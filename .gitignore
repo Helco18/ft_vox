@@ -1,0 +1,7 @@
+objs/
+*.o
+*.a
+ft_vox
+.clangd
+libs/
+.vscode/
