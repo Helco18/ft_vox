@@ -2,6 +2,7 @@ objs/
 *.o
 *.a
 ft_vox
+ft_vox_debug
 .clangd
 libs/
 .vscode/
