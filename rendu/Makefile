@@ -12,7 +12,8 @@ SRCS				=	srcs/main.cpp \
 						srcs/vulkan/VulkanEngine.cpp
 OBJ_FOLDER			=	objs
 INCLUDES			=	-I srcs \
-						-I libs
+						-I libs \
+						-I srcs/tools
 
 GLFW_PATH			=	libs/GLFW
 GLM_PATH			=	libs/glm
