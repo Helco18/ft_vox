@@ -1,3 +1,3 @@
 # ft_vox
 
-*Réalisé par [Gaël Cannaud](https://github.com/Helco18) et [l'autre](https://github.com/AgarOther).*
+*Réalisé par [Gaël Cannaud](https://github.com/Helco18) et [Sébastien Craeymeersch](https://github.com/AgarOther).*
