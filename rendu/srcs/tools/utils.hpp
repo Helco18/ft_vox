@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:27:14 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/22 19:22:12 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/23 17:26:21 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,14 @@
 
 struct QueueFamilyIndices;
 
+/* ************************************************************************** */
+/*   general_tools                                                            */
+/* ************************************************************************** */
+
+/* * Converts a value to a string.
+ * This is a utility function that can be used to convert any type that supports
+ * the stream insertion operator (<<) to a string.
+ */
 template <typename T>
 const std::string toString(const T & value)
 {
@@ -30,7 +38,30 @@ const std::string toString(const T & value)
 	return os.str();
 }
 
+/* ************************************************************************** */
+/*   vulkan_utils                                                             */
+/* ************************************************************************** */
+
+/* * Returns the required extensions for GLFW.
+ * This function retrieves the required Vulkan extensions for GLFW and returns them
+ * as a vector of C-style strings.
+ */
 std::vector<const char * > getRequiredExtensions();
+
+/* * Populates the debug messenger create info structure.
+ * This function fills the VkDebugUtilsMessengerCreateInfoEXT structure with the
+ * necessary information for debugging Vulkan applications.
+ */
 void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & createInfo);
+
+/* * Checks if a physical device is suitable for Vulkan.
+ * This function checks if the given physical device supports the necessary features
+ * and queue families to be used with Vulkan.
+ */
 bool isDeviceSuitable(const VkPhysicalDevice & device);
+
+/* * Finds the queue families for a physical device.
+ * This function checks the physical device for available queue families and returns
+ * a QueueFamilyIndices structure containing the indices of the graphics family.
+ */
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice & device);

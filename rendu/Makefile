@@ -123,7 +123,6 @@ download_stb:
 	git clone https://github.com/nothings/stb.git STB; \
 	echo "\033[31;1mGetting the Headers\033[0m"; \
 	mkdir -p stb; \
-	# ls; \
 	mv STB/* stb/; \
 	rm -rf STB;
 

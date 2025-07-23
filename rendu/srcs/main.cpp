@@ -6,7 +6,7 @@
 /*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 14:48:18 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 16:07:15 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 17:36:15 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,15 @@ GLFWwindow * getWindow()
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	GLFWwindow * window = glfwCreateWindow(800, 600, "ft_vox", nullptr, nullptr);
+	if (glfwVulkanSupported() == GLFW_FALSE)
+	{
+		std::cerr << RED << "[ERROR] Vulkan is not supported" << RESET << std::endl;
+		exit(1);
+	}
 	if (!window)
 	{
 		std::cerr << RED << "[ERROR] Failed to create GLFW window" << RESET << std::endl;
-		exit(1); // log a faire
+		exit(1);
 	}
 
 	glfwSetWindowSizeLimits(window, 400, 300, GLFW_DONT_CARE, GLFW_DONT_CARE);
@@ -54,6 +59,7 @@ GLFWwindow * getWindow()
 	// Free the image data after setting the icon
 	stbi_image_free(images[0].pixels);
 	stbi_image_free(images[1].pixels);
+
 	return (window);
 }
 
@@ -62,6 +68,11 @@ int main()
 	try
 	{
 		GLFWwindow * window = getWindow();
+		if (!window)
+		{
+			std::cerr << RED << "[ERROR] Failed to create GLFW window" << RESET << std::endl;
+			return -1;
+		}
 		VulkanEngine engine(window);
 		engine.init();
 

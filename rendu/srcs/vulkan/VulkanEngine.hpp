@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   VulkanEngine.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:05:49 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/22 19:20:59 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/23 17:29:00 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,15 @@ struct QueueFamilyIndices
 class VulkanEngine
 {
 	public:
+
 		VulkanEngine(GLFWwindow *window);
 		~VulkanEngine();
+
 		void init();
 		void destroy();
+
 	private:
+
 		GLFWwindow * _window;
 		VkSurfaceKHR _surface;
 		VkInstance _instance;
@@ -45,6 +49,7 @@ class VulkanEngine
 		VkDevice _device;
 		VkQueue _graphicsQueue;
 		QueueFamilyIndices _indices;
+
 		typedef std::vector<const char * > t_layers;
 		t_layers _validationLayers;
 
@@ -52,4 +57,5 @@ class VulkanEngine
 		void pickGraphicsCard();
 		void createLogicalDevice();
 		void createSurface();
+
 };
