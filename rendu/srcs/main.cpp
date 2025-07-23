@@ -6,7 +6,7 @@
 /*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 14:48:18 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 18:56:06 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 20:08:28 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,26 @@ static void setIcone(GLFWwindow * window)
 {
 	GLFWimage images[2];
 
-	images[0] = decodeOneStep("assets/icon.png");
-	images[1] = decodeOneStep("assets/icon_small.png");
-	if (images[0].height != images[0].width || images[1].height != images[1].width)
-		throw std::runtime_error("Icone size mismatch");
+	try
+	{
+		images[0] = decodeOneStep("assets/icon.png");
+		images[1] = decodeOneStep("assets/icon_small.png");
+	}
+	catch(const std::exception& e)
+	{
+		if (images[0].pixels)
+			stbi_image_free(images[0].pixels);
+		if (images[1].pixels)
+			stbi_image_free(images[1].pixels);
+		throw std::runtime_error(std::string(e.what()));
+	}
 
+	if (images[0].height != images[0].width || images[1].height != images[1].width)
+	{
+		stbi_image_free(images[0].pixels);
+		stbi_image_free(images[1].pixels);
+		throw std::runtime_error("Icone size mismatch");
+	}
 	glfwSetWindowIcon(window, 2, images);
 
 	stbi_image_free(images[0].pixels);
