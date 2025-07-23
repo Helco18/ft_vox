@@ -6,17 +6,11 @@
 /*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:05:49 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 17:29:00 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:32:32 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-
-#ifdef DEBUG
-# define IS_DEBUG 1
-# else
-# define IS_DEBUG 0
-#endif
 
 #include "tools/utils.hpp"
 #include <stdexcept>

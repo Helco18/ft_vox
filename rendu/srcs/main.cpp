@@ -6,7 +6,7 @@
 /*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 14:48:18 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 17:36:15 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:27:39 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@ GLFWwindow * getWindow()
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	GLFWwindow * window = glfwCreateWindow(800, 600, "ft_vox", nullptr, nullptr);
+	# ifdef DEBUG
+	glfwSetWindowTitle(window, "ft_vox [DEBUG]");
+	# endif
 	if (glfwVulkanSupported() == GLFW_FALSE)
 	{
 		std::cerr << RED << "[ERROR] Vulkan is not supported" << RESET << std::endl;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   vulkan_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 16:40:28 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/22 19:04:36 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:30:14 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,14 @@ std::vector<const char * > getRequiredExtensions() {
 
 	std::vector<const char * > extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-	if (IS_DEBUG)
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	# ifdef DEBUG
+	extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	# endif
 
 	return extensions;
 }
 
+# ifdef DEBUG
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT       messageSeverity,
 	VkDebugUtilsMessageTypeFlagsEXT              messageType,
@@ -93,3 +95,4 @@ void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & creat
 	createInfo.pfnUserCallback = debugCallback;
 	createInfo.pUserData = nullptr; // optionnel
 }
+# endif

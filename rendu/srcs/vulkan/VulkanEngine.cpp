@@ -6,7 +6,7 @@
 /*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:07:42 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 17:44:43 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:30:58 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,17 @@ void VulkanEngine::createInstance()
 	auto extensions = getRequiredExtensions();
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
+
+	# ifdef DEBUG
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
 
 	// Debug pour log les erreurs
-	if (IS_DEBUG) {
-		populateDebugMessengerCreateInfo(debugCreateInfo);
-		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-	} else {
-		createInfo.enabledLayerCount = 0;
-		createInfo.pNext = nullptr;
-	}
+	populateDebugMessengerCreateInfo(debugCreateInfo);
+	createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+	# else
+	createInfo.enabledLayerCount = 0;
+	createInfo.pNext = nullptr;
+	# endif
 
 	// Créer l'instance
 	// vkCreateInstance will return VK_SUCCESS if the instance was created successfully
@@ -94,14 +95,15 @@ void VulkanEngine::createLogicalDevice()
 	createInfo.pEnabledFeatures = &deviceFeatures;
 	createInfo.enabledExtensionCount = 0;
 
-	// If IS_DEBUG is true, enable the validation layers
-	if (IS_DEBUG)
+	// If DEBUG is true, enable the validation layers
+	# ifdef DEBUG
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
-		createInfo.ppEnabledLayerNames = _validationLayers.data();
+	createInfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
+	createInfo.ppEnabledLayerNames = _validationLayers.data();
 	}
-	else
-		createInfo.enabledLayerCount = 0;
+	# else
+	createInfo.enabledLayerCount = 0;
+	# endif
 	if (vkCreateDevice(_physicalDevice, &createInfo, nullptr, &_device) != VK_SUCCESS)
     	throw std::runtime_error("Failed to create logical device!");
 	// Get the graphics queue from the logical device

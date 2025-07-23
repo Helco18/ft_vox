@@ -6,7 +6,7 @@
 /*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:27:14 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 17:26:21 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:30:07 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,13 @@ const std::string toString(const T & value)
  */
 std::vector<const char * > getRequiredExtensions();
 
+# ifdef DEBUG
 /* * Populates the debug messenger create info structure.
  * This function fills the VkDebugUtilsMessengerCreateInfoEXT structure with the
  * necessary information for debugging Vulkan applications.
  */
 void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & createInfo);
+# endif
 
 /* * Checks if a physical device is suitable for Vulkan.
  * This function checks if the given physical device supports the necessary features
