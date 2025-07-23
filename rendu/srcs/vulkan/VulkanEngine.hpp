@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   VulkanEngine.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:05:49 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 18:32:32 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 19:14:04 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
