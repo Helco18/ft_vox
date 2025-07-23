@@ -13,12 +13,15 @@ SRCS				=	srcs/main.cpp \
 OBJ_FOLDER			=	objs
 INCLUDES			=	-I srcs \
 						-I libs \
-						-I srcs/tools
+						-I srcs/tools \
+						-I libs/stb
 
 GLFW_PATH			=	libs/GLFW
 GLM_PATH			=	libs/glm
+STB_PATH			=	libs/stb
 
 GLFW				=	$(GLFW_PATH)/libglfw3.a
+
 
 # Objects
 OBJS				=	$(patsubst srcs/%.cpp, $(OBJ_FOLDER)/%.o, $(SRCS)) \
@@ -46,11 +49,11 @@ ALL_FCLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects & Executables cleaned
 
 # Rules
 
-all : glfw glm
+all : glfw glm stb $(NAME)
 	@make -j4 $(NAME)
 
 $(NAME): $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) ${LDFLAGS}
+	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) $(LDFLAGS)
 	$(EXE_DONE)
 
 $(OBJ_FOLDER)/%.o: srcs/%.cpp
@@ -70,7 +73,7 @@ fclean :
 re : fclean all
 
 debug : fclean
-	$(MAKE) -j4 NAME="$(NAME)_debug" CFLAGS="$(CFLAGS) -DDEBUG"
+	$(MAKE) NAME="$(NAME)_debug" CFLAGS="$(CFLAGS) -DDEBUG"
 	$(DEBUG_DONE)
 
 # Libraries
@@ -111,6 +114,23 @@ glm:
 	@mkdir -p libs
 	@if ! ls ./libs/glm 2>/dev/null | grep -q "glm.hpp" ; then \
 		make --no-print-directory download_glm; \
+	fi
+
+download_stb:
+	@cd libs; \
+	echo "\033[31;1;4mstb Not Found\033[0m"; \
+	echo "\033[31;1mDownloading it from github\033[0m"; \
+	git clone https://github.com/nothings/stb.git STB; \
+	echo "\033[31;1mGetting the Headers\033[0m"; \
+	mkdir -p stb; \
+	# ls; \
+	mv STB/* stb/; \
+	rm -rf STB;
+
+stb:
+	@mkdir -p libs
+	@if ! ls ./libs/stb 2>/dev/null | grep -q "stb_image.h" ; then \
+		make --no-print-directory download_stb; \
 	fi
 
 .PHONY: all clean fclean re debug
