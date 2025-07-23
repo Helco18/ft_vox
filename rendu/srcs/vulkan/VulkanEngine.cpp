@@ -6,7 +6,7 @@
 /*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:07:42 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 18:30:58 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/23 19:00:40 by gcannaud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,8 @@ void VulkanEngine::createInstance()
     appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	// Validation layers
-	_validationLayers = {
-    	"VK_LAYER_KHRONOS_validation"
-	};
+	_validationLayers = {"VK_LAYER_KHRONOS_validation"};
+
 	VkInstanceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
@@ -118,9 +117,9 @@ void VulkanEngine::pickGraphicsCard()
 	// It will check if the device is suitable by calling isDeviceSuitable
 	// If a suitable device is found, it will be set as the _physicalDevice
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-
 	// Compte le nombre de GPU
 	uint32_t deviceCount = 0;
+
 	vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
 	if (deviceCount == 0)
 		throw std::runtime_error("Failed to find GPUs with Vulkan support!");
