@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:05:49 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/24 19:27:59 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/24 19:46:03 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,25 +52,31 @@ class VulkanEngine
 
 	private:
 
-		GLFWwindow * _window;
-		QueueFamilyIndices _indices;
-		VkSurfaceKHR _surface;
-		VkInstance _instance;
-		VkPhysicalDevice _physicalDevice;
-		VkDevice _device;
-		VkQueue _graphicsQueue;
-		VkQueue _presentQueue;
-		VkSwapchainKHR _swapChain;
+		GLFWwindow *		_window;
+		QueueFamilyIndices	_indices;
+		VkSurfaceKHR		_surface;
+		VkInstance			_instance;
+		VkPhysicalDevice	_physicalDevice;
+		VkDevice			_device;
+		VkQueue				_graphicsQueue;
+		VkQueue				_presentQueue;
+		VkSwapchainKHR		_swapChain;
+		VkFormat			_swapChainImageFormat;
+		VkExtent2D			_swapChainExtent;
 		
 		typedef std::vector<VkImage> t_swapChainImgs;
 		t_swapChainImgs _swapChainImages;
 		typedef std::vector<const char * > t_layers;
 		t_layers _validationLayers;
+		typedef std::vector<VkImageView> t_swapChainImgsViews;
+		t_swapChainImgsViews _swapChainImageViews;
 
 		void createInstance();
 		void createSurface();
 		void pickGraphicsCard();
 		void createLogicalDevice();
 		void createSwapChain();
+		void createImageViews();
+		void createGraphicsPipeline();
 
 };

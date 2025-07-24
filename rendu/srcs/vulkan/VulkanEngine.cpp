@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:07:42 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/24 19:26:39 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/24 19:45:54 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,6 +197,40 @@ void VulkanEngine::createSwapChain()
 
 	if (vkCreateSwapchainKHR(_device, &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
     	throw std::runtime_error("Failed to create swap chain!");
+	vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, nullptr);
+	_swapChainImages.resize(imageCount);
+	vkGetSwapchainImagesKHR(_device, _swapChain, &imageCount, _swapChainImages.data());
+	_swapChainImageFormat = surfaceFormat.format;
+	_swapChainExtent = extent;
+}
+
+void VulkanEngine::createImageViews()
+{
+    _swapChainImageViews.resize(_swapChainImages.size());
+	for (size_t i = 0; i < _swapChainImages.size(); i++)
+	{
+		VkImageViewCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		createInfo.image = _swapChainImages[i];
+		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		createInfo.format = _swapChainImageFormat;
+		createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+		createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		createInfo.subresourceRange.baseMipLevel = 0;
+		createInfo.subresourceRange.levelCount = 1;
+		createInfo.subresourceRange.baseArrayLayer = 0;
+		createInfo.subresourceRange.layerCount = 1;
+		if (vkCreateImageView(_device, &createInfo, nullptr, &_swapChainImageViews[i]) != VK_SUCCESS)
+    		throw std::runtime_error("Failed to create image views!");
+	}
+}
+
+void VulkanEngine::createGraphicsPipeline()
+{
+
 }
 
 void VulkanEngine::init()
@@ -206,10 +240,14 @@ void VulkanEngine::init()
 	pickGraphicsCard();
 	createLogicalDevice();
 	createSwapChain();
+	createImageViews();
+	createGraphicsPipeline();
 }
 
 void VulkanEngine::destroy()
 {
+	for (auto imageView : _swapChainImageViews)
+        vkDestroyImageView(_device, imageView, nullptr);
 	vkDestroySwapchainKHR(_device, _swapChain, nullptr);
 	vkDestroyDevice(_device, nullptr);
 	vkDestroySurfaceKHR(_instance, _surface, nullptr);
