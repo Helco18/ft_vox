@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:27:14 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/24 18:40:23 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/24 19:17:58 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <optional>
 
 struct QueueFamilyIndices;
+struct SwapChainSupportDetails;
 
 /* ************************************************************************** */
 /*   general_tools                                                            */
@@ -61,10 +62,18 @@ void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & creat
  * This function checks if the given physical device supports the necessary features
  * and queue families to be used with Vulkan.
  */
-bool isDeviceSuitable(const VkPhysicalDevice & device, const QueueFamilyIndices & indices);
+bool isDeviceSuitable(const VkPhysicalDevice & device, const QueueFamilyIndices & indices, const VkSurfaceKHR & surface);
 
 /* * Finds the queue families for a physical device.
  * This function checks the physical device for available queue families and returns
  * a QueueFamilyIndices structure containing the indices of the graphics family.
  */
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice & device, const VkSurfaceKHR & surface);
+
+SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice & device, const VkSurfaceKHR & surface);
+
+VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> & availableFormats);
+
+VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> & availablePresentModes);
+
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR & capabilities, GLFWwindow * window);
