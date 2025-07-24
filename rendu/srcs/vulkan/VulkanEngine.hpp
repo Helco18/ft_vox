@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:05:49 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 19:14:04 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/24 18:43:09 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,16 @@
 #include "colors.hpp"
 #include <iostream>
 #include <vector>
+#include <set>
 
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
+	std::optional<uint32_t> presentFamily;
+
+	inline bool isComplete() const {
+        return graphicsFamily.has_value() && presentFamily.has_value();
+    }
 };
 
 class VulkanEngine
@@ -42,6 +48,7 @@ class VulkanEngine
 		VkPhysicalDevice _physicalDevice;
 		VkDevice _device;
 		VkQueue _graphicsQueue;
+		VkQueue _presentQueue;
 		QueueFamilyIndices _indices;
 
 		typedef std::vector<const char * > t_layers;

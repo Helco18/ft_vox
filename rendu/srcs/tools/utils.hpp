@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:27:14 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 19:14:02 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/24 18:40:23 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,10 @@ void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT & creat
  * This function checks if the given physical device supports the necessary features
  * and queue families to be used with Vulkan.
  */
-bool isDeviceSuitable(const VkPhysicalDevice & device);
+bool isDeviceSuitable(const VkPhysicalDevice & device, const QueueFamilyIndices & indices);
 
 /* * Finds the queue families for a physical device.
  * This function checks the physical device for available queue families and returns
  * a QueueFamilyIndices structure containing the indices of the graphics family.
  */
-QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice & device);
+QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice & device, const VkSurfaceKHR & surface);

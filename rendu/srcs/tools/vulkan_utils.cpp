@@ -3,33 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   vulkan_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 16:40:28 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 18:30:14 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/07/24 18:40:10 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vulkan/VulkanEngine.hpp"
 #include <vulkan/vulkan_core.h>
 
-QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice & device) {
+QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice & device, const VkSurfaceKHR & surface) {
 	QueueFamilyIndices indices;
     uint32_t queueFamilyCount = 0;
 	int	i = 0;
+	VkBool32 presentSupport = false;
 
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+	vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 	for (const auto & queueFamily : queueFamilies) {
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			indices.graphicsFamily = i;
+		if (presentSupport)
+			indices.presentFamily = i;
 		i++;
 	}
 	return indices;
 }
 
-bool isDeviceSuitable(const VkPhysicalDevice & device)
+bool isDeviceSuitable(const VkPhysicalDevice & device, const QueueFamilyIndices & indices)
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
@@ -39,7 +43,7 @@ bool isDeviceSuitable(const VkPhysicalDevice & device)
 	// Discrete GPU = la bonne !! :) (celle qui n'est pas intégrée ect.)
 	if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
 		&& deviceFeatures.geometryShader
-		&& findQueueFamilies(device).graphicsFamily.has_value())
+		&& indices.isComplete())
 	{
 		std::cout << CYAN << "GPU: " << deviceProperties.deviceName << RESET << std::endl;
 		return true;

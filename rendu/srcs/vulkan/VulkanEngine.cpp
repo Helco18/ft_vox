@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:07:42 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/23 19:19:18 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/24 18:45:27 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,20 +67,18 @@ void VulkanEngine::createInstance()
 
 void VulkanEngine::createLogicalDevice()
 {
-	// Find the queue families for the physical device
-	_indices = findQueueFamilies(_physicalDevice);
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+	std::set<uint32_t> uniqueQueueFamilies = {_indices.graphicsFamily.value(), _indices.presentFamily.value()};
 
-	// Check if the graphics family is available
-	VkDeviceQueueCreateInfo queueCreateInfo{};
-	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = _indices.graphicsFamily.value();
-	queueCreateInfo.queueCount = 1;
-
-	// Set the queue priority to 1.0f (highest priority)
-	// This is necessary for the queue to be created successfully
-	// If the queue priority is not set, the queue will not be created
 	float queuePriority = 1.0f;
-	queueCreateInfo.pQueuePriorities = &queuePriority;
+	for (uint32_t queueFamily : uniqueQueueFamilies) {
+		VkDeviceQueueCreateInfo queueCreateInfo{};
+		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount = 1;
+		queueCreateInfo.pQueuePriorities = &queuePriority;
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
 
 	// Create the logical device
 	// This will create a logical device that can be used to interact with the physical device
@@ -89,8 +87,8 @@ void VulkanEngine::createLogicalDevice()
 	VkPhysicalDeviceFeatures deviceFeatures{};
 	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	createInfo.pQueueCreateInfos = &queueCreateInfo;
-	createInfo.queueCreateInfoCount = 1;
+	createInfo.pQueueCreateInfos = queueCreateInfos.data();
+	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
 	createInfo.pEnabledFeatures = &deviceFeatures;
 	createInfo.enabledExtensionCount = 0;
 
@@ -108,7 +106,7 @@ void VulkanEngine::createLogicalDevice()
 	// Get the graphics queue from the logical device
 	// This will return the queue that was created earlier
 	// The queue will be used to submit commands to the physical device
-	vkGetDeviceQueue(_device, _indices.graphicsFamily.value(), 0, &_graphicsQueue);
+	vkGetDeviceQueue(_device, _indices.presentFamily.value(), 0, &_presentQueue);
 }
 
 void VulkanEngine::pickGraphicsCard()
@@ -131,9 +129,11 @@ void VulkanEngine::pickGraphicsCard()
 	// On parcourt les GPU et on vérifie s'ils sont compatibles avec Vulkan
 	// Si un GPU est compatible, on le set comme _physicalDevice
 	// Si aucun GPU n'est compatible, on lance une erreur
+	
 	for (const auto &device : devices)
 	{
-		if (isDeviceSuitable(device))
+		_indices = findQueueFamilies(device, _surface);
+		if (isDeviceSuitable(device, _indices))
 		{
 			physicalDevice = device;
 			break;
@@ -153,9 +153,9 @@ void VulkanEngine::createSurface()
 void VulkanEngine::init()
 {
 	createInstance();
+	createSurface();
 	pickGraphicsCard();
 	createLogicalDevice();
-	createSurface();
 }
 
 void VulkanEngine::destroy()
