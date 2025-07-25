@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 14:48:18 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/24 18:26:43 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/25 18:11:38 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-GLFWimage decodeOneStep(const char* filename)
+GLFWimage decodeOneStep(const char * filename)
 {
 	GLFWimage image;
 	int width, height, channels;

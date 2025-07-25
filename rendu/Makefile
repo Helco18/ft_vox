@@ -8,8 +8,11 @@ NAME				=	ft_vox
 
 # Sources & Includes
 SRCS				=	srcs/main.cpp \
+						srcs/tools/shader_utils.cpp \
 						srcs/tools/vulkan_utils.cpp \
 						srcs/vulkan/VulkanEngine.cpp
+VERTEX_SHADERS		=	srcs/shaders/vertex/triangle.vert
+FRAGMENT_SHADERS	=	srcs/shaders/fragment/triangle.frag
 OBJ_FOLDER			=	objs
 INCLUDES			=	-I srcs \
 						-I libs \
@@ -19,9 +22,9 @@ INCLUDES			=	-I srcs \
 GLFW_PATH			=	libs/GLFW
 GLM_PATH			=	libs/glm
 STB_PATH			=	libs/stb
+SPIRV_PATH			=	srcs/shaders/spir-v
 
 GLFW				=	$(GLFW_PATH)/libglfw3.a
-
 
 # Objects
 OBJS				=	$(patsubst srcs/%.cpp, $(OBJ_FOLDER)/%.o, $(SRCS)) \
@@ -44,12 +47,13 @@ RESET				=	\033[0m
 # Custom messages
 EXE_DONE			=	@echo "🎉$(PURPLE) $(NAME) compiled! 🎉$(RESET)\n"
 DEBUG_DONE			=	@echo "🎉$(YELLOW) This is the DEBUG MODE version! 🎉$(RESET)\n"
+SHADERS_DONE		=	@echo "🎨$(PURPLE) Shaders compiled! 🎨$(RESET)\n"
 ALL_CLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects cleaned! 🧹$(RESET)\n"
 ALL_FCLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects & Executables cleaned! 🧹$(RESET)\n"
 
 # Rules
 
-all : glfw glm stb $(NAME)
+all : glfw glm stb shader $(NAME)
 	@make -j4 $(NAME)
 
 $(NAME): $(OBJS)
@@ -60,14 +64,22 @@ $(OBJ_FOLDER)/%.o: srcs/%.cpp
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+shader :
+	@mkdir -p $(SPIRV_PATH)
+	@glslc $(VERTEX_SHADERS) -o $(SPIRV_PATH)/vertex.spv
+	@glslc $(FRAGMENT_SHADERS) -o $(SPIRV_PATH)/fragment.spv
+	$(SHADERS_DONE)
+
 clean :
 	@rm -rf $(OBJ_FOLDER)
+	@rm -rf $(SPIRV_PATH)
 	$(ALL_CLEAN)
 
 fclean :
 	@rm -f $(NAME)_debug
 	@rm -f $(NAME)
 	@rm -rf $(OBJ_FOLDER)
+	@rm -rf $(SPIRV_PATH)
 	$(ALL_FCLEAN)
 
 re : fclean all

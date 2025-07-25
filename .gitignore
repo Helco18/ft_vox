@@ -6,3 +6,5 @@ ft_vox_debug
 .clangd
 libs/
 .vscode/
+spir-v/
+*.spv

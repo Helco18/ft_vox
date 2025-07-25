@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:27:14 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/24 19:17:58 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/07/25 19:04:16 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,3 +77,11 @@ VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>
 VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> & availablePresentModes);
 
 VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR & capabilities, GLFWwindow * window);
+
+VkShaderModule createShaderModule(const VkDevice & device, const std::vector<char> & code);
+
+/* ************************************************************************** */
+/*   shader_utils                                                             */
+/* ************************************************************************** */
+
+const std::vector<char> readFile(const std::string & filename);
