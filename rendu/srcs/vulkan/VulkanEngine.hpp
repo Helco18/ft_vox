@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 15:05:49 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/25 19:34:30 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/08/04 19:17:09 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ struct QueueFamilyIndices
 };
 
 struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
+    VkSurfaceCapabilitiesKHR		capabilities;
+    std::vector<VkSurfaceFormatKHR>	formats;
+    std::vector<VkPresentModeKHR>	presentModes;
 };
 
 class VulkanEngine
@@ -47,13 +47,16 @@ class VulkanEngine
 		VulkanEngine(GLFWwindow * window);
 		~VulkanEngine();
 
-		void init();
-		void destroy();
+		void				init();
+		void				destroy();
+		void				drawFrame();
+
+		const VkDevice &	getDevice() const { return _device; }
 
 	private:
 
 		GLFWwindow *		_window;
-		QueueFamilyIndices	_indices;
+		QueueFamilyIndices	_queueFamilyIndices;
 		VkSurfaceKHR		_surface;
 		VkInstance			_instance;
 		VkPhysicalDevice	_physicalDevice;
@@ -66,24 +69,33 @@ class VulkanEngine
 		VkRenderPass		_renderPass;
 		VkPipeline			_graphicsPipeline;
 		VkPipelineLayout	_pipelineLayout;
-
+		VkCommandPool		_commandPool;
+		VkCommandBuffer		_commandBuffer;
+		VkSemaphore			_imageAvailableSemaphore;
+		VkSemaphore			_renderFinishedSemaphore;
+		VkFence				_inFlightFence;
 		typedef std::vector<VkImage> t_swapChainImgs;
-		t_swapChainImgs _swapChainImages;
+		t_swapChainImgs		_swapChainImages;
 		typedef std::vector<const char * > t_layers;
-		t_layers _validationLayers;
+		t_layers			_validationLayers;
 		typedef std::vector<VkImageView> t_swapChainImgsViews;
 		t_swapChainImgsViews _swapChainImageViews;
 		typedef std::vector<VkFramebuffer> t_frameBuffers;
-		t_frameBuffers _swapChainFramebuffers;
+		t_frameBuffers		_swapChainFramebuffers;
 
-		void createInstance();
-		void createSurface();
-		void pickGraphicsCard();
-		void createLogicalDevice();
-		void createSwapChain();
-		void createImageViews();
-		void createRenderPass();
-		void createGraphicsPipeline();
-		void createFramebuffers();
+		void				createInstance();
+		void				createSurface();
+		void				pickGraphicsCard();
+		void				createLogicalDevice();
+		void				createSwapChain();
+		void				createImageViews();
+		void				createRenderPass();
+		void				createGraphicsPipeline();
+		void				createFramebuffers();
+		void				createCommandPool();
+		void				createCommandBuffer();
+		void				createSyncObjects();
+
+		void				recordCommandBuffer(uint32_t imageIndex);
 
 };

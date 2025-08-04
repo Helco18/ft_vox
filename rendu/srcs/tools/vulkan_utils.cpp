@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 16:40:28 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/25 19:04:31 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/08/04 19:03:54 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,8 @@ bool isDeviceSuitable(const VkPhysicalDevice & device, const QueueFamilyIndices 
 	return false;
 }
 
-std::vector<const char * > getRequiredExtensions() {
+std::vector<const char * > getRequiredExtensions()
+{
 	uint32_t glfwExtensionCount = 0;
 	const char ** glfwExtensions;
 

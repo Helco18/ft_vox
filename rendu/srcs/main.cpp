@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 14:48:18 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/25 18:11:38 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/08/04 19:16:37 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,13 +92,14 @@ int main()
 		GLFWwindow * window = getWindow();
 		VulkanEngine engine(window);
 		engine.init();
-
 		std::cout << GREEN << "Vulkan initialized" << RESET << std::endl;
 		while (!glfwWindowShouldClose(window))
 		{
 			glfwPollEvents();
+			engine.drawFrame();
 			glfwSwapBuffers(window);
 		}
+		vkDeviceWaitIdle(engine.getDevice());
 		engine.destroy();
 		glfwDestroyWindow(window);
 		glfwTerminate();
