@@ -1,101 +1,53 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   VulkanEngine.hpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/22 15:05:49 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/08/04 19:17:09 by scraeyme         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
-#include "tools/utils.hpp"
-#include <stdexcept>
-#include <vulkan/vulkan_core.h>
-#include "colors.hpp"
+#define GLFW_INCLUDE_VULKAN
+#include "GLFW/glfw3.h"
+
+#include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_raii.hpp>
 #include <iostream>
-#include <vector>
-#include <set>
+#include "colors.hpp"
 
-const std::vector<const char * > deviceExtensions = {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
+#define WIDTH 1280
+#define HEIGHT 720
+#define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
+#define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose
 
-struct QueueFamilyIndices
+const std::vector g_validationLayers =
 {
-	std::optional<uint32_t> graphicsFamily;
-	std::optional<uint32_t> presentFamily;
-
-	inline bool isComplete() const {
-        return graphicsFamily.has_value() && presentFamily.has_value();
-    }
+	"VK_LAYER_KHRONOS_validation"
 };
 
-struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR		capabilities;
-    std::vector<VkSurfaceFormatKHR>	formats;
-    std::vector<VkPresentModeKHR>	presentModes;
-};
+constexpr bool g_enableValidationLayers = true;
+// #ifdef DEBUG
+// constexpr bool g_enableValidationLayers = true;
+// #else
+// constexpr bool g_enableValidationLayers = false;
+// #endif
 
 class VulkanEngine
 {
 	public:
-
-		VulkanEngine(GLFWwindow * window);
+		VulkanEngine();
 		~VulkanEngine();
 
-		void				init();
-		void				destroy();
-		void				drawFrame();
-
-		const VkDevice &	getDevice() const { return _device; }
+		void								loop();
 
 	private:
+		GLFWwindow *						_window;
+		vk::raii::Context					_context;
+		vk::raii::Instance					_instance = nullptr;
+		vk::raii::DebugUtilsMessengerEXT	_debugMessenger = nullptr;
+		vk::raii::PhysicalDevice			_physicalDevice = nullptr;
 
-		GLFWwindow *		_window;
-		QueueFamilyIndices	_queueFamilyIndices;
-		VkSurfaceKHR		_surface;
-		VkInstance			_instance;
-		VkPhysicalDevice	_physicalDevice;
-		VkDevice			_device;
-		VkQueue				_graphicsQueue;
-		VkQueue				_presentQueue;
-		VkSwapchainKHR		_swapChain;
-		VkFormat			_swapChainImageFormat;
-		VkExtent2D			_swapChainExtent;
-		VkRenderPass		_renderPass;
-		VkPipeline			_graphicsPipeline;
-		VkPipelineLayout	_pipelineLayout;
-		VkCommandPool		_commandPool;
-		VkCommandBuffer		_commandBuffer;
-		VkSemaphore			_imageAvailableSemaphore;
-		VkSemaphore			_renderFinishedSemaphore;
-		VkFence				_inFlightFence;
-		typedef std::vector<VkImage> t_swapChainImgs;
-		t_swapChainImgs		_swapChainImages;
-		typedef std::vector<const char * > t_layers;
-		t_layers			_validationLayers;
-		typedef std::vector<VkImageView> t_swapChainImgsViews;
-		t_swapChainImgsViews _swapChainImageViews;
-		typedef std::vector<VkFramebuffer> t_frameBuffers;
-		t_frameBuffers		_swapChainFramebuffers;
+		typedef std::vector<char const *>	RequiredExtensions;
+		typedef std::vector<char const *>	RequiredLayers;
 
-		void				createInstance();
-		void				createSurface();
-		void				pickGraphicsCard();
-		void				createLogicalDevice();
-		void				createSwapChain();
-		void				createImageViews();
-		void				createRenderPass();
-		void				createGraphicsPipeline();
-		void				createFramebuffers();
-		void				createCommandPool();
-		void				createCommandBuffer();
-		void				createSyncObjects();
-
-		void				recordCommandBuffer(uint32_t imageIndex);
-
+		void								_initWindow();
+		void								_initVulkan();
+		void								_initDebugMessenger();
+		void								_createInstance();
+		RequiredExtensions					_getRequiredExtensions() const;
+		RequiredLayers						_getRequiredLayers() const;
+		void								_selectPhysicalDevice();
 };

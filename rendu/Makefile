@@ -8,9 +8,9 @@ NAME				=	ft_vox
 
 # Sources & Includes
 SRCS				=	srcs/main.cpp \
-						srcs/tools/shader_utils.cpp \
-						srcs/tools/vulkan_utils.cpp \
-						srcs/vulkan/VulkanEngine.cpp
+						srcs/vulkan/VulkanEngine.cpp \
+						srcs/vulkan/VulkanDebug.cpp \
+						srcs/vulkan/VulkanInstance.cpp
 VERTEX_SHADERS		=	srcs/shaders/vertex/triangle.vert
 FRAGMENT_SHADERS	=	srcs/shaders/fragment/triangle.frag
 OBJ_FOLDER			=	objs
@@ -53,8 +53,8 @@ ALL_FCLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects & Executables cleaned
 
 # Rules
 
-all : glfw glm stb shader $(NAME)
-	@make -j4 $(NAME)
+all : glfw glm stb $(NAME)
+	@make -j8 $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) $(LDFLAGS)
