@@ -12,7 +12,7 @@ static VULKAN_CALLBACK debugCallback(
 
 	std::string severityType = "";
 	if (severity & vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose)
-   		severityType = BLACK "[VERBOSE] ";
+   		severityType = GRAY "[VERBOSE] ";
 	if (severity & vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo)
 		severityType = CYAN "[INFO] ";
 	if (severity & vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning)

@@ -6,6 +6,7 @@
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_raii.hpp>
 #include <iostream>
+#include <iterator>
 #include "colors.hpp"
 
 #define WIDTH 1280
@@ -28,10 +29,8 @@ constexpr bool g_enableValidationLayers = true;
 class VulkanEngine
 {
 	public:
-		VulkanEngine();
+		VulkanEngine(GLFWwindow * window);
 		~VulkanEngine();
-
-		void								loop();
 
 	private:
 		GLFWwindow *						_window;
@@ -39,15 +38,16 @@ class VulkanEngine
 		vk::raii::Instance					_instance = nullptr;
 		vk::raii::DebugUtilsMessengerEXT	_debugMessenger = nullptr;
 		vk::raii::PhysicalDevice			_physicalDevice = nullptr;
+		vk::raii::Device					_device = nullptr;
 
 		typedef std::vector<char const *>	RequiredExtensions;
 		typedef std::vector<char const *>	RequiredLayers;
 
-		void								_initWindow();
-		void								_initVulkan();
 		void								_initDebugMessenger();
 		void								_createInstance();
 		RequiredExtensions					_getRequiredExtensions() const;
 		RequiredLayers						_getRequiredLayers() const;
 		void								_selectPhysicalDevice();
+		uint32_t							_findQueueFamilies() const;
+		void								_createLogicalDevice();
 };

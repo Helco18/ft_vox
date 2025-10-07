@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   colors.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scraeyme <scraeyme@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: scraeyme <scraeyme@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:24:47 by scraeyme          #+#    #+#             */
-/*   Updated: 2025/07/22 16:35:31 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/10/07 16:00:47 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #ifndef COLORS_HPP
 # define COLORS_HPP
 # define BLACK "\033[30;49m"
+# define GRAY "\033[90m"
 # define RED "\033[31;49m"
 # define GREEN "\033[32;49m"
 # define YELLOW "\033[33;49m"

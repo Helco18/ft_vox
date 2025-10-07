@@ -97,4 +97,34 @@ void VulkanEngine::_selectPhysicalDevice()
 
 	if (devices.empty())
 		throw std::runtime_error("Failed to find a GPU compatible with Vulkan.");
+	std::cout << BOLD_MAGENTA << "Selected GPU: " << devices[0].getProperties().deviceName << RESET << std::endl;
+	_physicalDevice = devices[0];
+}
+
+uint32_t VulkanEngine::_findQueueFamilies() const
+{
+	// Trouve l'index de la première queue family
+	const std::vector<vk::QueueFamilyProperties> queueFamilyProperties = _physicalDevice.getQueueFamilyProperties();
+	uint32_t i = 0;
+
+	// Trouve l'index de la queue family properties qui possède les graphics
+	while (i < queueFamilyProperties.size())
+	{
+		if (queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eGraphics)
+			return i;
+		++i;
+	}
+	throw std::runtime_error("No queue family supporting graphics found.");
+}
+
+void VulkanEngine::_createLogicalDevice()
+{
+	std::vector<vk::QueueFamilyProperties> qfp = _physicalDevice.getQueueFamilyProperties();
+	float queuePriority = 0.0f;
+
+	vk::DeviceQueueCreateInfo deviceQueueCreateInfo;
+	deviceQueueCreateInfo.pQueuePriorities = &queuePriority;
+	deviceQueueCreateInfo.queueFamilyIndex = _findQueueFamilies();
+
+	
 }
