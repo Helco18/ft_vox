@@ -5,9 +5,8 @@
 
 int main(void)
 {
-
 	try
-	{	
+	{
 		VulkanEngine	engine;
 
 		engine.loop();
@@ -15,7 +14,7 @@ int main(void)
 	catch (const std::exception & e)
 	{
 		std::cerr << RED << "[ERROR] " << e.what() << RESET << std::endl;
-		return 1;
+		return EXIT_FAILURE;
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }
