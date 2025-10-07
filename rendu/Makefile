@@ -8,6 +8,7 @@ NAME				=	ft_vox
 
 # Sources & Includes
 SRCS				=	srcs/main.cpp \
+						srcs/tools/glfwUtills.cpp \
 						srcs/vulkan/VulkanEngine.cpp \
 						srcs/vulkan/VulkanDebug.cpp \
 						srcs/vulkan/VulkanInstance.cpp

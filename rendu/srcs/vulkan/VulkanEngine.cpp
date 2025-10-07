@@ -11,6 +11,4 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 
 VulkanEngine::~VulkanEngine()
 {
-	glfwDestroyWindow(_window);
-	glfwTerminate();
 }

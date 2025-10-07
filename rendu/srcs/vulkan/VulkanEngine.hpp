@@ -13,8 +13,6 @@
 #include <optional>
 #include "colors.hpp"
 
-#define WIDTH 1280
-#define HEIGHT 720
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose
 
