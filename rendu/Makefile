@@ -100,6 +100,7 @@ download_glfw:
 	cmake --build GLFW_DOWNLOADED/build; \
 	mkdir -p GLFW; \
 	cp GLFW_DOWNLOADED/include/GLFW/glfw3.h GLFW/.; \
+	cp GLFW_DOWNLOADED/include/GLFW/glfw3native.h GLFW/.; \
 	cp GLFW_DOWNLOADED/build/src/libglfw3.a GLFW/.; \
 	rm -rf GLFW_DOWNLOADED
 

@@ -4,6 +4,7 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 {
 	_createInstance();
 	_initDebugMessenger();
+	_createSurface();
 	_selectPhysicalDevice();
 	_createLogicalDevice();
 }

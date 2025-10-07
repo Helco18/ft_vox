@@ -101,8 +101,9 @@ void VulkanEngine::_selectPhysicalDevice()
 	_physicalDevice = devices[0];
 }
 
-uint32_t VulkanEngine::_findQueueFamilies() const
+QueueIndices VulkanEngine::_findQueueFamilies() const
 {
+	QueueIndices queueIndices;
 	// Trouve l'index de la première queue family
 	const std::vector<vk::QueueFamilyProperties> queueFamilyProperties = _physicalDevice.getQueueFamilyProperties();
 	uint32_t i = 0;
@@ -111,9 +112,15 @@ uint32_t VulkanEngine::_findQueueFamilies() const
 	while (i < queueFamilyProperties.size())
 	{
 		if (queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eGraphics)
-			return i;
+		{
+			queueIndices.graphicsIndex = i;
+			if (_physicalDevice.getSurfaceSupportKHR(i, _surface)) // Est-ce qu'on peut présenter des images à notre surface
+				queueIndices.presentIndex = i;
+			return queueIndices;
+		}
 		++i;
 	}
+
 	throw std::runtime_error("No queue family supporting graphics found.");
 }
 
@@ -121,10 +128,43 @@ void VulkanEngine::_createLogicalDevice()
 {
 	std::vector<vk::QueueFamilyProperties> qfp = _physicalDevice.getQueueFamilyProperties();
 	float queuePriority = 0.0f;
+	QueueIndices queueIndex = _findQueueFamilies();
 
+	// Récupérer l'index de la queue family que l'on va utiliser
 	vk::DeviceQueueCreateInfo deviceQueueCreateInfo;
 	deviceQueueCreateInfo.pQueuePriorities = &queuePriority;
-	deviceQueueCreateInfo.queueFamilyIndex = _findQueueFamilies();
+	deviceQueueCreateInfo.queueFamilyIndex = queueIndex.graphicsIndex.value();
+	deviceQueueCreateInfo.queueCount = 1; // Ligne qu'on a du rajouter pour indiquer que nous possédons 1 queue
 
-	
+	// Activation des features en liste chaînée
+	vk::PhysicalDeviceFeatures2 features;
+	vk::PhysicalDeviceVulkan13Features vulkan13features;
+	vulkan13features.dynamicRendering = true;
+	vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT dynamicStateFeatures;
+	dynamicStateFeatures.extendedDynamicState = true;
+	features.pNext = vulkan13features;
+	vulkan13features.pNext = dynamicStateFeatures;
+	dynamicStateFeatures.pNext = nullptr;
+
+	// On remplit les infos de notre logical device
+	vk::DeviceCreateInfo deviceCreateInfo;
+	deviceCreateInfo.pNext = &features;
+	deviceCreateInfo.queueCreateInfoCount = 1;
+	deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
+	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(g_deviceExtensions.size());
+	deviceCreateInfo.ppEnabledExtensionNames = g_deviceExtensions.data();
+
+	_device = vk::raii::Device(_physicalDevice, deviceCreateInfo);
+
+	_graphicsQueue = vk::raii::Queue(_device, queueIndex.graphicsIndex.value(), 0);
+}
+
+void VulkanEngine::_createSurface()
+{
+	VkSurfaceKHR surface;
+
+	if (glfwCreateWindowSurface(*_instance, _window, nullptr, &surface) != 0)
+		throw std::runtime_error("Failed to create window surface.");
+
+	_surface = vk::raii::SurfaceKHR(_instance, surface);
 }
