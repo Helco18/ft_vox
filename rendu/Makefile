@@ -8,12 +8,13 @@ NAME				=	ft_vox
 
 # Sources & Includes
 SRCS				=	srcs/main.cpp \
-						srcs/tools/glfwUtills.cpp \
-						srcs/vulkan/VulkanEngine.cpp \
+						srcs/tools/glfwUtils.cpp \
+						srcs/tools/utils.cpp \
 						srcs/vulkan/VulkanDebug.cpp \
-						srcs/vulkan/VulkanInstance.cpp
-VERTEX_SHADERS		=	srcs/shaders/vertex/triangle.vert
-FRAGMENT_SHADERS	=	srcs/shaders/fragment/triangle.frag
+						srcs/vulkan/VulkanEngine.cpp \
+						srcs/vulkan/VulkanInstance.cpp \
+						srcs/vulkan/VulkanPipeline.cpp
+SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs
 INCLUDES			=	-I srcs \
 						-I libs \
@@ -24,6 +25,7 @@ GLFW_PATH			=	libs/GLFW
 GLM_PATH			=	libs/glm
 STB_PATH			=	libs/stb
 SPIRV_PATH			=	srcs/shaders/spir-v
+GLSL_PATH			=	srcs/shaders/glsl
 
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 
@@ -48,13 +50,15 @@ RESET				=	\033[0m
 # Custom messages
 EXE_DONE			=	@echo "🎉$(PURPLE) $(NAME) compiled! 🎉$(RESET)\n"
 DEBUG_DONE			=	@echo "🎉$(YELLOW) This is the DEBUG MODE version! 🎉$(RESET)\n"
-SHADERS_DONE		=	@echo "🎨$(PURPLE) Shaders compiled! 🎨$(RESET)\n"
+SHADERS_SPIRV_DONE	=	@echo "🎨$(PURPLE) SPIRV Shaders compiled! 🎨$(RESET)\n"
+SHADERS_GLSL_DONE	=	@echo "🎨$(PURPLE) GLSL Shaders compiled! 🎨$(RESET)\n"
+SHADERS_CLEAN		=	@echo "🧹$(LIGHT_GREEN) Shaders cleaned! 🧹$(RESET)\n"
 ALL_CLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects cleaned! 🧹$(RESET)\n"
 ALL_FCLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects & Executables cleaned! 🧹$(RESET)\n"
 
 # Rules
 
-all : glfw glm stb
+all : glfw glm stb shader
 	@make -j4 $(NAME)
 
 $(NAME): $(OBJS)
@@ -66,14 +70,23 @@ $(OBJ_FOLDER)/%.o: srcs/%.cpp
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 shader :
+	@mkdir -p $(GLSL_PATH)
 	@mkdir -p $(SPIRV_PATH)
-	@glslc $(VERTEX_SHADERS) -o $(SPIRV_PATH)/vertex.spv
-	@glslc $(FRAGMENT_SHADERS) -o $(SPIRV_PATH)/fragment.spv
-	$(SHADERS_DONE)
+	@slangc $(SHADERS) -target spirv -entry vertMain -entry fragMain -o $(SPIRV_PATH)/triangle.spv
+	$(SHADERS_SPIRV_DONE)
+	@slangc $(SHADERS) -target glsl -entry vertMain -o $(GLSL_PATH)/triangle.vert
+	@slangc $(SHADERS) -target glsl -entry fragMain -o $(GLSL_PATH)/triangle.frag
+	$(SHADERS_GLSL_DONE)
+
+sclean:
+	@rm -rf $(SPIRV_PATH)
+	@rm -rf $(GLSL_PATH)
+	$(SHADERS_CLEAN)
 
 clean :
 	@rm -rf $(OBJ_FOLDER)
 	@rm -rf $(SPIRV_PATH)
+	@rm -rf $(GLSL_PATH)
 	$(ALL_CLEAN)
 
 fclean :
@@ -81,6 +94,7 @@ fclean :
 	@rm -f $(NAME)
 	@rm -rf $(OBJ_FOLDER)
 	@rm -rf $(SPIRV_PATH)
+	@rm -rf $(GLSL_PATH)
 	$(ALL_FCLEAN)
 
 re : fclean all
@@ -146,6 +160,6 @@ stb:
 		make --no-print-directory download_stb; \
 	fi
 
-.PHONY: all clean fclean re debug
+.PHONY: all shader clean sclean fclean re debug stb download_stb glm download_glm glfw download_glfw
 
 -include $(DEPS)

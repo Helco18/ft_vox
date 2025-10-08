@@ -10,6 +10,7 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 	_createLogicalDevice();
 	_createSwapChain();
 	_createImageViews();
+	_createGraphicsPipeline();
 }
 
 VulkanEngine::~VulkanEngine()

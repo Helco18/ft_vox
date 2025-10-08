@@ -8,10 +8,9 @@
 #include "GLFW/glfw3native.h"
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_raii.hpp>
-#include <iostream>
 #include <iterator>
-#include <optional>
 #include "colors.hpp"
+#include "utils.hpp"
 
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose
@@ -67,6 +66,7 @@ class VulkanEngine
 		std::vector<vk::Image>				_swapChainImages;
 		vk::Format							_swapChainImageFormat;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
+		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
 
 		typedef std::vector<char const * >	RequiredExtensions;
 		typedef std::vector<char const * >	RequiredLayers;
@@ -85,4 +85,6 @@ class VulkanEngine
 		vk::Extent2D						_chooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities);
 		void								_createSwapChain();
 		void								_createImageViews();
+		void								_createGraphicsPipeline();
+		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 };

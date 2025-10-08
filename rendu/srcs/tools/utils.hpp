@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: scraeyme <scraeyme@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 19:33:36 by gcannaud          #+#    #+#             */
-/*   Updated: 2025/10/07 20:18:38 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/10/08 17:53:18 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 
 #include <exception>
 #include <iostream>
-#include "colors.hpp"
-#include <GLFW/glfw3.h>
 #include <sstream>
+#include <fstream>
+#include <vector>
+#include "GLFW/glfw3.h"
+#include "colors.hpp"
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -30,12 +32,14 @@
  * the stream insertion operator (<<) to a string.
  */
 template <typename T>
-const std::string toString(const T & value)
+const std::string		toString(const T & value)
 {
 	std::ostringstream os;
 	os << value;
 	return os.str();
 }
+
+const std::vector<char>	readFile(const std::string & filename);
 
 /* ************************************************************************** */
 /*   GLFW tools                                                               */
@@ -49,4 +53,4 @@ const std::string toString(const T & value)
  * @return A pointer to the created GLFWwindow.
  * @throws std::runtime_error if GLFW initialization or window creation fails.
  */
-GLFWwindow * getWindow();
+GLFWwindow *			getWindow();
