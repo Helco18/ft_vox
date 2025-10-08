@@ -6,7 +6,10 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 	_initDebugMessenger();
 	_createSurface();
 	_selectPhysicalDevice();
+	_checkDeviceExtensions();
 	_createLogicalDevice();
+	_createSwapChain();
+	_createImageViews();
 }
 
 VulkanEngine::~VulkanEngine()

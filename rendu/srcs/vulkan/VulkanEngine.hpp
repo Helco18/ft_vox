@@ -23,7 +23,7 @@ const std::vector g_validationLayers =
 
 // La swapchain servira à présenter des images à la fenêtre
 // Les autres ajoutent des fonctionnalités supplémentaires (?)
-const std::vector<const char*> g_deviceExtensions =
+const std::vector<const char * > g_deviceExtensions =
 {
     vk::KHRSwapchainExtensionName,
     vk::KHRSpirv14ExtensionName,
@@ -40,8 +40,8 @@ constexpr bool g_enableValidationLayers = true;
 
 struct QueueIndices
 {
-	std::optional<uint32_t>	graphicsIndex;
-	std::optional<uint32_t>	presentIndex;
+	uint32_t	graphicsIndex;
+	uint32_t	presentIndex;
 };
 
 class VulkanEngine
@@ -60,9 +60,16 @@ class VulkanEngine
 		vk::raii::Queue						_graphicsQueue = nullptr;
 		vk::raii::Queue						_presentQueue = nullptr;
 		vk::raii::SurfaceKHR				_surface = nullptr;
+		vk::SurfaceFormatKHR				_swapChainSurfaceFormat;
+		vk::Extent2D						_swapChainExtent;
+		QueueIndices						_queueIndices;
+		vk::raii::SwapchainKHR				_swapChain = nullptr;
+		std::vector<vk::Image>				_swapChainImages;
+		vk::Format							_swapChainImageFormat;
+		std::vector<vk::raii::ImageView>	_swapChainImageViews;
 
-		typedef std::vector<char const *>	RequiredExtensions;
-		typedef std::vector<char const *>	RequiredLayers;
+		typedef std::vector<char const * >	RequiredExtensions;
+		typedef std::vector<char const * >	RequiredLayers;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -72,4 +79,10 @@ class VulkanEngine
 		void								_selectPhysicalDevice();
 		QueueIndices						_findQueueFamilies() const;
 		void								_createLogicalDevice();
+		void								_checkDeviceExtensions() const;
+		vk::SurfaceFormatKHR				_chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR> & formats);
+		vk::PresentModeKHR					_chooseSwapPresentMode(const std::vector<vk::PresentModeKHR> & presentModes);
+		vk::Extent2D						_chooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities);
+		void								_createSwapChain();
+		void								_createImageViews();
 };

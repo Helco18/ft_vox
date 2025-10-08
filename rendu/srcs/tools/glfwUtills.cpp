@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   glfwUtills.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gcannaud <gcannaud@student.42.fr>          +#+  +:+       +#+        */
+/*   By: scraeyme <scraeyme@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 19:33:38 by gcannaud          #+#    #+#             */
-/*   Updated: 2025/10/07 20:13:55 by gcannaud         ###   ########.fr       */
+/*   Updated: 2025/10/08 13:00:55 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static GLFWimage decodeOneStep(const char * filename)
 	GLFWimage image;
 	int width, height, channels;
 	unsigned char* pixels = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
+
 	if (!pixels)
 		throw std::runtime_error("Failed to load image : " + std::string(filename));
 	image.width = width;
@@ -28,7 +29,7 @@ static GLFWimage decodeOneStep(const char * filename)
     return image;
 }
 
-static void setIcone(GLFWwindow * window)
+static void setIcon(GLFWwindow * window)
 {
 	GLFWimage images[2];
 
@@ -41,7 +42,7 @@ static void setIcone(GLFWwindow * window)
 
 		glfwSetWindowIcon(window, 2, images);
 	}
-	catch(const std::exception& e)
+	catch(const std::exception & e)
 	{
 		if (images[0].pixels)
 			stbi_image_free(images[0].pixels);
@@ -94,7 +95,7 @@ GLFWwindow * getWindow()
 	{
 		window = createWindow();
 		// glfwSetWindowSizeLimits(window, 400, 300, GLFW_DONT_CARE, GLFW_DONT_CARE);
-		setIcone(window);
+		setIcon(window);
 	}
 	catch(const std::exception& e)
 	{
