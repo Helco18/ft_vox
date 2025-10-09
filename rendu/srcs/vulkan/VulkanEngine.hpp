@@ -15,6 +15,7 @@
 
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose
+#define MAX_FRAMES_IN_FLIGHT 2
 
 const std::vector g_validationLayers =
 {
@@ -31,12 +32,11 @@ const std::vector<const char * > g_deviceExtensions =
     vk::KHRCreateRenderpass2ExtensionName
 };
 
+#ifdef DEBUG
+constexpr bool g_enableValidationLayers = true;
+#else
 constexpr bool g_enableValidationLayers = false;
-// #ifdef DEBUG
-// constexpr bool g_enableValidationLayers = true;
-// #else
-// constexpr bool g_enableValidationLayers = false;
-// #endif
+#endif
 
 struct QueueIndices
 {
@@ -63,9 +63,16 @@ class VulkanEngine
 
 		void								drawFrame();
 
+		const vk::raii::Device &			getDevice() const { return _device; };
 		void								waitIdle();
 
 	private:
+		typedef std::vector<char const * >				RequiredExtensions;
+		typedef std::vector<char const * >				RequiredLayers;
+		typedef std::vector<vk::raii::CommandBuffer>	CommandBuffers;
+		typedef std::vector<vk::raii::Semaphore>		Semaphores;
+		typedef std::vector<vk::raii::Fence>			Fences;
+
 		GLFWwindow *						_window;
 		vk::raii::Context					_context;
 		vk::raii::Instance					_instance = nullptr;
@@ -84,13 +91,11 @@ class VulkanEngine
 		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
 		vk::raii::Pipeline					_graphicsPipeline = nullptr;
 		vk::raii::CommandPool				_commandPool = nullptr;
-		vk::raii::CommandBuffer				_commandBuffer = nullptr;
-		vk::raii::Semaphore					_presentCompleteSemaphore = nullptr;
-		vk::raii::Semaphore					_renderFinishedSemaphore = nullptr;
-		vk::raii::Fence						_drawFence = nullptr;
-
-		typedef std::vector<char const * >	RequiredExtensions;
-		typedef std::vector<char const * >	RequiredLayers;
+		CommandBuffers						_commandBuffers;
+		Semaphores							_presentCompleteSemaphores;
+		Semaphores							_renderFinishedSemaphores;
+		Fences								_inFlightFences;
+		uint32_t							_currentFrame = 0;
 
 		void								_createInstance();
 		void								_initDebugMessenger();

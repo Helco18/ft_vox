@@ -18,8 +18,9 @@ int main(void)
 			engine.drawFrame();
 		}
 
-		engine.waitIdle();
+		engine.getDevice().waitIdle();
 		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;
+
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}

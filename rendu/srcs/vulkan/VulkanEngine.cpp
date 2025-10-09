@@ -21,32 +21,34 @@ VulkanEngine::~VulkanEngine() {}
 void VulkanEngine::drawFrame()
 {
 	_queue.waitIdle();
+	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
+		;
 	// Semaphore = on ordonne les tâches
 	// Fence = on attend que le GPU finisse la tâche
 	 
-	std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphore, nullptr);
+	std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphores[_currentFrame], nullptr);
 	if (result.first != vk::Result::eSuccess)
 		throw std::runtime_error("Couldn't acquire next image.");
+	_device.resetFences(*_inFlightFences[_currentFrame]);
+
+	_commandBuffers[_currentFrame].reset();
 	_recordCommandBuffer(result.second);
-	_device.resetFences(*_drawFence);
 
 	vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 	vk::SubmitInfo submitInfo;
 	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = &*_presentCompleteSemaphore;
+	submitInfo.pWaitSemaphores = &*_presentCompleteSemaphores[_currentFrame];
 	submitInfo.pWaitDstStageMask = &waitDstStageMask;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &*_commandBuffer;
+	submitInfo.pCommandBuffers = &*_commandBuffers[_currentFrame];
 	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = &*_renderFinishedSemaphore;
+	submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_currentFrame];
 
-	_queue.submit(submitInfo, *_drawFence);
-	while (vk::Result::eTimeout == _device.waitForFences(*_drawFence, vk::True, std::numeric_limits<uint64_t>::max()))
-		;
+	_queue.submit(submitInfo, *_inFlightFences[_currentFrame]);
 
 	vk::PresentInfoKHR presentInfoKHR;
 	presentInfoKHR.waitSemaphoreCount = 1;
-	presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphore;
+	presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphores[_currentFrame];
 	presentInfoKHR.swapchainCount = 1;
 	presentInfoKHR.pSwapchains = &*_swapChain;
 	presentInfoKHR.pImageIndices = &result.second;
@@ -54,9 +56,5 @@ void VulkanEngine::drawFrame()
 	vk::Result presentResult = _queue.presentKHR(presentInfoKHR);
 	if (presentResult != vk::Result::eSuccess)
 		throw std::runtime_error("Couldn't present next image.");
-}
-
-void VulkanEngine::waitIdle()
-{
-	_device.waitIdle();
+	_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }

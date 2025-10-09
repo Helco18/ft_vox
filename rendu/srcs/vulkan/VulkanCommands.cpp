@@ -17,15 +17,17 @@ void VulkanEngine::_createCommandPool()
 
 void VulkanEngine::_createCommandBuffer()
 {
+	_commandBuffers.clear();
+
 	// Les command buffers sont des instructions que l'on va donner au GPU, comme celle de draw.
 	vk::CommandBufferAllocateInfo commandBufferInfo;
 	commandBufferInfo.commandPool = _commandPool;
 	// Primaire : Peut être submit à la queue pour être exécutée
 	// Secondaire : Ne peut pas être submit directement et doit être appelée par une primaire
 	commandBufferInfo.level = vk::CommandBufferLevel::ePrimary;
-	commandBufferInfo.commandBufferCount = 1;
+	commandBufferInfo.commandBufferCount = MAX_FRAMES_IN_FLIGHT;
 
-	_commandBuffer = std::move(vk::raii::CommandBuffers(_device, commandBufferInfo).front());
+	_commandBuffers = vk::raii::CommandBuffers(_device, commandBufferInfo);
 
 	if (g_enableValidationLayers)
 		std::cout << GREEN << "[OK] Created Command Buffer" << std::endl;
@@ -57,13 +59,13 @@ void VulkanEngine::_transitionImageLayout(TransitionImageLayoutInfo info)
 	dependencyInfo.imageMemoryBarrierCount = 1;
 	dependencyInfo.pImageMemoryBarriers = &barrier;
 
-	_commandBuffer.pipelineBarrier2(dependencyInfo);
+	_commandBuffers[_currentFrame].pipelineBarrier2(dependencyInfo);
 }
 
 void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 {
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
-	_commandBuffer.begin(commandBufferBeginInfo);
+	_commandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 
 	TransitionImageLayoutInfo colorAttachmentInfo;
 	colorAttachmentInfo.imageIndex = imageIndex;
@@ -110,12 +112,12 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	renderingInfo.colorAttachmentCount = 1;
 	renderingInfo.pColorAttachments = &attachmentInfo;
 
-	_commandBuffer.beginRendering(renderingInfo);
-	_commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, _graphicsPipeline);
-	_commandBuffer.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width), static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
-	_commandBuffer.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
-	_commandBuffer.draw(3, 1, 0, 0);
-	_commandBuffer.endRendering();
+	_commandBuffers[_currentFrame].beginRendering(renderingInfo);
+	_commandBuffers[_currentFrame].bindPipeline(vk::PipelineBindPoint::eGraphics, _graphicsPipeline);
+	_commandBuffers[_currentFrame].setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width), static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
+	_commandBuffers[_currentFrame].setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
+	_commandBuffers[_currentFrame].draw(3, 1, 0, 0);
+	_commandBuffers[_currentFrame].endRendering();
 
 	TransitionImageLayoutInfo presentSrcInfo;
 	presentSrcInfo.imageIndex = imageIndex;
@@ -127,17 +129,24 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	presentSrcInfo.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
 
 	_transitionImageLayout(presentSrcInfo);
-	_commandBuffer.end();
+	_commandBuffers[_currentFrame].end();
 }
 
 void VulkanEngine::_createSyncObjects()
 {
-	_presentCompleteSemaphore = vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo());
-	_renderFinishedSemaphore = vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo());
+	_presentCompleteSemaphores.clear();
+	_renderFinishedSemaphores.clear();
+	_inFlightFences.clear();
 
-	vk::FenceCreateInfo fenceInfo;
-	fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;
-	_drawFence = vk::raii::Fence(_device, fenceInfo);
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+	{
+		_presentCompleteSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
+		_renderFinishedSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
+
+		vk::FenceCreateInfo fenceInfo;
+		fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;
+		_inFlightFences.emplace_back(vk::raii::Fence(_device, fenceInfo));
+	}
 
 	if (g_enableValidationLayers)
 		std::cout << GREEN << "[OK] Created Sync Objects" << std::endl;
