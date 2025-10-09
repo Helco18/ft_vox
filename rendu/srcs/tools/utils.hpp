@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 19:33:36 by gcannaud          #+#    #+#             */
-/*   Updated: 2025/10/08 17:53:18 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/10/09 17:19:52 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 #include "GLFW/glfw3.h"
 #include "colors.hpp"
 
-#define WIDTH 1280
-#define HEIGHT 720
+#define WIDTH	800
+#define HEIGHT	600
 
 /* ************************************************************************** */
 /*   general_tools                                                            */

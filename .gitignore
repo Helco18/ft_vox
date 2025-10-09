@@ -9,3 +9,5 @@ libs/
 spir-v/
 *.spv
 rendu_obsolete/
+*.frag
+*.vert

@@ -9,6 +9,7 @@
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_raii.hpp>
 #include <iterator>
+#include <limits>
 #include "colors.hpp"
 #include "utils.hpp"
 
@@ -30,7 +31,7 @@ const std::vector<const char * > g_deviceExtensions =
     vk::KHRCreateRenderpass2ExtensionName
 };
 
-constexpr bool g_enableValidationLayers = true;
+constexpr bool g_enableValidationLayers = false;
 // #ifdef DEBUG
 // constexpr bool g_enableValidationLayers = true;
 // #else
@@ -43,11 +44,26 @@ struct QueueIndices
 	uint32_t	presentIndex;
 };
 
+struct TransitionImageLayoutInfo
+{
+	uint32_t				imageIndex;
+	vk::ImageLayout			oldLayout;
+	vk::ImageLayout			newLayout;
+	vk::AccessFlags2		srcAccessMask;
+	vk::AccessFlags2		dstAccessMask;
+	vk::PipelineStageFlags2	srcStageMask;
+	vk::PipelineStageFlags2	dstStageMask;
+};
+
 class VulkanEngine
 {
 	public:
 		VulkanEngine(GLFWwindow * window);
 		~VulkanEngine();
+
+		void								drawFrame();
+
+		void								waitIdle();
 
 	private:
 		GLFWwindow *						_window;
@@ -56,8 +72,7 @@ class VulkanEngine
 		vk::raii::DebugUtilsMessengerEXT	_debugMessenger = nullptr;
 		vk::raii::PhysicalDevice			_physicalDevice = nullptr;
 		vk::raii::Device					_device = nullptr;
-		vk::raii::Queue						_graphicsQueue = nullptr;
-		vk::raii::Queue						_presentQueue = nullptr;
+		vk::raii::Queue						_queue = nullptr;
 		vk::raii::SurfaceKHR				_surface = nullptr;
 		vk::SurfaceFormatKHR				_swapChainSurfaceFormat;
 		vk::Extent2D						_swapChainExtent;
@@ -67,6 +82,12 @@ class VulkanEngine
 		vk::Format							_swapChainImageFormat;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
 		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
+		vk::raii::Pipeline					_graphicsPipeline = nullptr;
+		vk::raii::CommandPool				_commandPool = nullptr;
+		vk::raii::CommandBuffer				_commandBuffer = nullptr;
+		vk::raii::Semaphore					_presentCompleteSemaphore = nullptr;
+		vk::raii::Semaphore					_renderFinishedSemaphore = nullptr;
+		vk::raii::Fence						_drawFence = nullptr;
 
 		typedef std::vector<char const * >	RequiredExtensions;
 		typedef std::vector<char const * >	RequiredLayers;
@@ -87,4 +108,9 @@ class VulkanEngine
 		void								_createImageViews();
 		void								_createGraphicsPipeline();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
+		void								_createCommandPool();
+		void								_createCommandBuffer();
+		void								_recordCommandBuffer(uint32_t imageIndex);
+		void								_transitionImageLayout(TransitionImageLayoutInfo info);
+		void								_createSyncObjects();
 };

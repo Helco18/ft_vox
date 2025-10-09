@@ -10,10 +10,13 @@ NAME				=	ft_vox
 SRCS				=	srcs/main.cpp \
 						srcs/tools/glfwUtils.cpp \
 						srcs/tools/utils.cpp \
+						srcs/vulkan/VulkanCommands.cpp \
 						srcs/vulkan/VulkanDebug.cpp \
 						srcs/vulkan/VulkanEngine.cpp \
 						srcs/vulkan/VulkanInstance.cpp \
-						srcs/vulkan/VulkanPipeline.cpp
+						srcs/vulkan/VulkanPipeline.cpp \
+						srcs/vulkan/VulkanSwapchain.cpp
+
 SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs
 INCLUDES			=	-I srcs \

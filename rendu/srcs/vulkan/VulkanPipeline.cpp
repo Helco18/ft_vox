@@ -74,8 +74,10 @@ void VulkanEngine::_createGraphicsPipeline()
 
 	// Antialiasing
 	vk::PipelineMultisampleStateCreateInfo multisampling;
-	multisampling.rasterizationSamples = vk::SampleCountFlagBits::e2; // Degré de MSAA (Multisample Antialiasing)
-	multisampling.sampleShadingEnable = vk::True;
+	// multisampling.rasterizationSamples = vk::SampleCountFlagBits::e2; // Degré de MSAA (Multisample Antialiasing)
+	// multisampling.sampleShadingEnable = vk::True;
+	multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1; // Degré de MSAA (Multisample Antialiasing)
+	multisampling.sampleShadingEnable = vk::False;
 
 	// Color blending
 	vk::PipelineColorBlendAttachmentState colorBlendAttachment;
@@ -126,4 +128,9 @@ void VulkanEngine::_createGraphicsPipeline()
 	graphicsPipelineInfo.pDynamicState = &dynamicStateInfo;
 	graphicsPipelineInfo.layout = _pipelineLayout;
 	graphicsPipelineInfo.renderPass = nullptr;
+
+	_graphicsPipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineInfo);
+
+	if (g_enableValidationLayers)
+		std::cout << GREEN << "[OK] Created Graphics Pipeline" << std::endl;
 }

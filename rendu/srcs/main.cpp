@@ -9,14 +9,16 @@ int main(void)
 	try
 	{
 		GLFWwindow * window = getWindow();
-		VulkanEngine	engine(window);
+		VulkanEngine engine(window);
 		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 
 		while (!glfwWindowShouldClose(window))
 		{
 			glfwPollEvents();
+			engine.drawFrame();
 		}
 
+		engine.waitIdle();
 		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;
 		glfwDestroyWindow(window);
 		glfwTerminate();
