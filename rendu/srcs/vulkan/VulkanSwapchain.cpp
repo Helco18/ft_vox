@@ -103,7 +103,7 @@ void VulkanEngine::_createSwapChain()
 	_swapChainImages = _swapChain.getImages();
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Swapchain" << std::endl;
+		std::cout << GREEN << "[OK] Created Swapchain" << RESET << std::endl;
 }
 
 void VulkanEngine::_createImageViews()
@@ -136,5 +136,27 @@ void VulkanEngine::_createImageViews()
 	}
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Image Views" << std::endl;
+		std::cout << GREEN << "[OK] Created Image Views" << RESET << std::endl;
+}
+
+void VulkanEngine::_recreateSwapchain()
+{
+	int width, height;
+
+	glfwGetFramebufferSize(_window, &width, &height);
+
+	while (width == 0 || height == 0)
+	{
+		glfwGetFramebufferSize(_window, &width, &height);
+		glfwWaitEvents();
+	}
+
+	_device.waitIdle();
+	_queue.waitIdle();
+
+	_swapChainImageViews.clear();
+	_swapChain = nullptr;
+
+	_createSwapChain();
+	_createImageViews();
 }

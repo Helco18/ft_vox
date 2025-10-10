@@ -74,15 +74,13 @@ GLFWwindow * getWindow()
 
     // Vu que GLFW créé un contexte OpenGL par défaut, on lui précise de ne pas le faire.
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    // On va gérer nous même le resize de la fenêtre
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	GLFWwindow * window = nullptr;
 
 	try
 	{
 		window = createWindow();
-		// glfwSetWindowSizeLimits(window, 400, 300, GLFW_DONT_CARE, GLFW_DONT_CARE);
+		glfwSetWindowSizeLimits(window, 400, 300, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		setIcon(window);
 	}
 	catch(const std::exception& e)

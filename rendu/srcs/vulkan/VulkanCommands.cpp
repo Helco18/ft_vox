@@ -12,7 +12,7 @@ void VulkanEngine::_createCommandPool()
 	_commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Command Pool" << std::endl;
+		std::cout << GREEN << "[OK] Created Command Pool" << RESET << std::endl;
 }
 
 void VulkanEngine::_createCommandBuffer()
@@ -30,7 +30,7 @@ void VulkanEngine::_createCommandBuffer()
 	_commandBuffers = vk::raii::CommandBuffers(_device, commandBufferInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Command Buffer" << std::endl;
+		std::cout << GREEN << "[OK] Created Command Buffer" << RESET << std::endl;
 }
 
 void VulkanEngine::_transitionImageLayout(TransitionImageLayoutInfo info)
@@ -149,5 +149,5 @@ void VulkanEngine::_createSyncObjects()
 	}
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Sync Objects" << std::endl;
+		std::cout << GREEN << "[OK] Created Sync Objects" << RESET << std::endl;
 }

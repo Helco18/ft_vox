@@ -28,7 +28,7 @@ void VulkanEngine::_createInstance()
 	_instance = vk::raii::Instance(_context, createInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Instance" << std::endl;
+		std::cout << GREEN << "[OK] Created Instance" << RESET << std::endl;
 }
 
 VulkanEngine::RequiredLayers VulkanEngine::_getRequiredLayers() const
@@ -186,7 +186,7 @@ void VulkanEngine::_createLogicalDevice()
 	_queue = vk::raii::Queue(_device, _queueIndices.graphicsIndex, 0);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Logical Device" << std::endl;
+		std::cout << GREEN << "[OK] Created Logical Device" << RESET << std::endl;
 }
 
 void VulkanEngine::_createSurface()
@@ -199,5 +199,11 @@ void VulkanEngine::_createSurface()
 	_surface = vk::raii::SurfaceKHR(_instance, surface);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Surface" << std::endl;
+		std::cout << GREEN << "[OK] Created Surface" << RESET << std::endl;
+}
+
+void VulkanEngine::framebufferResizeCallback(GLFWwindow * window, int, int)
+{
+	VulkanEngine * engine = reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window));
+	engine->_framebufferResized = true;
 }

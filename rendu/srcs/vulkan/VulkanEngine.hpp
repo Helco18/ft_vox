@@ -32,11 +32,13 @@ const std::vector<const char * > g_deviceExtensions =
     vk::KHRCreateRenderpass2ExtensionName
 };
 
-#ifdef DEBUG
 constexpr bool g_enableValidationLayers = true;
-#else
-constexpr bool g_enableValidationLayers = false;
-#endif
+
+// #ifdef DEBUG
+// constexpr bool g_enableValidationLayers = true;
+// #else
+// constexpr bool g_enableValidationLayers = false;
+// #endif
 
 struct QueueIndices
 {
@@ -65,6 +67,7 @@ class VulkanEngine
 
 		const vk::raii::Device &			getDevice() const { return _device; };
 		void								waitIdle();
+		static void							framebufferResizeCallback(GLFWwindow * window, int width, int height);
 
 	private:
 		typedef std::vector<char const * >				RequiredExtensions;
@@ -95,7 +98,9 @@ class VulkanEngine
 		Semaphores							_presentCompleteSemaphores;
 		Semaphores							_renderFinishedSemaphores;
 		Fences								_inFlightFences;
+		uint32_t							_semaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
+		bool								_framebufferResized = false;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -118,4 +123,5 @@ class VulkanEngine
 		void								_recordCommandBuffer(uint32_t imageIndex);
 		void								_transitionImageLayout(TransitionImageLayoutInfo info);
 		void								_createSyncObjects();
+		void								_recreateSwapchain();
 };

@@ -132,5 +132,5 @@ void VulkanEngine::_createGraphicsPipeline()
 	_graphicsPipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Graphics Pipeline" << std::endl;
+		std::cout << GREEN << "[OK] Created Graphics Pipeline" << RESET << std::endl;
 }

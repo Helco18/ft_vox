@@ -6,12 +6,14 @@
 
 int main(void)
 {
-	try
-	{
+	// try
+	// {
 		GLFWwindow * window = getWindow();
 		VulkanEngine engine(window);
-		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 
+		glfwSetWindowUserPointer(window, &engine);
+		glfwSetFramebufferSizeCallback(window, engine.framebufferResizeCallback);
+		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 		while (!glfwWindowShouldClose(window))
 		{
 			glfwPollEvents();
@@ -23,11 +25,11 @@ int main(void)
 
 		glfwDestroyWindow(window);
 		glfwTerminate();
-	}
-	catch (const std::exception & e)
-	{
-		std::cerr << RED << "[ERROR] " << e.what() << RESET << std::endl;
-		return 3;
-	}
+	// }
+	// catch (const std::exception & e)
+	// {
+	// 	std::cerr << RED << "[ERROR MAIN] " << e.what() << RESET << std::endl;
+	// 	return 3;
+	// }
 	return EXIT_SUCCESS;
 }
