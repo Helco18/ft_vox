@@ -1,35 +1,27 @@
-static float2 positions[3] = float2[] (
-    float2(0.0, -0.5),
-    float2(0.5, 0.5),
-    float2(-0.5, 0.5)
-);
-
-static float3 colors[3] = float3[] (
-    float3(1.0, 0.0, 0.0),
-    float3(0.0, 1.0, 0.0),
-    float3(0.0, 0.0, 1.0)
-);
+struct VertexInput
+{
+    float2 inPosition;
+    float3 inColor;
+}
 
 struct VertexOutput
 {
     float4 sv_position : SV_Position;
-	float3 color;
+	float3 outColor;
 };
 
-
 [shader("vertex")]
-VertexOutput vertMain(uint vid : SV_VertexID)
+VertexOutput vertMain(VertexInput input)
 {
     VertexOutput output;
-	// x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
-    output.sv_position = float4(positions[vid], 0.0, 1.0);
-	output.color = colors[vid];
+    // x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
+    output.sv_position = float4(input.inPosition, 0.0, 1.0);
+    output.outColor = input.inColor;
     return output;
 }
 
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
-	float3 color = inVert.color;
-    return float4(color, 1.0);
+    return float4(inVert.outColor, 1.0);
 }

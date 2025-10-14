@@ -5,6 +5,7 @@
 #define GLFW_EXPOSE_NATIVE_X11
 #define GLFW_EXPOSE_NATIVE_GLX
 #include "GLFW/glfw3.h"
+#include "glm/glm.hpp"
 #include "GLFW/glfw3native.h"
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_raii.hpp>
@@ -29,7 +30,8 @@ const std::vector<const char * > g_deviceExtensions =
     vk::KHRSwapchainExtensionName,
     vk::KHRSpirv14ExtensionName,
     vk::KHRSynchronization2ExtensionName,
-    vk::KHRCreateRenderpass2ExtensionName
+    vk::KHRCreateRenderpass2ExtensionName,
+	vk::KHRShaderDrawParametersExtensionName
 };
 
 constexpr bool g_enableValidationLayers = true;
@@ -57,6 +59,29 @@ struct TransitionImageLayoutInfo
 	vk::PipelineStageFlags2	dstStageMask;
 };
 
+
+struct Vertex
+{
+	glm::vec2 position;
+	glm::vec3 color;
+
+	static vk::VertexInputBindingDescription getBindingDescription()
+	{
+		// Layout id, stride (taille de ta donnée), vertex ou instance
+		return { 0, sizeof(Vertex), vk::VertexInputRate::eVertex };
+	}
+
+	static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescription()
+	{
+		// Spécifier ce que notre vertex a comme attributs. Ici, nous avons sa position dans la location 0 et sa couleur dans la location 1.
+		// On stocke des coordonnées en couleur.
+		return {
+			vk::VertexInputAttributeDescription( 0, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, position)),
+			vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color))
+		};
+	}
+};
+
 class VulkanEngine
 {
 	public:
@@ -68,6 +93,7 @@ class VulkanEngine
 		const vk::raii::Device &			getDevice() const { return _device; };
 		void								waitIdle();
 		static void							framebufferResizeCallback(GLFWwindow * window, int width, int height);
+		static std::vector<Vertex>			getVertexFromFile(const std::string & path);
 
 	private:
 		typedef std::vector<char const * >				RequiredExtensions;
@@ -101,6 +127,9 @@ class VulkanEngine
 		uint32_t							_semaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
 		bool								_framebufferResized = false;
+		vk::raii::Buffer					_vertexBuffer = nullptr;
+		uint32_t							_vertexSize;
+		vk::raii::DeviceMemory				_vertexBufferMemory = nullptr;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -119,9 +148,11 @@ class VulkanEngine
 		void								_createGraphicsPipeline();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool();
+		void								_createVertexBuffer(const std::string & modelpath);
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer(uint32_t imageIndex);
 		void								_transitionImageLayout(TransitionImageLayoutInfo info);
 		void								_createSyncObjects();
 		void								_recreateSwapchain();
+		uint32_t							_findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
 };

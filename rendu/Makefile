@@ -15,13 +15,15 @@ SRCS				=	srcs/main.cpp \
 						srcs/vulkan/VulkanEngine.cpp \
 						srcs/vulkan/VulkanInstance.cpp \
 						srcs/vulkan/VulkanPipeline.cpp \
-						srcs/vulkan/VulkanSwapchain.cpp
+						srcs/vulkan/VulkanSwapchain.cpp \
+						srcs/vulkan/VulkanVertexBuffer.cpp
 
 SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs
 INCLUDES			=	-I srcs \
 						-I libs \
 						-I srcs/tools \
+						-I srcs/vulkan \
 						-I libs/stb
 
 GLFW_PATH			=	libs/GLFW

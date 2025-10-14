@@ -23,8 +23,8 @@ static void setIcon(GLFWwindow * window)
 
 	try
 	{
-		images[0] = decodeOneStep("assets/icon.png");
-		images[1] = decodeOneStep("assets/icon_small.png");
+		images[0] = decodeOneStep("assets/icon/icon.png");
+		images[1] = decodeOneStep("assets/icon/icon_small.png");
 		if (images[0].height != images[0].width || images[1].height != images[1].width)
 			throw std::runtime_error("Icone size mismatch");
 

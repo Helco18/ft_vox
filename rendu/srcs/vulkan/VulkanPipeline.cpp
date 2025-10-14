@@ -41,8 +41,14 @@ void VulkanEngine::_createGraphicsPipeline()
 	viewportState.viewportCount = 1;
 	viewportState.scissorCount = 1;
 
+	const vk::VertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
+	const std::array<vk::VertexInputAttributeDescription, 2> attributeDescription = Vertex::getAttributeDescription();
 	vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
-	(void) vertexInputInfo; // coucou nous après le triangle
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+	vertexInputInfo.vertexAttributeDescriptionCount = attributeDescription.size();
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
+	// (void) vertexInputInfo; // coucou nous après le triangle // coucou !!! on a un triangle omg
 	
 	vk::PipelineInputAssemblyStateCreateInfo pipelineInputInfo;
 	pipelineInputInfo.topology = vk::PrimitiveTopology::eTriangleList;

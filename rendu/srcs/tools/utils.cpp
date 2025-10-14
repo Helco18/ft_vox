@@ -1,5 +1,19 @@
 #include "utils.hpp"
 
+std::vector<std::string> ft_split(const std::string & str, char delimiter)
+{
+	std::vector<std::string> tab;
+	std::stringstream ss(str);
+	std::string tmp;
+
+	while (std::getline(ss, tmp, delimiter))
+	{
+		if (!tmp.empty())
+			tab.push_back(tmp);
+	}
+	return tab;
+}
+
 const std::vector<char> readFile(const std::string & filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);

@@ -32,14 +32,15 @@
  * the stream insertion operator (<<) to a string.
  */
 template <typename T>
-const std::string		toString(const T & value)
+const std::string			toString(const T & value)
 {
 	std::ostringstream os;
 	os << value;
 	return os.str();
 }
 
-const std::vector<char>	readFile(const std::string & filename);
+const std::vector<char>		readFile(const std::string & filename);
+std::vector<std::string>	ft_split(const std::string & str, char delimiter);
 
 /* ************************************************************************** */
 /*   GLFW tools                                                               */
@@ -53,4 +54,4 @@ const std::vector<char>	readFile(const std::string & filename);
  * @return A pointer to the created GLFWwindow.
  * @throws std::runtime_error if GLFW initialization or window creation fails.
  */
-GLFWwindow *			getWindow();
+GLFWwindow *				getWindow();

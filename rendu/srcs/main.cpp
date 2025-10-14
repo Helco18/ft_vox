@@ -1,13 +1,11 @@
 #include "vulkan/VulkanEngine.hpp"
-#include "colors.hpp"
-#include "utils.hpp"
 #include <exception>
 #include <iostream>
 
 int main(void)
 {
-	// try
-	// {
+	try
+	{
 		GLFWwindow * window = getWindow();
 		VulkanEngine engine(window);
 
@@ -25,11 +23,11 @@ int main(void)
 
 		glfwDestroyWindow(window);
 		glfwTerminate();
-	// }
-	// catch (const std::exception & e)
-	// {
-	// 	std::cerr << RED << "[ERROR MAIN] " << e.what() << RESET << std::endl;
-	// 	return 3;
-	// }
+	}
+	catch (const std::exception & e)
+	{
+		std::cerr << RED << "[ERROR MAIN] " << e.what() << RESET << std::endl;
+		return 3;
+	}
 	return EXIT_SUCCESS;
 }
