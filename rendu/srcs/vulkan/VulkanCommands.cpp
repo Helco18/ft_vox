@@ -115,9 +115,10 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	_commandBuffers[_currentFrame].beginRendering(renderingInfo);
 	_commandBuffers[_currentFrame].bindPipeline(vk::PipelineBindPoint::eGraphics, *_graphicsPipeline);
 	_commandBuffers[_currentFrame].bindVertexBuffers(0, *_vertexBuffer, {0});
+	_commandBuffers[_currentFrame].bindIndexBuffer( *_indexBuffer, 0, vk::IndexType::eUint16);
 	_commandBuffers[_currentFrame].setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width), static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
 	_commandBuffers[_currentFrame].setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
-	_commandBuffers[_currentFrame].draw(_vertexSize, 1, 0, 0);
+	_commandBuffers[_currentFrame].drawIndexed(_indexSize, 1, 0, 0, 0);
 	_commandBuffers[_currentFrame].endRendering();
 
 	TransitionImageLayoutInfo presentSrcInfo;

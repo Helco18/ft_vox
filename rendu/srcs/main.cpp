@@ -15,7 +15,6 @@ int main(void)
 		glfwSetFramebufferSizeCallback(window, engine.framebufferResizeCallback);
 		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 		
-
 		double lastTime = glfwGetTime();
 		int frames = 0;
 

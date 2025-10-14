@@ -87,10 +87,35 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
-					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					_vertexBuffer, _vertexBufferMemory);
 	_vertexBuffer.bindMemory(*_vertexBufferMemory, 0);
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
 	_vertexSize = vertices.size();
+}
+
+void VulkanEngine::_createIndexBuffer(ModelType type)
+{
+	const std::vector<uint16_t> indices = Model::getModel(type).getIndices();
+	vk::DeviceSize size = sizeof(indices[0]) * indices.size();
+	vk::raii::Buffer stagingBuffer = nullptr;
+	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
+
+	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
+					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+					stagingBuffer, stagingBufferMemory);
+
+	stagingBuffer.bindMemory(*stagingBufferMemory, 0);
+	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
+	memcpy(dataStaging, indices.data(), size);
+	stagingBufferMemory.unmapMemory();
+
+	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
+					vk::MemoryPropertyFlagBits::eDeviceLocal,
+					_indexBuffer, _indexBufferMemory);
+	_indexBuffer.bindMemory(*_indexBufferMemory, 0);
+	_copyBuffer(stagingBuffer, _indexBuffer, size);
+
+	_indexSize = indices.size();
 }

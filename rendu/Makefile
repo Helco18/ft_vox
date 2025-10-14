@@ -15,9 +15,9 @@ SRCS				=	srcs/main.cpp \
 						srcs/vulkan/VulkanDebug.cpp \
 						srcs/vulkan/VulkanEngine.cpp \
 						srcs/vulkan/VulkanInstance.cpp \
+						srcs/vulkan/VulkanMesh.cpp \
 						srcs/vulkan/VulkanPipeline.cpp \
-						srcs/vulkan/VulkanSwapchain.cpp \
-						srcs/vulkan/VulkanVertexBuffer.cpp
+						srcs/vulkan/VulkanSwapchain.cpp
 
 SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs

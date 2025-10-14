@@ -110,6 +110,9 @@ class VulkanEngine
 		vk::raii::Buffer					_vertexBuffer = nullptr;
 		uint32_t							_vertexSize;
 		vk::raii::DeviceMemory				_vertexBufferMemory = nullptr;
+		vk::raii::Buffer					_indexBuffer = nullptr;
+		uint32_t							_indexSize;
+		vk::raii::DeviceMemory				_indexBufferMemory = nullptr;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -129,6 +132,7 @@ class VulkanEngine
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag);
 		void								_createVertexBuffer(ModelType type);
+		void								_createIndexBuffer(ModelType type);
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer(uint32_t imageIndex);
 		void								_transitionImageLayout(TransitionImageLayoutInfo info);

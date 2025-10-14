@@ -14,6 +14,7 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 	_createCommandPool(_resetCommandPool, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
 	_createCommandPool(_transientCommandPool, vk::CommandPoolCreateFlagBits::eTransient);
 	_createVertexBuffer(TRIANGLE);
+	_createIndexBuffer(TRIANGLE);
 	_createCommandBuffer();
 	_createSyncObjects();
 }

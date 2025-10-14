@@ -4,8 +4,6 @@ Model::ModelMap Model::_modelMap;
 
 Model::Model(const std::string & path)
 {
-	std::vector<Vertex> vertices;
-	std::vector<uint16_t> indices;
 	std::string tmp;
 	std::ifstream file(path);
 	std::vector<std::string> splitted;
@@ -22,13 +20,13 @@ Model::Model(const std::string & path)
 		{
 			glm::vec2 position(std::atof(&(splitted[0].c_str())[2]), std::atof(splitted[1].c_str()));
 			glm::vec3 color(std::atof(splitted[2].c_str()), std::atof(splitted[3].c_str()), std::atof(splitted[4].c_str()));
-			vertices.push_back({ position, color });
+			_vertices.push_back({ position, color });
 		}
 		else if (strncmp(splitted[0].c_str(), "f ", 2) == 0 && splitted.size() >= 3)
 		{
 			splitted[0] = &splitted[0][2];
 			for (size_t i = 0; i < splitted.size(); ++i)
-				indices.push_back(std::atoi(splitted[i].c_str()));
+				_indices.push_back(std::atoi(splitted[i].c_str()));
 		}
 		else
 		{
@@ -37,8 +35,6 @@ Model::Model(const std::string & path)
 		}
 	}
 	file.close();
-	_vertices = vertices;
-	_indices = indices;
 }
 
 const std::vector<Vertex> & Model::getVertices() const
