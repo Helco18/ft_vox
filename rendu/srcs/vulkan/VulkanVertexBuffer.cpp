@@ -1,25 +1,19 @@
 #include "VulkanEngine.hpp"
 
-std::vector<Vertex> VulkanEngine::getVertexFromFile(const std::string & path)
+vk::VertexInputBindingDescription VulkanEngine::_getBindingDescription() const
 {
-	std::vector<Vertex> vertices;
-	std::string tmp;
-	std::ifstream file(path);
-	std::vector<std::string> splitted;
-	
-	if (file.fail())
-		throw std::runtime_error("No file found at given path: " + path);
+	// Layout id, stride (taille de ta donnée), vertex ou instance
+	return { 0, sizeof(Vertex), vk::VertexInputRate::eVertex };
+}
 
-	while (std::getline(file, tmp))
-	{
-		splitted = ft_split(tmp, ',');
-		if (splitted.size() < 5)
-			throw std::runtime_error("Invalid line at: " + tmp);
-		glm::vec2 position(std::atof(splitted[0].c_str()), std::atof(splitted[1].c_str()));
-		glm::vec3 color(std::atof(splitted[2].c_str()), std::atof(splitted[3].c_str()), std::atof(splitted[4].c_str()));
-		vertices.push_back({ position, color });
-	}
-	return vertices;
+VulkanEngine::VertexAttributeDescriptionArray VulkanEngine::_getAttributeDescription() const
+{
+	// Spécifier ce que notre vertex a comme attributs. Ici, nous avons sa position dans la location 0 et sa couleur dans la location 1.
+	// On stocke des coordonnées en couleur.
+	return {
+		vk::VertexInputAttributeDescription( 0, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, position)),
+		vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color))
+	};
 }
 
 uint32_t VulkanEngine::_findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties)
@@ -34,30 +28,69 @@ uint32_t VulkanEngine::_findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFl
 	throw std::runtime_error("Couldn't find suitable memory type.");
 }
 
-void VulkanEngine::_createVertexBuffer(const std::string & modelpath)
+void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties,
+									vk::raii::Buffer & buffer, vk::raii::DeviceMemory & deviceMemory)
 {
-	const std::vector<Vertex> vertices = getVertexFromFile(modelpath);
-
 	vk::BufferCreateInfo bufferInfo;
-	bufferInfo.size = sizeof(vertices[0]) * vertices.size();
-	bufferInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer;
+	bufferInfo.size = size;
+	bufferInfo.usage = usage;
 	bufferInfo.sharingMode = vk::SharingMode::eExclusive;
 
-	_vertexBuffer = vk::raii::Buffer(_device, bufferInfo);
+	buffer = vk::raii::Buffer(_device, bufferInfo);
 
-	vk::MemoryRequirements memRequirements = _vertexBuffer.getMemoryRequirements();
+	vk::MemoryRequirements memRequirements = buffer.getMemoryRequirements();
 
 	vk::MemoryAllocateInfo memAllocateInfo;
 	memAllocateInfo.allocationSize = memRequirements.size;
-	memAllocateInfo.memoryTypeIndex = _findMemoryType(memRequirements.memoryTypeBits,
-											vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+	memAllocateInfo.memoryTypeIndex = _findMemoryType(memRequirements.memoryTypeBits, properties);
 	
-	_vertexBufferMemory = vk::raii::DeviceMemory(_device, memAllocateInfo);
-	_vertexBuffer.bindMemory(*_vertexBufferMemory, 0);
+	deviceMemory = vk::raii::DeviceMemory(_device, memAllocateInfo);
+}
 
-	void * data = _vertexBufferMemory.mapMemory(0, bufferInfo.size);
-	memcpy(data, vertices.data(), bufferInfo.size);
-	_vertexBufferMemory.unmapMemory();
+void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size)
+{
+	// TODO Optimize Staging Buffer
+	vk::CommandBufferAllocateInfo allocInfo;
+	allocInfo.commandPool = _transientCommandPool;
+	allocInfo.level = vk::CommandBufferLevel::ePrimary;
+	allocInfo.commandBufferCount = 1;
+
+	vk::raii::CommandBuffer commandCopyBuffer = std::move(_device.allocateCommandBuffers(allocInfo).front());
+
+	vk::CommandBufferBeginInfo commandBufferBeginInfo;
+	commandBufferBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+	commandCopyBuffer.begin(commandBufferBeginInfo);
+	commandCopyBuffer.copyBuffer(srcBuffer, dstBuffer, vk::BufferCopy(0, 0, size));
+	commandCopyBuffer.end();
+
+	vk::SubmitInfo submitInfo;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &*commandCopyBuffer;
+	_queue.submit(submitInfo);
+	_queue.waitIdle();
+}
+
+void VulkanEngine::_createVertexBuffer(ModelType type)
+{
+	const std::vector<Vertex> vertices = Model::getModel(type).getVertices();
+	vk::DeviceSize size = sizeof(vertices[0]) * vertices.size();
+	vk::raii::Buffer stagingBuffer = nullptr;
+	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
+
+	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
+					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+					stagingBuffer, stagingBufferMemory);
+
+	stagingBuffer.bindMemory(*stagingBufferMemory, 0);
+	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
+	memcpy(dataStaging, vertices.data(), size);
+	stagingBufferMemory.unmapMemory();
+
+	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
+					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+					_vertexBuffer, _vertexBufferMemory);
+	_vertexBuffer.bindMemory(*_vertexBufferMemory, 0);
+	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
 	_vertexSize = vertices.size();
 }

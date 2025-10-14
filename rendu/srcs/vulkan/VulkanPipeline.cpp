@@ -41,8 +41,8 @@ void VulkanEngine::_createGraphicsPipeline()
 	viewportState.viewportCount = 1;
 	viewportState.scissorCount = 1;
 
-	const vk::VertexInputBindingDescription bindingDescription = Vertex::getBindingDescription();
-	const std::array<vk::VertexInputAttributeDescription, 2> attributeDescription = Vertex::getAttributeDescription();
+	const vk::VertexInputBindingDescription bindingDescription = _getBindingDescription();
+	const std::array<vk::VertexInputAttributeDescription, 2> attributeDescription = _getAttributeDescription();
 	vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;

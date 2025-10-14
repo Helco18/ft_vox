@@ -1,15 +1,15 @@
 #include "VulkanEngine.hpp"
 
-void VulkanEngine::_createCommandPool()
+void VulkanEngine::_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag)
 {
 	// La command pool va stocker nos command buffers
 	vk::CommandPoolCreateInfo commandPoolInfo;
 	// On veut record nos commandes à chaque frame donc on reset la pool et re-record avec ce flag
 	// L'autre flag est pour les commandes à courtes durée de vie (Transient)
-	commandPoolInfo.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+	commandPoolInfo.flags = flag;
 	commandPoolInfo.queueFamilyIndex = _queueIndices.graphicsIndex;
 
-	_commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
+	commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
 
 	if (g_enableValidationLayers)
 		std::cout << GREEN << "[OK] Created Command Pool" << RESET << std::endl;
@@ -21,7 +21,7 @@ void VulkanEngine::_createCommandBuffer()
 
 	// Les command buffers sont des instructions que l'on va donner au GPU, comme celle de draw.
 	vk::CommandBufferAllocateInfo commandBufferInfo;
-	commandBufferInfo.commandPool = _commandPool;
+	commandBufferInfo.commandPool = _resetCommandPool;
 	// Primaire : Peut être submit à la queue pour être exécutée
 	// Secondaire : Ne peut pas être submit directement et doit être appelée par une primaire
 	commandBufferInfo.level = vk::CommandBufferLevel::ePrimary;

@@ -11,8 +11,9 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 	_createSwapChain();
 	_createImageViews();
 	_createGraphicsPipeline();
-	_createCommandPool();
-	_createVertexBuffer("assets/models/triangle.obj");
+	_createCommandPool(_resetCommandPool, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
+	_createCommandPool(_transientCommandPool, vk::CommandPoolCreateFlagBits::eTransient);
+	_createVertexBuffer(TRIANGLE);
 	_createCommandBuffer();
 	_createSyncObjects();
 }

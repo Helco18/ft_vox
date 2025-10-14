@@ -6,16 +6,35 @@ int main(void)
 {
 	try
 	{
+		Model::loadModels();
+
 		GLFWwindow * window = getWindow();
 		VulkanEngine engine(window);
 
 		glfwSetWindowUserPointer(window, &engine);
 		glfwSetFramebufferSizeCallback(window, engine.framebufferResizeCallback);
 		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
+		
+
+		double lastTime = glfwGetTime();
+		int frames = 0;
+
 		while (!glfwWindowShouldClose(window))
 		{
 			glfwPollEvents();
 			engine.drawFrame();
+
+			frames++;
+
+			double currentTime = glfwGetTime();
+			if (currentTime - lastTime >= 1.0)
+			{
+				double fps = frames / (currentTime - lastTime); // average FPS in last second
+				std::cout << MAGENTA << "FPS: " << fps << "\r" << RESET << std::flush;
+
+				frames = 0;
+				lastTime = currentTime;
+			}
 		}
 
 		engine.getDevice().waitIdle();

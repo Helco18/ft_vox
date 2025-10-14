@@ -8,6 +8,7 @@ NAME				=	ft_vox
 
 # Sources & Includes
 SRCS				=	srcs/main.cpp \
+						srcs/model/Model.cpp \
 						srcs/tools/glfwUtils.cpp \
 						srcs/tools/utils.cpp \
 						srcs/vulkan/VulkanCommands.cpp \
@@ -20,11 +21,12 @@ SRCS				=	srcs/main.cpp \
 
 SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs
-INCLUDES			=	-I srcs \
-						-I libs \
+INCLUDES			=	-I libs \
+						-I libs/stb \
+						-I srcs \
+						-I srcs/model \
 						-I srcs/tools \
-						-I srcs/vulkan \
-						-I libs/stb
+						-I srcs/vulkan
 
 GLFW_PATH			=	libs/GLFW
 GLM_PATH			=	libs/glm

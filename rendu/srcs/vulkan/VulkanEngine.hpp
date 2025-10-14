@@ -11,6 +11,7 @@
 #include <vulkan/vulkan_raii.hpp>
 #include <iterator>
 #include <limits>
+#include "Model.hpp"
 #include "colors.hpp"
 #include "utils.hpp"
 
@@ -59,29 +60,6 @@ struct TransitionImageLayoutInfo
 	vk::PipelineStageFlags2	dstStageMask;
 };
 
-
-struct Vertex
-{
-	glm::vec2 position;
-	glm::vec3 color;
-
-	static vk::VertexInputBindingDescription getBindingDescription()
-	{
-		// Layout id, stride (taille de ta donnée), vertex ou instance
-		return { 0, sizeof(Vertex), vk::VertexInputRate::eVertex };
-	}
-
-	static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescription()
-	{
-		// Spécifier ce que notre vertex a comme attributs. Ici, nous avons sa position dans la location 0 et sa couleur dans la location 1.
-		// On stocke des coordonnées en couleur.
-		return {
-			vk::VertexInputAttributeDescription( 0, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, position)),
-			vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color))
-		};
-	}
-};
-
 class VulkanEngine
 {
 	public:
@@ -96,11 +74,12 @@ class VulkanEngine
 		static std::vector<Vertex>			getVertexFromFile(const std::string & path);
 
 	private:
-		typedef std::vector<char const * >				RequiredExtensions;
-		typedef std::vector<char const * >				RequiredLayers;
-		typedef std::vector<vk::raii::CommandBuffer>	CommandBuffers;
-		typedef std::vector<vk::raii::Semaphore>		Semaphores;
-		typedef std::vector<vk::raii::Fence>			Fences;
+		typedef std::vector<char const * >							RequiredExtensions;
+		typedef std::vector<char const * >							RequiredLayers;
+		typedef std::vector<vk::raii::CommandBuffer>				CommandBuffers;
+		typedef std::vector<vk::raii::Semaphore>					Semaphores;
+		typedef std::vector<vk::raii::Fence>						Fences;
+		typedef std::array<vk::VertexInputAttributeDescription, 2>	VertexAttributeDescriptionArray;
 
 		GLFWwindow *						_window;
 		vk::raii::Context					_context;
@@ -119,7 +98,8 @@ class VulkanEngine
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
 		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
 		vk::raii::Pipeline					_graphicsPipeline = nullptr;
-		vk::raii::CommandPool				_commandPool = nullptr;
+		vk::raii::CommandPool				_resetCommandPool = nullptr;
+		vk::raii::CommandPool				_transientCommandPool = nullptr;
 		CommandBuffers						_commandBuffers;
 		Semaphores							_presentCompleteSemaphores;
 		Semaphores							_renderFinishedSemaphores;
@@ -147,12 +127,16 @@ class VulkanEngine
 		void								_createImageViews();
 		void								_createGraphicsPipeline();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
-		void								_createCommandPool();
-		void								_createVertexBuffer(const std::string & modelpath);
+		void								_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag);
+		void								_createVertexBuffer(ModelType type);
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer(uint32_t imageIndex);
 		void								_transitionImageLayout(TransitionImageLayoutInfo info);
 		void								_createSyncObjects();
 		void								_recreateSwapchain();
 		uint32_t							_findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
+		void 								_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Buffer & buffer, vk::raii::DeviceMemory & deviceMemory);
+		void								_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size);
+		vk::VertexInputBindingDescription	_getBindingDescription() const;
+		VertexAttributeDescriptionArray		_getAttributeDescription() const;
 };
