@@ -6,11 +6,13 @@
 #define GLFW_EXPOSE_NATIVE_GLX
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include "GLFW/glfw3native.h"
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_raii.hpp>
 #include <iterator>
 #include <limits>
+#include <chrono>
 #include "Model.hpp"
 #include "colors.hpp"
 #include "utils.hpp"
@@ -26,7 +28,7 @@ const std::vector g_validationLayers =
 
 // La swapchain servira à présenter des images à la fenêtre
 // Les autres ajoutent des fonctionnalités supplémentaires (?)
-const std::vector<const char * > g_deviceExtensions =
+const std::vector<const char *> g_deviceExtensions =
 {
     vk::KHRSwapchainExtensionName,
     vk::KHRSpirv14ExtensionName,
@@ -60,6 +62,13 @@ struct TransitionImageLayoutInfo
 	vk::PipelineStageFlags2	dstStageMask;
 };
 
+struct UniformBuffer
+{
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 proj;
+};
+
 class VulkanEngine
 {
 	public:
@@ -74,8 +83,8 @@ class VulkanEngine
 		static std::vector<Vertex>			getVertexFromFile(const std::string & path);
 
 	private:
-		typedef std::vector<char const * >							RequiredExtensions;
-		typedef std::vector<char const * >							RequiredLayers;
+		typedef std::vector<char const *>							RequiredExtensions;
+		typedef std::vector<char const *>							RequiredLayers;
 		typedef std::vector<vk::raii::CommandBuffer>				CommandBuffers;
 		typedef std::vector<vk::raii::Semaphore>					Semaphores;
 		typedef std::vector<vk::raii::Fence>						Fences;
@@ -96,6 +105,7 @@ class VulkanEngine
 		std::vector<vk::Image>				_swapChainImages;
 		vk::Format							_swapChainImageFormat;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
+		vk::raii::DescriptorSetLayout		_descriptorSetLayout = nullptr;
 		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
 		vk::raii::Pipeline					_graphicsPipeline = nullptr;
 		vk::raii::CommandPool				_resetCommandPool = nullptr;
@@ -113,6 +123,9 @@ class VulkanEngine
 		vk::raii::Buffer					_indexBuffer = nullptr;
 		uint32_t							_indexSize;
 		vk::raii::DeviceMemory				_indexBufferMemory = nullptr;
+		std::vector<vk::raii::Buffer>		_uniformBuffers;
+		std::vector<vk::raii::DeviceMemory>	_uniformBuffersMemory;
+		std::vector<void *>					_uniformBuffersMapped;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -143,4 +156,7 @@ class VulkanEngine
 		void								_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size);
 		vk::VertexInputBindingDescription	_getBindingDescription() const;
 		VertexAttributeDescriptionArray		_getAttributeDescription() const;
+		void								_createDescriptorSetLayout();
+		void								_createUniformBuffers();
+		void								_updateUniformBuffer();
 };

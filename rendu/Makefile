@@ -13,6 +13,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/tools/utils.cpp \
 						srcs/vulkan/VulkanCommands.cpp \
 						srcs/vulkan/VulkanDebug.cpp \
+						srcs/vulkan/VulkanUniform.cpp \
 						srcs/vulkan/VulkanEngine.cpp \
 						srcs/vulkan/VulkanInstance.cpp \
 						srcs/vulkan/VulkanMesh.cpp \

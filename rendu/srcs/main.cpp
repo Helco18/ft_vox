@@ -29,7 +29,7 @@ int main(void)
 			if (currentTime - lastTime >= 1.0)
 			{
 				double fps = frames / (currentTime - lastTime); // average FPS in last second
-				std::cout << MAGENTA << "FPS: " << fps << "\r" << RESET << std::flush;
+				glfwSetWindowTitle(window, toString(fps).c_str());
 
 				frames = 0;
 				lastTime = currentTime;

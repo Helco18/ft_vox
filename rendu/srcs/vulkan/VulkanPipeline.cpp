@@ -111,7 +111,8 @@ void VulkanEngine::_createGraphicsPipeline()
 	colorBlending.pAttachments = &colorBlendAttachment;
 	
 	vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
-	pipelineLayoutInfo.setLayoutCount = 0;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &*_descriptorSetLayout;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 	_pipelineLayout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);

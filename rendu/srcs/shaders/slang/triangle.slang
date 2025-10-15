@@ -10,12 +10,21 @@ struct VertexOutput
 	float3 outColor;
 };
 
+struct UniformBuffer
+{
+    float4x4 model;
+    float4x4 view;
+    float4x4 proj;
+};
+
+ConstantBuffer<UniformBuffer> ubo;
+
 [shader("vertex")]
 VertexOutput vertMain(VertexInput input)
 {
     VertexOutput output;
     // x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
-    output.sv_position = float4(input.inPosition, 0.0, 1.0);
+    output.sv_position = mul(ubo.proj, mul(ubo.view, mul(ubo.model, float4(input.inPosition, 0.0, 1.0))));
     output.outColor = input.inColor;
     return output;
 }
