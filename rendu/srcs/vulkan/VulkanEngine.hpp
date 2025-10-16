@@ -88,6 +88,7 @@ class VulkanEngine
 		typedef std::vector<vk::raii::CommandBuffer>				CommandBuffers;
 		typedef std::vector<vk::raii::Semaphore>					Semaphores;
 		typedef std::vector<vk::raii::Fence>						Fences;
+		typedef std::vector<vk::raii::DescriptorSet>				DescriptorSets;
 		typedef std::array<vk::VertexInputAttributeDescription, 2>	VertexAttributeDescriptionArray;
 
 		GLFWwindow *						_window;
@@ -126,6 +127,8 @@ class VulkanEngine
 		std::vector<vk::raii::Buffer>		_uniformBuffers;
 		std::vector<vk::raii::DeviceMemory>	_uniformBuffersMemory;
 		std::vector<void *>					_uniformBuffersMapped;
+		vk::raii::DescriptorPool			_descriptorPool = nullptr;
+		DescriptorSets						_descriptorSets;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -158,5 +161,7 @@ class VulkanEngine
 		VertexAttributeDescriptionArray		_getAttributeDescription() const;
 		void								_createDescriptorSetLayout();
 		void								_createUniformBuffers();
+		void								_createDescriptorPool();
 		void								_updateUniformBuffer();
+		void								_createDescriptorSets();
 };

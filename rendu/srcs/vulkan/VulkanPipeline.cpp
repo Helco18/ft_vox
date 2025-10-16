@@ -73,7 +73,7 @@ void VulkanEngine::_createGraphicsPipeline()
 	rasterizer.rasterizerDiscardEnable = vk::False;
 	rasterizer.polygonMode = vk::PolygonMode::eFill; // Changer ici en line pour le wireframe
 	rasterizer.cullMode = vk::CullModeFlagBits::eBack; // Culling
-	rasterizer.frontFace = vk::FrontFace::eClockwise;
+	rasterizer.frontFace = vk::FrontFace::eCounterClockwise;
 	rasterizer.depthBiasEnable = vk::False; // Shadow map
 	rasterizer.depthBiasSlopeFactor = 1.0f;
 	rasterizer.lineWidth = 1.0f;

@@ -45,6 +45,7 @@ void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage
 	memAllocateInfo.memoryTypeIndex = _findMemoryType(memRequirements.memoryTypeBits, properties);
 	
 	deviceMemory = vk::raii::DeviceMemory(_device, memAllocateInfo);
+	buffer.bindMemory(*deviceMemory, 0);
 }
 
 void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size)
@@ -81,7 +82,6 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
 					stagingBuffer, stagingBufferMemory);
 
-	stagingBuffer.bindMemory(*stagingBufferMemory, 0);
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
 	memcpy(dataStaging, vertices.data(), size);
 	stagingBufferMemory.unmapMemory();
@@ -89,7 +89,6 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					_vertexBuffer, _vertexBufferMemory);
-	_vertexBuffer.bindMemory(*_vertexBufferMemory, 0);
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
 	_vertexSize = vertices.size();
@@ -106,7 +105,6 @@ void VulkanEngine::_createIndexBuffer(ModelType type)
 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
 					stagingBuffer, stagingBufferMemory);
 
-	stagingBuffer.bindMemory(*stagingBufferMemory, 0);
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
 	memcpy(dataStaging, indices.data(), size);
 	stagingBufferMemory.unmapMemory();
@@ -114,7 +112,6 @@ void VulkanEngine::_createIndexBuffer(ModelType type)
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					_indexBuffer, _indexBufferMemory);
-	_indexBuffer.bindMemory(*_indexBufferMemory, 0);
 	_copyBuffer(stagingBuffer, _indexBuffer, size);
 
 	_indexSize = indices.size();

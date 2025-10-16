@@ -12,3 +12,4 @@ glsl/
 rendu_obsolete/
 *.frag
 *.vert
+tutorial.cpp

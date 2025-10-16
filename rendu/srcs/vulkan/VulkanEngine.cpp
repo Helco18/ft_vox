@@ -54,6 +54,9 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 	_createIndexBuffer(TRIANGLE);
 	_createUniformBuffers();
 
+	_createDescriptorPool();
+	_createDescriptorSets();
+
 	// On enregistre dans un *command buffer* toutes les commandes Vulkan nécessaires pour dessiner nos objets.
 	// Ce buffer sera soumis à une file de commandes à chaque frame.
 	_createCommandBuffer();

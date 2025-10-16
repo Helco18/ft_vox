@@ -1,23 +1,5 @@
 #include "VulkanEngine.hpp"
 
-void VulkanEngine::_createDescriptorSetLayout()
-{
-	// Décrit la structure des ressources accessibles par le shader
-	vk::DescriptorSetLayoutBinding uboLayoutBinding;
-	uboLayoutBinding.binding = 0;
-	uboLayoutBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
-	uboLayoutBinding.descriptorCount = 1;
-	uboLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-	uboLayoutBinding.pImmutableSamplers = nullptr;
-
-	vk::DescriptorSetLayoutCreateInfo layoutInfo;
-	layoutInfo.bindingCount = 1;
-	layoutInfo.flags = {};
-	layoutInfo.pBindings = &uboLayoutBinding;
-
-	_descriptorSetLayout = vk::raii::DescriptorSetLayout( _device, layoutInfo );
-}
-
 void VulkanEngine::_createUniformBuffers()
 {
 	_uniformBuffers.clear();
@@ -47,6 +29,9 @@ void VulkanEngine::_createUniformBuffers()
 		_uniformBuffersMemory.emplace_back(std::move(bufferMemory));
 		_uniformBuffersMapped.emplace_back(_uniformBuffersMemory[i].mapMemory(0, size));
 	}
+
+	if (g_enableValidationLayers)
+		std::cout << GREEN << "[OK] Created Uniform Buffers" << RESET << std::endl;
 }
 
 void VulkanEngine::_updateUniformBuffer()
