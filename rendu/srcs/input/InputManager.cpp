@@ -11,7 +11,8 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		return;
 	}
 
-	Camera * camera = reinterpret_cast<Camera *>(glfwGetWindowUserPointer(window));
+	VulkanEngine * engine = reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window));
+	Camera * camera = engine->getCamera();
 	glm::vec3 forward;
 	forward.x = cosf(glm::radians(camera->getPitch())) * cosf(glm::radians(camera->getYaw())); // X component based on pitch
 	forward.z = cosf(glm::radians(camera->getPitch())) * sinf(glm::radians(camera->getYaw())); // Z component based on pitch

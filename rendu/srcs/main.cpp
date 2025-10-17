@@ -14,8 +14,8 @@ int main(void)
 
 		glfwSetWindowUserPointer(window, &engine);
 		glfwSetFramebufferSizeCallback(window, engine.framebufferResizeCallback);
-		glfwSetWindowUserPointer(window, &camera);
 		glfwSetKeyCallback(window, InputManager::interceptInputs);
+
 		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 		
 		double lastTime = glfwGetTime();

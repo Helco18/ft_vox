@@ -78,10 +78,9 @@ class VulkanEngine
 
 		void								drawFrame();
 
-		const vk::raii::Device &			getDevice() const { return _device; };
-		void								waitIdle();
 		static void							framebufferResizeCallback(GLFWwindow * window, int width, int height);
 		static std::vector<Vertex>			getVertexFromFile(const std::string & path);
+		Camera *							getCamera() const { return _camera; }
 
 	private:
 		typedef std::vector<char const *>							RequiredExtensions;
