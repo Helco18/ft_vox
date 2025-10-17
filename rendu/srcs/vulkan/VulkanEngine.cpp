@@ -1,6 +1,6 @@
 #include "VulkanEngine.hpp"
 
-VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
+VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera): _window(window), _camera(camera)
 {
 	// On initialise une instance Vulkan, qui représente notre application au niveau de l'API Vulkan.
 	// C'est le point d'entrée principal entre l'application et le driver Vulkan (on y précise nom, version, extensions, etc.)
@@ -66,7 +66,11 @@ VulkanEngine::VulkanEngine(GLFWwindow * window): _window(window)
 	_createSyncObjects();
 }
 
-VulkanEngine::~VulkanEngine() {}
+VulkanEngine::~VulkanEngine()
+{
+	_device.waitIdle();
+	_queue.waitIdle();
+}
 
 void VulkanEngine::drawFrame()
 {
@@ -96,7 +100,7 @@ void VulkanEngine::drawFrame()
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 
-		_updateUniformBuffer();
+		_updateUniformBuffer(_camera);
 
 		vk::SubmitInfo submitInfo;
 		submitInfo.waitSemaphoreCount = 1;

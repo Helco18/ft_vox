@@ -7,6 +7,7 @@ Model::Model(const std::string & path)
 	std::string tmp;
 	std::ifstream file(path);
 	std::vector<std::string> splitted;
+	int line = 1;
 
 	if (file.fail())
 		throw std::runtime_error("No file found at given path: " + path);
@@ -14,7 +15,7 @@ Model::Model(const std::string & path)
 	while (std::getline(file, tmp))
 	{
 		splitted = ft_split(tmp, ',');
-		if (splitted.empty() || strncmp(splitted[0].c_str(), "//", 2) == 0)
+		if (splitted.empty() || strncmp(splitted[0].c_str(), "//", 2) == 0 || strncmp(splitted[0].c_str(), "#", 1) == 0)
 			continue;
 		if (strncmp(splitted[0].c_str(), "v ", 2) == 0 && splitted.size() >= 5)
 		{
@@ -29,10 +30,8 @@ Model::Model(const std::string & path)
 				_indices.push_back(std::atoi(splitted[i].c_str()));
 		}
 		else
-		{
-			file.close();
-			throw std::runtime_error("Invalid line at: " + tmp);
-		}
+			std::cerr << YELLOW << "[WARNING] Invalid line at " << line << ": " + tmp << RESET << std::endl;
+		line++;
 	}
 	file.close();
 }

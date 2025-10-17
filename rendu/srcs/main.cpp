@@ -1,5 +1,5 @@
-#include "vulkan/VulkanEngine.hpp"
-#include <exception>
+#include "VulkanEngine.hpp"
+#include "InputManager.hpp"
 #include <iostream>
 
 int main(void)
@@ -9,10 +9,13 @@ int main(void)
 		Model::loadModels();
 
 		GLFWwindow * window = getWindow();
-		VulkanEngine engine(window);
+		Camera camera(glm::vec3(2.0f));
+		VulkanEngine engine(window, &camera);
 
 		glfwSetWindowUserPointer(window, &engine);
 		glfwSetFramebufferSizeCallback(window, engine.framebufferResizeCallback);
+		glfwSetWindowUserPointer(window, &camera);
+		glfwSetKeyCallback(window, InputManager::interceptInputs);
 		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 		
 		double lastTime = glfwGetTime();
@@ -36,7 +39,6 @@ int main(void)
 			}
 		}
 
-		engine.getDevice().waitIdle();
 		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;
 
 		glfwDestroyWindow(window);

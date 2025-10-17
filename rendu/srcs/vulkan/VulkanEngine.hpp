@@ -14,6 +14,7 @@
 #include <limits>
 #include <chrono>
 #include "Model.hpp"
+#include "Camera.hpp"
 #include "colors.hpp"
 #include "utils.hpp"
 
@@ -72,7 +73,7 @@ struct UniformBuffer
 class VulkanEngine
 {
 	public:
-		VulkanEngine(GLFWwindow * window);
+		VulkanEngine(GLFWwindow * window, Camera * camera);
 		~VulkanEngine();
 
 		void								drawFrame();
@@ -91,33 +92,44 @@ class VulkanEngine
 		typedef std::vector<vk::raii::DescriptorSet>				DescriptorSets;
 		typedef std::array<vk::VertexInputAttributeDescription, 2>	VertexAttributeDescriptionArray;
 
+		// Window, context, instance
 		GLFWwindow *						_window;
 		vk::raii::Context					_context;
 		vk::raii::Instance					_instance = nullptr;
 		vk::raii::DebugUtilsMessengerEXT	_debugMessenger = nullptr;
+		vk::raii::SurfaceKHR				_surface = nullptr;
+
+		// Physical/Logical device
 		vk::raii::PhysicalDevice			_physicalDevice = nullptr;
 		vk::raii::Device					_device = nullptr;
 		vk::raii::Queue						_queue = nullptr;
-		vk::raii::SurfaceKHR				_surface = nullptr;
+		QueueIndices						_queueIndices;
+
+		// Swapchain & Images
+		vk::raii::SwapchainKHR				_swapChain = nullptr;
 		vk::SurfaceFormatKHR				_swapChainSurfaceFormat;
 		vk::Extent2D						_swapChainExtent;
-		QueueIndices						_queueIndices;
-		vk::raii::SwapchainKHR				_swapChain = nullptr;
-		std::vector<vk::Image>				_swapChainImages;
 		vk::Format							_swapChainImageFormat;
+		std::vector<vk::Image>				_swapChainImages;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
+	
+		// Pipeline & Descriptor
 		vk::raii::DescriptorSetLayout		_descriptorSetLayout = nullptr;
 		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
 		vk::raii::Pipeline					_graphicsPipeline = nullptr;
 		vk::raii::CommandPool				_resetCommandPool = nullptr;
 		vk::raii::CommandPool				_transientCommandPool = nullptr;
 		CommandBuffers						_commandBuffers;
+
+		// Sync primitives
 		Semaphores							_presentCompleteSemaphores;
 		Semaphores							_renderFinishedSemaphores;
 		Fences								_inFlightFences;
 		uint32_t							_semaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
 		bool								_framebufferResized = false;
+
+		// Buffers & Memory
 		vk::raii::Buffer					_vertexBuffer = nullptr;
 		uint32_t							_vertexSize;
 		vk::raii::DeviceMemory				_vertexBufferMemory = nullptr;
@@ -129,6 +141,8 @@ class VulkanEngine
 		std::vector<void *>					_uniformBuffersMapped;
 		vk::raii::DescriptorPool			_descriptorPool = nullptr;
 		DescriptorSets						_descriptorSets;
+
+		Camera *							_camera = nullptr;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -162,6 +176,6 @@ class VulkanEngine
 		void								_createDescriptorSetLayout();
 		void								_createUniformBuffers();
 		void								_createDescriptorPool();
-		void								_updateUniformBuffer();
+		void								_updateUniformBuffer(const Camera * camera);
 		void								_createDescriptorSets();
 };

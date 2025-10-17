@@ -152,7 +152,6 @@ void VulkanEngine::_recreateSwapchain()
 	}
 
 	_device.waitIdle();
-	_queue.waitIdle();
 
 	_swapChainImageViews.clear();
 	_swapChain = nullptr;

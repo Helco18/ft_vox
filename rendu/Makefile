@@ -8,6 +8,8 @@ NAME				=	ft_vox
 
 # Sources & Includes
 SRCS				=	srcs/main.cpp \
+						srcs/camera/Camera.cpp \
+						srcs/input/InputManager.cpp \
 						srcs/model/Model.cpp \
 						srcs/tools/glfwUtils.cpp \
 						srcs/tools/utils.cpp \
@@ -26,6 +28,8 @@ OBJ_FOLDER			=	objs
 INCLUDES			=	-I libs \
 						-I libs/stb \
 						-I srcs \
+						-I srcs/camera \
+						-I srcs/input \
 						-I srcs/model \
 						-I srcs/tools \
 						-I srcs/vulkan
