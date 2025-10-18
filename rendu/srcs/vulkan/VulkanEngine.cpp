@@ -74,6 +74,9 @@ VulkanEngine::~VulkanEngine()
 
 void VulkanEngine::drawFrame()
 {
+	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
+		;
+
 	// Semaphore = on ordonne les tâches
 	// Fence = on attend que le GPU finisse la tâche
 	try

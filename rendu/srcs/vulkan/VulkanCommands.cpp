@@ -151,6 +151,11 @@ void VulkanEngine::_createSyncObjects()
 		_inFlightFences.emplace_back(_device, fenceInfo);
 		_presentCompleteSemaphores.emplace_back(_device, vk::SemaphoreCreateInfo());
 	}
+	for (size_t i = 0; i < _swapChainImages.size(); ++i)
+	{
+		_presentCompleteSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
+		_renderFinishedSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
+	}
 
 	if (g_enableValidationLayers)
 		std::cout << GREEN << "[OK] Created Sync Objects" << RESET << std::endl;
