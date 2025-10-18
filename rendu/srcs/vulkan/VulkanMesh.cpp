@@ -48,9 +48,8 @@ void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage
 	buffer.bindMemory(*deviceMemory, 0);
 }
 
-void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size)
+vk::raii::CommandBuffer VulkanEngine::_beginSingleTimeCommands()
 {
-	// TODO Optimize Staging Buffer
 	vk::CommandBufferAllocateInfo allocInfo;
 	allocInfo.commandPool = _transientCommandPool;
 	allocInfo.level = vk::CommandBufferLevel::ePrimary;
@@ -61,14 +60,26 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	commandBufferBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
 	commandCopyBuffer.begin(commandBufferBeginInfo);
-	commandCopyBuffer.copyBuffer(srcBuffer, dstBuffer, vk::BufferCopy(0, 0, size));
-	commandCopyBuffer.end();
+
+	return commandCopyBuffer;
+}
+
+void VulkanEngine::_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffer)
+{
+	commandBuffer.end();
 
 	vk::SubmitInfo submitInfo;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &*commandCopyBuffer;
+	submitInfo.pCommandBuffers = &*commandBuffer;
 	_queue.submit(submitInfo);
 	_queue.waitIdle();
+}
+
+void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size)
+{
+	vk::raii::CommandBuffer commandCopyBuffer = _beginSingleTimeCommands();
+	commandCopyBuffer.copyBuffer(srcBuffer, dstBuffer, vk::BufferCopy(0, 0, size));
+	_endSingleTimeCommands(commandCopyBuffer);
 }
 
 void VulkanEngine::_createVertexBuffer(ModelType type)
@@ -89,6 +100,7 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					_vertexBuffer, _vertexBufferMemory);
+	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
 	_vertexSize = vertices.size();

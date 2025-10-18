@@ -52,7 +52,7 @@ struct QueueIndices
 	uint32_t	presentIndex;
 };
 
-struct TransitionImageLayoutInfo
+struct TransitionImageViewLayoutInfo
 {
 	uint32_t				imageIndex;
 	vk::ImageLayout			oldLayout;
@@ -140,6 +140,8 @@ class VulkanEngine
 		std::vector<void *>					_uniformBuffersMapped;
 		vk::raii::DescriptorPool			_descriptorPool = nullptr;
 		DescriptorSets						_descriptorSets;
+		vk::raii::Image						_textureImage = nullptr;
+		vk::raii::DeviceMemory				_textureImageMemory = nullptr;
 
 		Camera *							_camera = nullptr;
 
@@ -160,16 +162,20 @@ class VulkanEngine
 		void								_createGraphicsPipeline();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag);
+		void								_createTextureImage();
 		void								_createVertexBuffer(ModelType type);
 		void								_createIndexBuffer(ModelType type);
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer(uint32_t imageIndex);
-		void								_transitionImageLayout(TransitionImageLayoutInfo info);
+		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);
+		void								_transitionImageLayout(const vk::raii::Image & image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 		void								_createSyncObjects();
 		void								_recreateSwapchain();
 		uint32_t							_findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
 		void 								_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Buffer & buffer, vk::raii::DeviceMemory & deviceMemory);
 		void								_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size);
+		vk::raii::CommandBuffer				_beginSingleTimeCommands();
+		void								_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffer);
 		vk::VertexInputBindingDescription	_getBindingDescription() const;
 		VertexAttributeDescriptionArray		_getAttributeDescription() const;
 		void								_createDescriptorSetLayout();
@@ -177,4 +183,5 @@ class VulkanEngine
 		void								_createDescriptorPool();
 		void								_updateUniformBuffer(const Camera * camera);
 		void								_createDescriptorSets();
+		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory);
 };

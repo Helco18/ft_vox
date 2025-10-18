@@ -16,12 +16,13 @@ SRCS				=	srcs/main.cpp \
 						srcs/vulkan/VulkanCommands.cpp \
 						srcs/vulkan/VulkanDebug.cpp \
 						srcs/vulkan/VulkanDescriptors.cpp \
-						srcs/vulkan/VulkanUniform.cpp \
 						srcs/vulkan/VulkanEngine.cpp \
 						srcs/vulkan/VulkanInstance.cpp \
 						srcs/vulkan/VulkanMesh.cpp \
 						srcs/vulkan/VulkanPipeline.cpp \
-						srcs/vulkan/VulkanSwapchain.cpp
+						srcs/vulkan/VulkanSwapchain.cpp \
+						srcs/vulkan/VulkanTexture.cpp \
+						srcs/vulkan/VulkanUniform.cpp
 
 SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs

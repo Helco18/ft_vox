@@ -33,7 +33,7 @@ void VulkanEngine::_createCommandBuffer()
 		std::cout << GREEN << "[OK] Created Command Buffer" << RESET << std::endl;
 }
 
-void VulkanEngine::_transitionImageLayout(TransitionImageLayoutInfo info)
+void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info)
 {
 	// Une barrière est comme un mutex, elle attend que l'image soit disponible puis change de layout
 	vk::ImageMemoryBarrier2 barrier;
@@ -67,7 +67,7 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	_commandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 
-	TransitionImageLayoutInfo colorAttachmentInfo;
+	TransitionImageViewLayoutInfo colorAttachmentInfo;
 	colorAttachmentInfo.imageIndex = imageIndex;
 	// Un ImageLayout est l'état de l'image.
 	// Undefined : Vient d'être créée
@@ -86,7 +86,7 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	colorAttachmentInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
 
 	// Transitioner le layout de l'image d'undefined à colorattachment dans notre cas
-	_transitionImageLayout(colorAttachmentInfo);
+	_transitionImageViewLayout(colorAttachmentInfo);
 
 	vk::ClearValue clearColor = vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f);
 	vk::RenderingAttachmentInfo attachmentInfo;
@@ -122,7 +122,7 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	_commandBuffers[_currentFrame].drawIndexed(_indexSize, 1, 0, 0, 0);
 	_commandBuffers[_currentFrame].endRendering();
 
-	TransitionImageLayoutInfo presentSrcInfo;
+	TransitionImageViewLayoutInfo presentSrcInfo;
 	presentSrcInfo.imageIndex = imageIndex;
 	presentSrcInfo.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	presentSrcInfo.newLayout = vk::ImageLayout::ePresentSrcKHR;
@@ -131,7 +131,7 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	presentSrcInfo.srcStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
 	presentSrcInfo.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
 
-	_transitionImageLayout(presentSrcInfo);
+	_transitionImageViewLayout(presentSrcInfo);
 	_commandBuffers[_currentFrame].end();
 }
 
