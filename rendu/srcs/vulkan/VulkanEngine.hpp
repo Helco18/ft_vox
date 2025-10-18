@@ -35,7 +35,7 @@ const std::vector<const char *> g_deviceExtensions =
     vk::KHRSpirv14ExtensionName,
     vk::KHRSynchronization2ExtensionName,
     vk::KHRCreateRenderpass2ExtensionName,
-	vk::KHRShaderDrawParametersExtensionName
+	vk::KHRShaderDrawParametersExtensionName,
 };
 
 constexpr bool g_enableValidationLayers = true;
