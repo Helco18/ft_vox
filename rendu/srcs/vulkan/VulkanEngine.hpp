@@ -142,6 +142,7 @@ class VulkanEngine
 		DescriptorSets						_descriptorSets;
 		vk::raii::Image						_textureImage = nullptr;
 		vk::raii::DeviceMemory				_textureImageMemory = nullptr;
+		vk::raii::ImageView					_textureImageView = nullptr;
 
 		Camera *							_camera = nullptr;
 
@@ -184,4 +185,7 @@ class VulkanEngine
 		void								_updateUniformBuffer(const Camera * camera);
 		void								_createDescriptorSets();
 		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory);
+		void								_createTextureImageView();
+		vk::raii::ImageView					_createImageView(vk::raii::Image & image, vk::Format format);
+		void								_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height);
 };

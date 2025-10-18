@@ -51,6 +51,7 @@ VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera): _window(window
 	// - index buffer : décrit l’ordre dans lequel les sommets sont connectés.
 	// - uniform buffer : ils contiennent les données variables entre les frames (comme les matrices de transformation / constantes globales utilisées par les shaders)
 	_createTextureImage();
+	_createTextureImageView();
 	_createVertexBuffer(TRIANGLE);
 	_createIndexBuffer(TRIANGLE);
 	_createUniformBuffers();

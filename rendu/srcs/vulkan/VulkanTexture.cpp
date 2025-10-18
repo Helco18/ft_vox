@@ -66,6 +66,7 @@ void VulkanEngine::_createImage(uint32_t width, uint32_t height, vk::Format form
 	allocInfo.allocationSize = memRequirements.size;
 	allocInfo.memoryTypeIndex = _findMemoryType(memRequirements.memoryTypeBits, properties);
 	imageMemory = vk::raii::DeviceMemory( _device, allocInfo );
+	image.bindMemory(imageMemory, 0);
 }
 
 void VulkanEngine::_createTextureImage()
@@ -87,7 +88,50 @@ void VulkanEngine::_createTextureImage()
 	stagingBufferMemory.unmapMemory();
 	stbi_image_free(pixels);
 
-	vk::raii::Image textureImage = nullptr;
-	vk::raii::DeviceMemory textureImageMemory = nullptr;
-	_createImage(width, height, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal, textureImage, textureImageMemory);
+	_createImage(width, height, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal,
+					vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+					vk::MemoryPropertyFlagBits::eDeviceLocal, _textureImage, _textureImageMemory);
+	
+	_transitionImageLayout(_textureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+    _copyBufferToImage(stagingBuffer, _textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    _transitionImageLayout(_textureImage, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+}
+
+void VulkanEngine::_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height)
+{
+	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
+
+	vk::BufferImageCopy region;
+	region.bufferOffset = 0;
+	region.bufferRowLength = 0;
+	region.bufferImageHeight = 0;
+	region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+	region.imageSubresource.mipLevel = 0;
+	region.imageSubresource.baseArrayLayer = 0;
+	region.imageSubresource.layerCount = 1;
+	region.imageOffset = vk::Offset3D(0, 0, 0);
+	region.imageExtent = vk::Extent3D(width, height, 1);
+	
+	commandBuffer.copyBufferToImage(buffer, image, vk::ImageLayout::eTransferDstOptimal, { region });
+	_endSingleTimeCommands(commandBuffer);
+}
+
+void VulkanEngine::_createTextureImageView()
+{
+	vk::ImageViewCreateInfo imageViewCreateInfo;
+	// On utilise le 2D pour les opérations basiques.
+	// On peut utiliser 1D pour des lookup tables par exemple.
+	// On peut utiliser 3D pour des textures 3D (nuages, fumée, IRM...)
+	imageViewCreateInfo.viewType = vk::ImageViewType::e2D;
+	imageViewCreateInfo.image = _textureImage;
+	imageViewCreateInfo.format = vk::Format::eR8G8B8A8Srgb;
+	imageViewCreateInfo.subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 };
+	// Nos images vont être utilisées en tant que cible pour les couleurs, sans mipmap et avec un seul layer
+	imageViewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlags::BitsType::eColor;
+	imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+	imageViewCreateInfo.subresourceRange.levelCount = 1;
+	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+	imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+	_textureImageView = vk::raii::ImageView( _device, imageViewCreateInfo );
 }
