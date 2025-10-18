@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 19:33:36 by gcannaud          #+#    #+#             */
-/*   Updated: 2025/10/09 17:19:52 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/10/18 16:04:17 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,3 +55,4 @@ std::vector<std::string>	ft_split(const std::string & str, char delimiter);
  * @throws std::runtime_error if GLFW initialization or window creation fails.
  */
 GLFWwindow *				getWindow();
+void						toggleFullscreen(GLFWwindow * window);

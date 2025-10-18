@@ -74,8 +74,6 @@ VulkanEngine::~VulkanEngine()
 
 void VulkanEngine::drawFrame()
 {
-	_queue.waitIdle();
-
 	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
 		;
 
@@ -84,6 +82,7 @@ void VulkanEngine::drawFrame()
 	try
 	{
 		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphores[_semaphoreIndex], nullptr);
+		uint32_t imageIndex = result.second;
 		if (result.first != vk::Result::eSuccess)
 		{
 			if (result.first == vk::Result::eErrorOutOfDateKHR)
@@ -96,7 +95,7 @@ void VulkanEngine::drawFrame()
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
 		_commandBuffers[_currentFrame].reset();
-		_recordCommandBuffer(result.second);
+		_recordCommandBuffer(imageIndex);
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 
@@ -109,16 +108,16 @@ void VulkanEngine::drawFrame()
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &*_commandBuffers[_currentFrame];
 		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_currentFrame];
+		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[imageIndex];
 
 		_queue.submit(submitInfo, *_inFlightFences[_currentFrame]);
 
 		vk::PresentInfoKHR presentInfoKHR;
 		presentInfoKHR.waitSemaphoreCount = 1;
-		presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphores[_currentFrame];
+		presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphores[imageIndex];
 		presentInfoKHR.swapchainCount = 1;
 		presentInfoKHR.pSwapchains = &*_swapChain;
-		presentInfoKHR.pImageIndices = &result.second;
+		presentInfoKHR.pImageIndices = &imageIndex;
 
 		vk::Result presentResult = _queue.presentKHR(presentInfoKHR);
 

@@ -143,12 +143,14 @@ void VulkanEngine::_createSyncObjects()
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 	{
-		_presentCompleteSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
-		_renderFinishedSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
-
 		vk::FenceCreateInfo fenceInfo;
 		fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;
 		_inFlightFences.emplace_back(vk::raii::Fence(_device, fenceInfo));
+	}
+	for (size_t i = 0; i < _swapChainImages.size(); ++i)
+	{
+		_presentCompleteSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
+		_renderFinishedSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
 	}
 
 	if (g_enableValidationLayers)

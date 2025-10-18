@@ -10,6 +10,8 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		glfwSetWindowShouldClose(window, GL_TRUE);
 		return;
 	}
+	if (key == GLFW_KEY_F11)
+		toggleFullscreen(window);
 
 	VulkanEngine * engine = reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window));
 	Camera * camera = engine->getCamera();

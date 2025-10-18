@@ -82,6 +82,9 @@ $(OBJ_FOLDER)/%.o: srcs/%.cpp
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+run: all
+	./$(NAME)
+
 shader :
 	@mkdir -p $(GLSL_PATH)
 	@mkdir -p $(SPIRV_PATH)
