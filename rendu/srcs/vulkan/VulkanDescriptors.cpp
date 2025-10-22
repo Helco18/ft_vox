@@ -3,6 +3,7 @@
 void VulkanEngine::_createDescriptorSetLayout()
 {
 	// Décrit la structure des ressources accessibles par le shader
+
 	vk::DescriptorSetLayoutBinding uboLayoutBinding;
 	uboLayoutBinding.binding = 0;
 	uboLayoutBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
@@ -10,10 +11,19 @@ void VulkanEngine::_createDescriptorSetLayout()
 	uboLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
 	uboLayoutBinding.pImmutableSamplers = nullptr;
 
+	vk::DescriptorSetLayoutBinding texLayoutBinding;
+	texLayoutBinding.binding = 1;
+	texLayoutBinding.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+	texLayoutBinding.descriptorCount = 1;
+	texLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
+	texLayoutBinding.pImmutableSamplers = nullptr;
+
+	std::array descriptorLayouts = { uboLayoutBinding, texLayoutBinding };
+
 	vk::DescriptorSetLayoutCreateInfo layoutInfo;
-	layoutInfo.bindingCount = 1;
 	layoutInfo.flags = {};
-	layoutInfo.pBindings = &uboLayoutBinding;
+	layoutInfo.bindingCount = descriptorLayouts.size();
+	layoutInfo.pBindings = descriptorLayouts.data();
 
 	_descriptorSetLayout = vk::raii::DescriptorSetLayout( _device, layoutInfo );
 
@@ -23,15 +33,21 @@ void VulkanEngine::_createDescriptorSetLayout()
 
 void VulkanEngine::_createDescriptorPool()
 {
-	vk::DescriptorPoolSize size;
-	size.type = vk::DescriptorType::eUniformBuffer;
-	size.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+	vk::DescriptorPoolSize uniformSize;
+	uniformSize.type = vk::DescriptorType::eUniformBuffer;
+	uniformSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+
+	vk::DescriptorPoolSize textureSize;
+	textureSize.type = vk::DescriptorType::eCombinedImageSampler;
+	textureSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+
+	std::array descriptorsSize = { uniformSize, textureSize };
 
 	vk::DescriptorPoolCreateInfo descriptorPoolInfo;
 	descriptorPoolInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
 	descriptorPoolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
-	descriptorPoolInfo.poolSizeCount = 1;
-	descriptorPoolInfo.pPoolSizes = &size;
+	descriptorPoolInfo.poolSizeCount = descriptorsSize.size();
+	descriptorPoolInfo.pPoolSizes = descriptorsSize.data();
 
 	_descriptorPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
 
@@ -52,20 +68,35 @@ void VulkanEngine::_createDescriptorSets()
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 	{
-		vk::DescriptorBufferInfo bufferInfo;
-		bufferInfo.buffer = _uniformBuffers[i];
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(UniformBuffer);
+		vk::DescriptorBufferInfo uniformBufferInfo;
+		uniformBufferInfo.buffer = _uniformBuffers[i];
+		uniformBufferInfo.offset = 0;
+		uniformBufferInfo.range = sizeof(UniformBuffer);
 
-		vk::WriteDescriptorSet descriptorWrite;
-		descriptorWrite.dstSet = _descriptorSets[i];
-		descriptorWrite.dstBinding = 0;
-		descriptorWrite.dstArrayElement = 0;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.descriptorType = vk::DescriptorType::eUniformBuffer;
-		descriptorWrite.pBufferInfo = &bufferInfo;
+		vk::DescriptorImageInfo textureBufferInfo;
+		textureBufferInfo.sampler = _textureSampler;
+		textureBufferInfo.imageView = _textureImageView;
+		textureBufferInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
-		_device.updateDescriptorSets(descriptorWrite, {});
+		vk::WriteDescriptorSet uniformWrite;
+		uniformWrite.dstSet = _descriptorSets[i];
+		uniformWrite.dstBinding = 0;
+		uniformWrite.dstArrayElement = 0;
+		uniformWrite.descriptorCount = 1;
+		uniformWrite.descriptorType = vk::DescriptorType::eUniformBuffer;
+		uniformWrite.pBufferInfo = &uniformBufferInfo;
+
+		vk::WriteDescriptorSet textureWrite;
+		textureWrite.dstSet = _descriptorSets[i];
+		textureWrite.dstBinding = 1;
+		textureWrite.dstArrayElement = 0;
+		textureWrite.descriptorCount = 1;
+		textureWrite.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+		textureWrite.pImageInfo = &textureBufferInfo;
+
+		std::array writeSets = { uniformWrite, textureWrite };
+
+		_device.updateDescriptorSets(writeSets, {});
 	}
 
 	if (g_enableValidationLayers)

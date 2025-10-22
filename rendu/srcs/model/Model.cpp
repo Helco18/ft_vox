@@ -17,11 +17,12 @@ Model::Model(const std::string & path)
 		splitted = ft_split(tmp, ',');
 		if (splitted.empty() || strncmp(splitted[0].c_str(), "//", 2) == 0 || strncmp(splitted[0].c_str(), "#", 1) == 0)
 			continue;
-		if (strncmp(splitted[0].c_str(), "v ", 2) == 0 && splitted.size() >= 5)
+		if (strncmp(splitted[0].c_str(), "v ", 2) == 0 && splitted.size() >= 7)
 		{
 			glm::vec2 position(std::atof(&(splitted[0].c_str())[2]), std::atof(splitted[1].c_str()));
 			glm::vec3 color(std::atof(splitted[2].c_str()), std::atof(splitted[3].c_str()), std::atof(splitted[4].c_str()));
-			_vertices.push_back({ position, color });
+			glm::vec2 texCoord(std::atof(splitted[5].c_str()), std::atof(splitted[6].c_str()));
+			_vertices.push_back({ position, color, texCoord });
 		}
 		else if (strncmp(splitted[0].c_str(), "f ", 2) == 0 && splitted.size() >= 3)
 		{

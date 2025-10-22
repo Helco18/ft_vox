@@ -89,7 +89,7 @@ class VulkanEngine
 		typedef std::vector<vk::raii::Semaphore>					Semaphores;
 		typedef std::vector<vk::raii::Fence>						Fences;
 		typedef std::vector<vk::raii::DescriptorSet>				DescriptorSets;
-		typedef std::array<vk::VertexInputAttributeDescription, 2>	VertexAttributeDescriptionArray;
+		typedef std::array<vk::VertexInputAttributeDescription, 3>	VertexAttributeDescriptionArray;
 
 		// Window, context, instance
 		GLFWwindow *						_window;
@@ -140,9 +140,12 @@ class VulkanEngine
 		std::vector<void *>					_uniformBuffersMapped;
 		vk::raii::DescriptorPool			_descriptorPool = nullptr;
 		DescriptorSets						_descriptorSets;
+
+		// Textures
 		vk::raii::Image						_textureImage = nullptr;
 		vk::raii::DeviceMemory				_textureImageMemory = nullptr;
 		vk::raii::ImageView					_textureImageView = nullptr;
+		vk::raii::Sampler					_textureSampler = nullptr;
 
 		Camera *							_camera = nullptr;
 
@@ -188,4 +191,5 @@ class VulkanEngine
 		void								_createTextureImageView();
 		vk::raii::ImageView					_createImageView(vk::raii::Image & image, vk::Format format);
 		void								_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height);
+		void								_createTextureSampler();
 };

@@ -135,3 +135,26 @@ void VulkanEngine::_createTextureImageView()
 
 	_textureImageView = vk::raii::ImageView( _device, imageViewCreateInfo );
 }
+
+void VulkanEngine::_createTextureSampler()
+{
+	vk::PhysicalDeviceProperties properties = _physicalDevice.getProperties();
+
+	vk::SamplerCreateInfo samplerInfo;
+	samplerInfo.flags = {};
+	samplerInfo.magFilter = vk::Filter::eLinear;
+	samplerInfo.minFilter = vk::Filter::eLinear;
+	samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+	samplerInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
+	samplerInfo.addressModeV = vk::SamplerAddressMode::eRepeat;
+	samplerInfo.addressModeW = vk::SamplerAddressMode::eRepeat;
+	samplerInfo.mipLodBias = 0;
+	samplerInfo.anisotropyEnable = 1;
+	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+	samplerInfo.compareEnable = vk::False;
+	samplerInfo.compareOp = vk::CompareOp::eAlways;
+	samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
+	samplerInfo.unnormalizedCoordinates = vk::False;
+
+	_textureSampler = vk::raii::Sampler( _device, samplerInfo );
+}

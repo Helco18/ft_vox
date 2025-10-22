@@ -12,7 +12,8 @@ VulkanEngine::VertexAttributeDescriptionArray VulkanEngine::_getAttributeDescrip
 	// On stocke des coordonnées en couleur.
 	return {
 		vk::VertexInputAttributeDescription( 0, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, position)),
-		vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color))
+		vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color)),
+		vk::VertexInputAttributeDescription( 2, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, texCoord))
 	};
 }
 

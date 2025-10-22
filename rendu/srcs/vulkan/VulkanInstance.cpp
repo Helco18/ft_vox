@@ -155,6 +155,10 @@ void VulkanEngine::_createLogicalDevice()
 	float queuePriority = 0.0f;
 	_queueIndices = _findQueueFamilies();
 
+	vk::PhysicalDeviceFeatures supportedFeatures = _physicalDevice.getFeatures();
+	if (!supportedFeatures.samplerAnisotropy)
+		throw std::runtime_error("Missing anisotropy feature.");
+
 	// Récupérer l'index de la queue family que l'on va utiliser
 	vk::DeviceQueueCreateInfo deviceQueueCreateInfo;
 	deviceQueueCreateInfo.pQueuePriorities = &queuePriority;
@@ -164,6 +168,7 @@ void VulkanEngine::_createLogicalDevice()
 	// Activation des features en liste chaînée
 	vk::PhysicalDeviceFeatures2 features;
 	features.features.sampleRateShading = vk::False; // Activer le MSAA (rajout hors-tutoriel)
+	features.features.samplerAnisotropy = vk::True;
 	vk::PhysicalDeviceVulkan13Features vulkan13features;
 	vulkan13features.dynamicRendering = true;
 	vulkan13features.synchronization2 = true; // Eviter un segfault (rajout hors-tutoriel)
