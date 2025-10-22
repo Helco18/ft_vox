@@ -78,6 +78,14 @@ void VulkanEngine::_createGraphicsPipeline()
 	rasterizer.depthBiasSlopeFactor = 1.0f;
 	rasterizer.lineWidth = 1.0f;
 
+	// Depth
+	vk::PipelineDepthStencilStateCreateInfo depthStencil;
+	depthStencil.depthTestEnable = vk::True;
+	depthStencil.depthWriteEnable = vk::True;
+	depthStencil.depthCompareOp = vk::CompareOp::eLess;
+	depthStencil.depthBoundsTestEnable = vk::False;
+	depthStencil.stencilTestEnable = vk::False;
+
 	// Antialiasing
 	vk::PipelineMultisampleStateCreateInfo multisampling;
 	// multisampling.rasterizationSamples = vk::SampleCountFlagBits::e2; // Degré de MSAA (Multisample Antialiasing)
@@ -120,6 +128,7 @@ void VulkanEngine::_createGraphicsPipeline()
 	vk::PipelineRenderingCreateInfo pipelineRenderingInfo;
 	pipelineRenderingInfo.colorAttachmentCount = 1;
 	pipelineRenderingInfo.pColorAttachmentFormats = &_swapChainImageFormat;
+	pipelineRenderingInfo.depthAttachmentFormat = vk::Format::eD32Sfloat;
 
 	// On lie toutes les infos de notre pipeline
 	vk::GraphicsPipelineCreateInfo graphicsPipelineInfo;
@@ -131,6 +140,7 @@ void VulkanEngine::_createGraphicsPipeline()
 	graphicsPipelineInfo.pViewportState = &viewportState;
 	graphicsPipelineInfo.pRasterizationState = &rasterizer;
 	graphicsPipelineInfo.pMultisampleState = &multisampling;
+	graphicsPipelineInfo.pDepthStencilState = &depthStencil;
 	graphicsPipelineInfo.pColorBlendState = &colorBlending;
 	graphicsPipelineInfo.pDynamicState = &dynamicStateInfo;
 	graphicsPipelineInfo.layout = _pipelineLayout;

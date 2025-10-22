@@ -4,6 +4,7 @@
 #define GLFW_INCLUDE_VULKAN
 #define GLFW_EXPOSE_NATIVE_X11
 #define GLFW_EXPOSE_NATIVE_GLX
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -147,6 +148,11 @@ class VulkanEngine
 		vk::raii::ImageView					_textureImageView = nullptr;
 		vk::raii::Sampler					_textureSampler = nullptr;
 
+		// Depth test
+		vk::raii::Image						_depthImage = nullptr;
+		vk::raii::DeviceMemory				_depthImageMemory = nullptr;
+		vk::raii::ImageView					_depthImageView = nullptr;
+
 		Camera *							_camera = nullptr;
 
 		void								_createInstance();
@@ -189,7 +195,9 @@ class VulkanEngine
 		void								_createDescriptorSets();
 		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory);
 		void								_createTextureImageView();
-		vk::raii::ImageView					_createImageView(vk::raii::Image & image, vk::Format format);
 		void								_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height);
 		void								_createTextureSampler();
+		void								_createDepthResources();
+		vk::Format							_findSupportedFormat(const std::vector<vk::Format> & candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features);
+		vk::Format							_findDepthFormat();
 };

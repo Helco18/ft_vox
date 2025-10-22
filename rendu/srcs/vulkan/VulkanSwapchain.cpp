@@ -158,4 +158,5 @@ void VulkanEngine::_recreateSwapchain()
 
 	_createSwapChain();
 	_createImageViews();
+	_createDepthResources();
 }

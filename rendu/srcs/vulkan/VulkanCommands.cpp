@@ -67,42 +67,75 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	_commandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 
-	TransitionImageViewLayoutInfo colorAttachmentInfo;
-	colorAttachmentInfo.imageIndex = imageIndex;
+	TransitionImageViewLayoutInfo transitionImageViewInfo;
+	transitionImageViewInfo.imageIndex = imageIndex;
 	// Un ImageLayout est l'état de l'image.
 	// Undefined : Vient d'être créée
 	// ColorAttachmentOptimal : Utilisée comme cible de rendu (render target)
 	// PresentSrcKHR : Prête à être affichée à l'écran
 	// TransferDstOptimal : Prête à recevoir un transfert de données (un upload de texture par exemple)
-	colorAttachmentInfo.oldLayout = vk::ImageLayout::eUndefined;
-	colorAttachmentInfo.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
+	transitionImageViewInfo.oldLayout = vk::ImageLayout::eUndefined;
+	transitionImageViewInfo.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	// Il n'y a pas d'opération à attendre avant, l'image est undefined donc non-utilisée
-	colorAttachmentInfo.srcAccessMask = {};
+	transitionImageViewInfo.srcAccessMask = {};
 	// Après la barrière, on veut écrire dans cette image (on écrit les pixels du framebuffer)
-	colorAttachmentInfo.dstAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
+	transitionImageViewInfo.dstAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
 	// La barrière doit se placer avant toute opération de la pipeline
-	colorAttachmentInfo.srcStageMask = vk::PipelineStageFlagBits2::eTopOfPipe;
+	transitionImageViewInfo.srcStageMask = vk::PipelineStageFlagBits2::eTopOfPipe;
 	// La barrière doit être validée avant que la pipeline atteigne la phase d'écriture du color attachment
-	colorAttachmentInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+	transitionImageViewInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+
+	// Depth testing
+	vk::ImageMemoryBarrier2 depthBarrier;
+	depthBarrier.srcStageMask = vk::PipelineStageFlagBits2::eTopOfPipe;
+	depthBarrier.srcAccessMask = {};
+	depthBarrier.dstStageMask = vk::PipelineStageFlagBits2::eEarlyFragmentTests | vk::PipelineStageFlagBits2::eLateFragmentTests;
+	depthBarrier.dstAccessMask = vk::AccessFlagBits2::eDepthStencilAttachmentRead | vk::AccessFlagBits2::eDepthStencilAttachmentWrite;
+	depthBarrier.oldLayout = vk::ImageLayout::eUndefined;
+	depthBarrier.newLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+	depthBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	depthBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	depthBarrier.image = _depthImage;
+	depthBarrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth;
+	depthBarrier.subresourceRange.baseMipLevel = 0;
+	depthBarrier.subresourceRange.levelCount = 1;
+	depthBarrier.subresourceRange.baseArrayLayer = 0;
+	depthBarrier.subresourceRange.layerCount = 1;
+
+	vk::DependencyInfo depthDependencyInfo;
+	depthDependencyInfo.dependencyFlags = {};
+	depthDependencyInfo.imageMemoryBarrierCount = 1;
+	depthDependencyInfo.pImageMemoryBarriers = &depthBarrier;
+
+	_commandBuffers[_currentFrame].pipelineBarrier2(depthDependencyInfo);
 
 	// Transitioner le layout de l'image d'undefined à colorattachment dans notre cas
-	_transitionImageViewLayout(colorAttachmentInfo);
+	_transitionImageViewLayout(transitionImageViewInfo);
 
 	vk::ClearValue clearColor = vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f);
-	vk::RenderingAttachmentInfo attachmentInfo;
-	attachmentInfo.imageView = _swapChainImageViews[imageIndex];
+	vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
+
+	vk::RenderingAttachmentInfo colorAttachmentInfo;
+	colorAttachmentInfo.imageView = _swapChainImageViews[imageIndex];
 	// On précise son layout actuel (comme celui au-dessus)
-	attachmentInfo.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
+	colorAttachmentInfo.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	// Que faire de ce qu'il y a actuellement sur l'image avant de dessiner ?
 	// Clear : Efface avec la clearColor
 	// Load : Garder ce qu'il y a actuellement
 	// DontCare : Ecrase le contenu
-	attachmentInfo.loadOp = vk::AttachmentLoadOp::eClear;
+	colorAttachmentInfo.loadOp = vk::AttachmentLoadOp::eClear;
 	// Que faire après le rendu ?
 	// Store : On conserve pour l'afficher ensuite à l'écran
 	// DontCare : On ne garde pas le résultat
-	attachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
-	attachmentInfo.clearValue = clearColor;
+	colorAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
+	colorAttachmentInfo.clearValue = clearColor;
+
+	vk::RenderingAttachmentInfo depthAttachmentInfo;
+	depthAttachmentInfo.imageView = _depthImageView;
+	depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+	depthAttachmentInfo.loadOp = vk::AttachmentLoadOp::eClear;
+	depthAttachmentInfo.storeOp = vk::AttachmentStoreOp::eDontCare;
+	depthAttachmentInfo.clearValue = clearDepth;
 
 	vk::RenderingInfo renderingInfo;
 	renderingInfo.renderArea.offset.x = 0;
@@ -110,7 +143,8 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	renderingInfo.renderArea.extent = _swapChainExtent;
 	renderingInfo.layerCount = 1;
 	renderingInfo.colorAttachmentCount = 1;
-	renderingInfo.pColorAttachments = &attachmentInfo;
+	renderingInfo.pColorAttachments = &colorAttachmentInfo;
+	renderingInfo.pDepthAttachment = &depthAttachmentInfo;
 
 	_commandBuffers[_currentFrame].beginRendering(renderingInfo);
 	_commandBuffers[_currentFrame].bindPipeline(vk::PipelineBindPoint::eGraphics, *_graphicsPipeline);
