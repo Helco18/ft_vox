@@ -1,4 +1,5 @@
 #include "VulkanEngine.hpp"
+#include "OBJModel.hpp"
 #include "InputManager.hpp"
 #include <iostream>
 
@@ -6,10 +7,11 @@ int main(void)
 {
 	try
 	{
-		Model::loadModels();
-
+		OBJModel model(TEST);
+		if (!model.load())
+			throw std::runtime_error("Tu réussiras jamais l'exam06");
 		GLFWwindow * window = getWindow();
-		Camera camera(glm::vec3(2.0f));
+		Camera camera(glm::vec3(2.0f, 0.0f, 0.0f), WIDTH, HEIGHT);
 		VulkanEngine engine(window, &camera);
 
 		glfwSetWindowUserPointer(window, &engine);
@@ -19,10 +21,12 @@ int main(void)
 		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 		
 		double lastTime = glfwGetTime();
+		double timeStart;
 		int frames = 0;
 
 		while (!glfwWindowShouldClose(window))
 		{
+			timeStart = glfwGetTime();
 			glfwPollEvents();
 			engine.drawFrame();
 
@@ -37,6 +41,8 @@ int main(void)
 				frames = 0;
 				lastTime = currentTime;
 			}
+			InputManager::interceptMovements(window, &camera, glfwGetTime() - timeStart);
+			InputManager::interceptMouse(window, &camera);
 		}
 
 		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;

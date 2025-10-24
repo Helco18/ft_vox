@@ -1,5 +1,64 @@
 #include "InputManager.hpp"
 
+void InputManager::interceptMouse(GLFWwindow * window, Camera * camera)
+{
+	int width, height;
+	double mouseX, mouseY;
+
+	width = camera->getWidth();
+	height = camera->getHeight();
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwGetCursorPos(window, &mouseX, &mouseY);
+
+		camera->updateOrientation(mouseX, mouseY);
+
+		glfwSetCursorPos(window, (static_cast<float>(width) / 2), (static_cast<float>(height) / 2));
+	}
+	else
+	{
+		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetCursorPos(window, (static_cast<float>(width) / 2), (static_cast<float>(height) / 2));
+		}
+	}
+}
+
+void InputManager::interceptMovements(GLFWwindow * window, Camera * camera, float deltaTime)
+{
+	float velocity;
+	float speed;
+	glm::vec3 forward;
+	glm::vec3 pos;
+	glm::vec3 up;
+	glm::vec3 right;
+
+	speed = CAMERA_SPEED;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		speed *= 5.0f;
+
+	velocity = speed * deltaTime;
+	pos = camera->getPosition();
+	up = camera->getAltitude();
+	forward = camera->computeForward();
+	right = glm::normalize(glm::cross(forward, up));
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		pos += forward * velocity;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		pos -= forward * velocity;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		pos -= right * velocity;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		pos += right * velocity;
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		pos += up * velocity;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		pos -= up * velocity;
+	camera->setPosition(pos);
+}
+
 void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action, int)
 {
 	if (action != GLFW_PRESS)
@@ -11,31 +70,5 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		return;
 	}
 	if (key == GLFW_KEY_F11)
-		toggleFullscreen(window);
-
-	VulkanEngine * engine = reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window));
-	Camera * camera = engine->getCamera();
-	glm::vec3 forward;
-	forward.x = cosf(glm::radians(camera->getPitch())) * cosf(glm::radians(camera->getYaw())); // X component based on pitch
-	forward.z = cosf(glm::radians(camera->getPitch())) * sinf(glm::radians(camera->getYaw())); // Z component based on pitch
-	forward.y = 0.0f; // No vertical movement based on pitch, set Y to 0
-
-	// Normalize the forward vector to maintain consistent speed
-	forward = glm::normalize(forward);
-
-	// Calculate the right vector (strafe) using yaw, no pitch influence
-	const glm::vec3 right = glm::normalize(glm::cross(forward, camera->getAltitude())); // Right direction is based on forward and altitude (up vector)
-
-	if (key == GLFW_KEY_W)
-		camera->setPosition(camera->getPosition() + CAMERA_SPEED * forward);
-	if (key == GLFW_KEY_A)
-		camera->setPosition(camera->getPosition() + CAMERA_SPEED * -right);
-	if (key == GLFW_KEY_S)
-		camera->setPosition(camera->getPosition() + CAMERA_SPEED * -forward);
-	if (key == GLFW_KEY_D)
-		camera->setPosition(camera->getPosition() + CAMERA_SPEED * right);
-	if (key == GLFW_KEY_SPACE)
-		camera->setPosition(camera->getPosition() + CAMERA_SPEED * camera->getAltitude());
-	if (key == GLFW_KEY_LEFT_SHIFT)
-		camera->setPosition(camera->getPosition() + CAMERA_SPEED * -camera->getAltitude());
+		toggleFullscreen(window, *reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window))->getCamera());
 }

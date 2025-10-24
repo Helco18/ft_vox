@@ -80,7 +80,7 @@ GLFWwindow * getWindow()
 	try
 	{
 		window = createWindow();
-		glfwSetWindowSizeLimits(window, 400, 300, GLFW_DONT_CARE, GLFW_DONT_CARE);
+		glfwSetWindowSizeLimits(window, WIDTH, HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		setIcon(window);
 	}
 	catch(const std::exception& e)
@@ -88,12 +88,10 @@ GLFWwindow * getWindow()
 		glfwTerminate();
 		throw;
 	}
-	
-
 	return (window);
 }
 
-void toggleFullscreen(GLFWwindow * window)
+void toggleFullscreen(GLFWwindow * window, Camera & camera)
 {
 	static int windowPosX = 0;
 	static int windowPosY = 0;
@@ -109,11 +107,15 @@ void toggleFullscreen(GLFWwindow * window)
 		GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode *mode = glfwGetVideoMode(monitor);
 		glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		camera.setWidth(mode->width);
+		camera.setHeight(mode->height);
 		isFullscreen = true;
 	}
 	else
 	{
 		glfwSetWindowMonitor(window, nullptr, windowPosX, windowPosY, windowWidth, windowHeight, 0);
+		camera.setWidth(windowWidth);
+		camera.setHeight(windowWidth);
 		isFullscreen = false;
 	}
 }

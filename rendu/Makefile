@@ -10,7 +10,7 @@ NAME				=	ft_vox
 SRCS				=	srcs/main.cpp \
 						srcs/camera/Camera.cpp \
 						srcs/input/InputManager.cpp \
-						srcs/model/Model.cpp \
+						srcs/model/OBJModel.cpp \
 						srcs/tools/glfwUtils.cpp \
 						srcs/tools/utils.cpp \
 						srcs/vulkan/VulkanCommands.cpp \
@@ -65,16 +65,14 @@ RESET				=	\033[0m
 # Custom messages
 EXE_DONE			=	@echo "🎉$(PURPLE) $(NAME) compiled! 🎉$(RESET)\n"
 DEBUG_DONE			=	@echo "🎉$(YELLOW) This is the DEBUG MODE version! 🎉$(RESET)\n"
-SHADERS_SPIRV_DONE	=	@echo "🎨$(PURPLE) SPIRV Shaders compiled! 🎨$(RESET)\n"
-SHADERS_GLSL_DONE	=	@echo "🎨$(PURPLE) GLSL Shaders compiled! 🎨$(RESET)\n"
+SHADERS_DONE		=	@echo "🎨$(PURPLE) Shaders compiled! 🎨$(RESET)\n"
 SHADERS_CLEAN		=	@echo "🧹$(LIGHT_GREEN) Shaders cleaned! 🧹$(RESET)\n"
 ALL_CLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects cleaned! 🧹$(RESET)\n"
 ALL_FCLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects & Executables cleaned! 🧹$(RESET)\n"
 
 # Rules
 
-all : glfw glm stb shader
-	@make -j4 $(NAME)
+all : glfw glm stb shader $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) $(LDFLAGS)
@@ -87,14 +85,20 @@ $(OBJ_FOLDER)/%.o: srcs/%.cpp
 run: all
 	./$(NAME)
 
-shader :
-	@mkdir -p $(GLSL_PATH)
+$(SPIRV_PATH)/triangle.spv : $(SHADERS)
 	@mkdir -p $(SPIRV_PATH)
-	@slangc $(SHADERS) -target spirv -entry vertMain -entry fragMain -o $(SPIRV_PATH)/triangle.spv
-	$(SHADERS_SPIRV_DONE)
-	@slangc $(SHADERS) -target glsl -entry vertMain -o $(GLSL_PATH)/triangle.vert
-	@slangc $(SHADERS) -target glsl -entry fragMain -o $(GLSL_PATH)/triangle.frag
-	$(SHADERS_GLSL_DONE)
+	@slangc $(SHADERS) -target spirv -entry vertMain -entry fragMain -o $@
+
+$(GLSL_PATH)/triangle.vert : $(SHADERS)
+	@mkdir -p $(GLSL_PATH)
+	@slangc $(SHADERS) -target glsl -entry vertMain -o $@
+
+$(GLSL_PATH)/triangle.frag : $(SHADERS)
+	@mkdir -p $(GLSL_PATH)
+	@slangc $(SHADERS) -target glsl -entry fragMain -o $@
+
+shader: $(SPIRV_PATH)/triangle.spv $(GLSL_PATH)/triangle.vert $(GLSL_PATH)/triangle.frag
+	$(SHADERS_DONE)
 
 sclean:
 	@rm -rf $(SPIRV_PATH)
@@ -115,7 +119,9 @@ fclean :
 	@rm -rf $(GLSL_PATH)
 	$(ALL_FCLEAN)
 
-re : fclean all
+re:
+	@$(MAKE) fclean
+	@$(MAKE) all
 
 debug : fclean
 	$(MAKE) NAME="$(NAME)_debug" CFLAGS="$(CFLAGS) -DDEBUG"

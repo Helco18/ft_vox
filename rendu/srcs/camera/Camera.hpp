@@ -7,19 +7,39 @@
 class Camera
 {
 	public:
-		Camera(glm::vec3 position);
+		Camera(glm::vec3 position, int width, int height);
 
-		glm::vec3	getPosition() const;
-		glm::vec3	getAltitude() const;
-		float		getYaw() const;
-		float		getPitch() const;
-		float		getFOV() const;
+		glm::vec3	getPosition() const { return _position; }
+		glm::vec3	getOrientation() const { return _orientation; }
+		glm::vec3	getAltitude() const { return _altitude; }
+		int			getWidth() const { return _width; }
+		int			getHeight() const { return _height; }
+		float		getYaw() const { return _yaw; }
+		float		getPitch() const { return _pitch; }
+		float		getFOV() const { return _FOV; }
+		float		getSensitivity() const { return _sensitivity; }
 
-		void		setPosition(const glm::vec3 & position);
+		void		setPosition(const glm::vec3 & position) { _position = position; }
+		void		setOrientation(glm::vec3 orientation) { _orientation = orientation; }
+		void		setYaw(float yaw) { _yaw = yaw; }
+		void		setPitch(float pitch) { _pitch = pitch; }
+		void		setWidth(int width) { _width = width; }
+		void		setHeight(int height) { _height = height; }
+
+		void		changeYaw(float yaw) { _yaw += yaw; }
+		void		changePitch(float pitch) { _pitch += pitch; }
+
+		glm::vec3	computeForward();
+
+		void		updateOrientation(double mouseX, double mouseY);
 	private:
 		glm::vec3	_position;
+		glm::vec3	_orientation;
 		glm::vec3	_altitude;
+		int			_width;
+		int			_height;
 		float		_yaw;
 		float		_pitch;
 		int			_FOV;
+		float		_sensitivity;
 };

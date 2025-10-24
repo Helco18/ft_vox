@@ -71,9 +71,15 @@ void VulkanEngine::_createImage(uint32_t width, uint32_t height, vk::Format form
 
 void VulkanEngine::_createTextureImage()
 {
-	int width, height, channels;
+	int width, height;
+	OBJModel model;
+	Texture texture;
 
-	stbi_uc * pixels = stbi_load("assets/textures/gcannaud.jpg", &width, &height, &channels, STBI_rgb_alpha);
+	model = OBJModel::getModel(TEST);
+	texture = model.getTexture();
+	width = texture.width;
+	height = texture.height;
+	stbi_uc * pixels = texture.data;
 	vk::DeviceSize size = width * height * 4;
 	if (!pixels)
 		throw std::runtime_error("Failed to load image.");

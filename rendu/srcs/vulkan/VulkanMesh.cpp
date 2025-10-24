@@ -12,7 +12,7 @@ VulkanEngine::VertexAttributeDescriptionArray VulkanEngine::_getAttributeDescrip
 	// On stocke des coordonnées en couleur.
 	return {
 		vk::VertexInputAttributeDescription( 0, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, position)),
-		vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, color)),
+		vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, normal)),
 		vk::VertexInputAttributeDescription( 2, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, texCoord))
 	};
 }
@@ -85,7 +85,7 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 
 void VulkanEngine::_createVertexBuffer(ModelType type)
 {
-	const std::vector<Vertex> vertices = Model::getModel(type).getVertices();
+	const std::vector<Vertex> vertices = OBJModel::getModel(type).getVertices();
 	vk::DeviceSize size = sizeof(vertices[0]) * vertices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
@@ -109,7 +109,7 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 
 void VulkanEngine::_createIndexBuffer(ModelType type)
 {
-	const std::vector<uint16_t> indices = Model::getModel(type).getIndices();
+	const std::vector<uint16_t> indices = OBJModel::getModel(type).getIndices();
 	vk::DeviceSize size = sizeof(indices[0]) * indices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;

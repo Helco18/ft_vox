@@ -1,39 +1,60 @@
 #include "Camera.hpp"
 
-Camera::Camera(glm::vec3 position): _position(position)
+Camera::Camera(glm::vec3 position, int width, int height): _position(position), _width(width), _height(height)
 {
 	_altitude = glm::vec3(0.0f, 1.0f, 0.0f);
-	_yaw = 90.f;
-	_pitch = 0.f;
+	_yaw = -90.f;
+	_pitch = 0.0f;
 	_FOV = 90;
+	_sensitivity = 200.0f;
+
+	glm::vec3 direction;
+	direction.x = cosf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));
+	direction.y = sinf(glm::radians(_pitch));
+	direction.z = sinf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));
+	_orientation = glm::normalize(direction);
 }
 
-glm::vec3 Camera::getPosition() const
+static glm::vec3 translateDirection(const float yaw, const float pitch)
 {
-	return _position;
+	glm::vec3 direction;
+	direction.x = cosf(glm::radians(yaw)) * cosf(glm::radians(pitch));
+	direction.y = sinf(glm::radians(pitch));
+	direction.z = sinf(glm::radians(yaw)) * cosf(glm::radians(pitch));
+	return (direction);
 }
 
-glm::vec3 Camera::getAltitude() const
+void Camera::updateOrientation(double mouseX, double mouseY)
 {
-	return _altitude;
+	const float rotX = _sensitivity * static_cast<float>(mouseY - (static_cast<float>(_height) / 2)) / static_cast<float>(_height);
+	const float rotY = _sensitivity * static_cast<float>(mouseX - (static_cast<float>(_width) / 2)) / static_cast<float>(_width);
+
+	_yaw += rotY;
+	_pitch -= rotX;
+
+	if (_pitch> 89.99f)
+		_pitch = 89.99f;
+	else if (_pitch< -89.99f)
+		_pitch = -89.99f;
+
+	if (_yaw < -179.99f)
+		_yaw = 180.0f;
+	else if (_yaw > 179.99f)
+		_yaw = -180.0f;
+
+	setOrientation(translateDirection(_yaw, _pitch));
 }
 
-float Camera::getYaw() const
+glm::vec3 Camera::computeForward()
 {
-	return _yaw;
-}
+	const float radYaw = glm::radians(_yaw);
+	const float radPitch = glm::radians(_pitch);
 
-float Camera::getPitch() const
-{
-	return _pitch;
-}
-
-float Camera::getFOV() const
-{
-	return _FOV;
-}
-
-void Camera::setPosition(const glm::vec3 & position)
-{
-	_position = position;
+	glm::vec3 forward;
+	forward.x = cosf(radPitch) * sinf(radYaw);
+	forward.y = sinf(radPitch);
+	forward.z = -cosf(radPitch) * cosf(radYaw);
+	forward = glm::normalize(forward);
+	
+	return forward;
 }

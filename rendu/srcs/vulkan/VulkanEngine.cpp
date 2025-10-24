@@ -54,8 +54,8 @@ VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera): _window(window
 	_createTextureImage();
 	_createTextureImageView();
 	_createTextureSampler();
-	_createVertexBuffer(TRIANGLE);
-	_createIndexBuffer(TRIANGLE);
+	_createVertexBuffer(TEST);
+	_createIndexBuffer(TEST);
 	_createUniformBuffers();
 
 	_createDescriptorPool();

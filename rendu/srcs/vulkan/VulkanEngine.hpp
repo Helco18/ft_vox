@@ -14,7 +14,7 @@
 #include <iterator>
 #include <limits>
 #include <chrono>
-#include "Model.hpp"
+#include "OBJModel.hpp"
 #include "Camera.hpp"
 #include "colors.hpp"
 #include "utils.hpp"
@@ -66,7 +66,6 @@ struct TransitionImageViewLayoutInfo
 
 struct UniformBuffer
 {
-	glm::mat4 model;
 	glm::mat4 view;
 	glm::mat4 proj;
 };
