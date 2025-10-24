@@ -8,7 +8,7 @@
 
 enum ModelType
 {
-	TRIANGLE,
+	CUBE,
 	TEST
 };
 
@@ -49,10 +49,11 @@ class OBJModel
 {
     public:
 		OBJModel() {};
-        OBJModel(ModelType type);
+        OBJModel(const std::string & filepath, ModelType type);
         ~OBJModel();
 
         bool												load();
+
         const std::vector<Vertex> &							getVertices() const { return _vertices; }
         const std::vector<uint16_t> &						getIndices() const { return _indices; }
         const std::unordered_map<std::string, Mesh> &		getMeshes() const { return _meshes; }
@@ -60,11 +61,12 @@ class OBJModel
 		const Texture &										getTexture() const;
 
 		static OBJModel										getModel(ModelType type);
+		static bool											loadModels();
     private:
-		static std::unordered_map<ModelType, OBJModel>		_modelCache;	
+		static std::unordered_map<ModelType, OBJModel>		_modelCache;
 
-        ModelType											_type;
         std::string											_filepath;
+        ModelType											_type;
         std::vector<Vertex>									_vertices;
         std::vector<uint16_t>								_indices;
 

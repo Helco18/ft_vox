@@ -1,6 +1,8 @@
 #include "VulkanEngine.hpp"
 
-VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera): _window(window), _camera(camera)
+VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera): _window(window), _camera(camera) {}
+
+void VulkanEngine::load()
 {
 	// On initialise une instance Vulkan, qui représente notre application au niveau de l'API Vulkan.
 	// C'est le point d'entrée principal entre l'application et le driver Vulkan (on y précise nom, version, extensions, etc.)
@@ -54,8 +56,8 @@ VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera): _window(window
 	_createTextureImage();
 	_createTextureImageView();
 	_createTextureSampler();
-	_createVertexBuffer(TEST);
-	_createIndexBuffer(TEST);
+	_createVertexBuffer(CUBE);
+	_createIndexBuffer(CUBE);
 	_createUniformBuffers();
 
 	_createDescriptorPool();
@@ -85,7 +87,6 @@ void VulkanEngine::drawFrame()
 	// Fence = on attend que le GPU finisse la tâche
 	try
 	{
-
 		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphores[_semaphoreIndex], nullptr);
 		uint32_t imageIndex = result.second;
 		if (result.first != vk::Result::eSuccess)

@@ -56,4 +56,4 @@ std::vector<std::string>	ft_split(const std::string & str, char delimiter);
  * @throws std::runtime_error if GLFW initialization or window creation fails.
  */
 GLFWwindow *				getWindow();
-void						toggleFullscreen(GLFWwindow * window, Camera & camera);
+void						toggleFullscreen(GLFWwindow * window, Camera * camera);

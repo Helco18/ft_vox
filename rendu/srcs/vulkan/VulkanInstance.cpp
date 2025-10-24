@@ -207,8 +207,11 @@ void VulkanEngine::_createSurface()
 		std::cout << GREEN << "[OK] Created Surface" << RESET << std::endl;
 }
 
-void VulkanEngine::framebufferResizeCallback(GLFWwindow * window, int, int)
+void VulkanEngine::framebufferResizeCallback(GLFWwindow * window, int width, int height)
 {
 	VulkanEngine * engine = reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window));
+	Camera * camera = engine->getCamera();
+	camera->setWidth(width);
+	camera->setHeight(height);
 	engine->_framebufferResized = true;
 }

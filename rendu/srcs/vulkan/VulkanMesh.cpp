@@ -101,7 +101,6 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					_vertexBuffer, _vertexBufferMemory);
-	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
 	_vertexSize = vertices.size();

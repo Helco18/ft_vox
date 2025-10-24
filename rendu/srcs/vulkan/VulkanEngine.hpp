@@ -76,6 +76,8 @@ class VulkanEngine
 		VulkanEngine(GLFWwindow * window, Camera * camera);
 		~VulkanEngine();
 
+		void								load();
+
 		void								drawFrame();
 
 		static void							framebufferResizeCallback(GLFWwindow * window, int width, int height);

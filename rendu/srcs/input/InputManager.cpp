@@ -70,5 +70,5 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		return;
 	}
 	if (key == GLFW_KEY_F11)
-		toggleFullscreen(window, *reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window))->getCamera());
+		toggleFullscreen(window, reinterpret_cast<VulkanEngine *>(glfwGetWindowUserPointer(window))->getCamera());
 }

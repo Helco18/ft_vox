@@ -1,5 +1,5 @@
 # Cube CCW (Counterclockwise)
-mtllib cub.mtl
+mtllib cube.mtl
 
 v -0.5 -0.5 -0.5  # 1
 v  0.5 -0.5 -0.5  # 2

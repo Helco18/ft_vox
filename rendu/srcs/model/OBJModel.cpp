@@ -8,7 +8,7 @@
 
 std::unordered_map<ModelType, OBJModel> OBJModel::_modelCache;
 
-OBJModel::OBJModel(ModelType type) : _type(type)
+OBJModel::OBJModel(const std::string & filepath, ModelType type) : _filepath(filepath), _type(type)
 {}
 
 OBJModel::~OBJModel()
@@ -24,17 +24,6 @@ OBJModel OBJModel::getModel(ModelType type)
 
 bool OBJModel::load()
 {
-	switch(static_cast<int>(_type))
-	{
-		case TRIANGLE: _filepath = "assets/models/triangle.obj"; break;
-		case TEST: _filepath = "assets/models/test.obj"; break;
-		default:
-		{
-			std::cerr << "Unknown ModelType: " << _type << std::endl;
-			return false;
-		}
-	};
-
 	_uniqueVertexMap.clear();
 	_indices.clear();
 
@@ -220,11 +209,8 @@ uint16_t OBJModel::_parseVertexIndex(const std::string & token)
 
 void OBJModel::_loadMTL(const std::string & filename)
 {
-	namespace fs = std::filesystem;
-
-	fs::path objDir = fs::path(_filepath).parent_path();
-	fs::path fullPath = objDir / filename;
-
+	std::filesystem::path objDir = std::filesystem::path(_filepath).parent_path();
+	std::filesystem::path fullPath = objDir / filename;
 	std::ifstream file(fullPath);
 
 	if (!file.is_open())
@@ -270,7 +256,6 @@ void OBJModel::_loadMTL(const std::string & filename)
 		{
 			iss >> current->diffuseTexturePath;
 
-			std::filesystem::path objDir = std::filesystem::path(_filepath).parent_path();
 			std::filesystem::path fullTexturePath = objDir / current->diffuseTexturePath;
 
 			if (_loadedTextures.find(_type) == _loadedTextures.end()) {
@@ -298,4 +283,16 @@ const Texture & OBJModel::getTexture() const
 	}
 	const static Texture emptyTexture = {0, 0, 0, nullptr};
 	return emptyTexture;
+}
+
+bool OBJModel::loadModels()
+{
+	_modelCache[CUBE] = OBJModel("assets/models/cube.obj", CUBE);
+
+	for (std::unordered_map<ModelType, OBJModel>::iterator it = _modelCache.begin(); it != _modelCache.end(); ++it)
+	{
+		if (!it->second.load())
+			return false;
+	}
+	return true;
 }

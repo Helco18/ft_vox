@@ -91,7 +91,7 @@ GLFWwindow * getWindow()
 	return (window);
 }
 
-void toggleFullscreen(GLFWwindow * window, Camera & camera)
+void toggleFullscreen(GLFWwindow * window, Camera * camera)
 {
 	static int windowPosX = 0;
 	static int windowPosY = 0;
@@ -104,18 +104,18 @@ void toggleFullscreen(GLFWwindow * window, Camera & camera)
 		glfwGetWindowPos(window, &windowPosX, &windowPosY);
 		glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
-		GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-		const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+		GLFWmonitor * monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode * mode = glfwGetVideoMode(monitor);
 		glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-		camera.setWidth(mode->width);
-		camera.setHeight(mode->height);
+		camera->setWidth(mode->width);
+		camera->setHeight(mode->height);
 		isFullscreen = true;
 	}
 	else
 	{
 		glfwSetWindowMonitor(window, nullptr, windowPosX, windowPosY, windowWidth, windowHeight, 0);
-		camera.setWidth(windowWidth);
-		camera.setHeight(windowWidth);
+		camera->setWidth(windowWidth);
+		camera->setHeight(windowHeight);
 		isFullscreen = false;
 	}
 }

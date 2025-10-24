@@ -7,15 +7,16 @@ int main(void)
 {
 	try
 	{
-		OBJModel model(TEST);
-		if (!model.load())
-			throw std::runtime_error("Tu réussiras jamais l'exam06");
 		GLFWwindow * window = getWindow();
-		Camera camera(glm::vec3(2.0f, 0.0f, 0.0f), WIDTH, HEIGHT);
-		VulkanEngine engine(window, &camera);
+		Camera * camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), WIDTH, HEIGHT);
+		VulkanEngine * engine = new VulkanEngine(window, camera);
 
-		glfwSetWindowUserPointer(window, &engine);
-		glfwSetFramebufferSizeCallback(window, engine.framebufferResizeCallback);
+		if (!OBJModel::loadModels())
+			throw std::runtime_error("Tu réussiras jamais l'exam06");
+
+		engine->load();
+		glfwSetWindowUserPointer(window, engine);
+		glfwSetFramebufferSizeCallback(window, engine->framebufferResizeCallback);
 		glfwSetKeyCallback(window, InputManager::interceptInputs);
 
 		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
@@ -28,7 +29,7 @@ int main(void)
 		{
 			timeStart = glfwGetTime();
 			glfwPollEvents();
-			engine.drawFrame();
+			engine->drawFrame();
 
 			frames++;
 
@@ -41,14 +42,15 @@ int main(void)
 				frames = 0;
 				lastTime = currentTime;
 			}
-			InputManager::interceptMovements(window, &camera, glfwGetTime() - timeStart);
-			InputManager::interceptMouse(window, &camera);
+			InputManager::interceptMovements(window, camera, glfwGetTime() - timeStart);
+			InputManager::interceptMouse(window, camera);
 		}
 
 		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;
 
 		glfwDestroyWindow(window);
 		glfwTerminate();
+		delete engine;
 	}
 	catch (const std::exception & e)
 	{

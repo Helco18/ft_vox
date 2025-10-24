@@ -75,7 +75,7 @@ void VulkanEngine::_createTextureImage()
 	OBJModel model;
 	Texture texture;
 
-	model = OBJModel::getModel(TEST);
+	model = OBJModel::getModel(CUBE);
 	texture = model.getTexture();
 	width = texture.width;
 	height = texture.height;
