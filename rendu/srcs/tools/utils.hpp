@@ -17,9 +17,16 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <GL/glew.h>
 #include "GLFW/glfw3.h"
 #include "colors.hpp"
 #include "Camera.hpp"
+
+enum EngineType
+{
+	VULKAN,
+	OPENGL
+};
 
 #define WIDTH	800
 #define HEIGHT	600
@@ -42,6 +49,7 @@ const std::string			toString(const T & value)
 
 const std::vector<char>		readFile(const std::string & filename);
 std::vector<std::string>	ft_split(const std::string & str, char delimiter);
+const std::string			getFileAsString(const char * name);
 
 /* ************************************************************************** */
 /*   GLFW tools                                                               */
@@ -55,5 +63,6 @@ std::vector<std::string>	ft_split(const std::string & str, char delimiter);
  * @return A pointer to the created GLFWwindow.
  * @throws std::runtime_error if GLFW initialization or window creation fails.
  */
-GLFWwindow *				getWindow();
+GLFWwindow *				getWindow(EngineType engineType);
 void						toggleFullscreen(GLFWwindow * window, Camera * camera);
+void						framebufferResizeCallback(GLFWwindow * window, int width, int height);

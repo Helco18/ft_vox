@@ -1,5 +1,7 @@
 #include "VulkanEngine.hpp"
+#include "OpenGLEngine.hpp"
 #include "OBJModel.hpp"
+#include "AEngine.hpp"
 #include "InputManager.hpp"
 #include <iostream>
 
@@ -7,19 +9,20 @@ int main(void)
 {
 	try
 	{
-		GLFWwindow * window = getWindow();
+		GLFWwindow * window = getWindow(OPENGL);
 		Camera * camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), WIDTH, HEIGHT);
-		VulkanEngine * engine = new VulkanEngine(window, camera);
+		AEngine * engine;
 
 		if (!OBJModel::loadModels())
 			throw std::runtime_error("Tu réussiras jamais l'exam06");
-
+	
+		engine = new OpenGLEngine(window, camera);
 		engine->load();
+
 		glfwSetWindowUserPointer(window, engine);
-		glfwSetFramebufferSizeCallback(window, engine->framebufferResizeCallback);
+		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 		glfwSetKeyCallback(window, InputManager::interceptInputs);
 
-		std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 		
 		double lastTime = glfwGetTime();
 		double timeStart;

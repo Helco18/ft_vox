@@ -2,28 +2,18 @@
 
 #define VK_USE_PLATFORM_XCB_KHR
 #define GLFW_INCLUDE_VULKAN
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLFW_EXPOSE_NATIVE_X11
 #define GLFW_EXPOSE_NATIVE_GLX
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "GLFW/glfw3native.h"
+#include "AEngine.hpp"
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_raii.hpp>
-#include <iterator>
-#include <limits>
-#include <chrono>
-#include "OBJModel.hpp"
-#include "Camera.hpp"
-#include "colors.hpp"
-#include "utils.hpp"
 
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose
 #define MAX_FRAMES_IN_FLIGHT 2
 
-const std::vector g_validationLayers =
+const std::vector<const char *> g_validationLayers =
 {
 	"VK_LAYER_KHRONOS_validation"
 };
@@ -64,25 +54,14 @@ struct TransitionImageViewLayoutInfo
 	vk::PipelineStageFlags2	dstStageMask;
 };
 
-struct UniformBuffer
-{
-	glm::mat4 view;
-	glm::mat4 proj;
-};
-
-class VulkanEngine
+class VulkanEngine : public AEngine
 {
 	public:
 		VulkanEngine(GLFWwindow * window, Camera * camera);
 		~VulkanEngine();
 
-		void								load();
-
-		void								drawFrame();
-
-		static void							framebufferResizeCallback(GLFWwindow * window, int width, int height);
-		static std::vector<Vertex>			getVertexFromFile(const std::string & path);
-		Camera *							getCamera() const { return _camera; }
+		void								load() override;
+		void								drawFrame() override;
 
 	private:
 		typedef std::vector<char const *>							RequiredExtensions;
@@ -94,7 +73,6 @@ class VulkanEngine
 		typedef std::array<vk::VertexInputAttributeDescription, 3>	VertexAttributeDescriptionArray;
 
 		// Window, context, instance
-		GLFWwindow *						_window;
 		vk::raii::Context					_context;
 		vk::raii::Instance					_instance = nullptr;
 		vk::raii::DebugUtilsMessengerEXT	_debugMessenger = nullptr;
@@ -128,7 +106,6 @@ class VulkanEngine
 		Fences								_inFlightFences;
 		uint32_t							_semaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
-		bool								_framebufferResized = false;
 
 		// Buffers & Memory
 		vk::raii::Buffer					_vertexBuffer = nullptr;
@@ -153,8 +130,6 @@ class VulkanEngine
 		vk::raii::Image						_depthImage = nullptr;
 		vk::raii::DeviceMemory				_depthImageMemory = nullptr;
 		vk::raii::ImageView					_depthImageView = nullptr;
-
-		Camera *							_camera = nullptr;
 
 		void								_createInstance();
 		void								_initDebugMessenger();

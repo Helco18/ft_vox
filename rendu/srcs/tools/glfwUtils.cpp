@@ -1,6 +1,7 @@
 #include "utils.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+#include "AEngine.hpp"
 
 static GLFWimage decodeOneStep(const char * filename)
 {
@@ -14,7 +15,7 @@ static GLFWimage decodeOneStep(const char * filename)
 	image.height = height;
 	image.pixels = pixels;
 
-    return image;
+	return image;
 }
 
 static void setIcon(GLFWwindow * window)
@@ -45,41 +46,52 @@ static void setIcon(GLFWwindow * window)
 
 static void	glfwErrorCallback(int error, const char* description)
 {
-    std::cerr << RED << "[GLFW ERROR] (" << error << ") " << description << RESET << std::endl;
+	std::cerr << RED << "[GLFW ERROR] (" << error << ") " << description << RESET << std::endl;
 }
 
 static GLFWwindow * createWindow()
 {
-    // Width, height, titre de la fenêtre, écran sur lequel afficher (GLFWMonitor, nullptr pour défaut)
-    // Le dernier paramètre est pour OpenGL, on met donc nullptr.
-    GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, "scop", nullptr, nullptr);
-    if (!window)
-        throw std::runtime_error("Failed to instantiate GLFW window.");
-    if (glfwVulkanSupported() == GLFW_FALSE)
+	// Width, height, titre de la fenêtre, écran sur lequel afficher (GLFWMonitor, nullptr pour défaut)
+	// Le dernier paramètre est pour OpenGL, on met donc nullptr.
+	GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, "scop", nullptr, nullptr);
+	if (!window)
+		throw std::runtime_error("Failed to instantiate GLFW window.");
+	if (glfwVulkanSupported() == GLFW_FALSE)
 		throw std::runtime_error("Vulkan is not supported by this system");
 
 	# ifdef DEBUG
 	glfwSetWindowTitle(window, "scop [DEBUG]");
 	# endif
 
-    return window;
+	return window;
 }
 
-GLFWwindow * getWindow()
+GLFWwindow * getWindow(EngineType engineType)
 {
-    glfwSetErrorCallback(glfwErrorCallback);
+	if (glfwInit() == GLFW_FALSE)
+		throw std::runtime_error("Failed to create GLFW context.");
 
-    if (glfwInit() == GLFW_FALSE)
-        throw std::runtime_error("Failed to create GLFW context.");
-
-    // Vu que GLFW créé un contexte OpenGL par défaut, on lui précise de ne pas le faire.
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	// Vu que GLFW créé un contexte OpenGL par défaut, on lui précise de ne pas le faire.
+	if (engineType == VULKAN)
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	else
+	{
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	}
 
 	GLFWwindow * window = nullptr;
 
 	try
 	{
 		window = createWindow();
+		if (engineType == OPENGL)
+		{
+			glfwMakeContextCurrent(window);
+			if (glewInit() != GLEW_OK)
+				throw std::runtime_error("Couldn't initialize GLEW.");
+		}
 		glfwSetWindowSizeLimits(window, WIDTH, HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		setIcon(window);
 	}
@@ -88,6 +100,7 @@ GLFWwindow * getWindow()
 		glfwTerminate();
 		throw;
 	}
+	glfwSetErrorCallback(glfwErrorCallback);
 	return (window);
 }
 
@@ -118,4 +131,13 @@ void toggleFullscreen(GLFWwindow * window, Camera * camera)
 		camera->setHeight(windowHeight);
 		isFullscreen = false;
 	}
+}
+
+void framebufferResizeCallback(GLFWwindow * window, int width, int height)
+{
+	AEngine * engine = reinterpret_cast<AEngine *>(glfwGetWindowUserPointer(window));
+	Camera * camera = engine->getCamera();
+	camera->setWidth(width);
+	camera->setHeight(height);
+	engine->setFramebufferResized(true);
 }

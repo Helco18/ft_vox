@@ -28,3 +28,28 @@ const std::vector<char> readFile(const std::string & filename)
 	file.close();
 	return buffer;
 }
+
+const std::string getFileAsString(const char * name)
+{
+	std::ifstream	file;
+	std::string		buffer;
+	std::string		content;
+	std::string		filename;
+	
+	filename = name;
+	file.open(filename, std::ios::in);
+	if (file.fail())
+	{
+		std::cout << BOLD_RED << "Couldn't find file " << filename << "." << std::endl;
+		exit(6);
+	}
+	while (std::getline(file, buffer))
+		content += buffer + '\n';
+	file.close();
+	if (content.empty())
+	{
+		std::cout << BOLD_RED << "File " << filename << " is empty." << std::endl;
+		exit(6);
+	}
+	return (content);
+}

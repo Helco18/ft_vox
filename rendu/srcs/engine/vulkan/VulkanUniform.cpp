@@ -36,27 +36,27 @@ void VulkanEngine::_createUniformBuffers()
 
 void VulkanEngine::_updateUniformBuffer(const Camera* camera)
 {
-    UniformBuffer ubo{};
+	UniformBuffer ubo{};
 
-    // Camera orientation (Y-up)
-    glm::vec3 camPos = camera->getPosition();
-    float yaw = glm::radians(camera->getYaw());
-    float pitch = glm::radians(camera->getPitch());
+	// Camera orientation (Y-up)
+	glm::vec3 camPos = camera->getPosition();
+	float yaw = glm::radians(camera->getYaw());
+	float pitch = glm::radians(camera->getPitch());
 
-    glm::vec3 forward;
-    forward.x = cosf(pitch) * sinf(yaw);
-    forward.y = sinf(pitch);
-    forward.z = -cosf(pitch) * cosf(yaw);
-    forward = glm::normalize(forward);
+	glm::vec3 forward;
+	forward.x = cosf(pitch) * sinf(yaw);
+	forward.y = sinf(pitch);
+	forward.z = -cosf(pitch) * cosf(yaw);
+	forward = glm::normalize(forward);
 
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    ubo.view = glm::lookAt(camPos, camPos + forward, up);
+	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	ubo.view = glm::lookAt(camPos, camPos + forward, up);
 
-    // Vulkan projection (flip Y)
-    ubo.proj = glm::perspective(glm::radians(camera->getFOV()),
-        (float)_swapChainExtent.width / (float)_swapChainExtent.height,
-        0.01f, 1500.0f);
-    ubo.proj[1][1] *= -1;
+	// Vulkan projection (flip Y)
+	ubo.proj = glm::perspective(glm::radians(camera->getFOV()),
+		(float)_swapChainExtent.width / (float)_swapChainExtent.height,
+		0.01f, 1500.0f);
+	ubo.proj[1][1] *= -1;
 
-    memcpy(_uniformBuffersMapped[_currentFrame], &ubo, sizeof(ubo));
+	memcpy(_uniformBuffersMapped[_currentFrame], &ubo, sizeof(ubo));
 }

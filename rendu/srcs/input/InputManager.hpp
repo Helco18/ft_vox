@@ -1,7 +1,7 @@
 #pragma once
 
-#include "VulkanEngine.hpp"
-#include "GLFW/glfw3.h"
+#include "AEngine.hpp"
+#include "utils.hpp"
 
 class InputManager
 {

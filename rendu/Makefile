@@ -1,7 +1,7 @@
 # Compilation
 CC					=	g++
 CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD
-LDFLAGS				=	-lvulkan
+LDFLAGS				=	-lvulkan -lGL -lGLEW
 
 # Names
 NAME				=	ft_vox
@@ -9,21 +9,23 @@ NAME				=	ft_vox
 # Sources & Includes
 SRCS				=	srcs/main.cpp \
 						srcs/camera/Camera.cpp \
+						srcs/engine/opengl/OpenGLEngine.cpp \
+						srcs/engine/opengl/OpenGLShader.cpp \
+						srcs/engine/vulkan/VulkanCommands.cpp \
+						srcs/engine/vulkan/VulkanDebug.cpp \
+						srcs/engine/vulkan/VulkanDepthTest.cpp \
+						srcs/engine/vulkan/VulkanDescriptors.cpp \
+						srcs/engine/vulkan/VulkanEngine.cpp \
+						srcs/engine/vulkan/VulkanInstance.cpp \
+						srcs/engine/vulkan/VulkanMesh.cpp \
+						srcs/engine/vulkan/VulkanPipeline.cpp \
+						srcs/engine/vulkan/VulkanSwapchain.cpp \
+						srcs/engine/vulkan/VulkanTexture.cpp \
+						srcs/engine/vulkan/VulkanUniform.cpp \
 						srcs/input/InputManager.cpp \
 						srcs/model/OBJModel.cpp \
 						srcs/tools/glfwUtils.cpp \
-						srcs/tools/utils.cpp \
-						srcs/vulkan/VulkanCommands.cpp \
-						srcs/vulkan/VulkanDebug.cpp \
-						srcs/vulkan/VulkanDepthTest.cpp \
-						srcs/vulkan/VulkanDescriptors.cpp \
-						srcs/vulkan/VulkanEngine.cpp \
-						srcs/vulkan/VulkanInstance.cpp \
-						srcs/vulkan/VulkanMesh.cpp \
-						srcs/vulkan/VulkanPipeline.cpp \
-						srcs/vulkan/VulkanSwapchain.cpp \
-						srcs/vulkan/VulkanTexture.cpp \
-						srcs/vulkan/VulkanUniform.cpp
+						srcs/tools/utils.cpp
 
 SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs
@@ -31,12 +33,15 @@ INCLUDES			=	-I libs \
 						-I libs/stb \
 						-I srcs \
 						-I srcs/camera \
+						-I srcs/engine \
+						-I srcs/engine/opengl \
+						-I srcs/engine/vulkan \
 						-I srcs/input \
 						-I srcs/model \
-						-I srcs/tools \
-						-I srcs/vulkan
+						-I srcs/tools
 
 GLFW_PATH			=	libs/GLFW
+GLEW_PATH			=	libs/GLEW
 GLM_PATH			=	libs/glm
 STB_PATH			=	libs/stb
 SPIRV_PATH			=	srcs/shaders/spir-v

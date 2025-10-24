@@ -1,6 +1,6 @@
 #include "VulkanEngine.hpp"
 
-VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera): _window(window), _camera(camera) {}
+VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
 
 void VulkanEngine::load()
 {
@@ -70,6 +70,8 @@ void VulkanEngine::load()
 	// On crée les *semaphores* et *fences* pour la synchronisation :
 	// ils permettent de s’assurer que les opérations GPU (rendu, présentation, etc.) s’exécutent dans le bon ordre et ne se chevauchent pas.
 	_createSyncObjects();
+
+	std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 }
 
 VulkanEngine::~VulkanEngine()

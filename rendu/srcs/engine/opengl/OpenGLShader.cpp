@@ -1,0 +1,54 @@
+#include "OpenGLEngine.hpp"
+
+static const std::string getShaderAsString(std::string path)
+{
+	path = "srcs/shaders/glsl/" + path;
+	return getFileAsString(path.c_str());
+}
+
+static GLuint compileShader(GLenum type, const std::string & filepath)
+{
+	GLuint shader;
+	int result;
+	std::string shaderSrc;
+	char * vertexStr;
+
+	shader = glCreateShader(type);
+	shaderSrc = getShaderAsString(filepath);
+	vertexStr = (char *)shaderSrc.c_str();
+	glShaderSource(shader, 1, &vertexStr, nullptr);
+	glCompileShader(shader);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+	if (!result)
+	{
+		int error_length;
+		char *error_message;
+		// Get the log message's length in order to alloca the string to store it.
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &error_length);
+		// Alloca is a malloc that frees itself once the function ends.
+		error_message = (char *)alloca(sizeof(char) * error_length);
+		// This will store the log of the program into the error_message string.
+		glGetShaderInfoLog(shader, error_length, &error_length, error_message);
+		std::cerr << BOLD_RED << (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") << "shader failed to compile." << std::endl;
+		std::cerr << error_message << RESET << std::endl;
+		// Delete the shader to avoid leaks.
+		glDeleteShader(shader);
+		return (0);
+	}
+	return shader;
+}
+
+void OpenGLEngine::_createShader(const std::string & vertexPath, const std::string & fragmentPath)
+{
+	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexPath);
+	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentPath);
+	_shader = glCreateProgram();
+	glAttachShader(_shader, vertexShader);
+	glAttachShader(_shader, fragmentShader);
+	glLinkProgram(_shader);
+	glValidateProgram(_shader);
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	std::cout << GREEN << "[OK] Created Shaders" << RESET << std::endl;
+}
