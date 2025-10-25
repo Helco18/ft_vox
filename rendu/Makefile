@@ -11,6 +11,8 @@ SRCS				=	srcs/main.cpp \
 						srcs/camera/Camera.cpp \
 						srcs/engine/opengl/OpenGLEngine.cpp \
 						srcs/engine/opengl/OpenGLShader.cpp \
+						srcs/engine/opengl/OpenGLTexture.cpp \
+						srcs/engine/opengl/OpenGLUniform.cpp \
 						srcs/engine/vulkan/VulkanCommands.cpp \
 						srcs/engine/vulkan/VulkanDebug.cpp \
 						srcs/engine/vulkan/VulkanDepthTest.cpp \
