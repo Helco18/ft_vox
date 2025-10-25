@@ -45,7 +45,7 @@ void Camera::updateOrientation(double mouseX, double mouseY)
 	setOrientation(translateDirection(_yaw, _pitch));
 }
 
-glm::vec3 Camera::computeForward()
+glm::vec3 Camera::computeForward() const
 {
 	const float radYaw = glm::radians(_yaw);
 	const float radPitch = glm::radians(_pitch);

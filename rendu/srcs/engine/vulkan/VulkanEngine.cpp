@@ -102,7 +102,7 @@ void VulkanEngine::drawFrame()
 		}
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
-		_updateUniformBuffer(_camera);
+		_updateUniformBuffer();
 
 		_commandBuffers[_currentFrame].reset();
 		_recordCommandBuffer(imageIndex);

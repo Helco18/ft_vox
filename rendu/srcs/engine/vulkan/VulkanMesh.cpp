@@ -108,7 +108,7 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 
 void VulkanEngine::_createIndexBuffer(ModelType type)
 {
-	const std::vector<uint16_t> indices = OBJModel::getModel(type).getIndices();
+	const std::vector<uint32_t> indices = OBJModel::getModel(type).getIndices();
 	vk::DeviceSize size = sizeof(indices[0]) * indices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;

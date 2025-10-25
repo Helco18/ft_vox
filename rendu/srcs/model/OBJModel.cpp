@@ -127,7 +127,7 @@ void OBJModel::_parseLine(const std::string & line)
 	}
 	else if (prefix == "f")
 	{
-		std::vector<uint16_t> face_indices;
+		std::vector<uint32_t> face_indices;
 		std::string token;
 		while (iss >> token)
 		{
@@ -166,7 +166,7 @@ void OBJModel::_parseLine(const std::string & line)
 	}
 }
 
-uint16_t OBJModel::_parseVertexIndex(const std::string & token)
+uint32_t OBJModel::_parseVertexIndex(const std::string & token)
 {
 	auto it = _uniqueVertexMap.find(token);
 	if (it != _uniqueVertexMap.end())

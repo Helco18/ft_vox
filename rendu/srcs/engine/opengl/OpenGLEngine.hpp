@@ -13,9 +13,13 @@ class OpenGLEngine : public AEngine
 		GLuint	_vao;
 		GLuint	_vbo;
 		GLuint	_ibo;
-		GLuint	_tbo;
-		size_t	_indexSixe;
+		GLuint	_ubo;
+		GLuint	_texture;
+		size_t	_indexSize;
 		GLuint	_shader;
 
 		void	_createShader(const std::string & vertexPath, const std::string & fragmentPath);
+		void	_updateUniformBuffer();
+		void	_handleResize();
+		void	_createTexture();
 };

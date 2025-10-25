@@ -34,7 +34,7 @@ struct Material
 struct Mesh
 {
     std::string				material;
-    std::vector<uint16_t>	indices;
+    std::vector<uint32_t>	indices;
 };
 
 struct Texture
@@ -55,7 +55,7 @@ class OBJModel
         bool												load();
 
         const std::vector<Vertex> &							getVertices() const { return _vertices; }
-        const std::vector<uint16_t> &						getIndices() const { return _indices; }
+        const std::vector<uint32_t> &						getIndices() const { return _indices; }
         const std::unordered_map<std::string, Mesh> &		getMeshes() const { return _meshes; }
         const std::unordered_map<std::string, Material> &	getMaterials() const { return _materials; }
 		const Texture &										getTexture() const;
@@ -68,9 +68,9 @@ class OBJModel
         std::string											_filepath;
         ModelType											_type;
         std::vector<Vertex>									_vertices;
-        std::vector<uint16_t>								_indices;
+        std::vector<uint32_t>								_indices;
 
-        std::unordered_map<std::string, uint16_t>			_uniqueVertexMap;
+        std::unordered_map<std::string, uint32_t>			_uniqueVertexMap;
 
         std::vector<glm::vec3>								_temp_positions;
         std::vector<glm::vec3>								_temp_normals;
@@ -85,6 +85,6 @@ class OBJModel
         std::unordered_map<ModelType, Texture>				_loadedTextures;
 
         void												_parseLine(const std::string & line);
-        uint16_t											_parseVertexIndex(const std::string & token);
+        uint32_t											_parseVertexIndex(const std::string & token);
         void												_loadMTL(const std::string & filename);
 };

@@ -31,10 +31,11 @@ VertexOutput vertMain(VertexInput input)
 	return output;
 }
 
+[[vk::binding(1,0)]]
 Sampler2D texture;
 
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
-	return float4(1.0f);
+	return texture.Sample(inVert.outTexCoord);
 }

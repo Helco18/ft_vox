@@ -29,7 +29,7 @@ class Camera
 		void		changeYaw(float yaw) { _yaw += yaw; }
 		void		changePitch(float pitch) { _pitch += pitch; }
 
-		glm::vec3	computeForward();
+		glm::vec3	computeForward() const;
 
 		void		updateOrientation(double mouseX, double mouseY);
 	private:

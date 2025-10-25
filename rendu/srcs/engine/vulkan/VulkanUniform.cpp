@@ -34,14 +34,14 @@ void VulkanEngine::_createUniformBuffers()
 		std::cout << GREEN << "[OK] Created Uniform Buffers" << RESET << std::endl;
 }
 
-void VulkanEngine::_updateUniformBuffer(const Camera* camera)
+void VulkanEngine::_updateUniformBuffer()
 {
 	UniformBuffer ubo{};
 
 	// Camera orientation (Y-up)
-	glm::vec3 camPos = camera->getPosition();
-	float yaw = glm::radians(camera->getYaw());
-	float pitch = glm::radians(camera->getPitch());
+	glm::vec3 camPos = _camera->getPosition();
+	float yaw = glm::radians(_camera->getYaw());
+	float pitch = glm::radians(_camera->getPitch());
 
 	glm::vec3 forward;
 	forward.x = cosf(pitch) * sinf(yaw);
@@ -53,7 +53,7 @@ void VulkanEngine::_updateUniformBuffer(const Camera* camera)
 	ubo.view = glm::lookAt(camPos, camPos + forward, up);
 
 	// Vulkan projection (flip Y)
-	ubo.proj = glm::perspective(glm::radians(camera->getFOV()),
+	ubo.proj = glm::perspective(glm::radians(_camera->getFOV()),
 		(float)_swapChainExtent.width / (float)_swapChainExtent.height,
 		0.01f, 1500.0f);
 	ubo.proj[1][1] *= -1;

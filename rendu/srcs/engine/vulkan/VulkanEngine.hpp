@@ -167,7 +167,7 @@ class VulkanEngine : public AEngine
 		void								_createDescriptorSetLayout();
 		void								_createUniformBuffers();
 		void								_createDescriptorPool();
-		void								_updateUniformBuffer(const Camera * camera);
+		void								_updateUniformBuffer();
 		void								_createDescriptorSets();
 		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory);
 		void								_createTextureImageView();
