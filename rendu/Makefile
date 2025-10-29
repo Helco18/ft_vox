@@ -28,7 +28,8 @@ SRCS				=	srcs/main.cpp \
 						srcs/model/OBJModel.cpp \
 						srcs/tools/glfwUtils.cpp \
 						srcs/tools/stb_image.cpp \
-						srcs/tools/utils.cpp
+						srcs/tools/utils.cpp \
+						srcs/window/WindowManager.cpp
 
 SHADERS				=	srcs/shaders/slang/triangle.slang
 OBJ_FOLDER			=	objs
@@ -41,7 +42,8 @@ INCLUDES			=	-I libs \
 						-I srcs/engine/vulkan \
 						-I srcs/input \
 						-I srcs/model \
-						-I srcs/tools
+						-I srcs/tools \
+						-I srcs/window
 
 GLFW_PATH			=	libs/GLFW
 GLEW_PATH			=	libs/GLEW
