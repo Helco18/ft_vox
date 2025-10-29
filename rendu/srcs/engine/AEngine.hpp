@@ -15,6 +15,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
+
 struct UniformBuffer
 {
 	glm::mat4 view;
@@ -25,7 +27,7 @@ class AEngine
 {
 	public:
 		AEngine(GLFWwindow * window, Camera * camera) : _window(window), _camera(camera) {};
-		virtual ~AEngine() { SAFE_DELETE(_camera); }
+		virtual ~AEngine() {}
 
 		virtual void	load() = 0;
 		virtual void	drawFrame() = 0;

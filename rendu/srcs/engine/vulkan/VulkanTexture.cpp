@@ -92,7 +92,6 @@ void VulkanEngine::_createTextureImage()
 	void * data = stagingBufferMemory.mapMemory(0, size);
 	memcpy(data, pixels, size);
 	stagingBufferMemory.unmapMemory();
-	stbi_image_free(pixels);
 
 	_createImage(width, height, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal,
 					vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,

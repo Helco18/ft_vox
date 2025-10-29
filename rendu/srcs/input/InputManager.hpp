@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AEngine.hpp"
+#include "WindowManager.hpp"
 #include "utils.hpp"
 
 class InputManager

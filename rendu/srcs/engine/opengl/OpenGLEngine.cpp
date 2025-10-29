@@ -2,10 +2,7 @@
 
 OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
 
-OpenGLEngine::~OpenGLEngine()
-{
-	OBJModel::deleteModels();
-}
+OpenGLEngine::~OpenGLEngine() {}
 
 void OpenGLEngine::load()
 {

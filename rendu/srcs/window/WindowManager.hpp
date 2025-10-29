@@ -8,14 +8,24 @@
 class WindowManager
 {
 	public:
-		WindowManager(EngineType engineType) : _engineType(engineType) {}
+		WindowManager(EngineType engineType);
 		~WindowManager();
 
-        void    load();
-        void    loop();
+		void		load();
+		void		loop();
+		void		swap();
+
+		AEngine *		getEngine() const { return _engine; }
 
 	private:
+		EngineType		_engineType;
 		AEngine *		_engine;
 		GLFWwindow *	_window;
-        EngineType      _engineType;
+		Camera *		_camera;
+		double			_lastFpsUpdate;
+
+		GLFWwindow *	_createWindow();
+		void			_setIcon(GLFWwindow * window);
+		void			_glfwErrorCallback(int error, const char* description);
+		GLFWimage		_decodeOneStep(const char * filename);
 };

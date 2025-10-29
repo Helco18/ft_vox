@@ -29,6 +29,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/tools/glfwUtils.cpp \
 						srcs/tools/stb_image.cpp \
 						srcs/tools/utils.cpp \
+						srcs/window/WindowCreation.cpp \
 						srcs/window/WindowManager.cpp
 
 SHADERS				=	srcs/shaders/slang/triangle.slang

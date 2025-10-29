@@ -61,6 +61,8 @@ void InputManager::interceptMovements(GLFWwindow * window, Camera * camera, floa
 
 void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action, int)
 {
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+
 	if (action != GLFW_PRESS)
 		return;
 
@@ -69,6 +71,9 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		glfwSetWindowShouldClose(window, GL_TRUE);
 		return;
 	}
+	if (key == GLFW_KEY_TAB)
+		windowManager->swap();
+
 	if (key == GLFW_KEY_F11)
-		toggleFullscreen(window, reinterpret_cast<AEngine *>(glfwGetWindowUserPointer(window))->getCamera());
+		toggleFullscreen(window, windowManager->getEngine()->getCamera());
 }
