@@ -41,13 +41,15 @@ void OpenGLEngine::load()
 
 	_indexSize = model.getIndices().size();
 
-	std::cout << GREEN << "[OK] OpenGL engine initialized successfully." << RESET << std::endl;
 	glBindVertexArray(0);
+
+	std::cout << GREEN << "[OK] OpenGL engine initialized successfully." << RESET << std::endl;
+	_isInitalized = true;
 }
 
 void OpenGLEngine::drawFrame()
 {
-	if (_framebufferResized)
+	if (_isFramebufferResized)
 		_handleResize();
 
 	glfwSwapBuffers(_window);
@@ -74,5 +76,5 @@ void OpenGLEngine::_handleResize()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, _camera->getWidth(), _camera->getHeight());
-	_framebufferResized = false;
+	_isFramebufferResized = false;
 }

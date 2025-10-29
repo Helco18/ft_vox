@@ -72,6 +72,7 @@ void VulkanEngine::load()
 	_createSyncObjects();
 
 	std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
+	_isInitalized = true;
 }
 
 VulkanEngine::~VulkanEngine()
@@ -136,7 +137,7 @@ void VulkanEngine::drawFrame()
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	} catch (const vk::OutOfDateKHRError & e)
 	{
-		_framebufferResized = false;
+		_isFramebufferResized = false;
 		_recreateSwapchain();
 	}
 }

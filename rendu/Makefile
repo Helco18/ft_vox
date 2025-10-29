@@ -26,7 +26,6 @@ SRCS				=	srcs/main.cpp \
 						srcs/engine/vulkan/VulkanUniform.cpp \
 						srcs/input/InputManager.cpp \
 						srcs/model/OBJModel.cpp \
-						srcs/tools/glfwUtils.cpp \
 						srcs/tools/stb_image.cpp \
 						srcs/tools/utils.cpp \
 						srcs/window/WindowCreation.cpp \

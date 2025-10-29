@@ -1,8 +1,9 @@
 #include "WindowManager.hpp"
+#include "InputManager.hpp"
 
-WindowManager::WindowManager(EngineType engineType): _engineType(engineType)
+WindowManager::WindowManager(EngineType engineType): _engineType(engineType), _width(WIDTH), _height(HEIGHT), _isFullscreen(false)
 {
-	_camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), WIDTH, HEIGHT);
+	_camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), _width, _height);
 }
 
 WindowManager::~WindowManager()
@@ -34,8 +35,15 @@ void WindowManager::load()
 	_engine->load();
 
 	glfwSetWindowUserPointer(_window, this);
-	glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+	glfwSetFramebufferSizeCallback(_window, WindowManager::framebufferResizeCallback);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
+
+	if (_isFullscreen && _engineType == OPENGL)
+	{
+		GLFWmonitor * monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode * mode = glfwGetVideoMode(monitor);
+		glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+	}
 }
 
 void WindowManager::loop()
@@ -62,8 +70,8 @@ void WindowManager::loop()
 			frames = 0;
 			_lastFpsUpdate = currentTime;
 		}
-		InputManager::interceptMovements(_window, _engine->getCamera(), glfwGetTime() - timeStart);
-		InputManager::interceptMouse(_window, _engine->getCamera());
+		InputManager::interceptMovements(this, glfwGetTime() - timeStart);
+		InputManager::interceptMouse(this);
 	}
 }
 
@@ -80,4 +88,51 @@ void WindowManager::swap()
 	load();
 
 	_lastFpsUpdate = glfwGetTime();
+	glfwFocusWindow(_window);
+}
+
+void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, int height)
+{
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+	AEngine * engine = windowManager->getEngine();
+	Camera * camera = engine->getCamera();
+	camera->setWidth(width);
+	camera->setHeight(height);
+	windowManager->setWidth(width);
+	windowManager->setHeight(height);
+	engine->setFramebufferResized(true);
+}
+
+void WindowManager::toggleFullscreen()
+{
+	static int windowPosX = 0;
+	static int windowPosY = 0;
+	static int windowWidth = 0;
+	static int windowHeight = 0;
+
+	if (!_isFullscreen)
+	{
+		glfwGetWindowPos(_window, &windowPosX, &windowPosY);
+		glfwGetWindowSize(_window, &windowWidth, &windowHeight);
+
+		GLFWmonitor * monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode * mode = glfwGetVideoMode(monitor);
+		glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+		_camera->setWidth(mode->width);
+		_camera->setHeight(mode->height);
+		_width = mode->width;
+		_height = mode->height;
+		_isFullscreen = true;
+	}
+	else
+	{
+		glfwSetWindowMonitor(_window, nullptr, windowPosX, windowPosY, windowWidth, windowHeight, 0);
+		_camera->setWidth(windowWidth);
+		_camera->setHeight(windowHeight);
+		_width = windowWidth;
+		_height = windowHeight;
+		_isFullscreen = false;
+	}
+
+	glfwFocusWindow(_window);
 }

@@ -42,7 +42,7 @@ void WindowManager::_setIcon(GLFWwindow * window)
 	stbi_image_free(images[1].pixels);
 }
 
-static void glfwErrorCallback(int error, const char* description)
+static void glfwErrorCallback(int error, const char * description)
 {
 	std::cerr << RED << "[GLFW ERROR] (" << error << ") " << description << RESET << std::endl;
 }
@@ -70,7 +70,7 @@ GLFWwindow * WindowManager::_createWindow()
 
 	std::stringstream sstream;
 	sstream << "[" << (ENGINE_NAME(_engineType)) << "]";
-	GLFWwindow * window = glfwCreateWindow(WIDTH, HEIGHT, sstream.str().c_str(), nullptr, nullptr);
+	GLFWwindow * window = glfwCreateWindow(_width, _height, sstream.str().c_str(), nullptr, nullptr);
 
 	try
 	{
@@ -83,14 +83,15 @@ GLFWwindow * WindowManager::_createWindow()
 			if (glewInit() != GLEW_OK)
 				throw std::runtime_error("Couldn't initialize GLEW.");
 		}
-		glfwSetWindowSizeLimits(window, WIDTH, HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
+		glfwSetWindowSizeLimits(window, WIDTH / 2, HEIGHT / 2, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		_setIcon(window);
 	}
-	catch(const std::exception& e)
+	catch(const std::exception & e)
 	{
 		glfwTerminate();
 		throw;
 	}
+
 	glfwSetErrorCallback(glfwErrorCallback);
 	return (window);
 }

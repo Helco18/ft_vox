@@ -26,18 +26,20 @@ struct UniformBuffer
 class AEngine
 {
 	public:
-		AEngine(GLFWwindow * window, Camera * camera) : _window(window), _camera(camera) {};
+		AEngine(GLFWwindow * window, Camera * camera) : _window(window), _camera(camera), _isFramebufferResized(false), _isInitalized(false) {};
 		virtual ~AEngine() {}
 
 		virtual void	load() = 0;
 		virtual void	drawFrame() = 0;
 		
 		Camera *		getCamera() const { return _camera; }
-		bool			getFramebufferResized() const { return _framebufferResized; }
+		bool			getFramebufferResized() const { return _isFramebufferResized; }
+		bool			isInitialized() const { return _isInitalized; }
 
-		void			setFramebufferResized(bool framebufferResized) { _framebufferResized = framebufferResized; }
+		void			setFramebufferResized(bool framebufferResized) { _isFramebufferResized = framebufferResized; }
 	protected:
 		GLFWwindow *	_window;
 		Camera *		_camera;
-		bool			_framebufferResized = false;
+		bool			_isFramebufferResized;
+		bool			_isInitalized;
 };

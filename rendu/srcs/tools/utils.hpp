@@ -51,19 +51,3 @@ const std::string			toString(const T & value)
 const std::vector<char>		readFile(const std::string & filename);
 std::vector<std::string>	ft_split(const std::string & str, char delimiter);
 const std::string			getFileAsString(const char * name);
-
-/* ************************************************************************** */
-/*   GLFW tools                                                               */
-/* ************************************************************************** */
-
-/* * Initializes GLFW and creates a window.
- * This function sets up GLFW, configures window hints, and creates a window.
- * It also sets the window icon and handles any errors that may occur during
- * initialization or window creation.
- *
- * @return A pointer to the created GLFWwindow.
- * @throws std::runtime_error if GLFW initialization or window creation fails.
- */
-GLFWwindow *				getWindow(EngineType engineType);
-void						toggleFullscreen(GLFWwindow * window, Camera * camera);
-void						framebufferResizeCallback(GLFWwindow * window, int width, int height);

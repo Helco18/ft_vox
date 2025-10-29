@@ -1,7 +1,13 @@
 #include "InputManager.hpp"
 
-void InputManager::interceptMouse(GLFWwindow * window, Camera * camera)
+void InputManager::interceptMouse(WindowManager * windowManager)
 {
+	if (!windowManager->getEngine()->isInitialized())
+		return;
+
+	GLFWwindow * window = windowManager->getWindow();
+	Camera * camera = windowManager->getCamera();
+
 	int width, height;
 	double mouseX, mouseY;
 
@@ -26,8 +32,14 @@ void InputManager::interceptMouse(GLFWwindow * window, Camera * camera)
 	}
 }
 
-void InputManager::interceptMovements(GLFWwindow * window, Camera * camera, float deltaTime)
+void InputManager::interceptMovements(WindowManager * windowManager, float deltaTime)
 {
+	if (!windowManager->getEngine()->isInitialized())
+		return;
+
+	GLFWwindow * window = windowManager->getWindow();
+	Camera * camera = windowManager->getCamera();
+
 	float velocity;
 	float speed;
 	glm::vec3 forward;
@@ -63,6 +75,9 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 {
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
 
+	if (!windowManager->getEngine()->isInitialized())
+		return;
+
 	if (action != GLFW_PRESS)
 		return;
 
@@ -75,5 +90,5 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		windowManager->swap();
 
 	if (key == GLFW_KEY_F11)
-		toggleFullscreen(window, windowManager->getEngine()->getCamera());
+		windowManager->toggleFullscreen();
 }
