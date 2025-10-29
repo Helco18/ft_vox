@@ -129,9 +129,16 @@ void VulkanEngine::drawFrame()
 		presentInfoKHR.pImageIndices = &imageIndex;
 
 		vk::Result presentResult = _queue.presentKHR(presentInfoKHR);
-
 		if (presentResult != vk::Result::eSuccess)
-			throw std::runtime_error("Couldn't present next image.");
+		{
+			if (presentResult == vk::Result::eSuboptimalKHR)
+			{
+				_isFramebufferResized = false;
+				_recreateSwapchain();
+			}
+			else
+				throw std::runtime_error("Couldn't present next image.");
+		}
 
 		_semaphoreIndex = (_semaphoreIndex + 1) % _presentCompleteSemaphores.size();
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;

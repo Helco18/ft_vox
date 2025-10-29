@@ -11,8 +11,8 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 	int width, height;
 	double mouseX, mouseY;
 
-	width = camera->getWidth();
-	height = camera->getHeight();
+	width = windowManager->getWidth();
+	height = windowManager->getHeight();
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
 	{
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

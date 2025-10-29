@@ -144,9 +144,8 @@ void VulkanEngine::_createImageViews()
 
 void VulkanEngine::_recreateSwapchain()
 {
-	int width, height;
-
-	glfwGetFramebufferSize(_window, &width, &height);
+	int width = 0;
+	int height = 0;
 
 	while (width == 0 || height == 0)
 	{
@@ -155,6 +154,7 @@ void VulkanEngine::_recreateSwapchain()
 	}
 
 	_device.waitIdle();
+	// _queue.waitIdle(); Gael jte jure cette fois ca marchera
 
 	_swapChainImageViews.clear();
 	_swapChain = nullptr;
