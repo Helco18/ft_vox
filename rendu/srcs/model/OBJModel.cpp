@@ -7,13 +7,12 @@
 #include "stb/stb_image.h"
 
 std::unordered_map<ModelType, OBJModel> OBJModel::_modelCache;
+std::unordered_map<ModelType, Texture> OBJModel::_loadedTextures;
 
 OBJModel::OBJModel(const std::string & filepath, ModelType type) : _filepath(filepath), _type(type)
 {}
 
-OBJModel::~OBJModel()
-{
-}
+OBJModel::~OBJModel() {}
 
 OBJModel OBJModel::getModel(ModelType type)
 {
@@ -295,4 +294,13 @@ bool OBJModel::loadModels()
 			return false;
 	}
 	return true;
+}
+
+void OBJModel::deleteModels()
+{
+	for (std::unordered_map<ModelType, Texture>::const_iterator it = _loadedTextures.begin(); it != _loadedTextures.end(); ++it)
+	{
+		if (it->second.data)
+			stbi_image_free(it->second.data);
+	}
 }

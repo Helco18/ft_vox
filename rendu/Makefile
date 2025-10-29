@@ -27,6 +27,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/input/InputManager.cpp \
 						srcs/model/OBJModel.cpp \
 						srcs/tools/glfwUtils.cpp \
+						srcs/tools/stb_image.cpp \
 						srcs/tools/utils.cpp
 
 SHADERS				=	srcs/shaders/slang/triangle.slang
@@ -98,11 +99,11 @@ $(SPIRV_PATH)/triangle.spv : $(SHADERS)
 
 $(GLSL_PATH)/triangle.vert : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(SHADERS) -target glsl -entry vertMain -o $@
+	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry vertMain -o $@
 
 $(GLSL_PATH)/triangle.frag : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(SHADERS) -target glsl -entry fragMain -o $@
+	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry fragMain -o $@
 
 shader: $(SPIRV_PATH)/triangle.spv $(GLSL_PATH)/triangle.vert $(GLSL_PATH)/triangle.frag
 	$(SHADERS_DONE)

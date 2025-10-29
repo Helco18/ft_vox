@@ -2,7 +2,10 @@
 
 OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
 
-OpenGLEngine::~OpenGLEngine() {}
+OpenGLEngine::~OpenGLEngine()
+{
+	OBJModel::deleteModels();
+}
 
 void OpenGLEngine::load()
 {
@@ -71,24 +74,8 @@ void OpenGLEngine::drawFrame()
 
 void OpenGLEngine::_handleResize()
 {
-	int viewportWidth, viewportHeight, viewportX, viewportY;
-	float targetRatio = 16.0f / 9.0f;
-	float windowRatio = static_cast<float>(_camera->getWidth()) / static_cast<float>(_camera->getHeight());
-
-	if (windowRatio > targetRatio)
-	{
-		viewportHeight = _camera->getHeight();
-		viewportWidth = static_cast<int>(_camera->getHeight() * targetRatio);
-		viewportX = (_camera->getWidth() - viewportWidth) / 2;
-		viewportY = 0;
-	}
-	else
-	{
-		viewportWidth = _camera->getWidth();
-		viewportHeight = static_cast<int>(_camera->getWidth() / targetRatio);
-		viewportX = 0;
-		viewportY = (_camera->getHeight() - viewportHeight) / 2;
-	}
-	glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, _camera->getWidth(), _camera->getHeight());
 	_framebufferResized = false;
 }

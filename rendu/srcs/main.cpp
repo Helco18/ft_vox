@@ -58,9 +58,9 @@ int main(int ac, char **av)
 
 		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;
 
+		delete engine;
 		glfwDestroyWindow(window);
 		glfwTerminate();
-		delete engine;
 	}
 	catch (const std::exception & e)
 	{

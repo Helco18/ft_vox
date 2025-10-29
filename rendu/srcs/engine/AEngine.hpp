@@ -7,6 +7,7 @@
 #include <iterator>
 #include <limits>
 #include <chrono>
+#include <valgrind/valgrind.h>
 #include "OBJModel.hpp"
 #include "colors.hpp"
 #include "utils.hpp"
@@ -24,7 +25,7 @@ class AEngine
 {
 	public:
 		AEngine(GLFWwindow * window, Camera * camera) : _window(window), _camera(camera) {};
-		virtual ~AEngine() {};
+		virtual ~AEngine() { SAFE_DELETE(_camera); }
 
 		virtual void	load() = 0;
 		virtual void	drawFrame() = 0;

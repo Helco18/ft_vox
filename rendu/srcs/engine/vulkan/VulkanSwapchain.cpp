@@ -13,10 +13,13 @@ vk::SurfaceFormatKHR VulkanEngine::_chooseSwapSurfaceFormat(const std::vector<vk
 
 vk::PresentModeKHR VulkanEngine::_chooseSwapPresentMode(const std::vector<vk::PresentModeKHR> & presentModes)
 {
-	for (const vk::PresentModeKHR & presentMode : presentModes)
+	if (!RUNNING_ON_VALGRIND)
 	{
-		if (presentMode == vk::PresentModeKHR::eImmediate)
-			return presentMode;
+		for (const vk::PresentModeKHR & presentMode : presentModes)
+		{
+			if (presentMode == vk::PresentModeKHR::eImmediate)
+				return presentMode;
+		}
 	}
 	return vk::PresentModeKHR::eFifo;
 }

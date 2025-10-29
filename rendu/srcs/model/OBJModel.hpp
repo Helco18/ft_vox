@@ -62,8 +62,10 @@ class OBJModel
 
 		static OBJModel										getModel(ModelType type);
 		static bool											loadModels();
+		static void											deleteModels();
     private:
 		static std::unordered_map<ModelType, OBJModel>		_modelCache;
+        static std::unordered_map<ModelType, Texture>		_loadedTextures;
 
         std::string											_filepath;
         ModelType											_type;
@@ -82,7 +84,6 @@ class OBJModel
 
         std::unordered_map<std::string, Mesh>				_meshes;
 
-        std::unordered_map<ModelType, Texture>				_loadedTextures;
 
         void												_parseLine(const std::string & line);
         uint32_t											_parseVertexIndex(const std::string & token);
