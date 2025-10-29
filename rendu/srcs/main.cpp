@@ -7,6 +7,9 @@ int main(int ac, char ** av)
 
 	try
 	{
+		if (!OBJModel::loadModels())
+			throw std::runtime_error("Failed to load models.");
+
 		WindowManager windowManager(engineType);
 
 		windowManager.load();

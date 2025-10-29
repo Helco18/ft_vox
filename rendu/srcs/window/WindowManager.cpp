@@ -1,7 +1,8 @@
 #include "WindowManager.hpp"
 #include "InputManager.hpp"
 
-WindowManager::WindowManager(EngineType engineType): _engineType(engineType), _width(WIDTH), _height(HEIGHT), _isFullscreen(false)
+WindowManager::WindowManager(EngineType engineType):
+	_engineType(engineType), _width(WIDTH), _height(HEIGHT), _windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false)
 {
 	_camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), _width, _height);
 }
@@ -22,8 +23,8 @@ void WindowManager::load()
 {
 	_window = _createWindow();
 
-	if (!OBJModel::loadModels())
-		throw std::runtime_error("Failed to load models.");
+	if (_windowPosX && _windowPosY)
+		glfwSetWindowPos(_window, _windowPosX, _windowPosY);
 
 	switch (static_cast<int>(_engineType))
 	{
@@ -38,12 +39,12 @@ void WindowManager::load()
 	glfwSetFramebufferSizeCallback(_window, WindowManager::framebufferResizeCallback);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
 
-	if (_isFullscreen && _engineType == OPENGL)
+	if (_isFullscreen)
 	{
 		GLFWmonitor * monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode * mode = glfwGetVideoMode(monitor);
 		glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-	}
+	}		
 }
 
 void WindowManager::loop()
@@ -57,6 +58,13 @@ void WindowManager::loop()
 	{
 		timeStart = glfwGetTime();
 		glfwPollEvents();
+
+		if (_isSwapRequested)
+		{
+			swap();
+			continue;
+		}
+
 		_engine->drawFrame();
 
 		frames++;
@@ -77,6 +85,8 @@ void WindowManager::loop()
 
 void WindowManager::swap()
 {
+	glfwGetWindowPos(_window, &_windowPosX, &_windowPosY);
+
 	SAFE_DELETE(_engine);
 	if (_window)
 	{
@@ -85,10 +95,13 @@ void WindowManager::swap()
 	}
 
 	_engineType = _engineType == VULKAN ? OPENGL : VULKAN;
+	std::cout << MAGENTA << "[ENGINE] Swapping to: " << (ENGINE_NAME(_engineType)) << RESET << std::endl;
 	load();
 
 	_lastFpsUpdate = glfwGetTime();
 	glfwFocusWindow(_window);
+	_isSwapRequested = false;
+	std::cout << MAGENTA << "[ENGINE] Successfully swapped to: " << (ENGINE_NAME(_engineType)) << RESET << std::endl;
 }
 
 void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, int height)
@@ -105,14 +118,12 @@ void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, in
 
 void WindowManager::toggleFullscreen()
 {
-	static int windowPosX = 0;
-	static int windowPosY = 0;
 	static int windowWidth = 0;
 	static int windowHeight = 0;
 
 	if (!_isFullscreen)
 	{
-		glfwGetWindowPos(_window, &windowPosX, &windowPosY);
+		glfwGetWindowPos(_window, &_windowPosX, &_windowPosY);
 		glfwGetWindowSize(_window, &windowWidth, &windowHeight);
 
 		GLFWmonitor * monitor = glfwGetPrimaryMonitor();
@@ -126,7 +137,7 @@ void WindowManager::toggleFullscreen()
 	}
 	else
 	{
-		glfwSetWindowMonitor(_window, nullptr, windowPosX, windowPosY, windowWidth, windowHeight, 0);
+		glfwSetWindowMonitor(_window, nullptr, _windowPosX, _windowPosY, windowWidth, windowHeight, 0);
 		_camera->setWidth(windowWidth);
 		_camera->setHeight(windowHeight);
 		_width = windowWidth;

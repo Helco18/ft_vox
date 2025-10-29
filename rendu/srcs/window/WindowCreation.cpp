@@ -86,7 +86,7 @@ GLFWwindow * WindowManager::_createWindow()
 		glfwSetWindowSizeLimits(window, WIDTH / 2, HEIGHT / 2, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		_setIcon(window);
 	}
-	catch(const std::exception & e)
+	catch (const std::exception & e)
 	{
 		glfwTerminate();
 		throw;

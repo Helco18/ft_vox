@@ -30,7 +30,7 @@ enum EngineType
 
 #define WIDTH	800
 #define HEIGHT	600
-#define SAFE_DELETE(x) if (x) delete(x);
+#define SAFE_DELETE(x) if (x) delete(x); 
 
 /* ************************************************************************** */
 /*   general_tools                                                            */

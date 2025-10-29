@@ -17,4 +17,6 @@ void OpenGLEngine::_createTexture()
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, model.getTexture().width, model.getTexture().height, 0, GL_RGBA, GL_UNSIGNED_BYTE, model.getTexture().data);
 	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	std::cout << GREEN << "[OK] Created Texture" << RESET << std::endl;
 }

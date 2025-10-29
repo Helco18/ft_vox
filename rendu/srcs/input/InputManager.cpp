@@ -87,7 +87,7 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		return;
 	}
 	if (key == GLFW_KEY_TAB)
-		windowManager->swap();
+		windowManager->requestSwap();
 
 	if (key == GLFW_KEY_F11)
 		windowManager->toggleFullscreen();
