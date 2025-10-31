@@ -1,6 +1,7 @@
 #include "VulkanEngine.hpp"
 #include "colors.hpp"
 #include <iostream>
+#include <map>
 
 void VulkanEngine::_createInstance()
 {
@@ -101,8 +102,29 @@ void VulkanEngine::_selectPhysicalDevice()
 
 	if (devices.empty())
 		throw std::runtime_error("Failed to find a GPU compatible with Vulkan.");
-	std::cout << GREEN << "[OK] Selected GPU: " << devices[0].getProperties().deviceName << RESET << std::endl;
-	_physicalDevice = devices[0];
+
+	std::map<uint32_t, vk::raii::PhysicalDevice> candidates;
+	for (const vk::raii::PhysicalDevice & device : devices)
+	{
+		vk::PhysicalDeviceProperties deviceProperties = device.getProperties();
+		vk::PhysicalDeviceFeatures deviceFeatures = device.getFeatures();
+		uint32_t score = 0;
+
+		if (deviceProperties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu)
+			score += 1000;
+
+		score += deviceProperties.limits.maxImageDimension2D;
+
+		if (!deviceFeatures.geometryShader)
+		   continue;
+		candidates.insert(std::make_pair(score, device));
+	}
+
+	if (candidates.empty())
+		throw std::runtime_error("Failed to find a suitable GPU");
+
+	_physicalDevice = candidates.rbegin()->second;
+	std::cout << GREEN << "[OK] Selected GPU: " << _physicalDevice.getProperties().deviceName << RESET << std::endl;
 }
 
 QueueIndices VulkanEngine::_findQueueFamilies() const
