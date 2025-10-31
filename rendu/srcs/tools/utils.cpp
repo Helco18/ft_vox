@@ -1,4 +1,7 @@
 #include "utils.hpp"
+#include "colors.hpp"
+#include <iostream>
+#include <fstream>
 
 std::vector<std::string> ft_split(const std::string & str, char delimiter)
 {

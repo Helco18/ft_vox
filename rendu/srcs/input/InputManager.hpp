@@ -1,7 +1,6 @@
 #pragma once
 
 #include "WindowManager.hpp"
-#include "utils.hpp"
 
 class InputManager
 {

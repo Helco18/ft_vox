@@ -1,10 +1,7 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include "glm/glm.hpp"
 
-#include <filesystem>
+#include "glm/glm.hpp"
+#include <string>
 
 enum ModelType
 {

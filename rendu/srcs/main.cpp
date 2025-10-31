@@ -1,5 +1,7 @@
-#include <iostream>
 #include "WindowManager.hpp"
+#include "OBJModel.hpp"
+#include "colors.hpp"
+#include <iostream>
 
 int main(int ac, char ** av)
 {

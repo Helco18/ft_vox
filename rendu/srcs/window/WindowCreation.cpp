@@ -1,5 +1,7 @@
 #include "WindowManager.hpp"
 #include "stb/stb_image.h"
+#include "colors.hpp"
+#include <iostream>
 
 GLFWimage WindowManager::_decodeOneStep(const char * filename)
 {
@@ -20,6 +22,7 @@ void WindowManager::_setIcon(GLFWwindow * window)
 {
 	GLFWimage images[2];
 
+	stbi_set_flip_vertically_on_load(true);
 	try
 	{
 		images[0] = _decodeOneStep("assets/icon/icon.png");

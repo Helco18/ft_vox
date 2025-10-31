@@ -1,19 +1,9 @@
 #pragma once
 
-#include <GL/glew.h>
+#include "GLEW/glew.h"
 #include "GLFW/glfw3.h"
-#include "GLFW/glfw3native.h"
 #include "Camera.hpp"
-#include <iterator>
-#include <limits>
-#include <chrono>
-#include <valgrind/valgrind.h>
-#include "OBJModel.hpp"
-#include "colors.hpp"
-#include "utils.hpp"
 #include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
 

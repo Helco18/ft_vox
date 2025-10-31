@@ -1,4 +1,7 @@
 #include "OpenGLEngine.hpp"
+#include "colors.hpp"
+#include "OBJModel.hpp"
+#include <iostream>
 
 OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
 

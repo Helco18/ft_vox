@@ -1,4 +1,5 @@
 #include "AEngine.hpp"
+#include <string>
 
 class OpenGLEngine : public AEngine
 {

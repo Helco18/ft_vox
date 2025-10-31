@@ -6,21 +6,14 @@
 /*   By: scraeyme <scraeyme@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 19:33:36 by gcannaud          #+#    #+#             */
-/*   Updated: 2025/10/18 16:04:17 by scraeyme         ###   ########.fr       */
+/*   Updated: 2025/10/31 14:58:25 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <exception>
-#include <iostream>
 #include <sstream>
-#include <fstream>
 #include <vector>
-#include <GL/glew.h>
-#include "GLFW/glfw3.h"
-#include "colors.hpp"
-#include "Camera.hpp"
 
 enum EngineType
 {

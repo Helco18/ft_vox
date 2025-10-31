@@ -1,4 +1,7 @@
 #include "OpenGLEngine.hpp"
+#include "OBJModel.hpp"
+#include "colors.hpp"
+#include <iostream>
 
 void OpenGLEngine::_createTexture()
 {

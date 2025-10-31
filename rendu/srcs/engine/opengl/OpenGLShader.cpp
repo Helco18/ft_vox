@@ -1,4 +1,7 @@
 #include "OpenGLEngine.hpp"
+#include "utils.hpp"
+#include "colors.hpp"
+#include <iostream>
 
 static const std::string getShaderAsString(std::string path)
 {
@@ -50,7 +53,7 @@ void OpenGLEngine::_createShader(const std::string & vertexPath, const std::stri
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	GLuint uboIndex = glGetUniformBlockIndex(_shader, "block_UniformBuffer_0");
+	GLuint uboIndex = glGetUniformBlockIndex(_shader, "block_UniformBuffer_std140_0");
 	if (uboIndex == GL_INVALID_INDEX)
 		throw std::runtime_error("Couldn't find ubo index.");
 	glUniformBlockBinding(_shader, uboIndex, 0);

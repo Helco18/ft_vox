@@ -1,4 +1,7 @@
 #include "VulkanEngine.hpp"
+#include "colors.hpp"
+#include <iostream>
+#include <valgrind/valgrind.h>
 
 vk::SurfaceFormatKHR VulkanEngine::_chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR> & formats)
 {

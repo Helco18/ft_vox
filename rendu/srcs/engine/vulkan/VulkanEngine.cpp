@@ -1,4 +1,6 @@
 #include "VulkanEngine.hpp"
+#include "colors.hpp"
+#include <iostream>
 
 VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
 
@@ -137,7 +139,7 @@ void VulkanEngine::drawFrame()
 				_recreateSwapchain();
 			}
 			else
-				throw std::runtime_error("Couldn't present next image.");
+				throw std::runtime_error("Couldn't present next image." + vk::to_string(presentResult));
 		}
 
 		_semaphoreIndex = (_semaphoreIndex + 1) % _presentCompleteSemaphores.size();

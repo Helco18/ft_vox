@@ -1,8 +1,7 @@
 #pragma once
 
 #include "AEngine.hpp"
-#include "OpenGLEngine.hpp"
-#include "VulkanEngine.hpp"
+#include "utils.hpp"
 
 class WindowManager
 {
