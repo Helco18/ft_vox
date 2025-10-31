@@ -157,7 +157,7 @@ void VulkanEngine::_recreateSwapchain()
 	}
 
 	_device.waitIdle();
-	// _queue.waitIdle(); Gael jte jure cette fois ca marchera
+	// _queue.waitIdle(); //Gael jte jure cette fois ca marchera
 
 	_swapChainImageViews.clear();
 	_swapChain = nullptr;

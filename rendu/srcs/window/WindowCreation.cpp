@@ -22,7 +22,7 @@ void WindowManager::_setIcon(GLFWwindow * window)
 {
 	GLFWimage images[2];
 
-	stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(false);
 	try
 	{
 		images[0] = _decodeOneStep("assets/icon/icon.png");

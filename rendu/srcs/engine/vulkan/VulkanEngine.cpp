@@ -94,7 +94,7 @@ void VulkanEngine::drawFrame()
 	{
 		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphores[_semaphoreIndex], nullptr);
 		uint32_t imageIndex = result.second;
-		if (result.first != vk::Result::eSuccess)
+		if (result.first != vk::Result::eSuccess && result.first != vk::Result::eSuboptimalKHR)
 		{
 			if (result.first == vk::Result::eErrorOutOfDateKHR)
 			{
@@ -139,7 +139,7 @@ void VulkanEngine::drawFrame()
 				_recreateSwapchain();
 			}
 			else
-				throw std::runtime_error("Couldn't present next image." + vk::to_string(presentResult));
+				throw std::runtime_error("Couldn't present next image.");
 		}
 
 		_semaphoreIndex = (_semaphoreIndex + 1) % _presentCompleteSemaphores.size();
