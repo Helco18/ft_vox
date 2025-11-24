@@ -131,7 +131,7 @@ void VulkanEngine::_createGraphicsPipeline()
 	vk::PipelineRenderingCreateInfo pipelineRenderingInfo;
 	pipelineRenderingInfo.colorAttachmentCount = 1;
 	pipelineRenderingInfo.pColorAttachmentFormats = &_swapChainImageFormat;
-	pipelineRenderingInfo.depthAttachmentFormat = vk::Format::eD32Sfloat;
+	pipelineRenderingInfo.depthAttachmentFormat = vk::Format::eD24UnormS8Uint;
 
 	// On lie toutes les infos de notre pipeline
 	vk::GraphicsPipelineCreateInfo graphicsPipelineInfo;

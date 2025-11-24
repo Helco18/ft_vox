@@ -13,3 +13,4 @@ rendu_obsolete/
 *.frag
 *.vert
 tutorial.cpp
+*.rdc

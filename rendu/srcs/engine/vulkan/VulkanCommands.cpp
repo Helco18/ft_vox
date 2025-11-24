@@ -98,7 +98,7 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
 	depthBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	depthBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 	depthBarrier.image = _depthImage;
-	depthBarrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth;
+	depthBarrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil;
 	depthBarrier.subresourceRange.baseMipLevel = 0;
 	depthBarrier.subresourceRange.levelCount = 1;
 	depthBarrier.subresourceRange.baseArrayLayer = 0;

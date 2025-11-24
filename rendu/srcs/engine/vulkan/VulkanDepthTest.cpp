@@ -16,9 +16,9 @@ vk::Format VulkanEngine::_findSupportedFormat(const std::vector<vk::Format> & ca
 vk::Format VulkanEngine::_findDepthFormat()
 {
 	std::vector<vk::Format> formats = { 
+		vk::Format::eD24UnormS8Uint,
 		vk::Format::eD32Sfloat,
-		vk::Format::eD32SfloatS8Uint,
-		vk::Format::eD24UnormS8Uint
+		vk::Format::eD32SfloatS8Uint
 	};
 	return _findSupportedFormat(formats, vk::ImageTiling::eOptimal, vk::FormatFeatureFlagBits::eDepthStencilAttachment);
 }
@@ -34,7 +34,7 @@ void VulkanEngine::_createDepthResources()
 	viewInfo.image = _depthImage;
 	viewInfo.format = depthFormat;
 	viewInfo.viewType = vk::ImageViewType::e2D;
-	viewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth;
+	viewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil;
 	viewInfo.subresourceRange.baseMipLevel = 0;
 	viewInfo.subresourceRange.levelCount = 1;
 	viewInfo.subresourceRange.baseArrayLayer = 0;

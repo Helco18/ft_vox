@@ -16,7 +16,7 @@ void OpenGLEngine::_updateUniformBuffer()
 	ubo->view = glm::lookAt(camPos, camPos + forward, up);
 
 	ubo->proj = glm::perspective(glm::radians(_camera->getFOV()),
-		(float)_camera->getWidth() / (float)_camera->getHeight(),
+		static_cast<float>(_camera->getWidth()) / static_cast<float>(_camera->getHeight()),
 		0.01f, 1500.0f);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
