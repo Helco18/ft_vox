@@ -2,7 +2,7 @@
 
 #include "glm/glm.hpp"
 
-#define CAMERA_SPEED 5.0f
+#define CAMERA_SPEED 2.0f
 
 class Camera
 {
@@ -18,6 +18,7 @@ class Camera
 		float		getPitch() const { return _pitch; }
 		float		getFOV() const { return _FOV; }
 		float		getSensitivity() const { return _sensitivity; }
+		float		getSpeed() const { return _speed; }
 
 		void		setPosition(const glm::vec3 & position) { _position = position; }
 		void		setOrientation(glm::vec3 orientation) { _orientation = orientation; }
@@ -25,9 +26,11 @@ class Camera
 		void		setPitch(float pitch) { _pitch = pitch; }
 		void		setWidth(int width) { _width = width; }
 		void		setHeight(int height) { _height = height; }
+		void		setSpeed(float speed) { _speed = speed; }
 
 		void		changeYaw(float yaw) { _yaw += yaw; }
 		void		changePitch(float pitch) { _pitch += pitch; }
+		void		changeSpeed(float speed) { _speed += speed; }
 
 		glm::vec3	computeForward() const;
 
@@ -42,4 +45,5 @@ class Camera
 		float		_pitch;
 		int			_FOV;
 		float		_sensitivity;
+		float		_speed;
 };

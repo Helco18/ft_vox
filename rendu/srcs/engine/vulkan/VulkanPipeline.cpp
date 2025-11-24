@@ -15,7 +15,7 @@ vk::raii::ShaderModule VulkanEngine::_createShaderModule(const std::vector<char>
 
 void VulkanEngine::_createGraphicsPipeline()
 {
-	const std::vector<char> shaderSrc = readFile("srcs/shaders/spir-v/triangle.spv");
+	const std::vector<char> shaderSrc = readFile("srcs/shaders/spir-v/base.spv");
 
 	// On créé le shader module qui va stocker notre code source
 	vk::raii::ShaderModule shaderModule = _createShaderModule(shaderSrc);

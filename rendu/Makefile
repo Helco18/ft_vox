@@ -31,7 +31,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/window/WindowCreation.cpp \
 						srcs/window/WindowManager.cpp
 
-SHADERS				=	srcs/shaders/slang/triangle.slang
+SHADERS				=	srcs/shaders/slang/base.slang
 OBJ_FOLDER			=	objs
 INCLUDES			=	-I libs \
 						-I libs/stb \
@@ -73,12 +73,12 @@ LIGHT_GREEN			=	\033[1;32m
 RESET				=	\033[0m
 
 # Custom messages
-EXE_DONE			=	@echo "🎉$(PURPLE) $(NAME) compiled! 🎉$(RESET)\n"
-DEBUG_DONE			=	@echo "🎉$(YELLOW) This is the DEBUG MODE version! 🎉$(RESET)\n"
-SHADERS_DONE		=	@echo "🎨$(PURPLE) Shaders compiled! 🎨$(RESET)\n"
-SHADERS_CLEAN		=	@echo "🧹$(LIGHT_GREEN) Shaders cleaned! 🧹$(RESET)\n"
-ALL_CLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects cleaned! 🧹$(RESET)\n"
-ALL_FCLEAN			=	@echo "🧹$(LIGHT_GREEN) Project's objects & Executables cleaned! 🧹$(RESET)\n"
+EXE_DONE			=	@echo "[PROGRAM] $(PURPLE)$(NAME) compiled!$(RESET)"
+DEBUG_DONE			=	@echo "[PROGRAM] $(YELLOW)This is the DEBUG MODE version!$(RESET)"
+SHADERS_DONE		=	@echo "[SHADER] $(PURPLE)Shaders compiled!$(RESET)"
+SHADERS_CLEAN		=	@echo "[SHADER] $(LIGHT_GREEN)Shaders cleaned!$(RESET)"
+ALL_CLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects cleaned!$(RESET)"
+ALL_FCLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects & Executables cleaned!$(RESET)"
 
 # Rules
 
@@ -91,23 +91,27 @@ $(NAME): $(OBJS)
 $(OBJ_FOLDER)/%.o: srcs/%.cpp
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@echo "[SRCS] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
 
 run: all
 	./$(NAME)
 
-$(SPIRV_PATH)/triangle.spv : $(SHADERS)
+$(SPIRV_PATH)/base.spv : $(SHADERS)
 	@mkdir -p $(SPIRV_PATH)
 	@slangc $(SHADERS) -target spirv -entry vertMain -entry fragMain -o $@
+	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/triangle.vert : $(SHADERS)
+$(GLSL_PATH)/base.vert : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
 	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry vertMain -o $@
+	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/triangle.frag : $(SHADERS)
+$(GLSL_PATH)/base.frag : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
 	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry fragMain -o $@
+	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
 
-shader: $(SPIRV_PATH)/triangle.spv $(GLSL_PATH)/triangle.vert $(GLSL_PATH)/triangle.frag
+shader: $(SPIRV_PATH)/base.spv $(GLSL_PATH)/base.vert $(GLSL_PATH)/base.frag
 	$(SHADERS_DONE)
 
 sclean:

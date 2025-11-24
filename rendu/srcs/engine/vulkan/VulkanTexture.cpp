@@ -46,7 +46,7 @@ void VulkanEngine::_transitionImageLayout(const vk::raii::Image & image, vk::Ima
 
 void VulkanEngine::_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling,
 								vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image,
-								vk::raii::DeviceMemory & imageMemory)
+								vk::raii::DeviceMemory & imageMemory, vk::SampleCountFlagBits sampling)
 {
 	vk::ImageCreateInfo imageInfo;
 	imageInfo.imageType = vk::ImageType::e2D;
@@ -54,7 +54,7 @@ void VulkanEngine::_createImage(uint32_t width, uint32_t height, vk::Format form
 	imageInfo.extent = vk::Extent3D(width, height ,1);
 	imageInfo.mipLevels = 1;
 	imageInfo.arrayLayers = 1;
-	imageInfo.samples = vk::SampleCountFlagBits::e1;
+	imageInfo.samples = sampling;
 	imageInfo.tiling = tiling;
 	imageInfo.usage = usage;
 	imageInfo.sharingMode = vk::SharingMode::eExclusive;
@@ -95,7 +95,7 @@ void VulkanEngine::_createTextureImage()
 
 	_createImage(width, height, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal,
 					vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
-					vk::MemoryPropertyFlagBits::eDeviceLocal, _textureImage, _textureImageMemory);
+					vk::MemoryPropertyFlagBits::eDeviceLocal, _textureImage, _textureImageMemory, vk::SampleCountFlagBits::e1);
 	
 	_transitionImageLayout(_textureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
     _copyBufferToImage(stagingBuffer, _textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
@@ -147,8 +147,8 @@ void VulkanEngine::_createTextureSampler()
 
 	vk::SamplerCreateInfo samplerInfo;
 	samplerInfo.flags = {};
-	samplerInfo.magFilter = vk::Filter::eLinear;
 	samplerInfo.minFilter = vk::Filter::eLinear;
+	samplerInfo.magFilter = vk::Filter::eLinear;
 	samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
 	samplerInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
 	samplerInfo.addressModeV = vk::SamplerAddressMode::eRepeat;

@@ -191,7 +191,7 @@ void VulkanEngine::_createLogicalDevice()
 
 	// Activation des features en liste chaînée
 	vk::PhysicalDeviceFeatures2 features;
-	features.features.sampleRateShading = vk::False; // Activer le MSAA (rajout hors-tutoriel)
+	features.features.sampleRateShading = vk::True; // Activer le MSAA (rajout hors-tutoriel)
 	features.features.samplerAnisotropy = vk::True;
 	vk::PhysicalDeviceVulkan13Features vulkan13features;
 	vulkan13features.dynamicRendering = true;

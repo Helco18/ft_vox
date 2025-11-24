@@ -42,6 +42,7 @@ void WindowManager::load()
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, WindowManager::framebufferResizeCallback);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
+	glfwSetScrollCallback(_window, InputManager::interceptScroll);
 
 	if (_isFullscreen)
 	{

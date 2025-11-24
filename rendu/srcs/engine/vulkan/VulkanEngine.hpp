@@ -7,7 +7,6 @@
 #define GLFW_EXPOSE_NATIVE_GLX
 #include "AEngine.hpp"
 #include "OBJModel.hpp"
-#include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_raii.hpp>
 
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
@@ -170,7 +169,7 @@ class VulkanEngine : public AEngine
 		void								_createDescriptorPool();
 		void								_updateUniformBuffer();
 		void								_createDescriptorSets();
-		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory);
+		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory, vk::SampleCountFlagBits sampling);
 		void								_createTextureImageView();
 		void								_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height);
 		void								_createTextureSampler();

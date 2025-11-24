@@ -1,4 +1,20 @@
 #include "InputManager.hpp"
+#include <iostream>
+
+void InputManager::interceptScroll(GLFWwindow * window, double xoffset, double yoffset)
+{
+	(void) xoffset;
+
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+	if (!windowManager->getEngine()->isInitialized())
+		return;
+
+	Camera * camera = windowManager->getCamera();
+	if (yoffset > 0)
+		camera->changeSpeed(0.1f);
+	else if (camera->getSpeed() >= 0.2f)
+		camera->changeSpeed(-0.1f);
+}
 
 void InputManager::interceptMouse(WindowManager * windowManager)
 {
@@ -47,7 +63,7 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 	glm::vec3 up;
 	glm::vec3 right;
 
-	speed = CAMERA_SPEED;
+	speed = camera->getSpeed();
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		speed *= 5.0f;
 

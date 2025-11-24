@@ -7,6 +7,7 @@ Camera::Camera(glm::vec3 position, int width, int height): _position(position), 
 	_pitch = 0.0f;
 	_FOV = 90;
 	_sensitivity = 200.0f;
+	_speed = CAMERA_SPEED;
 
 	glm::vec3 direction;
 	direction.x = cosf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));

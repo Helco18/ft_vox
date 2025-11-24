@@ -32,7 +32,7 @@ void OpenGLEngine::load()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.getIndices().size() * sizeof(uint32_t), model.getIndices().data(), GL_STATIC_DRAW);
 
-	_createShader("triangle.vert", "triangle.frag");
+	_createShader("base.vert", "base.frag");
 	glUseProgram(_shader);
 
 	glGenBuffers(1, &_ubo);
