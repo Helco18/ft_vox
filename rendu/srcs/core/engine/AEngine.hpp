@@ -3,9 +3,9 @@
 #include "GLEW/glew.h"
 #include "GLFW/glfw3.h"
 #include "Camera.hpp"
-#include "glm/glm.hpp"
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
+#define SHADER_PATH "srcs/core/shaders/"
 
 struct UniformBuffer
 {

@@ -1,5 +1,6 @@
 #include "OpenGLEngine.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include <iostream>
 
 void OpenGLEngine::_updateUniformBuffer()
 {

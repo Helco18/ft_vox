@@ -52,7 +52,7 @@ void VulkanEngine::_updateUniformBuffer()
 	// Vulkan projection (flip Y)
 	ubo.proj = glm::perspective(glm::radians(_camera->getFOV()),
 		static_cast<float>(_swapChainExtent.width) / static_cast<float>(_swapChainExtent.height),
-		0.005f, 1500.0f);
+		0.01f * NEAR_PLANE_OFFSET, 1500.0f);
 	ubo.proj[1][1] *= -1;
 
 	memcpy(_uniformBuffersMapped[_currentFrame], &ubo, sizeof(ubo));

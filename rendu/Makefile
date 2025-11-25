@@ -6,62 +6,66 @@ LDFLAGS				=	-lvulkan -lGL -lGLEW
 # Names
 NAME				=	ft_vox
 
-# Sources & Includes
-SRCS				=	srcs/main.cpp \
-						srcs/camera/Camera.cpp \
-						srcs/engine/opengl/OpenGLEngine.cpp \
-						srcs/engine/opengl/OpenGLShader.cpp \
-						srcs/engine/opengl/OpenGLTexture.cpp \
-						srcs/engine/opengl/OpenGLUniform.cpp \
-						srcs/engine/vulkan/VulkanCommands.cpp \
-						srcs/engine/vulkan/VulkanDebug.cpp \
-						srcs/engine/vulkan/VulkanDepthTest.cpp \
-						srcs/engine/vulkan/VulkanDescriptors.cpp \
-						srcs/engine/vulkan/VulkanEngine.cpp \
-						srcs/engine/vulkan/VulkanInstance.cpp \
-						srcs/engine/vulkan/VulkanMesh.cpp \
-						srcs/engine/vulkan/VulkanPipeline.cpp \
-						srcs/engine/vulkan/VulkanSwapchain.cpp \
-						srcs/engine/vulkan/VulkanTexture.cpp \
-						srcs/engine/vulkan/VulkanUniform.cpp \
-						srcs/input/InputManager.cpp \
-						srcs/model/OBJModel.cpp \
-						srcs/tools/stb_image.cpp \
-						srcs/tools/utils.cpp \
-						srcs/window/WindowCreation.cpp \
-						srcs/window/WindowManager.cpp
-
-SHADERS				=	srcs/shaders/slang/base.slang
-OBJ_FOLDER			=	objs
-INCLUDES			=	-I libs \
-						-I libs/stb \
-						-I srcs \
-						-I srcs/camera \
-						-I srcs/engine \
-						-I srcs/engine/opengl \
-						-I srcs/engine/vulkan \
-						-I srcs/input \
-						-I srcs/model \
-						-I srcs/tools \
-						-I srcs/window
-
+# Paths
+SHADER_PATH			=	srcs/core/shaders
+OBJ_PATH			=	objs
 GLFW_PATH			=	libs/GLFW
 GLEW_PATH			=	libs/GLEW
 GLM_PATH			=	libs/glm
 STB_PATH			=	libs/stb
-SPIRV_PATH			=	srcs/shaders/spir-v
-GLSL_PATH			=	srcs/shaders/glsl
+SPIRV_PATH			=	$(SHADER_PATH)/spir-v
+GLSL_PATH			=	$(SHADER_PATH)/glsl
 
+# Sources
+SRCS				=	srcs/main.cpp \
+						srcs/tools/stb_image.cpp \
+						srcs/tools/utils.cpp \
+						srcs/core/camera/Camera.cpp \
+						srcs/core/engine/opengl/OpenGLEngine.cpp \
+						srcs/core/engine/opengl/OpenGLShader.cpp \
+						srcs/core/engine/opengl/OpenGLTexture.cpp \
+						srcs/core/engine/opengl/OpenGLUniform.cpp \
+						srcs/core/engine/vulkan/VulkanCommands.cpp \
+						srcs/core/engine/vulkan/VulkanDebug.cpp \
+						srcs/core/engine/vulkan/VulkanDepthTest.cpp \
+						srcs/core/engine/vulkan/VulkanDescriptors.cpp \
+						srcs/core/engine/vulkan/VulkanEngine.cpp \
+						srcs/core/engine/vulkan/VulkanInstance.cpp \
+						srcs/core/engine/vulkan/VulkanMesh.cpp \
+						srcs/core/engine/vulkan/VulkanPipeline.cpp \
+						srcs/core/engine/vulkan/VulkanSwapchain.cpp \
+						srcs/core/engine/vulkan/VulkanTexture.cpp \
+						srcs/core/engine/vulkan/VulkanUniform.cpp \
+						srcs/core/input/InputManager.cpp \
+						srcs/core/model/OBJModel.cpp \
+						srcs/core/window/WindowCreation.cpp \
+						srcs/core/window/WindowManager.cpp
+SHADERS				=	$(SHADER_PATH)/slang/base.slang
+
+# Includes
+INCLUDES			=	-I libs \
+						-I libs/stb \
+						-I srcs \
+						-I srcs/core \
+						-I srcs/core/camera \
+						-I srcs/core/engine \
+						-I srcs/core/engine/opengl \
+						-I srcs/core/engine/vulkan \
+						-I srcs/core/input \
+						-I srcs/core/model \
+						-I srcs/core/shaders \
+						-I srcs/core/window \
+						-I srcs/tools
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 
 # Objects
-OBJS				=	$(patsubst srcs/%.cpp, $(OBJ_FOLDER)/%.o, $(SRCS)) \
-						$(patsubst %.c, $(OBJ_FOLDER)/%.o, $(LIBS)) \
-						$(patsubst %.cpp, $(OBJ_FOLDER)/%.o, $(LIBS))
+OBJS				=	$(patsubst srcs/%.cpp, $(OBJ_PATH)/%.o, $(SRCS)) \
+						$(patsubst %.c, $(OBJ_PATH)/%.o, $(LIBS)) \
+						$(patsubst %.cpp, $(OBJ_PATH)/%.o, $(LIBS))
 
-DEPS				=	$(patsubst srcs/%.cpp, $(OBJ_FOLDER)/%.d, $(SRCS)) \
-						$(patsubst %.c, $(OBJ_FOLDER)/%.d, $(LIBS)) \
-						$(patsubst %.cpp, $(OBJ_FOLDER)/%.d, $(LIBS))
+DEPS				=	$(patsubst srcs/%.cpp, $(OBJ_PATH)/%.d, $(SRCS)) \
+						$(patsubst %.c, $(OBJ_PATH)/%.d, $(LIBS)) \
+						$(patsubst %.cpp, $(OBJ_PATH)/%.d, $(LIBS))
 
 # Custom Makefile Flags
 MAKEFLAGS			+=	--no-print-directory --silent
@@ -88,7 +92,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) $(LDFLAGS)
 	$(EXE_DONE)
 
-$(OBJ_FOLDER)/%.o: srcs/%.cpp
+$(OBJ_PATH)/%.o: srcs/%.cpp
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@echo "[SRCS] $(LIGHT_GREEN)Compiled: $@ $(RESET)"

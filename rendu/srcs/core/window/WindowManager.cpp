@@ -8,7 +8,7 @@
 WindowManager::WindowManager(EngineType engineType):
 	_engineType(engineType), _width(WIDTH), _height(HEIGHT), _windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false)
 {
-	_camera = new Camera(glm::vec3(0.514561f, -0.0921271f, 0.305256f), _width, _height);
+	_camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), _width, _height);
 }
 
 WindowManager::~WindowManager()

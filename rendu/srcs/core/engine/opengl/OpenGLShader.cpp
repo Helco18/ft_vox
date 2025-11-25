@@ -5,7 +5,7 @@
 
 static const std::string getShaderAsString(std::string path)
 {
-	path = "srcs/shaders/glsl/" + path;
+	path = SHADER_PATH"glsl/" + path;
 	return getFileAsString(path.c_str());
 }
 

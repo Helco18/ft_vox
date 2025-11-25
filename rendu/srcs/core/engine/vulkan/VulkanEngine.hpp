@@ -12,6 +12,7 @@
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
 #define MAX_FRAMES_IN_FLIGHT 2
+#define NEAR_PLANE_OFFSET 0.5f
 
 const std::vector<const char *> g_validationLayers =
 {

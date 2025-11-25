@@ -3,8 +3,8 @@
 Camera::Camera(glm::vec3 position, int width, int height): _position(position), _width(width), _height(height)
 {
 	_altitude = glm::vec3(0.0f, 1.0f, 0.0f);
-	_yaw = -49.25;
-	_pitch = -19.3333;
+	_yaw = -90.0f;
+	_pitch = 0.0f;
 	_FOV = 90;
 	_sensitivity = 200.0f;
 	_speed = CAMERA_SPEED;
