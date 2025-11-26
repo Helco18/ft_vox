@@ -39,7 +39,10 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/input/InputManager.cpp \
 						srcs/core/model/OBJModel.cpp \
 						srcs/core/window/WindowCreation.cpp \
-						srcs/core/window/WindowManager.cpp
+						srcs/core/window/WindowManager.cpp \
+						srcs/voxel/WorldManager.cpp \
+						srcs/voxel/chunk/Chunk.cpp \
+						srcs/voxel/world/World.cpp
 SHADERS				=	$(SHADER_PATH)/slang/base.slang
 
 # Includes
@@ -55,7 +58,11 @@ INCLUDES			=	-I libs \
 						-I srcs/core/model \
 						-I srcs/core/shaders \
 						-I srcs/core/window \
-						-I srcs/tools
+						-I srcs/environment \
+						-I srcs/tools \
+						-I srcs/voxel \
+						-I srcs/voxel/chunk \
+						-I srcs/voxel/world
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 
 # Objects

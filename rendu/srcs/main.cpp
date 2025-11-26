@@ -1,21 +1,18 @@
-#include "WindowManager.hpp"
+#include "InputManager.hpp"
 #include "OBJModel.hpp"
 #include "colors.hpp"
+#include "Environment.hpp"
 #include <iostream>
 
 int main(int ac, char ** av)
 {
 	EngineType engineType = ac == 2 && std::string(av[1]) == "gl" ? OPENGL : VULKAN;
+	Environment environment;
 
 	try
 	{
-		if (!OBJModel::loadModels())
-			throw std::runtime_error("Failed to load models.");
-
-		WindowManager windowManager(engineType);
-
-		windowManager.load();
-		windowManager.loop();
+		environment.init(engineType);
+		environment.loop();
 
 		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;
 	}

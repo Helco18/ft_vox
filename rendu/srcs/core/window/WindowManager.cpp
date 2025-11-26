@@ -84,7 +84,6 @@ void WindowManager::loop()
 			_lastFpsUpdate = currentTime;
 		}
 		InputManager::interceptMovements(this, glfwGetTime() - timeStart);
-		InputManager::interceptMouse(this);
 	}
 }
 
