@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include "AEngine.hpp"
 #include "Chunk.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/hash.hpp"
@@ -20,6 +21,8 @@ class World
 
 		void				addChunk(Chunk * chunk);
 		void				reloadChunks();
+
+		void				render(AEngine * engine);
 	private:
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 

@@ -10,6 +10,7 @@ WindowManager::WindowManager(EngineType engineType, Environment * environment):
 	_windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false)
 {
 	_camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), _width, _height);
+	_lastFpsUpdate = glfwGetTime();
 }
 
 WindowManager::~WindowManager()
@@ -64,7 +65,6 @@ bool WindowManager::drawFrame()
 		return false;
 	}
 
-	_lastFpsUpdate = glfwGetTime();
 	glfwPollEvents();
 
 	if (_isSwapRequested)
@@ -72,8 +72,6 @@ bool WindowManager::drawFrame()
 		swap();
 		return false;
 	}
-
-	_engine->drawFrame();
 
 	frames++;
 	currentTime = glfwGetTime();

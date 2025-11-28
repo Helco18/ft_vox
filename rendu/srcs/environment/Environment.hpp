@@ -17,6 +17,5 @@ class Environment
 	private:
 		WindowManager *	_windowManager;
 		EngineType		_engineType; // A JARTER D'UTILS BORDEL
-		AEngine *		_engine;
 		bool			_running = true;
 };

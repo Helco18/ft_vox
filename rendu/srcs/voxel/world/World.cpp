@@ -6,7 +6,6 @@ void World::load()
 	_chunkMap[glm::ivec3(0)] = new Chunk();
 	_chunkMap[glm::ivec3(0)]->build();
 	_chunkMap[glm::ivec3(0)]->generateMesh();
-	_chunkMap[glm::ivec3(0)]->upload();
 }
 
 Chunk * World::getChunk(const glm::vec3 & location)
@@ -45,6 +44,17 @@ void World::reloadChunks()
 	{
 		Chunk * chunk = chunks.second;
 		if (chunk && chunk->getState() == UPLOADED)
-			chunk->unload();
+			(void) chunk;// bref
+	}
+}
+
+void World::render(AEngine * engine)
+{
+	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
+	{
+		Chunk * chunk = chunks.second;
+		if (chunk && chunk->getState() == MESHED)
+			chunk->upload(engine);
+		engine->drawAsset(chunk->getAsset().assetID);
 	}
 }

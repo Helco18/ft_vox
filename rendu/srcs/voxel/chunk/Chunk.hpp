@@ -1,12 +1,13 @@
 #pragma once
 
-#define CHUNK_WIDTH 3
-#define CHUNK_HEIGHT 3
-#define CHUNK_LENGTH 3
+#define CHUNK_WIDTH 16
+#define CHUNK_HEIGHT 256
+#define CHUNK_LENGTH 16
 
 #include <cstdint>
 #include <vector>
 #include "OBJModel.hpp"
+#include "AEngine.hpp"
 
 enum ChunkState
 {
@@ -23,21 +24,19 @@ class Chunk
 		Chunk(const glm::vec3 & chunkLocation): _chunkLocation(chunkLocation), _state(NONE) {}
 		~Chunk() {};
 
-		const glm::vec3			getChunkLocation() const { return _chunkLocation; }
+		const glm::vec3 &		getChunkLocation() const { return _chunkLocation; }
 		int						getChunkX() const { return _chunkLocation.x; }
 		int						getChunkY() const { return _chunkLocation.y; }
 		int						getChunkZ() const { return _chunkLocation.z; }
 		ChunkState				getState() const { return _state; }
+		Asset &					getAsset() { return _asset; }
 
 		void					build();
 		void					generateMesh();
-		void					upload();
-		void					unload();
-		void					render();
+		void					upload(AEngine * engine);
 	private:
 		glm::vec3				_chunkLocation;
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
-		std::vector<Vertex>		_vertices;
-		std::vector<uint32_t>	_indices;
+		Asset					_asset;
 		ChunkState				_state;
 };

@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include "utils.hpp"
 
 void Chunk::build()
 {
@@ -7,9 +8,9 @@ void Chunk::build()
 
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
-		for (int y = 0; y < CHUNK_WIDTH; ++y)
+		for (int y = 0; y < CHUNK_HEIGHT; ++y)
 		{
-			for (int z = 0; z < CHUNK_WIDTH; ++z)
+			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
 				if (y <= 64)
 					_blocks[x][y][z] = 1;
@@ -27,14 +28,23 @@ void Chunk::generateMesh()
 
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
-		for (int y = 0; y < CHUNK_WIDTH; ++y)
+		for (int y = 0; y < CHUNK_HEIGHT; ++y)
 		{
-			for (int z = 0; z < CHUNK_WIDTH; ++z)
+			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
+				uint32_t verticesAdded = _asset.vertices.size();
 				if (_blocks[x][y][z] == 1)
 				{
-					_vertices.insert(_vertices.end(), model.getVertices().begin(), model.getVertices().end());
-					_indices.insert(_indices.end(), model.getIndices().begin(), model.getIndices().end());
+					for (Vertex vertex : model.getVertices())
+					{
+						Vertex tmp = vertex;
+						tmp.position.x += x;
+						tmp.position.y += y;
+						tmp.position.z += z;
+						_asset.vertices.push_back(tmp);
+					}
+					for (uint32_t indice : model.getIndices())
+						_asset.indices.push_back(indice + verticesAdded);
 				}
 			}
 		}
@@ -42,14 +52,8 @@ void Chunk::generateMesh()
 	_state = MESHED;
 }
 
-void Chunk::upload()
+void Chunk::upload(AEngine * engine)
 {
-	// coucou à nous du futur, j'espère que vous avez fini les autres classes avant :)
+	engine->upload(_asset);
 	_state = UPLOADED;
-}
-
-void Chunk::unload()
-{
-	// y'aura surement autre chose au-dessus
-	_state = MESHED;
 }

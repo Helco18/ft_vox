@@ -32,6 +32,9 @@ void Environment::loop()
 		frameStart = glfwGetTime();
 		if (!_windowManager->drawFrame())
 			continue;
+		World * world = WorldManager::getWorld("bozoandzibocircus");
+		if (world)
+			world->render(_windowManager->getEngine());
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager, glfwGetTime() - frameStart);
 	}

@@ -13,6 +13,14 @@ void WorldManager::createWorld(const std::string & name)
 	std::cout << GREEN << "[OK] Created world " << name << RESET << std::endl;
 }
 
+World * WorldManager::getWorld(const std::string & name)
+{
+	WorldMap::iterator it = _worldMap.find(name);
+	if (it != _worldMap.end())
+		return it->second;
+	return nullptr;
+}
+
 void WorldManager::destroy()
 {
 	for (std::pair<std::string, World *> entry : _worldMap)

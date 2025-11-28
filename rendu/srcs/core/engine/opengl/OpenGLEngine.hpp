@@ -8,12 +8,10 @@ class OpenGLEngine : public AEngine
 		~OpenGLEngine();
 
 		void	load() override;
-		void	drawFrame() override;
+		AssetID	upload(Asset & asset) override;
+		void	drawAsset(AssetID asset) override;
 
 	private:
-		GLuint	_vao;
-		GLuint	_vbo;
-		GLuint	_ibo;
 		GLuint	_ubo;
 		GLuint	_texture;
 		size_t	_indexSize;

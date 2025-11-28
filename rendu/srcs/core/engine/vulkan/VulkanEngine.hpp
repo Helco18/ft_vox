@@ -62,7 +62,8 @@ class VulkanEngine : public AEngine
 		~VulkanEngine();
 
 		void								load() override;
-		void								drawFrame() override;
+		AssetID								upload(Asset & asset) override {(void) asset; return 0;}
+		void								drawAsset(AssetID asset) override;
 
 	private:
 		typedef std::vector<char const *>							RequiredExtensions;

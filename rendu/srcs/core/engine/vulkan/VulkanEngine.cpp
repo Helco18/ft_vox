@@ -58,6 +58,7 @@ void VulkanEngine::load()
 	_createTextureImage();
 	_createTextureImageView();
 	_createTextureSampler();
+
 	_createVertexBuffer(CUBE);
 	_createIndexBuffer(CUBE);
 	_createUniformBuffers();
@@ -83,8 +84,9 @@ VulkanEngine::~VulkanEngine()
 	_queue.waitIdle();
 }
 
-void VulkanEngine::drawFrame()
+void VulkanEngine::drawAsset(AssetID asset)
 {
+	(void)asset; // a l'aide
 	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
 		;
 
