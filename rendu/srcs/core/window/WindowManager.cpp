@@ -1,20 +1,21 @@
-#include "WindowManager.hpp"
+#include "Environment.hpp"
 #include "InputManager.hpp"
 #include "VulkanEngine.hpp"
 #include "OpenGLEngine.hpp"
 #include "colors.hpp"
 #include <iostream>
 
-WindowManager::WindowManager(EngineType engineType):
-	_engineType(engineType), _width(WIDTH), _height(HEIGHT), _windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false)
+WindowManager::WindowManager(EngineType engineType, Environment * environment):
+	_environment(environment), _engineType(engineType), _width(WIDTH), _height(HEIGHT),
+	_windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false)
 {
 	_camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), _width, _height);
 }
 
 WindowManager::~WindowManager()
 {
-	SAFE_DELETE(_engine);
-	SAFE_DELETE(_camera);
+	delete _engine;
+	delete _camera;
 	if (_window)
 	{
 		glfwDestroyWindow(_window);
@@ -52,46 +53,47 @@ void WindowManager::load()
 	}		
 }
 
-void WindowManager::loop()
+bool WindowManager::drawFrame()
 {
-	double timeStart;
-	double currentTime;
-	int frames = 0;
+	static double currentTime = 0;
+	static int frames = 0;
+
+	if (glfwWindowShouldClose(_window))
+	{
+		_environment->stop();
+		return false;
+	}
 
 	_lastFpsUpdate = glfwGetTime();
-	while (!glfwWindowShouldClose(_window))
+	glfwPollEvents();
+
+	if (_isSwapRequested)
 	{
-		timeStart = glfwGetTime();
-		glfwPollEvents();
-
-		if (_isSwapRequested)
-		{
-			swap();
-			continue;
-		}
-
-		_engine->drawFrame();
-
-		frames++;
-
-		currentTime = glfwGetTime();
-		if (currentTime - _lastFpsUpdate >= 1.0)
-		{
-			double fps = frames / (currentTime - _lastFpsUpdate); // average FPS in last second
-			glfwSetWindowTitle(_window, std::string(std::string(_engineType == VULKAN ? "[Vulkan] " : "[OpenGL] ") + toString(fps)).c_str());
-
-			frames = 0;
-			_lastFpsUpdate = currentTime;
-		}
-		InputManager::interceptMovements(this, glfwGetTime() - timeStart);
+		swap();
+		return false;
 	}
+
+	_engine->drawFrame();
+
+	frames++;
+	currentTime = glfwGetTime();
+	if (currentTime - _lastFpsUpdate >= 1.0)
+	{
+		double fps = frames / (currentTime - _lastFpsUpdate); // average FPS in last second
+		glfwSetWindowTitle(_window, std::string(std::string(_engineType == VULKAN ? "[Vulkan] " : "[OpenGL] ") + toString(fps)).c_str());
+
+		frames = 0;
+		_lastFpsUpdate = currentTime;
+	}
+
+	return true;
 }
 
 void WindowManager::swap()
 {
 	glfwGetWindowPos(_window, &_windowPosX, &_windowPosY);
 
-	SAFE_DELETE(_engine);
+	delete _engine;
 	if (_window)
 	{
 		glfwDestroyWindow(_window);

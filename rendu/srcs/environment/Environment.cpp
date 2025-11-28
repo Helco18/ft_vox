@@ -1,21 +1,38 @@
 #include "Environment.hpp"
 #include "OBJModel.hpp"
 #include "InputManager.hpp"
+#include "WorldManager.hpp"
+#include "colors.hpp"
+#include <iostream>
+
+Environment::~Environment()
+{
+	delete _windowManager;
+}
 
 void Environment::init(EngineType engineType)
 {
 	if (!OBJModel::loadModels())
 		throw std::runtime_error("Failed to load models.");
 
-	WindowManager windowManager(engineType);
-	windowManager.load();
+	_windowManager = new WindowManager(engineType, this);
+	_windowManager->load();
+
+	WorldManager::createWorld("bozoandzibocircus");
+
+	std::cout << GREEN << "[OK] Environment started" << RESET << std::endl;
 }
 
 void Environment::loop()
 {
+	double frameStart;
+
 	while (_running)
 	{
-		_windowManager.loop();
-		InputManager::interceptMouse(&_windowManager);
+		frameStart = glfwGetTime();
+		if (!_windowManager->drawFrame())
+			continue;
+		InputManager::interceptMouse(_windowManager);
+		InputManager::interceptMovements(_windowManager, glfwGetTime() - frameStart);
 	}
 }

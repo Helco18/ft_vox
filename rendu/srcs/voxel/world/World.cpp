@@ -1,4 +1,5 @@
 #include "World.hpp"
+#include <algorithm>
 
 void World::load()
 {
@@ -15,7 +16,7 @@ Chunk * World::getChunk(const glm::vec3 & location)
 	int floorZ = std::floor(location.z);
 
 	glm::ivec3 flooredLocation(floorX, floorY, floorZ);
-	ChunkMap::iterator it = std::find(_chunkMap.begin(), _chunkMap.end(), flooredLocation);
+	ChunkMap::iterator it = _chunkMap.find(flooredLocation);
 	if (it != _chunkMap.end())
 		return it->second;
 	return nullptr;
@@ -28,7 +29,7 @@ Chunk * World::getChunk(int x, int y, int z)
 
 void World::addChunk(Chunk * chunk)
 {
-	ChunkMap::iterator it = std::find(_chunkMap.begin(), _chunkMap.end(), chunk->getChunkLocation());
+	ChunkMap::iterator it = _chunkMap.find(chunk->getChunkLocation());
 	if (it != _chunkMap.end())
 	{
 		Chunk * foundChunk = _chunkMap[chunk->getChunkLocation()];

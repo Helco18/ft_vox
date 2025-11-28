@@ -5,12 +5,13 @@
 class WorldManager
 {
 	public:
-		WorldManager();
-		~WorldManager();
+		WorldManager() = delete;
+		~WorldManager() = delete;
 
-		void		createWorld(const std::string & name);
+		static void		createWorld(const std::string & name);
+		static void		destroy();
 	private:
 		typedef std::unordered_map<std::string, World *> WorldMap;
 
-		WorldMap	_worldMap;
+		static WorldMap	_worldMap;
 };

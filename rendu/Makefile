@@ -40,6 +40,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/model/OBJModel.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
+						srcs/environment/Environment.cpp \
 						srcs/voxel/WorldManager.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/world/World.cpp

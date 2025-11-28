@@ -21,7 +21,7 @@ class Chunk
 	public:
 		Chunk(int x = 0, int y = 0, int z = 0): _chunkLocation(glm::vec3(x, y, z)), _state(NONE) {}
 		Chunk(const glm::vec3 & chunkLocation): _chunkLocation(chunkLocation), _state(NONE) {}
-		~Chunk();
+		~Chunk() {};
 
 		const glm::vec3			getChunkLocation() const { return _chunkLocation; }
 		int						getChunkX() const { return _chunkLocation.x; }

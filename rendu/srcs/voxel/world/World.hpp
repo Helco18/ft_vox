@@ -2,24 +2,14 @@
 
 #include <unordered_map>
 #include "Chunk.hpp"
-
-#define KNUTH_CONSTANT 0x9e3779b9
-
-struct Vec3Hash
-{
-	size_t operator()(const glm::ivec3 & v) const noexcept
-	{
-		return ((KNUTH_CONSTANT + std::hash<int>()(v.x)) * KNUTH_CONSTANT
-				 + std::hash<int>()(v.y)) * KNUTH_CONSTANT
-				 + std::hash<int>()(v.z);
-	}
-};
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/hash.hpp"
 
 class World
 {
 	public:
 		World(const std::string & name): _name(name) {}
-		~World();
+		~World() {};
 
 		void				load();
 
@@ -31,7 +21,7 @@ class World
 		void				addChunk(Chunk * chunk);
 		void				reloadChunks();
 	private:
-		typedef std::unordered_map<glm::ivec3, Chunk *, Vec3Hash> ChunkMap;
+		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 
 		std::string			_name;
 		ChunkMap			_chunkMap;

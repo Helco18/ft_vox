@@ -3,14 +3,16 @@
 #include "AEngine.hpp"
 #include "utils.hpp"
 
+class Environment;
+
 class WindowManager
 {
 	public:
-		WindowManager(EngineType engineType);
+		WindowManager(EngineType engineType, Environment * environment);
 		~WindowManager();
 
 		void			load();
-		void			loop();
+		bool			drawFrame();
 		void			swap();
 
 		AEngine *		getEngine() const { return _engine; }
@@ -31,6 +33,7 @@ class WindowManager
 		static void		framebufferResizeCallback(GLFWwindow * window, int width, int height);
 
 	private:
+		Environment *	_environment;
 		EngineType		_engineType;
 		AEngine *		_engine;
 		GLFWwindow *	_window;
