@@ -38,9 +38,9 @@ void Chunk::generateMesh()
 					for (Vertex vertex : model.getVertices())
 					{
 						Vertex tmp = vertex;
-						tmp.position.x += x;
-						tmp.position.y += y;
-						tmp.position.z += z;
+						tmp.position.x += x + _chunkLocation.x * CHUNK_WIDTH;
+						tmp.position.y += y + _chunkLocation.y * CHUNK_HEIGHT;
+						tmp.position.z += z + _chunkLocation.z * CHUNK_LENGTH;
 						_asset.vertices.push_back(tmp);
 					}
 					for (uint32_t indice : model.getIndices())

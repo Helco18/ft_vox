@@ -3,9 +3,19 @@
 
 void World::load()
 {
-	_chunkMap[glm::ivec3(0)] = new Chunk();
-	_chunkMap[glm::ivec3(0)]->build();
-	_chunkMap[glm::ivec3(0)]->generateMesh();
+	for (int x = 0; x < 3; ++x)
+	{
+		for (int y = 0; y < 3; ++y)
+		{
+			for (int z = 0; z < 3; ++z)
+			{
+				Chunk * chunk = new Chunk(x, y, z);
+				chunk->build();
+				chunk->generateMesh();
+				_chunkMap[chunk->getChunkLocation()] = chunk;
+			}
+		}
+	}
 }
 
 Chunk * World::getChunk(const glm::vec3 & location)

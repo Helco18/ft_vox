@@ -8,13 +8,14 @@ class OpenGLEngine : public AEngine
 		~OpenGLEngine();
 
 		void	load() override;
+		void	beginFrame() override;
 		AssetID	upload(Asset & asset) override;
 		void	drawAsset(AssetID assetID) override;
+		void	endFrame() override;
 
 	private:
 		GLuint	_ubo;
 		GLuint	_texture;
-		size_t	_indexSize;
 		GLuint	_shader;
 
 		void	_createShader(const std::string & vertexPath, const std::string & fragmentPath);

@@ -120,7 +120,7 @@ void VulkanEngine::drawAsset(AssetID assetID)
 		_updateUniformBuffer();
 
 		_commandBuffers[_currentFrame].reset();
-		_recordCommandBuffer(imageIndex);
+		_recordCommandBuffer(imageIndex, assetID);
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 

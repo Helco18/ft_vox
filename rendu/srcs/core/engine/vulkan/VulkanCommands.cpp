@@ -64,8 +64,9 @@ void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info
 	_commandBuffers[_currentFrame].pipelineBarrier2(dependencyInfo);
 }
 
-void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex)
+void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex, AssetID assetID)
 {
+	(void) assetID;
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	_commandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 

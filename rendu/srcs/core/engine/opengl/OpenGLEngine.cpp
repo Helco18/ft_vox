@@ -28,7 +28,6 @@ AssetID OpenGLEngine::upload(Asset & asset)
 	glGenBuffers(1, &asset.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, asset.ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, asset.indices.size() * sizeof(uint32_t), asset.indices.data(), GL_STATIC_DRAW);
-	_indexSize = asset.indices.size();
 
 	glBindVertexArray(0);
 
@@ -54,7 +53,17 @@ void OpenGLEngine::load()
 	glBindVertexArray(0);
 
 	std::cout << GREEN << "[OK] OpenGL engine initialized successfully." << RESET << std::endl;
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glEnable(GL_DEPTH_TEST);
+
 	_isInitalized = true;
+}
+
+void OpenGLEngine::beginFrame()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGLEngine::drawAsset(AssetID assetID)
@@ -62,7 +71,12 @@ void OpenGLEngine::drawAsset(AssetID assetID)
 	if (_isFramebufferResized)
 		_handleResize();
 
-	glfwSwapBuffers(_window);
+	AssetMap::iterator it = _assetMap.find(assetID);
+	if (it == _assetMap.end())
+		return;
+
+	Asset asset = it->second;
+	
 	glBindVertexArray(assetID);
 	_updateUniformBuffer();
 
@@ -73,12 +87,13 @@ void OpenGLEngine::drawAsset(AssetID assetID)
 		throw std::runtime_error("Couldn't find texture uniform.");
 	glUniform1i(textureIndex, 0);
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glEnable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDrawElements(GL_TRIANGLES, _indexSize, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, asset.indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+}
+
+void OpenGLEngine::endFrame()
+{
+	glfwSwapBuffers(_window);
 }
 
 void OpenGLEngine::_handleResize()
