@@ -59,8 +59,6 @@ void VulkanEngine::load()
 	_createTextureImageView();
 	_createTextureSampler();
 
-	_createVertexBuffer(CUBE);
-	_createIndexBuffer(CUBE);
 	_createUniformBuffers();
 
 	_createDescriptorPool();
@@ -84,9 +82,21 @@ VulkanEngine::~VulkanEngine()
 	_queue.waitIdle();
 }
 
-void VulkanEngine::drawAsset(AssetID asset)
+AssetID VulkanEngine::upload(Asset & asset)
 {
-	(void)asset; // a l'aide
+	static AssetID assetID = 1;
+
+	_createVertexBuffer(asset);
+	_createIndexBuffer(asset);
+	asset.assetID = assetID;
+
+	_assetMap.try_emplace(assetID, asset);
+	return assetID++;
+}
+
+void VulkanEngine::drawAsset(AssetID assetID)
+{
+	(void)assetID;
 	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
 		;
 

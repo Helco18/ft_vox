@@ -83,10 +83,9 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 	_endSingleTimeCommands(commandCopyBuffer);
 }
 
-void VulkanEngine::_createVertexBuffer(ModelType type)
+void VulkanEngine::_createVertexBuffer(Asset & asset)
 {
-	const std::vector<Vertex> vertices = OBJModel::getModel(type).getVertices();
-	vk::DeviceSize size = sizeof(vertices[0]) * vertices.size();
+	vk::DeviceSize size = sizeof(asset.vertices[0]) * asset.vertices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
@@ -95,7 +94,7 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, vertices.data(), size);
+	memcpy(dataStaging, asset.vertices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
@@ -103,13 +102,12 @@ void VulkanEngine::_createVertexBuffer(ModelType type)
 					_vertexBuffer, _vertexBufferMemory);
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
-	_vertexSize = vertices.size();
+	_vertexSize = asset.vertices.size();
 }
 
-void VulkanEngine::_createIndexBuffer(ModelType type)
+void VulkanEngine::_createIndexBuffer(Asset & asset)
 {
-	const std::vector<uint32_t> indices = OBJModel::getModel(type).getIndices();
-	vk::DeviceSize size = sizeof(indices[0]) * indices.size();
+	vk::DeviceSize size = sizeof(asset.indices[0]) * asset.indices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
@@ -118,7 +116,7 @@ void VulkanEngine::_createIndexBuffer(ModelType type)
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, indices.data(), size);
+	memcpy(dataStaging, asset.indices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
@@ -126,5 +124,5 @@ void VulkanEngine::_createIndexBuffer(ModelType type)
 					_indexBuffer, _indexBufferMemory);
 	_copyBuffer(stagingBuffer, _indexBuffer, size);
 
-	_indexSize = indices.size();
+	_indexSize = asset.indices.size();
 }

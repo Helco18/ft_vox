@@ -1,8 +1,8 @@
 #pragma once
 
-#define CHUNK_WIDTH 16
+#define CHUNK_WIDTH 32
 #define CHUNK_HEIGHT 256
-#define CHUNK_LENGTH 16
+#define CHUNK_LENGTH 32
 
 #include <cstdint>
 #include <vector>
@@ -34,6 +34,7 @@ class Chunk
 		void					build();
 		void					generateMesh();
 		void					upload(AEngine * engine);
+		void					unload();
 	private:
 		glm::vec3				_chunkLocation;
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];

@@ -57,3 +57,8 @@ void Chunk::upload(AEngine * engine)
 	engine->upload(_asset);
 	_state = UPLOADED;
 }
+
+void Chunk::unload()
+{
+	_state = MESHED;
+}

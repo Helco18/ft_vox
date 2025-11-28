@@ -9,10 +9,10 @@ OpenGLEngine::~OpenGLEngine() {}
 
 AssetID OpenGLEngine::upload(Asset & asset)
 {
-	glGenVertexArrays(1, &asset.assetID); // ticket magique (OUT)
+	glGenVertexArrays(1, &asset.assetID);
 	glBindVertexArray(asset.assetID);
 
-	glGenBuffers(1, &asset.vbo); // vertices (IN)
+	glGenBuffers(1, &asset.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, asset.vbo);
 	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size() * sizeof(Vertex), asset.vertices.data(), GL_STATIC_DRAW);
 
@@ -25,7 +25,7 @@ AssetID OpenGLEngine::upload(Asset & asset)
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
 
-	glGenBuffers(1, &asset.ibo); // indices (IN)
+	glGenBuffers(1, &asset.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, asset.ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, asset.indices.size() * sizeof(uint32_t), asset.indices.data(), GL_STATIC_DRAW);
 	_indexSize = asset.indices.size();
@@ -44,7 +44,7 @@ void OpenGLEngine::load()
 	_createShader("base.vert", "base.frag");
 	glUseProgram(_shader);
 
-	glGenBuffers(1, &_ubo); // engine
+	glGenBuffers(1, &_ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformBuffer), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, _ubo);

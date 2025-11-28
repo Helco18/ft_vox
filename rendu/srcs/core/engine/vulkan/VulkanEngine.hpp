@@ -62,8 +62,8 @@ class VulkanEngine : public AEngine
 		~VulkanEngine();
 
 		void								load() override;
-		AssetID								upload(Asset & asset) override {(void) asset; return 0;}
-		void								drawAsset(AssetID asset) override;
+		AssetID								upload(Asset & asset) override;
+		void								drawAsset(AssetID assetID) override;
 
 	private:
 		typedef std::vector<char const *>							RequiredExtensions;
@@ -151,8 +151,8 @@ class VulkanEngine : public AEngine
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag);
 		void								_createTextureImage();
-		void								_createVertexBuffer(ModelType type);
-		void								_createIndexBuffer(ModelType type);
+		void								_createVertexBuffer(Asset & asset);
+		void								_createIndexBuffer(Asset & asset);
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer(uint32_t imageIndex);
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

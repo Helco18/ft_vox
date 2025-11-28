@@ -33,7 +33,7 @@ class AEngine
 
 		virtual void	load() = 0;
 		virtual AssetID	upload(Asset & asset) = 0;
-		virtual void	drawAsset(AssetID asset) = 0;
+		virtual void	drawAsset(AssetID assetID) = 0;
 		
 		Camera *		getCamera() const { return _camera; }
 		bool			getFramebufferResized() const { return _isFramebufferResized; }

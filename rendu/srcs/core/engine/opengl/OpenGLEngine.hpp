@@ -9,7 +9,7 @@ class OpenGLEngine : public AEngine
 
 		void	load() override;
 		AssetID	upload(Asset & asset) override;
-		void	drawAsset(AssetID asset) override;
+		void	drawAsset(AssetID assetID) override;
 
 	private:
 		GLuint	_ubo;

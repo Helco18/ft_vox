@@ -44,7 +44,7 @@ void World::reloadChunks()
 	{
 		Chunk * chunk = chunks.second;
 		if (chunk && chunk->getState() == UPLOADED)
-			(void) chunk;// bref
+			chunk->unload();// bref
 	}
 }
 
