@@ -7,6 +7,7 @@
 
 Environment::~Environment()
 {
+	WorldManager::destroy();
 	delete _windowManager;
 }
 
@@ -29,19 +30,19 @@ void Environment::loop()
 
 	while (_running)
 	{
-		_windowManager->getEngine()->beginFrame();
 		frameStart = glfwGetTime();
+		_windowManager->getEngine()->beginFrame();
+		InputManager::interceptMouse(_windowManager);
+		InputManager::interceptMovements(_windowManager, glfwGetTime() - frameStart);
 		World * world = WorldManager::getWorld("bozoandzibocircus");
+		if (world)
+			world->render(_windowManager->getEngine());
 		if (!_windowManager->drawFrame())
 		{
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
 				world->reloadChunks();
 			continue;
 		}
-		if (world)
-			world->render(_windowManager->getEngine());
-		InputManager::interceptMouse(_windowManager);
-		InputManager::interceptMovements(_windowManager, glfwGetTime() - frameStart);
 		_windowManager->getEngine()->endFrame();
 	}
 }
