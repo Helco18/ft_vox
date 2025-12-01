@@ -1,13 +1,19 @@
 #include "World.hpp"
 #include <algorithm>
 
+World::~World()
+{
+	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
+		delete chunks.second;
+}
+
 void World::load()
 {
-	for (int x = 0; x < 3; ++x)
+	for (int x = 0; x < 1; ++x)
 	{
-		for (int y = 0; y < 3; ++y)
+		for (int y = 0; y < 1; ++y)
 		{
-			for (int z = 0; z < 3; ++z)
+			for (int z = 0; z < 1; ++z)
 			{
 				Chunk * chunk = new Chunk(x, y, z);
 				chunk->build();

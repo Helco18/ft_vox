@@ -10,7 +10,7 @@ class World
 {
 	public:
 		World(const std::string & name): _name(name) {}
-		~World() {};
+		~World();
 
 		void				load();
 
