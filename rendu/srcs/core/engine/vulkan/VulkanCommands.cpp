@@ -64,14 +64,13 @@ void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info
 	_commandBuffers[_currentFrame].pipelineBarrier2(dependencyInfo);
 }
 
-void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex, AssetID assetID)
+void VulkanEngine::_recordCommandBuffer()
 {
-	(void) assetID;
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	_commandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 
 	TransitionImageViewLayoutInfo transitionImageViewInfo;
-	transitionImageViewInfo.imageIndex = imageIndex;
+	transitionImageViewInfo.imageIndex = _imageIndex;
 	// Un ImageLayout est l'état de l'image.
 	// Undefined : Vient d'être créée
 	// ColorAttachmentOptimal : Utilisée comme cible de rendu (render target)
@@ -119,7 +118,7 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex, AssetID assetID)
 	vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
 
 	vk::RenderingAttachmentInfo colorAttachmentInfo;
-	colorAttachmentInfo.imageView = _swapChainImageViews[imageIndex];
+	colorAttachmentInfo.imageView = _swapChainImageViews[_imageIndex];
 	// On précise son layout actuel (comme celui au-dessus)
 	colorAttachmentInfo.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	// Que faire de ce qu'il y a actuellement sur l'image avant de dessiner ?
@@ -156,11 +155,12 @@ void VulkanEngine::_recordCommandBuffer(uint32_t imageIndex, AssetID assetID)
 	_commandBuffers[_currentFrame].bindVertexBuffers(0, *_vertexBuffer, {0});
 	_commandBuffers[_currentFrame].bindIndexBuffer( *_indexBuffer, 0, vk::IndexType::eUint32);
 	_commandBuffers[_currentFrame].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, *_descriptorSets[_currentFrame], nullptr);
-	_commandBuffers[_currentFrame].drawIndexed(_indexSize, 1, 0, 0, 0);
+	for (const Asset * asset : _drawableAssets)
+		_commandBuffers[_currentFrame].drawIndexed(asset->indices.size(), 1, asset->ibo, asset->vbo, 0);
 	_commandBuffers[_currentFrame].endRendering();
 
 	TransitionImageViewLayoutInfo presentSrcInfo;
-	presentSrcInfo.imageIndex = imageIndex;
+	presentSrcInfo.imageIndex = _imageIndex;
 	presentSrcInfo.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	presentSrcInfo.newLayout = vk::ImageLayout::ePresentSrcKHR;
 	presentSrcInfo.srcAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;

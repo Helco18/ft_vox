@@ -126,3 +126,47 @@ void VulkanEngine::_createIndexBuffer(Asset & asset)
 
 	_indexSize = asset.indices.size();
 }
+
+// void VulkanEngine::_createVertexBuffer(Asset & asset)
+// {
+// 	vk::DeviceSize size = sizeof(asset.vertices[0]) * asset.vertices.size();
+// 	vk::raii::Buffer stagingBuffer = nullptr;
+// 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
+
+// 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
+// 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+// 					stagingBuffer, stagingBufferMemory);
+
+// 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
+// 	memcpy(dataStaging, asset.vertices.data(), size);
+// 	stagingBufferMemory.unmapMemory();
+
+// 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
+// 					vk::MemoryPropertyFlagBits::eDeviceLocal,
+// 					_vertexBuffer, _vertexBufferMemory);
+// 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
+
+// 	_vertexSize = asset.vertices.size();
+// }
+
+// void VulkanEngine::_createIndexBuffer(Asset & asset)
+// {
+// 	vk::DeviceSize size = sizeof(asset.indices[0]) * asset.indices.size();
+// 	vk::raii::Buffer stagingBuffer = nullptr;
+// 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
+
+// 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
+// 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+// 					stagingBuffer, stagingBufferMemory);
+
+// 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
+// 	memcpy(dataStaging, asset.indices.data(), size);
+// 	stagingBufferMemory.unmapMemory();
+
+// 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
+// 					vk::MemoryPropertyFlagBits::eDeviceLocal,
+// 					_indexBuffer, _indexBufferMemory);
+// 	_copyBuffer(stagingBuffer, _indexBuffer, size);
+
+// 	_indexSize = asset.indices.size();
+// }

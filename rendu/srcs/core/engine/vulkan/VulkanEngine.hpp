@@ -62,10 +62,10 @@ class VulkanEngine : public AEngine
 		~VulkanEngine();
 
 		void								load() override;
-		void								beginFrame() override {}
+		void								beginFrame() override;
 		AssetID								upload(Asset & asset) override;
 		void								drawAsset(AssetID assetID) override;
-		void								endFrame() override {}
+		void								endFrame() override;
 
 	private:
 		typedef std::vector<char const *>							RequiredExtensions;
@@ -110,6 +110,7 @@ class VulkanEngine : public AEngine
 		Fences								_inFlightFences;
 		uint32_t							_semaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
+		uint32_t							_imageIndex = 0;
 
 		// Buffers & Memory
 		vk::raii::Buffer					_vertexBuffer = nullptr;
@@ -135,6 +136,8 @@ class VulkanEngine : public AEngine
 		vk::raii::DeviceMemory				_depthImageMemory = nullptr;
 		vk::raii::ImageView					_depthImageView = nullptr;
 
+		std::vector<Asset *>				_drawableAssets;
+
 		void								_createInstance();
 		void								_initDebugMessenger();
 		void								_createSurface();
@@ -156,7 +159,7 @@ class VulkanEngine : public AEngine
 		void								_createVertexBuffer(Asset & asset);
 		void								_createIndexBuffer(Asset & asset);
 		void								_createCommandBuffer();
-		void								_recordCommandBuffer(uint32_t imageIndex, AssetID assetID);
+		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);
 		void								_transitionImageLayout(const vk::raii::Image & image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 		void								_createSyncObjects();

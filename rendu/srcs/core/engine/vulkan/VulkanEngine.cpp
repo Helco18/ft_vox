@@ -82,8 +82,15 @@ VulkanEngine::~VulkanEngine()
 	_queue.waitIdle();
 }
 
+void VulkanEngine::beginFrame()
+{
+	_drawableAssets.clear();
+}
+
 AssetID VulkanEngine::upload(Asset & asset)
 {
+	static uint64_t vboCount = 0;
+	static uint64_t iboCount = 0;
 	static AssetID assetID = 1;
 
 	_createVertexBuffer(asset);
@@ -91,12 +98,21 @@ AssetID VulkanEngine::upload(Asset & asset)
 	asset.assetID = assetID;
 
 	_assetMap.try_emplace(assetID, asset);
+	asset.vbo = vboCount;
+	vboCount += asset.vertices.size();
+	asset.ibo = iboCount;
+	iboCount += asset.indices.size();
+	_indexSize = iboCount;
 	return assetID++;
 }
 
 void VulkanEngine::drawAsset(AssetID assetID)
 {
-	(void)assetID;
+	_drawableAssets.push_back(&_assetMap[assetID]);
+}
+
+void VulkanEngine::endFrame()
+{
 	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
 		;
 
@@ -120,7 +136,7 @@ void VulkanEngine::drawAsset(AssetID assetID)
 		_updateUniformBuffer();
 
 		_commandBuffers[_currentFrame].reset();
-		_recordCommandBuffer(imageIndex, assetID);
+		_recordCommandBuffer();
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 
