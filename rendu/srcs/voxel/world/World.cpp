@@ -15,7 +15,7 @@ void World::load()
 		{
 			for (int z = 0; z < WORLD_LENGTH; ++z)
 			{
-				Chunk * chunk = new Chunk(x, y, z);
+				Chunk * chunk = new Chunk(x, y, z, this);
 				chunk->build();
 				chunk->generateMesh();
 				_chunkMap[chunk->getChunkLocation()] = chunk;
