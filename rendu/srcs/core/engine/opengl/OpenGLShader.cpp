@@ -1,6 +1,7 @@
 #include "OpenGLEngine.hpp"
 #include "utils.hpp"
 #include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 static const std::string getShaderAsString(std::string path)
@@ -32,8 +33,7 @@ static GLuint compileShader(GLenum type, const std::string & filepath)
 		error_message = (char *)alloca(sizeof(char) * error_length);
 		// This will store the log of the program into the error_message string.
 		glGetShaderInfoLog(shader, error_length, &error_length, error_message);
-		std::cerr << BOLD_RED << (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") << "shader failed to compile." << std::endl;
-		std::cerr << error_message << RESET << std::endl;
+		Logger::log(ENGINE_OPENGL, CRITICAL, (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") + std::string("shader failed to compile: ") + error_message);
 		// Delete the shader to avoid leaks.
 		glDeleteShader(shader);
 		return (0);

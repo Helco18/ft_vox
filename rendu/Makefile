@@ -18,8 +18,6 @@ GLSL_PATH			=	$(SHADER_PATH)/glsl
 
 # Sources
 SRCS				=	srcs/main.cpp \
-						srcs/tools/stb_image.cpp \
-						srcs/tools/utils.cpp \
 						srcs/core/camera/Camera.cpp \
 						srcs/core/engine/opengl/OpenGLEngine.cpp \
 						srcs/core/engine/opengl/OpenGLShader.cpp \
@@ -41,6 +39,9 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
+						srcs/tools/stb_image.cpp \
+						srcs/tools/utils.cpp \
+						srcs/tools/logger/Logger.cpp \
 						srcs/voxel/WorldManager.cpp \
 						srcs/voxel/block/BlockData.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
@@ -62,6 +63,7 @@ INCLUDES			=	-I libs \
 						-I srcs/core/window \
 						-I srcs/environment \
 						-I srcs/tools \
+						-I srcs/tools/logger \
 						-I srcs/voxel \
 						-I srcs/voxel/block \
 						-I srcs/voxel/chunk \
