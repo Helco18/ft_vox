@@ -9,11 +9,11 @@ World::~World()
 
 void World::load()
 {
-	for (int x = 0; x < 3; ++x)
+	for (int x = 0; x < WORLD_WIDTH; ++x)
 	{
-		for (int y = 0; y < 3; ++y)
+		for (int y = 0; y < WORLD_HEIGHT; ++y)
 		{
-			for (int z = 0; z < 3; ++z)
+			for (int z = 0; z < WORLD_LENGTH; ++z)
 			{
 				Chunk * chunk = new Chunk(x, y, z);
 				chunk->build();

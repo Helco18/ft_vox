@@ -23,6 +23,9 @@ class BlockData
 		static void					init();
 		static BlockData			getBlockData(uint8_t id);
 
+		const std::string &			getName() const { return _name; }
+		bool						isVisible() const { return _isVisible; }
+
 	private:
 		typedef std::unordered_map<uint8_t, BlockData>	BlockDataRegistry;
 

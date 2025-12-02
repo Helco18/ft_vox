@@ -1,5 +1,9 @@
 #pragma once
 
+#define WORLD_WIDTH 3
+#define WORLD_HEIGHT 3
+#define WORLD_LENGTH 3
+
 #include <unordered_map>
 #include "AEngine.hpp"
 #include "Chunk.hpp"
@@ -26,6 +30,6 @@ class World
 	private:
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 
-		std::string			_name;
-		ChunkMap			_chunkMap;
+		std::string				_name;
+		ChunkMap				_chunkMap;
 };

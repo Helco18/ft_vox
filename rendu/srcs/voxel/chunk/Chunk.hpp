@@ -1,8 +1,8 @@
 #pragma once
 
-#define CHUNK_WIDTH 2
-#define CHUNK_HEIGHT 2
-#define CHUNK_LENGTH 2
+#define CHUNK_WIDTH 32
+#define CHUNK_HEIGHT 32
+#define CHUNK_LENGTH 32
 
 #include <cstdint>
 #include <vector>
@@ -40,4 +40,7 @@ class Chunk
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 		Asset					_asset;
 		ChunkState				_state;
+
+		std::vector<uint8_t>	_getNeighboringBlocks(int x, int y, int z);
+		bool					_blockIsVisible(int x, int y, int z);
 };

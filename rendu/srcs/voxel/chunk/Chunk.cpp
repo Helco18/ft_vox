@@ -1,5 +1,6 @@
 #include "Chunk.hpp"
 #include "utils.hpp"
+#include "BlockData.hpp"
 
 void Chunk::build()
 {
@@ -22,6 +23,59 @@ void Chunk::build()
 	_state = BUILT;
 }
 
+std::vector<uint8_t> Chunk::_getNeighboringBlocks(int x, int y, int z)
+{
+	std::vector<uint8_t> neighboringBlocks;
+
+	// SOUTH
+	if (x > 0)
+		neighboringBlocks.push_back(_blocks[x - 1][y][z]);
+	else
+		neighboringBlocks.push_back(0);
+	// NORTH
+	if (x + 1 < CHUNK_WIDTH)
+		neighboringBlocks.push_back(_blocks[x + 1][y][z]);
+	else
+		neighboringBlocks.push_back(0);
+
+	// WEST
+	if (z > 0)
+		neighboringBlocks.push_back(_blocks[x][y][z - 1]);
+	else
+		neighboringBlocks.push_back(0);
+	// EAST
+	if (z + 1 < CHUNK_LENGTH)
+		neighboringBlocks.push_back(_blocks[x][y][z + 1]);
+	else
+		neighboringBlocks.push_back(0);
+
+	// TOP
+	if (y > 0)
+		neighboringBlocks.push_back(_blocks[x][y - 1][z]);
+	else
+		neighboringBlocks.push_back(0);
+	// BOTTOM
+	if (y + 1 < CHUNK_WIDTH)
+		neighboringBlocks.push_back(_blocks[x][y + 1][z]);
+	else
+		neighboringBlocks.push_back(0);
+
+	return neighboringBlocks;
+}
+
+bool Chunk::_blockIsVisible(int x, int y, int z)
+{
+	std::vector<uint8_t> neighboringBlocks = _getNeighboringBlocks(x, y, z);
+
+	for (std::vector<uint8_t>::iterator it = neighboringBlocks.begin(); it != neighboringBlocks.end(); ++it)
+	{
+		BlockData blockData = BlockData::getBlockData(*it);
+		if (!blockData.isVisible())
+			return true;
+	}
+	return false;
+}
+
 void Chunk::generateMesh()
 {
 	const OBJModel model = OBJModel::getModel(CUBE);
@@ -32,6 +86,16 @@ void Chunk::generateMesh()
 		{
 			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
+				if (!_blockIsVisible(x, y, z))
+					continue;
+				// for (int i = 0; i <= BlockFace::BOTTOM; ++i)
+				// {
+				// 	for (int j = 0; j < 4; ++j)
+				// 	{
+				// 		_asset.vertices.push_back()
+				// 	}
+				// }
+
 				uint32_t verticesAdded = _asset.vertices.size();
 				if (_blocks[x][y][z] == 1)
 				{
