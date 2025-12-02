@@ -42,6 +42,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
 						srcs/voxel/WorldManager.cpp \
+						srcs/voxel/block/BlockData.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/world/World.cpp
 SHADERS				=	$(SHADER_PATH)/slang/base.slang
