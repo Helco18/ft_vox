@@ -63,8 +63,10 @@ INCLUDES			=	-I libs \
 						-I srcs/environment \
 						-I srcs/tools \
 						-I srcs/voxel \
+						-I srcs/voxel/block \
 						-I srcs/voxel/chunk \
 						-I srcs/voxel/world
+
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 
 # Objects

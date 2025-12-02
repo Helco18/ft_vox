@@ -3,6 +3,7 @@
 #include "InputManager.hpp"
 #include "WorldManager.hpp"
 #include "colors.hpp"
+#include "BlockData.hpp"
 #include <iostream>
 
 Environment::~Environment()
@@ -19,6 +20,7 @@ void Environment::init(EngineType engineType)
 	_windowManager = new WindowManager(engineType, this);
 	_windowManager->load();
 
+	BlockData::init();
 	WorldManager::createWorld("bozoandzibocircus");
 
 	std::cout << GREEN << "[OK] Environment started" << RESET << std::endl;
