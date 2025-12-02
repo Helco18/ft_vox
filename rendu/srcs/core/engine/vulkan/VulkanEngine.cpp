@@ -89,20 +89,15 @@ void VulkanEngine::beginFrame()
 
 AssetID VulkanEngine::upload(Asset & asset)
 {
-	static uint64_t vboCount = 0;
-	static uint64_t iboCount = 0;
 	static AssetID assetID = 1;
 
-	_createVertexBuffer(asset);
-	_createIndexBuffer(asset);
+	asset.vbo = _vertexSize;
+	asset.ibo = _indexSize;
+	_concateneVertexBuffer(asset);
+	_concateneIndexBuffer(asset);
 	asset.assetID = assetID;
 
 	_assetMap.try_emplace(assetID, asset);
-	asset.vbo = vboCount;
-	vboCount += asset.vertices.size();
-	asset.ibo = iboCount;
-	iboCount += asset.indices.size();
-	_indexSize = iboCount;
 	return assetID++;
 }
 
@@ -120,8 +115,8 @@ void VulkanEngine::endFrame()
 	// Fence = on attend que le GPU finisse la tâche
 	try
 	{
-		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphores[_semaphoreIndex], nullptr);
-		uint32_t imageIndex = result.second;
+		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphores[_presentSemaphoreIndex], nullptr);
+		_imageIndex = result.second;
 		if (result.first != vk::Result::eSuccess && result.first != vk::Result::eSuboptimalKHR)
 		{
 			if (result.first == vk::Result::eErrorOutOfDateKHR)
@@ -142,21 +137,21 @@ void VulkanEngine::endFrame()
 
 		vk::SubmitInfo submitInfo;
 		submitInfo.waitSemaphoreCount = 1;
-		submitInfo.pWaitSemaphores = &*_presentCompleteSemaphores[_semaphoreIndex];
+		submitInfo.pWaitSemaphores = &*_presentCompleteSemaphores[_presentSemaphoreIndex];
 		submitInfo.pWaitDstStageMask = &waitDstStageMask;
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &*_commandBuffers[_currentFrame];
 		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[imageIndex];
+		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_renderSemaphoreIndex];
 
 		_queue.submit(submitInfo, *_inFlightFences[_currentFrame]);
 
 		vk::PresentInfoKHR presentInfoKHR;
 		presentInfoKHR.waitSemaphoreCount = 1;
-		presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphores[imageIndex];
+		presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphores[_renderSemaphoreIndex];
 		presentInfoKHR.swapchainCount = 1;
 		presentInfoKHR.pSwapchains = &*_swapChain;
-		presentInfoKHR.pImageIndices = &imageIndex;
+		presentInfoKHR.pImageIndices = &_imageIndex;
 
 		vk::Result presentResult = _queue.presentKHR(presentInfoKHR);
 		if (presentResult != vk::Result::eSuccess)
@@ -170,7 +165,8 @@ void VulkanEngine::endFrame()
 				throw std::runtime_error("Couldn't present next image.");
 		}
 
-		_semaphoreIndex = (_semaphoreIndex + 1) % _presentCompleteSemaphores.size();
+		_presentSemaphoreIndex = (_presentSemaphoreIndex + 1) % _presentCompleteSemaphores.size();
+		_renderSemaphoreIndex = (_renderSemaphoreIndex + 1) % _renderFinishedSemaphores.size();
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	} catch (const vk::OutOfDateKHRError & e)
 	{

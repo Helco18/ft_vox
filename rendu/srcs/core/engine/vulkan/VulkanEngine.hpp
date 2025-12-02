@@ -108,16 +108,17 @@ class VulkanEngine : public AEngine
 		Semaphores							_presentCompleteSemaphores;
 		Semaphores							_renderFinishedSemaphores;
 		Fences								_inFlightFences;
-		uint32_t							_semaphoreIndex = 0;
+		uint32_t							_presentSemaphoreIndex = 0;
+		uint32_t							_renderSemaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
 		uint32_t							_imageIndex = 0;
 
 		// Buffers & Memory
 		vk::raii::Buffer					_vertexBuffer = nullptr;
-		uint32_t							_vertexSize;
+		uint32_t							_vertexSize = 0;
 		vk::raii::DeviceMemory				_vertexBufferMemory = nullptr;
 		vk::raii::Buffer					_indexBuffer = nullptr;
-		uint32_t							_indexSize;
+		uint32_t							_indexSize = 0;
 		vk::raii::DeviceMemory				_indexBufferMemory = nullptr;
 		std::vector<vk::raii::Buffer>		_uniformBuffers;
 		std::vector<vk::raii::DeviceMemory>	_uniformBuffersMemory;
@@ -156,8 +157,8 @@ class VulkanEngine : public AEngine
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag);
 		void								_createTextureImage();
-		void								_createVertexBuffer(Asset & asset);
-		void								_createIndexBuffer(Asset & asset);
+		void								_concateneVertexBuffer(Asset & asset);
+		void								_concateneIndexBuffer(Asset & asset);
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

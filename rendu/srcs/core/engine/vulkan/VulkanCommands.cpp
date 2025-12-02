@@ -67,7 +67,8 @@ void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info
 void VulkanEngine::_recordCommandBuffer()
 {
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
-	_commandBuffers[_currentFrame].begin(commandBufferBeginInfo);
+	vk::CommandBuffer commands = _commandBuffers[_currentFrame];
+	commands.begin(commandBufferBeginInfo);
 
 	TransitionImageViewLayoutInfo transitionImageViewInfo;
 	transitionImageViewInfo.imageIndex = _imageIndex;
@@ -109,7 +110,7 @@ void VulkanEngine::_recordCommandBuffer()
 	depthDependencyInfo.imageMemoryBarrierCount = 1;
 	depthDependencyInfo.pImageMemoryBarriers = &depthBarrier;
 
-	_commandBuffers[_currentFrame].pipelineBarrier2(depthDependencyInfo);
+	commands.pipelineBarrier2(depthDependencyInfo);
 
 	// Transitioner le layout de l'image d'undefined à colorattachment dans notre cas
 	_transitionImageViewLayout(transitionImageViewInfo);
@@ -148,16 +149,16 @@ void VulkanEngine::_recordCommandBuffer()
 	renderingInfo.pColorAttachments = &colorAttachmentInfo;
 	renderingInfo.pDepthAttachment = &depthAttachmentInfo;
 
-	_commandBuffers[_currentFrame].beginRendering(renderingInfo);
-	_commandBuffers[_currentFrame].bindPipeline(vk::PipelineBindPoint::eGraphics, *_graphicsPipeline);
-	_commandBuffers[_currentFrame].setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width), static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
-	_commandBuffers[_currentFrame].setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
-	_commandBuffers[_currentFrame].bindVertexBuffers(0, *_vertexBuffer, {0});
-	_commandBuffers[_currentFrame].bindIndexBuffer( *_indexBuffer, 0, vk::IndexType::eUint32);
-	_commandBuffers[_currentFrame].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, *_descriptorSets[_currentFrame], nullptr);
+	commands.beginRendering(renderingInfo);
+	commands.bindPipeline(vk::PipelineBindPoint::eGraphics, *_graphicsPipeline);
+	commands.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width), static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
+	commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
+	commands.bindVertexBuffers(0, *_vertexBuffer, {0});
+	commands.bindIndexBuffer( *_indexBuffer, 0, vk::IndexType::eUint32);
+	commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, *_descriptorSets[_currentFrame], nullptr);
 	for (const Asset * asset : _drawableAssets)
-		_commandBuffers[_currentFrame].drawIndexed(asset->indices.size(), 1, asset->ibo, asset->vbo, 0);
-	_commandBuffers[_currentFrame].endRendering();
+		commands.drawIndexed(asset->indices.size(), 1, asset->ibo, asset->vbo, 0);
+	commands.endRendering();
 
 	TransitionImageViewLayoutInfo presentSrcInfo;
 	presentSrcInfo.imageIndex = _imageIndex;
@@ -169,7 +170,7 @@ void VulkanEngine::_recordCommandBuffer()
 	presentSrcInfo.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
 
 	_transitionImageViewLayout(presentSrcInfo);
-	_commandBuffers[_currentFrame].end();
+	commands.end();
 }
 
 void VulkanEngine::_createSyncObjects()

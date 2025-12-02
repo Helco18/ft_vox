@@ -27,13 +27,14 @@ void Environment::init(EngineType engineType)
 void Environment::loop()
 {
 	double frameStart;
+	double deltaTime = 0.0;
 
 	while (_running)
 	{
 		frameStart = glfwGetTime();
 		_windowManager->getEngine()->beginFrame();
 		InputManager::interceptMouse(_windowManager);
-		InputManager::interceptMovements(_windowManager, glfwGetTime() - frameStart);
+		InputManager::interceptMovements(_windowManager, deltaTime);
 		World * world = WorldManager::getWorld("bozoandzibocircus");
 		if (world)
 			world->render(_windowManager->getEngine());
@@ -44,5 +45,6 @@ void Environment::loop()
 			continue;
 		}
 		_windowManager->getEngine()->endFrame();
+		deltaTime = glfwGetTime() - frameStart;
 	}
 }

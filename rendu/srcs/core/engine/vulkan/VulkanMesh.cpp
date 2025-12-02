@@ -83,18 +83,20 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 	_endSingleTimeCommands(commandCopyBuffer);
 }
 
-void VulkanEngine::_createVertexBuffer(Asset & asset)
+void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 {
-	vk::DeviceSize size = sizeof(asset.vertices[0]) * asset.vertices.size();
+	static std::vector<Vertex> vertices;
+	vk::DeviceSize size = sizeof(Vertex) * (asset.vertices.size() + _vertexSize);
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
-	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
+	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc,
 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, asset.vertices.data(), size);
+	vertices.insert(vertices.end(), asset.vertices.begin(), asset.vertices.end());
+	memcpy(dataStaging, vertices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
@@ -102,12 +104,13 @@ void VulkanEngine::_createVertexBuffer(Asset & asset)
 					_vertexBuffer, _vertexBufferMemory);
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
-	_vertexSize = asset.vertices.size();
+	_vertexSize = vertices.size();
 }
 
-void VulkanEngine::_createIndexBuffer(Asset & asset)
+void VulkanEngine::_concateneIndexBuffer(Asset & asset)
 {
-	vk::DeviceSize size = sizeof(asset.indices[0]) * asset.indices.size();
+	static std::vector<uint32_t> indices;
+	vk::DeviceSize size = sizeof(asset.indices[0]) * (asset.indices.size() + _indexSize);
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
@@ -116,7 +119,8 @@ void VulkanEngine::_createIndexBuffer(Asset & asset)
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, asset.indices.data(), size);
+	indices.insert(indices.end(), asset.indices.begin(), asset.indices.end());
+	memcpy(dataStaging, indices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
@@ -124,49 +128,5 @@ void VulkanEngine::_createIndexBuffer(Asset & asset)
 					_indexBuffer, _indexBufferMemory);
 	_copyBuffer(stagingBuffer, _indexBuffer, size);
 
-	_indexSize = asset.indices.size();
+	_indexSize = indices.size();
 }
-
-// void VulkanEngine::_createVertexBuffer(Asset & asset)
-// {
-// 	vk::DeviceSize size = sizeof(asset.vertices[0]) * asset.vertices.size();
-// 	vk::raii::Buffer stagingBuffer = nullptr;
-// 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
-
-// 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
-// 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-// 					stagingBuffer, stagingBufferMemory);
-
-// 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-// 	memcpy(dataStaging, asset.vertices.data(), size);
-// 	stagingBufferMemory.unmapMemory();
-
-// 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
-// 					vk::MemoryPropertyFlagBits::eDeviceLocal,
-// 					_vertexBuffer, _vertexBufferMemory);
-// 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
-
-// 	_vertexSize = asset.vertices.size();
-// }
-
-// void VulkanEngine::_createIndexBuffer(Asset & asset)
-// {
-// 	vk::DeviceSize size = sizeof(asset.indices[0]) * asset.indices.size();
-// 	vk::raii::Buffer stagingBuffer = nullptr;
-// 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
-
-// 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
-// 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-// 					stagingBuffer, stagingBufferMemory);
-
-// 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-// 	memcpy(dataStaging, asset.indices.data(), size);
-// 	stagingBufferMemory.unmapMemory();
-
-// 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
-// 					vk::MemoryPropertyFlagBits::eDeviceLocal,
-// 					_indexBuffer, _indexBufferMemory);
-// 	_copyBuffer(stagingBuffer, _indexBuffer, size);
-
-// 	_indexSize = asset.indices.size();
-// }
