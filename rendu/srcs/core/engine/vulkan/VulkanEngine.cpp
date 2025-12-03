@@ -88,7 +88,7 @@ void VulkanEngine::beginFrame()
 	_drawableAssets.clear();
 }
 
-AssetID VulkanEngine::upload(Asset & asset)
+AssetID VulkanEngine::uploadAsset(Asset & asset)
 {
 	static AssetID assetID = 1;
 

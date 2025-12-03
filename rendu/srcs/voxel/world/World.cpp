@@ -74,7 +74,7 @@ void World::render(AEngine * engine)
 	{
 		Chunk * chunk = chunks.second;
 		if (chunk && chunk->getState() == MESHED)
-			chunk->upload(engine);
+			chunk->uploadAsset(engine);
 		engine->drawAsset(chunk->getAsset().assetID);
 	}
 }

@@ -21,7 +21,8 @@ enum LogSource
 	MODEL,
 	SHADER,
 	WINDOW,
-	GENERAL
+	GENERAL,
+	TEXTURE
 };
 
 class Logger

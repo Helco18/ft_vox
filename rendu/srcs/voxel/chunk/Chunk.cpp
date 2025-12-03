@@ -138,9 +138,9 @@ void Chunk::generateMesh()
 	_state = MESHED;
 }
 
-void Chunk::upload(AEngine * engine)
+void Chunk::uploadAsset(AEngine * engine)
 {
-	engine->upload(_asset);
+	engine->uploadAsset(_asset);
 	_state = UPLOADED;
 }
 

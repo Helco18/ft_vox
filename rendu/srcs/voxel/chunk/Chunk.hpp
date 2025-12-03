@@ -36,7 +36,7 @@ class Chunk
 
 		void					build();
 		void					generateMesh();
-		void					upload(AEngine * engine);
+		void					uploadAsset(AEngine * engine);
 		void					unload();
 	private:
 		World *					_world;

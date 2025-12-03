@@ -60,6 +60,7 @@ const std::string Logger::_getLogSourcePrefix(LogSource source)
 		case SHADER: return "SHADER";
 		case WINDOW: return "WINDOW";
 		case GENERAL: return "GENERAL";
+		case TEXTURE: return "TEXTURE";
 		default: return "UNKNOWN";
 	}
 }

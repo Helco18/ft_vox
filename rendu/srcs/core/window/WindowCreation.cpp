@@ -8,7 +8,7 @@ GLFWimage WindowManager::_decodeOneStep(const char * filename)
 {
 	GLFWimage image;
 	int width, height, channels;
-	unsigned char* pixels = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
+	unsigned char * pixels = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
 
 	if (!pixels)
 		throw WindowException("Failed to load image : " + std::string(filename));
@@ -33,7 +33,7 @@ void WindowManager::_setIcon(GLFWwindow * window)
 
 		glfwSetWindowIcon(window, 2, images);
 	}
-	catch(const std::exception & e)
+	catch (const std::exception & e)
 	{
 		if (images[0].pixels)
 			stbi_image_free(images[0].pixels);

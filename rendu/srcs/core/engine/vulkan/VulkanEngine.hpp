@@ -63,7 +63,9 @@ class VulkanEngine : public AEngine
 
 		void								load() override;
 		void								beginFrame() override;
-		AssetID								upload(Asset & asset) override;
+		AssetID								uploadAsset(Asset & asset) override;
+		void								uploadTexture(OBJModel & model) override;
+		void								uploadTexture(Texture & texture) override;
 		void								drawAsset(AssetID assetID) override;
 		void								endFrame() override;
 

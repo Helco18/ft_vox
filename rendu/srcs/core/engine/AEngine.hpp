@@ -33,7 +33,9 @@ class AEngine
 
 		virtual void	load() = 0;
 		virtual void	beginFrame() = 0;
-		virtual AssetID	upload(Asset & asset) = 0;
+		virtual AssetID	uploadAsset(Asset & asset) = 0;
+		virtual void	uploadTexture(OBJModel & model) = 0;
+		virtual void	uploadTexture(Texture & texture) = 0;
 		virtual void	drawAsset(AssetID assetID) = 0;
 		virtual void	endFrame() = 0;
 		

@@ -8,7 +8,7 @@ OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(windo
 
 OpenGLEngine::~OpenGLEngine() {}
 
-AssetID OpenGLEngine::upload(Asset & asset)
+AssetID OpenGLEngine::uploadAsset(Asset & asset)
 {
 	glGenVertexArrays(1, &asset.assetID);
 	glBindVertexArray(asset.assetID);

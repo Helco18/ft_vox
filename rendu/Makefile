@@ -35,6 +35,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanUniform.cpp \
 						srcs/core/input/InputManager.cpp \
 						srcs/core/model/OBJModel.cpp \
+						srcs/core/texture/Texture.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
@@ -58,7 +59,7 @@ INCLUDES			=	-I libs \
 						-I srcs/core/engine/vulkan \
 						-I srcs/core/input \
 						-I srcs/core/model \
-						-I srcs/core/shaders \
+						-I srcs/core/texture \
 						-I srcs/core/window \
 						-I srcs/environment \
 						-I srcs/tools \

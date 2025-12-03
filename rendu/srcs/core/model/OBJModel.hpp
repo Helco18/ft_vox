@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Texture.hpp"
 #include "glm/glm.hpp"
 #include <string>
 
@@ -31,14 +32,6 @@ struct Mesh
 {
 	std::string				material;
 	std::vector<uint32_t>	indices;
-};
-
-struct Texture
-{
-	int				width;
-	int				height;
-	int				channels;
-	unsigned char *	data;
 };
 
 class OBJModel
