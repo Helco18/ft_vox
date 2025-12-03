@@ -1,11 +1,36 @@
 #include "Logger.hpp"
 #include "colors.hpp"
+#include <iomanip>
 #include <iostream>
+#include <ctime>
+#include <chrono>
+#include <sstream>
+
+static const std::string getTimestampAsDate()
+{
+	std::ostringstream oss;
+	std::chrono::time_point now = std::chrono::system_clock::now();
+
+	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+	time_t timeTNow = std::chrono::system_clock::to_time_t(now);
+	struct tm * sTime = std::localtime(&timeTNow);
+	oss << std::put_time(sTime, "[%Y/%m/%d %I:%M:%S");
+	oss << "." << std::setw(3) << std::setfill('0') << ms.count();
+	oss << " " << std::put_time(sTime, "%p] ");
+
+	return oss.str();
+}
 
 void Logger::log(LogSource source, LogSeverity severity, const std::string & message)
 {
 	std::ostream * outputStream = severity >= ERROR ? &std::cerr : &std::cout;
-	*outputStream << _getLogSeverityPrefix(severity) << " " << _getLogSourcePrefix(source) << ": " << message << RESET << std::endl; 
+	*outputStream
+		<< getTimestampAsDate()
+		<< _getLogSeverityPrefix(severity)
+		<< "\t"
+		<< _getLogSourcePrefix(source)
+		<< ": "
+		<< message << RESET << std::endl; 
 }
 
 const std::string Logger::_getLogSeverityPrefix(LogSeverity severity)
@@ -17,7 +42,7 @@ const std::string Logger::_getLogSeverityPrefix(LogSeverity severity)
 		case WARNING: return YELLOW"[WARNING]";
 		case ERROR: return RED"[ERROR]";
 		case CRITICAL: return BOLD_RED"[CRITICAL]";
-		default: return "UNKNOWN";
+		default: return "[UNKNOWN]";
 	}
 }
 
