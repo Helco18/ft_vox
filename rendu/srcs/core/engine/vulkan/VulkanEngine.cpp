@@ -1,5 +1,6 @@
 #include "VulkanEngine.hpp"
-#include "colors.hpp"
+#include "CustomExceptions.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
@@ -72,8 +73,8 @@ void VulkanEngine::load()
 	// ils permettent de s’assurer que les opérations GPU (rendu, présentation, etc.) s’exécutent dans le bon ordre et ne se chevauchent pas.
 	_createSyncObjects();
 
-	std::cout << GREEN << "[OK] Vulkan engine initialized successfully." << RESET << std::endl;
 	_isInitalized = true;
+	Logger::log(ENGINE_VULKAN, INFO, "Vulkan engine initialized successfully.");
 }
 
 VulkanEngine::~VulkanEngine()
@@ -124,7 +125,7 @@ void VulkanEngine::endFrame()
 				_recreateSwapchain();
 				return;
 			}
-			throw std::runtime_error("Couldn't acquire next image.");
+			throw VulkanException("Couldn't acquire next image.");
 		}
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
@@ -162,7 +163,7 @@ void VulkanEngine::endFrame()
 				_recreateSwapchain();
 			}
 			else
-				throw std::runtime_error("Couldn't present next image.");
+				throw VulkanException("Couldn't present next image.");
 		}
 
 		_presentSemaphoreIndex = (_presentSemaphoreIndex + 1) % _presentCompleteSemaphores.size();

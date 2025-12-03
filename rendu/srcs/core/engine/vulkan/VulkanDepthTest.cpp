@@ -1,4 +1,5 @@
 #include "VulkanEngine.hpp"
+#include "CustomExceptions.hpp"
 
 vk::Format VulkanEngine::_findSupportedFormat(const std::vector<vk::Format> & candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features)
 {
@@ -10,7 +11,7 @@ vk::Format VulkanEngine::_findSupportedFormat(const std::vector<vk::Format> & ca
 		if (tiling == vk::ImageTiling::eOptimal && (props.optimalTilingFeatures & features) == features)
 			return candidate;
 	}
-	throw std::runtime_error("Failed to find supported Depth format.");
+	throw VulkanException("Failed to find supported Depth format.");
 }
 
 vk::Format VulkanEngine::_findDepthFormat()

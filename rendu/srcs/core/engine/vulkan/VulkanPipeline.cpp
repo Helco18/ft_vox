@@ -1,6 +1,6 @@
 #include "VulkanEngine.hpp"
 #include "utils.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 vk::raii::ShaderModule VulkanEngine::_createShaderModule(const std::vector<char> & shaderSrc) const
@@ -152,5 +152,5 @@ void VulkanEngine::_createGraphicsPipeline()
 	_graphicsPipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Graphics Pipeline" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Graphics Pipeline.");
 }

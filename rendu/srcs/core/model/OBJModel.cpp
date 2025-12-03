@@ -1,7 +1,7 @@
 #include "OBJModel.hpp"
 #include "utils.hpp"
 #include "stb/stb_image.h"
-#include "colors.hpp"
+#include "CustomExceptions.hpp"
 #include <iostream>
 #include <fstream>
 #include <filesystem>
@@ -17,7 +17,7 @@ OBJModel::~OBJModel() {}
 OBJModel OBJModel::getModel(ModelType type)
 {
 	if (_modelCache.find(type) == _modelCache.end())
-		throw std::runtime_error("Invalid ModelType: " + toString(type));
+		throw ModelException("Invalid ModelType: " + toString(type));
 	return _modelCache[type];
 }
 
@@ -35,7 +35,7 @@ bool OBJModel::load()
 	std::ifstream file(_filepath);
 	if (!file.is_open())
 	{
-		std::cerr << "Erreur ouverture OBJ : " << _filepath << std::endl;
+		Logger::log(MODEL, ERROR, "Couldn't open OBJ file: '" + _filepath + "'.");
 		return false;
 	}
 
@@ -63,7 +63,7 @@ bool OBJModel::load()
 			size_t posIndex3 = _vertices[index3].originalPositionIndex;
 			if (posIndex1 >= _temp_positions.size() || posIndex2 >= _temp_positions.size() || posIndex3 >= _temp_positions.size())
 			{
-				std::cerr << "Erreur: Indice de position d'origine invalide lors du calcul de la normale" << std::endl;
+				Logger::log(MODEL, ERROR, "Invalid position indice while computing normal.");
 				continue;
 			}
 			const glm::vec3& p1 = _temp_positions[posIndex1];
@@ -82,11 +82,7 @@ bool OBJModel::load()
 	}
 
 	for (glm::vec3& normal : temp_calculated_normals)
-	{
 		normal = normalize(normal);
-		// if (normal.z < 0)
-		//     normal = -normal;
-	}
 	for (size_t i = 0; i < _vertices.size(); ++i)
 	{
 		int posIndex = _vertices[i].originalPositionIndex;
@@ -152,17 +148,9 @@ void OBJModel::_parseLine(const std::string & line)
 		_loadMTL(mtlFile);
 	}
 	else if (prefix == "usemtl")
-	{
 		iss >> _currentMaterialName;
-	}
 	else if (prefix == "g" || prefix == "o")
-	{
-		std::cout << "Ignoring line: " << line << std::endl;
-	}
-	else if (line.empty() || line[0] == '#')
-	{
-		// Ignore empty lines and comments
-	}
+		Logger::log(MODEL, INFO, "Ignoring line: " + line + ".");
 }
 
 uint32_t OBJModel::_parseVertexIndex(const std::string & token)
@@ -214,10 +202,10 @@ void OBJModel::_loadMTL(const std::string & filename)
 
 	if (!file.is_open())
 	{
-		std::cerr << "Erreur ouverture MTL : " << filename << std::endl;
+		Logger::log(MODEL, ERROR, "Couldn't open MTL file '" + filename + "'.");
 		return;
 	}
-	std::cout << "Chargement du fichier MTL : " << filename << std::endl;
+	Logger::log(MODEL, INFO, "Loading MTL file '" + filename + "'.");
 
 	std::string line;
 	Material * current = nullptr;
@@ -264,11 +252,11 @@ void OBJModel::_loadMTL(const std::string & filename)
 
 				if (newTexture.data)
 				{
-					std::cout << "Texture '" << current->diffuseTexturePath << "' chargee avec succes." << std::endl;
+					Logger::log(MODEL, INFO, "Successfully loaded texture '" + current->diffuseTexturePath + "'.");
 					_loadedTextures[_type] = newTexture;
 				}
 				else
-					std::cerr << "Erreur de chargement de la texture : " << fullTexturePath << std::endl;
+					Logger::log(MODEL, ERROR, "Couldn't load texture '" + current->diffuseTexturePath + "'.");
 			}
 		}
 	}

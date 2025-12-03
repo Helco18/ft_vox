@@ -1,5 +1,5 @@
 #include "VulkanEngine.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 static VULKAN_CALLBACK debugCallback(
@@ -12,15 +12,15 @@ static VULKAN_CALLBACK debugCallback(
 	if (severity < DEBUG_LEVEL)
 		return vk::False;
 
-	std::string severityType = "";
+	LogSeverity severityType = INFO;
 	if (severity & vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose)
-   		severityType = GRAY "[VERBOSE] ";
+   		severityType = INFO;
 	if (severity & vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo)
-		severityType = CYAN "[INFO] ";
+		severityType = INFO;
 	if (severity & vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning)
-		severityType = YELLOW "[WARNING] ";
+		severityType = WARNING;
 	if (severity & vk::DebugUtilsMessageSeverityFlagBitsEXT::eError)
-		severityType = RED "[ERROR] ";
+		severityType = ERROR;
 
 	std::string messageType = "";
 	if (type & vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral)
@@ -30,7 +30,7 @@ static VULKAN_CALLBACK debugCallback(
 	if (type & vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance)
 		messageType = "Performance - ";
 
-	std::cout << severityType << messageType << pCallbackData->pMessage << RESET << std::endl;
+	Logger::log(ENGINE_VULKAN, severityType, messageType + pCallbackData->pMessage + ".");
 	return vk::False;
 }
 

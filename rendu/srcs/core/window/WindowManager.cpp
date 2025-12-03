@@ -1,8 +1,9 @@
 #include "Environment.hpp"
-#include "InputManager.hpp"
-#include "VulkanEngine.hpp"
 #include "OpenGLEngine.hpp"
-#include "colors.hpp"
+#include "VulkanEngine.hpp"
+#include "CustomExceptions.hpp"
+#include "InputManager.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 WindowManager::WindowManager(EngineType engineType, Environment * environment):
@@ -36,7 +37,7 @@ void WindowManager::load()
 	{
 		case VULKAN: _engine = new VulkanEngine(_window, _camera); break;
 		case OPENGL: _engine = new OpenGLEngine(_window, _camera); break;
-		default: throw std::runtime_error("Unknown Engine type.");
+		default: throw WindowException("Unknown Engine type.");
 	}
 
 	_engine->load();
@@ -99,13 +100,13 @@ void WindowManager::swap()
 	}
 
 	_engineType = _engineType == VULKAN ? OPENGL : VULKAN;
-	std::cout << MAGENTA << "[ENGINE] Swapping to: " << (ENGINE_NAME(_engineType)) << RESET << std::endl;
+	Logger::log(WINDOW, INFO, "Swapping to: " + std::string(ENGINE_NAME(_engineType)) + ".");
 	load();
 
 	_lastFpsUpdate = glfwGetTime();
 	glfwFocusWindow(_window);
 	_isSwapRequested = false;
-	std::cout << MAGENTA << "[ENGINE] Successfully swapped to: " << (ENGINE_NAME(_engineType)) << RESET << std::endl;
+	Logger::log(WINDOW, INFO, "Successfully swapped to: " + std::string(ENGINE_NAME(_engineType)) + ".");
 }
 
 void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, int height)

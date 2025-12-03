@@ -1,5 +1,6 @@
 #include "VulkanEngine.hpp"
-#include "colors.hpp"
+#include "CustomExceptions.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <map>
 
@@ -31,7 +32,7 @@ void VulkanEngine::_createInstance()
 	_instance = vk::raii::Instance(_context, createInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Instance" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Instance.");
 }
 
 VulkanEngine::RequiredLayers VulkanEngine::_getRequiredLayers() const
@@ -55,7 +56,7 @@ VulkanEngine::RequiredLayers VulkanEngine::_getRequiredLayers() const
 			}
 		}
 		if (!foundExtension)
-			throw std::runtime_error("Required validation layer not supported: " + std::string(tmp));
+			throw VulkanException("Required validation layer not supported: " + std::string(tmp));
 	}
 	return requiredLayers;
 }
@@ -91,7 +92,7 @@ VulkanEngine::RequiredExtensions VulkanEngine::_getRequiredExtensions() const
 			}
 		}
 		if (!foundExtension)
-			throw std::runtime_error("Required GLFW extension not supported: " + std::string(tmp));
+			throw VulkanException("Required GLFW extension not supported: " + std::string(tmp));
 	}
 	return requiredExtensions;
 }
@@ -101,7 +102,7 @@ void VulkanEngine::_selectPhysicalDevice()
 	std::vector<vk::raii::PhysicalDevice> devices = _instance.enumeratePhysicalDevices();
 
 	if (devices.empty())
-		throw std::runtime_error("Failed to find a GPU compatible with Vulkan.");
+		throw VulkanException("Failed to find a GPU compatible with Vulkan.");
 
 	std::map<uint32_t, vk::raii::PhysicalDevice> candidates;
 	for (const vk::raii::PhysicalDevice & device : devices)
@@ -121,10 +122,10 @@ void VulkanEngine::_selectPhysicalDevice()
 	}
 
 	if (candidates.empty())
-		throw std::runtime_error("Failed to find a suitable GPU");
+		throw VulkanException("Failed to find a suitable GPU");
 
 	_physicalDevice = candidates.rbegin()->second;
-	std::cout << GREEN << "[OK] Selected GPU: " << _physicalDevice.getProperties().deviceName << RESET << std::endl;
+	Logger::log(ENGINE_VULKAN, INFO, "Selected GPU: " + std::string(_physicalDevice.getProperties().deviceName) + ".");
 }
 
 QueueIndices VulkanEngine::_findQueueFamilies() const
@@ -148,7 +149,7 @@ QueueIndices VulkanEngine::_findQueueFamilies() const
 		}
 		++i;
 	}
-	throw std::runtime_error("No queue family supporting graphics and present found.");
+	throw VulkanException("No queue family supporting graphics and present found.");
 }
 
 void VulkanEngine::_checkDeviceExtensions() const
@@ -169,7 +170,7 @@ void VulkanEngine::_checkDeviceExtensions() const
 			}
 		}
 		if (!foundExtension)
-			throw std::runtime_error("Missing required device extension: " + std::string(tmp));
+			throw VulkanException("Missing required device extension: " + std::string(tmp));
 	}
 }
 
@@ -181,7 +182,7 @@ void VulkanEngine::_createLogicalDevice()
 
 	vk::PhysicalDeviceFeatures supportedFeatures = _physicalDevice.getFeatures();
 	if (!supportedFeatures.samplerAnisotropy)
-		throw std::runtime_error("Missing anisotropy feature.");
+		throw VulkanException("Missing anisotropy feature.");
 
 	// Récupérer l'index de la queue family que l'on va utiliser
 	vk::DeviceQueueCreateInfo deviceQueueCreateInfo;
@@ -215,7 +216,7 @@ void VulkanEngine::_createLogicalDevice()
 	_queue = vk::raii::Queue(_device, _queueIndices.graphicsIndex, 0);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Logical Device" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Logical Device.");
 }
 
 void VulkanEngine::_createSurface()
@@ -223,10 +224,10 @@ void VulkanEngine::_createSurface()
 	VkSurfaceKHR surface;
 
 	if (glfwCreateWindowSurface(*_instance, _window, nullptr, &surface) != 0)
-		throw std::runtime_error("Failed to create window surface.");
+		throw VulkanException("Failed to create window surface.");
 
 	_surface = vk::raii::SurfaceKHR(_instance, surface);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Surface" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Surface.");
 }

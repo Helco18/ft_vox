@@ -27,10 +27,11 @@ void Logger::log(LogSource source, LogSeverity severity, const std::string & mes
 	*outputStream
 		<< getTimestampAsDate()
 		<< _getLogSeverityPrefix(severity)
-		<< "\t"
+		<< '\t'
 		<< _getLogSourcePrefix(source)
 		<< ": "
-		<< message << RESET << std::endl; 
+		<< message
+		<< RESET << std::endl; 
 }
 
 const std::string Logger::_getLogSeverityPrefix(LogSeverity severity)

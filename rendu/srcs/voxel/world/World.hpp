@@ -1,8 +1,8 @@
 #pragma once
 
-#define WORLD_WIDTH 3
-#define WORLD_HEIGHT 3
-#define WORLD_LENGTH 3
+#define WORLD_WIDTH 16
+#define WORLD_HEIGHT 16
+#define WORLD_LENGTH 16
 
 #include <unordered_map>
 #include "AEngine.hpp"

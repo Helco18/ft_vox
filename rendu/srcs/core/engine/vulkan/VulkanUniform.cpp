@@ -1,6 +1,6 @@
 #include "VulkanEngine.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 void VulkanEngine::_createUniformBuffers()
@@ -34,7 +34,7 @@ void VulkanEngine::_createUniformBuffers()
 	}
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Uniform Buffers" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Uniform Buffers.");
 }
 
 void VulkanEngine::_updateUniformBuffer()

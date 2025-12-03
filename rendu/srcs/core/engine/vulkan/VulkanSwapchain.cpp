@@ -1,5 +1,5 @@
 #include "VulkanEngine.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <valgrind/valgrind.h>
 
@@ -109,7 +109,7 @@ void VulkanEngine::_createSwapChain()
 	_swapChainImages = _swapChain.getImages();
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Swapchain" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Swapchain.");
 }
 
 void VulkanEngine::_createImageViews()
@@ -142,7 +142,7 @@ void VulkanEngine::_createImageViews()
 	}
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Image Views" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Image Views.");
 }
 
 void VulkanEngine::_recreateSwapchain()

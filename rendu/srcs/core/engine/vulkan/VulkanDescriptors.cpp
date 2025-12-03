@@ -1,5 +1,5 @@
 #include "VulkanEngine.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 void VulkanEngine::_createDescriptorSetLayout()
@@ -30,7 +30,7 @@ void VulkanEngine::_createDescriptorSetLayout()
 	_descriptorSetLayout = vk::raii::DescriptorSetLayout( _device, layoutInfo );
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Descriptor Pool Set" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool Set.");
 }
 
 void VulkanEngine::_createDescriptorPool()
@@ -54,7 +54,7 @@ void VulkanEngine::_createDescriptorPool()
 	_descriptorPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Descriptor Pool" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool.");
 }
 
 void VulkanEngine::_createDescriptorSets()
@@ -102,5 +102,5 @@ void VulkanEngine::_createDescriptorSets()
 	}
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Descriptor Sets" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Sets.");
 }

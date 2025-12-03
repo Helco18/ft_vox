@@ -1,7 +1,7 @@
 #include "OpenGLEngine.hpp"
 #include "utils.hpp"
-#include "colors.hpp"
 #include "Logger.hpp"
+#include "CustomExceptions.hpp"
 #include <iostream>
 
 static const std::string getShaderAsString(std::string path)
@@ -33,7 +33,7 @@ static GLuint compileShader(GLenum type, const std::string & filepath)
 		error_message = (char *)alloca(sizeof(char) * error_length);
 		// This will store the log of the program into the error_message string.
 		glGetShaderInfoLog(shader, error_length, &error_length, error_message);
-		Logger::log(ENGINE_OPENGL, CRITICAL, (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") + std::string("shader failed to compile: ") + error_message);
+		Logger::log(ENGINE_OPENGL, CRITICAL, (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") + std::string("shader failed to compile: ") + error_message + ".");
 		// Delete the shader to avoid leaks.
 		glDeleteShader(shader);
 		return (0);
@@ -57,8 +57,8 @@ void OpenGLEngine::_createShader(const std::string & vertexPath, const std::stri
 	if (uboIndex == GL_INVALID_INDEX)
 		uboIndex = glGetUniformBlockIndex(_shader, "block_UniformBuffer_std140_0");
 	if (uboIndex == GL_INVALID_INDEX)
-		throw std::runtime_error("Couldn't find ubo index.");
+		throw OpenGLException("Couldn't find ubo index.");
 	glUniformBlockBinding(_shader, uboIndex, 0);
 
-	std::cout << GREEN << "[OK] Created Shaders" << RESET << std::endl;
+	Logger::log(ENGINE_OPENGL, INFO, "Created Shaders.");
 }

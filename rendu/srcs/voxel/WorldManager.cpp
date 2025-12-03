@@ -1,6 +1,6 @@
 #include "WorldManager.hpp"
 #include "utils.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 WorldManager::WorldMap WorldManager::_worldMap;
@@ -10,7 +10,7 @@ void WorldManager::createWorld(const std::string & name)
 	_worldMap[name] = new World(name);
 	_worldMap[name]->load();
 
-	std::cout << GREEN << "[OK] Created world " << name << RESET << std::endl;
+	Logger::log(VOXEL, INFO, "Created world " + name + ".");
 }
 
 World * WorldManager::getWorld(const std::string & name)

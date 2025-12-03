@@ -1,5 +1,5 @@
 #include "BlockData.hpp"
-#include "colors.hpp"
+#include "CustomExceptions.hpp"
 #include "utils.hpp"
 #include <iostream>
 
@@ -16,5 +16,5 @@ BlockData BlockData::getBlockData(uint8_t type)
 	BlockDataRegistry::iterator it = _registry.find(type);
 	if (it != _registry.end())
 		return it->second;
-	throw std::runtime_error("Invalid BlockData #" + toString(type) + " requested.");
+	throw VoxelException("Invalid BlockData #" + toString(type) + " requested.");
 }

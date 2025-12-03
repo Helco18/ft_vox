@@ -1,4 +1,5 @@
 #include "VulkanEngine.hpp"
+#include "CustomExceptions.hpp"
 #include "stb/stb_image.h"
 
 void VulkanEngine::_transitionImageLayout(const vk::raii::Image & image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout)
@@ -38,7 +39,7 @@ void VulkanEngine::_transitionImageLayout(const vk::raii::Image & image, vk::Ima
 		destinationStage = vk::PipelineStageFlagBits::eFragmentShader;
 	}
 	else
-		throw std::runtime_error("Unsupported image layout transition");
+		throw VulkanException("Unsupported image layout transition");
 
 	commandBuffer.pipelineBarrier(sourceStage, destinationStage, {}, {}, nullptr, barrier);
 	_endSingleTimeCommands(commandBuffer);
@@ -82,7 +83,7 @@ void VulkanEngine::_createTextureImage()
 	stbi_uc * pixels = texture.data;
 	vk::DeviceSize size = width * height * 4;
 	if (!pixels)
-		throw std::runtime_error("Failed to load image.");
+		throw VulkanException("Failed to load image.");
 
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;

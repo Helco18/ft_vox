@@ -1,3 +1,4 @@
+#include "CustomExceptions.hpp"
 #include "VulkanEngine.hpp"
 
 vk::VertexInputBindingDescription VulkanEngine::_getBindingDescription() const
@@ -26,7 +27,7 @@ uint32_t VulkanEngine::_findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFl
 		if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
 			return i;
 	}
-	throw std::runtime_error("Couldn't find suitable memory type.");
+	throw VulkanException("Couldn't find suitable memory type.");
 }
 
 void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties,

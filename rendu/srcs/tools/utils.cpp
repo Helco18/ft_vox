@@ -1,5 +1,6 @@
 #include "utils.hpp"
-#include "colors.hpp"
+#include "CustomExceptions.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -22,7 +23,7 @@ const std::vector<char> readFile(const std::string & filename)
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
-		throw std::runtime_error("Failed to open file: " + filename);
+		throw GeneralException("Failed to open file: " + filename);
 
 	size_t fileSize = (size_t) file.tellg();
 	std::vector<char> buffer(fileSize);
@@ -43,7 +44,7 @@ const std::string getFileAsString(const char * name)
 	file.open(filename, std::ios::in);
 	if (file.fail())
 	{
-		std::cout << BOLD_RED << "Couldn't find file " << filename << "." << std::endl;
+		Logger::log(GENERAL, CRITICAL, "Couldn't find file: " + filename + ".");
 		exit(6);
 	}
 	while (std::getline(file, buffer))
@@ -51,7 +52,7 @@ const std::string getFileAsString(const char * name)
 	file.close();
 	if (content.empty())
 	{
-		std::cout << BOLD_RED << "File " << filename << " is empty." << std::endl;
+		Logger::log(GENERAL, CRITICAL, "File " + filename + " is empty.");
 		exit(6);
 	}
 	return (content);

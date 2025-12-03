@@ -1,7 +1,7 @@
 #include "InputManager.hpp"
 #include "OBJModel.hpp"
-#include "colors.hpp"
 #include "Environment.hpp"
+#include "CustomExceptions.hpp"
 #include <iostream>
 
 int main(int ac, char ** av)
@@ -14,11 +14,11 @@ int main(int ac, char ** av)
 		environment.init(engineType);
 		environment.loop();
 
-		std::cout << GREEN << "[OK] Exiting program." << RESET << std::endl;
+		Logger::log(GENERAL, INFO, "Exiting program.");
 	}
-	catch (const std::exception & e)
+	catch (const CustomException & e)
 	{
-		std::cerr << RED << "[ERROR MAIN] " << e.what() << RESET << std::endl;
+		Logger::log(e.getSource(), CRITICAL, std::string(e.what()));
 		return 3;
 	}
 	return EXIT_SUCCESS;

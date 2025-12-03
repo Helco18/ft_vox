@@ -1,6 +1,7 @@
 #include "WindowManager.hpp"
+#include "CustomExceptions.hpp"
 #include "stb/stb_image.h"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 GLFWimage WindowManager::_decodeOneStep(const char * filename)
@@ -10,7 +11,7 @@ GLFWimage WindowManager::_decodeOneStep(const char * filename)
 	unsigned char* pixels = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
 
 	if (!pixels)
-		throw std::runtime_error("Failed to load image : " + std::string(filename));
+		throw WindowException("Failed to load image : " + std::string(filename));
 	image.width = width;
 	image.height = height;
 	image.pixels = pixels;
@@ -28,7 +29,7 @@ void WindowManager::_setIcon(GLFWwindow * window)
 		images[0] = _decodeOneStep("assets/icon/icon.png");
 		images[1] = _decodeOneStep("assets/icon/icon_small.png");
 		if (images[0].height != images[0].width || images[1].height != images[1].width)
-			throw std::runtime_error("Icone size mismatch");
+			throw WindowException("Icone size mismatch");
 
 		glfwSetWindowIcon(window, 2, images);
 	}
@@ -47,17 +48,17 @@ void WindowManager::_setIcon(GLFWwindow * window)
 
 static void glfwErrorCallback(int error, const char * description)
 {
-	std::cerr << RED << "[GLFW ERROR] (" << error << ") " << description << RESET << std::endl;
+	Logger::log(ENGINE_OPENGL, ERROR, "(" + toString(error) + ")" + description + ".");
 }
 
 GLFWwindow * WindowManager::_createWindow()
 {
 	if (glfwInit() == GLFW_FALSE)
-		throw std::runtime_error("Failed to create GLFW context.");
+		throw WindowException("Failed to create GLFW context.");
 
 	if (glfwVulkanSupported() == GLFW_FALSE)
 	{
-		std::cout << YELLOW << "[Warning] Vulkan not supported on this computer. Defaulting to OpenGL." << RESET << std::endl;
+		Logger::log(WINDOW, WARNING, "Vulkan not supported on this computer. Defaulting to OpenGL.");
 		_engineType = OPENGL;
 	}
 
@@ -78,13 +79,13 @@ GLFWwindow * WindowManager::_createWindow()
 	try
 	{
 		if (!window)
-			throw std::runtime_error("Failed to instantiate GLFW window.");
+			throw WindowException("Failed to instantiate GLFW window.");
 
 		if (_engineType == OPENGL)
 		{
 			glfwMakeContextCurrent(window);
 			if (glewInit() != GLEW_OK)
-				throw std::runtime_error("Couldn't initialize GLEW.");
+				throw WindowException("Couldn't initialize GLEW.");
 		}
 		glfwSetWindowSizeLimits(window, WIDTH / 2, HEIGHT / 2, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		_setIcon(window);

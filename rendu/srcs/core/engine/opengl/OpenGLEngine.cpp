@@ -1,5 +1,6 @@
 #include "OpenGLEngine.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
+#include "CustomExceptions.hpp"
 #include "OBJModel.hpp"
 #include <iostream>
 
@@ -52,7 +53,7 @@ void OpenGLEngine::load()
 
 	glBindVertexArray(0);
 
-	std::cout << GREEN << "[OK] OpenGL engine initialized successfully." << RESET << std::endl;
+	Logger::log(ENGINE_OPENGL, INFO, "OpenGL engine initialized successfully.");
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -84,7 +85,7 @@ void OpenGLEngine::drawAsset(AssetID assetID)
 	glBindTexture(GL_TEXTURE_2D, _texture);
 	GLuint textureIndex = glGetUniformLocation(_shader, "texture_0");
 	if (textureIndex == GL_INVALID_INDEX)
-		throw std::runtime_error("Couldn't find texture uniform.");
+		throw OpenGLException("Couldn't find texture uniform.");
 	glUniform1i(textureIndex, 0);
 
 	glDrawElements(GL_TRIANGLES, asset.indices.size(), GL_UNSIGNED_INT, 0);

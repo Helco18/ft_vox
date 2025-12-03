@@ -15,7 +15,7 @@ class Environment
 		void		stop() { _running = false; }
 
 	private:
-		WindowManager *	_windowManager;
+		WindowManager *	_windowManager = nullptr;
 		EngineType		_engineType; // A JARTER D'UTILS BORDEL
 		bool			_running = true;
 };

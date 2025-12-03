@@ -62,6 +62,7 @@ INCLUDES			=	-I libs \
 						-I srcs/core/window \
 						-I srcs/environment \
 						-I srcs/tools \
+						-I srcs/tools/exceptions \
 						-I srcs/tools/logger \
 						-I srcs/voxel \
 						-I srcs/voxel/block \

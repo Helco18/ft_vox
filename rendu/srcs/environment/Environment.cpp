@@ -1,9 +1,10 @@
 #include "Environment.hpp"
+#include "CustomExceptions.hpp"
 #include "OBJModel.hpp"
 #include "InputManager.hpp"
 #include "WorldManager.hpp"
-#include "colors.hpp"
 #include "BlockData.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 Environment::~Environment()
@@ -15,7 +16,7 @@ Environment::~Environment()
 void Environment::init(EngineType engineType)
 {
 	if (!OBJModel::loadModels())
-		throw std::runtime_error("Failed to load models.");
+		throw EnvironmentException("Failed to load models.");
 
 	_windowManager = new WindowManager(engineType, this);
 	_windowManager->load();
@@ -23,7 +24,7 @@ void Environment::init(EngineType engineType)
 	BlockData::init();
 	WorldManager::createWorld("bozoandzibocircus");
 
-	std::cout << GREEN << "[OK] Environment started" << RESET << std::endl;
+	Logger::log(ENVIRONMENT, INFO, "Environment started.");
 }
 
 void Environment::loop()

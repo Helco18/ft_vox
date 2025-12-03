@@ -1,5 +1,5 @@
 #include "VulkanEngine.hpp"
-#include "colors.hpp"
+#include "Logger.hpp"
 #include <iostream>
 
 void VulkanEngine::_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag)
@@ -14,7 +14,7 @@ void VulkanEngine::_createCommandPool(vk::raii::CommandPool & commandPool, vk::C
 	commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Command Pool" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Command Pool.");
 }
 
 void VulkanEngine::_createCommandBuffer()
@@ -32,7 +32,7 @@ void VulkanEngine::_createCommandBuffer()
 	_commandBuffers = vk::raii::CommandBuffers(_device, commandBufferInfo);
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Command Buffer" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Command Buffer.");
 }
 
 void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info)
@@ -193,5 +193,5 @@ void VulkanEngine::_createSyncObjects()
 	}
 
 	if (g_enableValidationLayers)
-		std::cout << GREEN << "[OK] Created Sync Objects" << RESET << std::endl;
+		Logger::log(ENGINE_VULKAN, INFO, "Created Sync Objects.");
 }
