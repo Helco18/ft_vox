@@ -10,7 +10,6 @@ NAME				=	ft_vox
 SHADER_PATH			=	srcs/core/shaders
 OBJ_PATH			=	objs
 GLFW_PATH			=	libs/GLFW
-GLEW_PATH			=	libs/GLEW
 GLM_PATH			=	libs/glm
 STB_PATH			=	libs/stb
 SPIRV_PATH			=	$(SHADER_PATH)/spir-v
@@ -99,7 +98,7 @@ ALL_FCLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects & Executables clean
 
 # Rules
 
-all : glfw glm glew stb shader $(NAME)
+all : glfw glm stb shader $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) $(LDFLAGS)
@@ -215,29 +214,6 @@ stb:
 		make --no-print-directory download_stb; \
 	fi
 
-download_glew:
-	@cd libs; \
-	rm -rf GLEW 2>/dev/null; \
-	echo "\033[31;1;4mGLEW Not Found\033[0m"; \
-	echo "\033[31;1mDownloading it from github\033[0m"; \
-	wget https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz; \
-	tar -xpf glew-2.2.0.tgz; \
-	make -C glew-2.2.0; \
-	echo "\033[31;1mGetting the Headers\033[0m"; \
-	mkdir -p GLEW; \
-	mv glew-2.2.0/lib/libGLEW.a GLEW/; \
-	mv glew-2.2.0/include/GL/glew.h GLEW/; \
-	rm -rf glew-2.2.0/;
-
-glew:
-	@mkdir -p libs
-	@if ! ls ./libs/GLEW 2>/dev/null | grep -q "libGLEW.a" ; then \
-		make --no-print-directory download_glew; \
-	fi
-	@if ! ls ./libs/GLEW 2>/dev/null | grep -q "glew.h" ; then \
-		make --no-print-directory download_glew; \
-	fi
-
-.PHONY: all shader clean sclean fclean re debug stb download_stb glm download_glm glfw download_glfw glew download_glew
+.PHONY: all shader clean sclean fclean re debug stb download_stb glm download_glm glfw download_glfw
 
 -include $(DEPS)
