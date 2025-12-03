@@ -17,10 +17,14 @@ void World::load()
 			{
 				Chunk * chunk = new Chunk(x, y, z, this);
 				chunk->build();
-				chunk->generateMesh();
 				_chunkMap[chunk->getChunkLocation()] = chunk;
 			}
 		}
+	}
+	for (std::pair<glm::ivec3, Chunk *> chunkPtr : _chunkMap)
+	{
+		if (chunkPtr.second)
+			chunkPtr.second->generateMesh();
 	}
 }
 
