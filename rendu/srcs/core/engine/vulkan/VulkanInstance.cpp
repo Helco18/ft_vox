@@ -194,6 +194,7 @@ void VulkanEngine::_createLogicalDevice()
 	vk::PhysicalDeviceFeatures2 features;
 	features.features.sampleRateShading = vk::True; // Activer le MSAA (rajout hors-tutoriel)
 	features.features.samplerAnisotropy = vk::True;
+	features.features.fillModeNonSolid = vk::True;
 	vk::PhysicalDeviceVulkan13Features vulkan13features;
 	vulkan13features.dynamicRendering = true;
 	vulkan13features.synchronization2 = true; // Eviter un segfault (rajout hors-tutoriel)

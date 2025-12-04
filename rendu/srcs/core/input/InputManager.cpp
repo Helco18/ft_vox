@@ -109,4 +109,6 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 
 	if (key == GLFW_KEY_F11)
 		windowManager->toggleFullscreen();
+	if (key == GLFW_KEY_F7)
+		windowManager->toggleWireframe();
 }
