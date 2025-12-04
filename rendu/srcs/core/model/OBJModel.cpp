@@ -1,5 +1,4 @@
 #include "OBJModel.hpp"
-#include "Texture.hpp"
 #include "utils.hpp"
 #include "stb/stb_image.h"
 #include "CustomExceptions.hpp"
@@ -247,10 +246,11 @@ void OBJModel::_loadMTL(const std::string & filename)
 			std::filesystem::path fullTexturePath = objDir / current->diffuseTexturePath;
 
 			if (_loadedTextures.find(_type) == _loadedTextures.end()) {
-				Texture newTexture(fullTexturePath);
+				Texture newTexture = {};
 				stbi_set_flip_vertically_on_load(true);
+				newTexture.data = stbi_load(fullTexturePath.string().c_str(), &newTexture.width, &newTexture.height, &newTexture.channels, STBI_rgb_alpha);
 
-				if (newTexture.getData())
+				if (newTexture.data)
 				{
 					Logger::log(MODEL, INFO, "Successfully loaded texture '" + current->diffuseTexturePath + "'.");
 					_loadedTextures[_type] = newTexture;
@@ -268,7 +268,8 @@ const Texture & OBJModel::getTexture() const
 	if (it != _loadedTextures.end()) {
 		return it->second;
 	}
-	throw new TextureException("Couldn't find texture object of: " + _filepath);
+	const static Texture emptyTexture = {0, 0, 0, nullptr};
+	return emptyTexture;
 }
 
 bool OBJModel::loadModels()
@@ -281,4 +282,13 @@ bool OBJModel::loadModels()
 			return false;
 	}
 	return true;
+}
+
+void OBJModel::deleteModels()
+{
+	for (std::unordered_map<ModelType, Texture>::const_iterator it = _loadedTextures.begin(); it != _loadedTextures.end(); ++it)
+	{
+		if (it->second.data)
+			stbi_image_free(it->second.data);
+	}
 }
