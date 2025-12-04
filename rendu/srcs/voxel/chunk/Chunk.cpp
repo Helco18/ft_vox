@@ -98,6 +98,74 @@ bool Chunk::_blockIsVisible(int x, int y, int z)
 	return false;
 }
 
+
+
+// Mesh Chunk::_generateQuadMesh(float width, float height, BlockFace face)
+// {
+	// Mesh mesh;
+	// Vertex a;
+	// Vertex b;
+	// Vertex c;
+	// Vertex d;
+
+	// float x = 0;
+	// float y = 0;
+	// float z = 0;
+
+	// switch (static_cast<int>(face))
+	// {
+	// 	case NORTH:
+	// 	{
+	// 		x = 1;
+	// 	}
+	// 	case EAST:
+	// 	{
+	// 		z = 1;
+	// 	}
+	// 	case TOP:
+	// 	{
+	// 		y = 1;
+	// 	}
+	// }
+
+
+	// a.position = glm::vec3(x, y, z);
+	// a.originalPositionIndex = ;
+	// a.texCoord =;
+	// mesh.vertices.push_back(a);
+
+	// a.position = glm::vec3(x, y, z);
+	// mesh.vertices.push_back(b);
+
+	// a.position = glm::vec3(x, y, z);
+	// mesh.vertices.push_back(c);
+
+	// a.position = glm::vec3(x, y, z);
+	// mesh.vertices.push_back(d);
+
+	// switch (static_cast<int>(face))
+	// {
+	// 	case SOUTH:
+	// 	{
+	// 		a.position = glm::vec3(0, 0, 0);
+	// 		a.originalPositionIndex = ;
+	// 		a.texCoord =;
+	// 		mesh.vertices.push_back(a);
+			
+	// 		a.position = glm::vec3(0, 0, 0);
+	// 		mesh.vertices.push_back(b);
+
+	// 		a.position = glm::vec3(0, 0, 0);
+	// 		mesh.vertices.push_back(c);
+
+	// 		a.position = glm::vec3(0, 0, 0);
+	// 		mesh.vertices.push_back(d);
+	// 	}
+	// }
+
+	// return mesh;
+// }
+
 void Chunk::generateMesh()
 {
 	const OBJModel model = OBJModel::getModel(CUBE);
@@ -110,27 +178,48 @@ void Chunk::generateMesh()
 			{
 				if (!_blockIsVisible(x, y, z))
 					continue;
-				// for (int i = 0; i <= BlockFace::BOTTOM; ++i)
+				// if (_blocks[x][y][z] == 1)
 				// {
-				// 	for (int j = 0; j < 4; ++j)
+				// 	for (int i = 0; i <= BlockFace::BOTTOM; ++i)
 				// 	{
-				// 		_asset.vertices.push_back()
+				// 		for (int j = 0; j < 4; ++j)
+				// 		{
+				// 			Vertex v = 
+				// 			v.position.x += x + _chunkLocation.x * CHUNK_WIDTH;
+				// 			v.position.y += y + _chunkLocation.y * CHUNK_HEIGHT;
+				// 			v.position.z += z + _chunkLocation.z * CHUNK_LENGTH;
+				// 			_asset.vertices.push_back(v);
+				// 			uint32_t indice = 
+				// 			_asset.indices.push_back();
+				// 		}
 				// 	}
 				// }
-
 				uint32_t verticesAdded = _asset.vertices.size();
 				if (_blocks[x][y][z] == 1)
 				{
+					// Logger::log(VOXEL, DEBUG, "----------");
 					for (Vertex vertex : model.getVertices())
 					{
 						Vertex tmp = vertex;
 						tmp.position.x += x + _chunkLocation.x * CHUNK_WIDTH;
 						tmp.position.y += y + _chunkLocation.y * CHUNK_HEIGHT;
 						tmp.position.z += z + _chunkLocation.z * CHUNK_LENGTH;
+						// Logger::log(VOXEL, DEBUG, "DEBUG Vertex----------");
+						// Logger::log(VOXEL, DEBUG, "vertices pushed mormal:" + toString(tmp.normal.x) + " " + toString(tmp.normal.y) + " " + toString(tmp.normal.z));
+						// Logger::log(VOXEL, DEBUG, "vertices pushed originalPositionIndex:" + toString(tmp.originalPositionIndex));
+						// Logger::log(VOXEL, DEBUG, "vertices pushed position:" + toString(tmp.position.x) + " " + toString(tmp.position.y) + " " + toString(tmp.position.z));
+						// Logger::log(VOXEL, DEBUG, "vertices pushed texCoord:" + toString(tmp.texCoord.x) + " " + toString(tmp.texCoord.y));
+						// Logger::log(VOXEL, DEBUG, "----------");
 						_asset.vertices.push_back(tmp);
 					}
 					for (uint32_t indice : model.getIndices())
+					{
+						// Logger::log(VOXEL, DEBUG, "DEBUG Indices----------");
+						// Logger::log(VOXEL, DEBUG, "indices pushed :" + toString(indice + verticesAdded));
 						_asset.indices.push_back(indice + verticesAdded);
+						// Logger::log(VOXEL, DEBUG, "----------");
+					}
+					// Logger::log(VOXEL, DEBUG, "----------");
 				}
 			}
 		}
