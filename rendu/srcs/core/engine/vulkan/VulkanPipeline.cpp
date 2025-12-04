@@ -13,7 +13,7 @@ vk::raii::ShaderModule VulkanEngine::_createShaderModule(const std::vector<char>
 	return shaderModule;
 }
 
-void VulkanEngine::_createGraphicsPipeline()
+void VulkanEngine::_createGraphicsPipelines()
 {
 	const std::vector<char> shaderSrc = readFile(SHADER_PATH"spir-v/base.spv");
 
@@ -71,15 +71,18 @@ void VulkanEngine::_createGraphicsPipeline()
 	scissor.extent = _swapChainExtent;
 
 	// On créé l'étape du rasterizer
-	vk::PipelineRasterizationStateCreateInfo rasterizer;
-	rasterizer.depthClampEnable = vk::False; // Est-ce que l'on clamp les pixels non-visibles ou est-ce qu'on les discard
-	rasterizer.rasterizerDiscardEnable = vk::False;
-	rasterizer.polygonMode = vk::PolygonMode::eFill; // Changer ici en line pour le wireframe
-	rasterizer.cullMode = vk::CullModeFlagBits::eBack; // Culling
-	rasterizer.frontFace = vk::FrontFace::eCounterClockwise;
-	rasterizer.depthBiasEnable = vk::False; // Shadow map
-	rasterizer.depthBiasSlopeFactor = 1.0f;
-	rasterizer.lineWidth = 1.0f;
+	vk::PipelineRasterizationStateCreateInfo rasterizerFill;
+	rasterizerFill.depthClampEnable = vk::False; // Est-ce que l'on clamp les pixels non-visibles ou est-ce qu'on les discard
+	rasterizerFill.rasterizerDiscardEnable = vk::False;
+	rasterizerFill.polygonMode = vk::PolygonMode::eFill; // Changer ici en line pour le wireframe
+	rasterizerFill.cullMode = vk::CullModeFlagBits::eBack; // Culling
+	rasterizerFill.frontFace = vk::FrontFace::eCounterClockwise;
+	rasterizerFill.depthBiasEnable = vk::False; // Shadow map
+	rasterizerFill.depthBiasSlopeFactor = 1.0f;
+	rasterizerFill.lineWidth = 1.0f;
+
+	vk::PipelineRasterizationStateCreateInfo rasterizerLine = rasterizerFill;
+	rasterizerLine.polygonMode = vk::PolygonMode::eLine;
 
 	// Depth
 	vk::PipelineDepthStencilStateCreateInfo depthStencil;
@@ -127,6 +130,7 @@ void VulkanEngine::_createGraphicsPipeline()
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 	_pipelineLayout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
+	_wireframePipelineLayout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
 
 	vk::PipelineRenderingCreateInfo pipelineRenderingInfo;
 	pipelineRenderingInfo.colorAttachmentCount = 1;
@@ -134,23 +138,27 @@ void VulkanEngine::_createGraphicsPipeline()
 	pipelineRenderingInfo.depthAttachmentFormat = vk::Format::eD24UnormS8Uint;
 
 	// On lie toutes les infos de notre pipeline
-	vk::GraphicsPipelineCreateInfo graphicsPipelineInfo;
-	graphicsPipelineInfo.pNext = &pipelineRenderingInfo;
-	graphicsPipelineInfo.stageCount = 2;
-	graphicsPipelineInfo.pStages = shaderStages;
-	graphicsPipelineInfo.pVertexInputState = &vertexInputInfo;
-	graphicsPipelineInfo.pInputAssemblyState = &pipelineInputInfo;
-	graphicsPipelineInfo.pViewportState = &viewportState;
-	graphicsPipelineInfo.pRasterizationState = &rasterizer;
-	graphicsPipelineInfo.pMultisampleState = &multisampling;
-	graphicsPipelineInfo.pDepthStencilState = &depthStencil;
-	graphicsPipelineInfo.pColorBlendState = &colorBlending;
-	graphicsPipelineInfo.pDynamicState = &dynamicStateInfo;
-	graphicsPipelineInfo.layout = _pipelineLayout;
-	graphicsPipelineInfo.renderPass = nullptr;
+	vk::GraphicsPipelineCreateInfo graphicsPipelineFillInfo;
+	graphicsPipelineFillInfo.pNext = &pipelineRenderingInfo;
+	graphicsPipelineFillInfo.stageCount = 2;
+	graphicsPipelineFillInfo.pStages = shaderStages;
+	graphicsPipelineFillInfo.pVertexInputState = &vertexInputInfo;
+	graphicsPipelineFillInfo.pInputAssemblyState = &pipelineInputInfo;
+	graphicsPipelineFillInfo.pViewportState = &viewportState;
+	graphicsPipelineFillInfo.pRasterizationState = &rasterizerFill;
+	graphicsPipelineFillInfo.pMultisampleState = &multisampling;
+	graphicsPipelineFillInfo.pDepthStencilState = &depthStencil;
+	graphicsPipelineFillInfo.pColorBlendState = &colorBlending;
+	graphicsPipelineFillInfo.pDynamicState = &dynamicStateInfo;
+	graphicsPipelineFillInfo.layout = _pipelineLayout;
+	graphicsPipelineFillInfo.renderPass = nullptr;
 
-	_graphicsPipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineInfo);
+	vk::GraphicsPipelineCreateInfo graphicsPipelinLineInfo = graphicsPipelineFillInfo;
+	graphicsPipelinLineInfo.pRasterizationState = &rasterizerLine;
+
+	_graphicsPipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineFillInfo);
+	_wireframeGraphicsPipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelinLineInfo);
 
 	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Graphics Pipeline.");
+		Logger::log(ENGINE_VULKAN, INFO, "Created Graphics Pipelines.");
 }

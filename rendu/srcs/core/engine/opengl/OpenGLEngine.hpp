@@ -4,7 +4,7 @@
 class OpenGLEngine : public AEngine
 {
 	public:
-		OpenGLEngine(GLFWwindow * window, Camera * camera);
+		OpenGLEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled);
 		~OpenGLEngine();
 
 		void	load() override;

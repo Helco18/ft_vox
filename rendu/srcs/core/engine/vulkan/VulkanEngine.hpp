@@ -58,7 +58,7 @@ struct TransitionImageViewLayoutInfo
 class VulkanEngine : public AEngine
 {
 	public:
-		VulkanEngine(GLFWwindow * window, Camera * camera);
+		VulkanEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled);
 		~VulkanEngine();
 
 		void								load() override;
@@ -101,7 +101,9 @@ class VulkanEngine : public AEngine
 		// Pipeline & Descriptor
 		vk::raii::DescriptorSetLayout		_descriptorSetLayout = nullptr;
 		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
+		vk::raii::PipelineLayout			_wireframePipelineLayout = nullptr;
 		vk::raii::Pipeline					_graphicsPipeline = nullptr;
+		vk::raii::Pipeline					_wireframeGraphicsPipeline = nullptr;
 		vk::raii::CommandPool				_resetCommandPool = nullptr;
 		vk::raii::CommandPool				_transientCommandPool = nullptr;
 		CommandBuffers						_commandBuffers;
@@ -155,7 +157,7 @@ class VulkanEngine : public AEngine
 		vk::Extent2D						_chooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities);
 		void								_createSwapChain();
 		void								_createImageViews();
-		void								_createGraphicsPipeline();
+		void								_createGraphicsPipelines();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag);
 		void								_createTextureImage();

@@ -29,6 +29,7 @@ class WindowManager
 		void			requestSwap() { _isSwapRequested = true; }
 
 		void			toggleFullscreen();
+		void			toggleWireframe();
 
 		static void		framebufferResizeCallback(GLFWwindow * window, int width, int height);
 
@@ -45,6 +46,7 @@ class WindowManager
 		int				_windowPosY;
 		bool			_isFullscreen;
 		bool			_isSwapRequested;
+		bool			_isWireframeEnabled = false;
 
 		GLFWwindow *	_createWindow();
 		void			_setIcon(GLFWwindow * window);

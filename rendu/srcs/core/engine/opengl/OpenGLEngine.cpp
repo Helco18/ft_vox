@@ -4,7 +4,7 @@
 #include "OBJModel.hpp"
 #include <iostream>
 
-OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
+OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled) : AEngine(window, camera, isWireframeEnabled) {}
 
 OpenGLEngine::~OpenGLEngine() {}
 
@@ -88,7 +88,10 @@ void OpenGLEngine::drawAsset(AssetID assetID)
 		throw OpenGLException("Couldn't find texture uniform.");
 	glUniform1i(textureIndex, 0);
 
+	if (_isWireframeEnabled)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawElements(GL_TRIANGLES, asset.indices.size(), GL_UNSIGNED_INT, 0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindVertexArray(0);
 }
 

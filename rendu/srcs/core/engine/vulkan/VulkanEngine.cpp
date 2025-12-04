@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 #include <iostream>
 
-VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
+VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled) : AEngine(window, camera, isWireframeEnabled) {}
 
 void VulkanEngine::load()
 {
@@ -43,7 +43,7 @@ void VulkanEngine::load()
 
 	// On construit notre *graphics pipeline*, c’est-à-dire la configuration complète du pipeline graphique :
 	// shaders, entrées vertex, assemblage, rasterization, blending, etc.
-	_createGraphicsPipeline();
+	_createGraphicsPipelines();
 
 	// On crée deux *command pools* :
 	// - un "reset" pool pour des commandes réutilisables (e.g. dessin, rendu)
