@@ -27,6 +27,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanDepthTest.cpp \
 						srcs/core/engine/vulkan/VulkanDescriptors.cpp \
 						srcs/core/engine/vulkan/VulkanEngine.cpp \
+						srcs/core/engine/vulkan/VulkanImage.cpp \
 						srcs/core/engine/vulkan/VulkanInstance.cpp \
 						srcs/core/engine/vulkan/VulkanMesh.cpp \
 						srcs/core/engine/vulkan/VulkanPipeline.cpp \
