@@ -1,8 +1,8 @@
 #pragma once
 
-#define CHUNK_WIDTH 5
-#define CHUNK_HEIGHT 5
-#define CHUNK_LENGTH 5
+#define CHUNK_WIDTH 10
+#define CHUNK_HEIGHT 10
+#define CHUNK_LENGTH 10
 
 #include <cstdint>
 #include <vector>

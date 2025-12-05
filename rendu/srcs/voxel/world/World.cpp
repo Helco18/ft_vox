@@ -70,10 +70,71 @@ void World::reloadChunks()
 
 void World::render(AEngine * engine)
 {
-	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
+	std::vector<Chunk *> visibleCunk = _generateVisibleCunk(engine->getCamera());
+
+	_generateProceduralTerrain(visibleCunk);
+	_generateProceduralMesh(visibleCunk);
+	_uploadChunk(visibleCunk, engine);
+}
+
+std::vector<Chunk *> World::_generateVisibleCunk(Camera * camera)
+{
+	std::vector<Chunk *> visibleCunk;
+	glm::vec3 cameraPosition = camera->getPosition();
+	cameraPosition.x /= CHUNK_WIDTH;
+	cameraPosition.y /= CHUNK_HEIGHT;
+	cameraPosition.z /= CHUNK_LENGTH;
+	int renderDistance = (camera->getRenderDistance() / 2);
+	int renderDistanceNorth = renderDistance + cameraPosition.x;
+	int renderDistanceSouth = cameraPosition.x - renderDistance;
+	int renderDistanceEast = renderDistance + cameraPosition.z;
+	int renderDistanceWest = cameraPosition.z - renderDistance;
+	int renderDistanceUp = renderDistance + cameraPosition.y;
+	int renderDistanceDown = cameraPosition.y - renderDistance;
+
+	for (int x = renderDistanceSouth; x < renderDistanceNorth; ++x)
 	{
-		Chunk * chunk = chunks.second;
-		if (chunk && chunk->getState() == MESHED)
+		for (int y = renderDistanceDown; y < renderDistanceUp; ++y)
+		{
+			for (int z = renderDistanceWest; z < renderDistanceEast; ++z)
+			{
+				if (_chunkMap[glm::vec3(x, y, z)])
+				{
+					visibleCunk.push_back(_chunkMap[glm::vec3(x, y, z)]);
+					continue;
+				}
+				Chunk * chunk = new Chunk(x, y, z, this);
+				_chunkMap[chunk->getChunkLocation()] = chunk;
+				visibleCunk.push_back(_chunkMap[chunk->getChunkLocation()]);
+			}
+		}
+	}
+	return visibleCunk;
+}
+
+void World::_generateProceduralTerrain(std::vector<Chunk *> visibleCunk)
+{
+	for (Chunk * chunk : visibleCunk)
+	{
+		if (chunk->getState() == NONE)
+			chunk->build();
+	}
+}
+
+void World::_generateProceduralMesh(std::vector<Chunk *> visibleCunk)
+{
+	for (Chunk * chunk : visibleCunk)
+	{
+		if (chunk && chunk->getState() == BUILT)
+			chunk->generateMesh();
+	}
+}
+
+void World::_uploadChunk(std::vector<Chunk *> visibleCunk, AEngine * engine)
+{
+	for (Chunk * chunk : visibleCunk)
+	{
+		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
 		engine->drawAsset(chunk->getAsset().assetID);
 	}

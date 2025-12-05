@@ -3,6 +3,7 @@
 #include "BlockData.hpp"
 #include "World.hpp"
 #include <iostream>
+#include "Logger.hpp"
 
 void Chunk::build()
 {
@@ -15,7 +16,7 @@ void Chunk::build()
 		{
 			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
-				if (y <= 64)
+				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= -1))
 					_blocks[x][y][z] = 1;
 				else
 					_blocks[x][y][z] = 0;

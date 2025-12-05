@@ -19,6 +19,7 @@ class Camera
 		float		getFOV() const { return _FOV; }
 		float		getSensitivity() const { return _sensitivity; }
 		float		getSpeed() const { return _speed; }
+		int			getRenderDistance() const {return _renderDistance; }
 
 		void		setPosition(const glm::vec3 & position) { _position = position; }
 		void		setOrientation(glm::vec3 orientation) { _orientation = orientation; }
@@ -27,6 +28,7 @@ class Camera
 		void		setWidth(int width) { _width = width; }
 		void		setHeight(int height) { _height = height; }
 		void		setSpeed(float speed) { _speed = speed; }
+		void		setRenderDistance(int renderDistance) { _renderDistance = renderDistance; }
 
 		void		changeYaw(float yaw) { _yaw += yaw; }
 		void		changePitch(float pitch) { _pitch += pitch; }
@@ -39,6 +41,7 @@ class Camera
 		glm::vec3	_position;
 		glm::vec3	_orientation;
 		glm::vec3	_altitude;
+		int			_renderDistance = 6;
 		int			_width;
 		int			_height;
 		float		_yaw;

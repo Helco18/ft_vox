@@ -1,8 +1,12 @@
 #pragma once
 
-#define WORLD_WIDTH 4
-#define WORLD_HEIGHT 4
-#define WORLD_LENGTH 4
+#define WORLD_WIDTH 1
+#define WORLD_HEIGHT 1
+#define WORLD_LENGTH 1
+
+#define CHUNK_WIDTH 10
+#define CHUNK_HEIGHT 10
+#define CHUNK_LENGTH 10
 
 #include <unordered_map>
 #include "AEngine.hpp"
@@ -16,18 +20,23 @@ class World
 		World(const std::string & name): _name(name) {}
 		~World();
 
-		void				load();
+		void					load();
 
-		const std::string &	getName() { return _name; }
+		const std::string &		getName() { return _name; }
 
-		Chunk *				getChunk(const glm::vec3 & location);
-		Chunk *				getChunk(int x, int y, int z);
+		Chunk *					getChunk(const glm::vec3 & location);
+		Chunk *					getChunk(int x, int y, int z);
 
-		void				addChunk(Chunk * chunk);
-		void				reloadChunks();
+		void					addChunk(Chunk * chunk);
+		void					reloadChunks();
 
-		void				render(AEngine * engine);
+		void					render(AEngine * engine);
 	private:
+		std::vector<Chunk *>	_generateVisibleCunk(Camera * camera);
+		void					_generateProceduralTerrain(std::vector<Chunk *> visibleCunk);
+		void					_generateProceduralMesh(std::vector<Chunk *> visibleCunk);
+		void					_uploadChunk(std::vector<Chunk *> visibleCunk, AEngine * engine);
+
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 
 		std::string				_name;
