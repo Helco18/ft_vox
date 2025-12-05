@@ -84,7 +84,7 @@ std::vector<Chunk *> World::_generateVisibleCunk(Camera * camera)
 	cameraPosition.x /= CHUNK_WIDTH;
 	cameraPosition.y /= CHUNK_HEIGHT;
 	cameraPosition.z /= CHUNK_LENGTH;
-	int renderDistance = (camera->getRenderDistance() / 2);
+	int renderDistance = (camera->getRenderDistance());
 	int renderDistanceNorth = renderDistance + cameraPosition.x;
 	int renderDistanceSouth = cameraPosition.x - renderDistance;
 	int renderDistanceEast = renderDistance + cameraPosition.z;

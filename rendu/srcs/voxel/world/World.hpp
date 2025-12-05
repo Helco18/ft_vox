@@ -4,10 +4,6 @@
 #define WORLD_HEIGHT 1
 #define WORLD_LENGTH 1
 
-#define CHUNK_WIDTH 10
-#define CHUNK_HEIGHT 10
-#define CHUNK_LENGTH 10
-
 #include <unordered_map>
 #include "AEngine.hpp"
 #include "Chunk.hpp"
