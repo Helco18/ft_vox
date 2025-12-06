@@ -28,10 +28,10 @@ class World
 
 		void					render(AEngine * engine);
 	private:
-		std::vector<Chunk *>	_generateVisibleCunk(Camera * camera);
-		void					_generateProceduralTerrain(std::vector<Chunk *> visibleCunk);
-		void					_generateProceduralMesh(std::vector<Chunk *> visibleCunk);
-		void					_uploadChunk(std::vector<Chunk *> visibleCunk, AEngine * engine);
+		std::vector<Chunk *>	_generateVisibleChunk(Camera * camera);
+		void					_generateProceduralTerrain(std::vector<Chunk *> visibleChunk);
+		void					_generateProceduralMesh(std::vector<Chunk *> visibleChunk);
+		void					_uploadChunk(std::vector<Chunk *> visibleChunk, AEngine * engine);
 
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 
