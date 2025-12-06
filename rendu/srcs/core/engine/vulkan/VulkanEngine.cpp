@@ -166,6 +166,9 @@ void VulkanEngine::endFrame()
 				throw VulkanException("Couldn't present next image.");
 		}
 
+		while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
+			;
+		_commandBuffers[_currentFrame].reset();
 		_presentSemaphoreIndex = (_presentSemaphoreIndex + 1) % _presentCompleteSemaphores.size();
 		_renderSemaphoreIndex = (_renderSemaphoreIndex + 1) % _renderFinishedSemaphores.size();
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
