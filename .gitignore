@@ -14,3 +14,4 @@ rendu_obsolete/
 *.vert
 tutorial.cpp
 *.rdc
+atlas_debug.png

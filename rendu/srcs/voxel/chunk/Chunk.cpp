@@ -236,8 +236,7 @@ void Chunk::generateMesh()
 
 void Chunk::uploadAsset(AEngine * engine)
 {
-	if (!_asset.vertices.empty())
-		engine->uploadAsset(_asset);
+	engine->uploadAsset(_asset);
 	_state = UPLOADED;
 }
 

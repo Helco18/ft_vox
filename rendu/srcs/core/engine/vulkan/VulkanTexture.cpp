@@ -1,18 +1,14 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
-#include "stb/stb_image.h"
+#include "TextureAtlas.hpp"
 
 void VulkanEngine::_createTextureImage()
 {
 	int width, height;
-	OBJModel model;
-	ModelTexture texture;
 
-	model = OBJModel::getModel(CUBE);
-	texture = model.getTexture();
-	width = texture.width;
-	height = texture.height;
-	stbi_uc * pixels = texture.data;
+	width = TextureAtlas::getWidth();
+	height = TextureAtlas::getHeight();
+	unsigned char * pixels = TextureAtlas::getData();
 	vk::DeviceSize size = width * height * 4;
 	if (!pixels)
 		throw VulkanException("Failed to load image.");

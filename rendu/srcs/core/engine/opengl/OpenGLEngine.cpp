@@ -82,7 +82,9 @@ void OpenGLEngine::drawAsset(AssetID assetID)
 	if (it == _assetMap.end())
 		return;
 
-	Asset asset = it->second;
+	Asset & asset = it->second;
+	if (asset.vertices.empty())
+		return;
 	
 	glBindVertexArray(assetID);
 	_updateUniformBuffer();

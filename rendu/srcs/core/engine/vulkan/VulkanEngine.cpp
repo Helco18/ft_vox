@@ -104,7 +104,9 @@ AssetID VulkanEngine::uploadAsset(Asset & asset)
 
 void VulkanEngine::drawAsset(AssetID assetID)
 {
-	_drawableAssets.push_back(&_assetMap[assetID]);
+	Asset * asset = &_assetMap[assetID];
+	if (!asset->vertices.empty())
+		_drawableAssets.push_back(&_assetMap[assetID]);
 }
 
 void VulkanEngine::endFrame()
