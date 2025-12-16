@@ -143,13 +143,13 @@ void VulkanEngine::endFrame()
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &*_commandBuffers[_currentFrame];
 		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_renderSemaphoreIndex];
+		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_imageIndex];
 
 		_queue.submit(submitInfo, *_inFlightFences[_currentFrame]);
 
 		vk::PresentInfoKHR presentInfoKHR;
 		presentInfoKHR.waitSemaphoreCount = 1;
-		presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphores[_renderSemaphoreIndex];
+		presentInfoKHR.pWaitSemaphores = &*_renderFinishedSemaphores[_imageIndex];
 		presentInfoKHR.swapchainCount = 1;
 		presentInfoKHR.pSwapchains = &*_swapChain;
 		presentInfoKHR.pImageIndices = &_imageIndex;
@@ -170,7 +170,6 @@ void VulkanEngine::endFrame()
 			;
 		_commandBuffers[_currentFrame].reset();
 		_presentSemaphoreIndex = (_presentSemaphoreIndex + 1) % _presentCompleteSemaphores.size();
-		_renderSemaphoreIndex = (_renderSemaphoreIndex + 1) % _renderFinishedSemaphores.size();
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	} catch (const vk::OutOfDateKHRError & e)
 	{

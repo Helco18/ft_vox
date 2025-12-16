@@ -14,6 +14,8 @@ struct Vertex
 	glm::vec3	position;
 	glm::vec3	normal;
 	glm::vec2	texCoord;
+	glm::vec2	uvMin;
+	glm::vec2	uvMax;
 	int			originalPositionIndex; 
 };
 
@@ -33,7 +35,7 @@ struct Mesh
 	std::vector<uint32_t>	indices;
 };
 
-struct Texture
+struct ModelTexture
 {
 	int				width;
 	int				height;
@@ -54,14 +56,14 @@ class OBJModel
 		const std::vector<uint32_t> &						getIndices() const { return _indices; }
 		const std::unordered_map<std::string, Mesh> &		getMeshes() const { return _meshes; }
 		const std::unordered_map<std::string, Material> &	getMaterials() const { return _materials; }
-		const Texture &										getTexture() const;
+		const ModelTexture &										getTexture() const;
 
 		static OBJModel										getModel(ModelType type);
 		static bool											loadModels();
 		static void											deleteModels();
 	private:
 		static std::unordered_map<ModelType, OBJModel>		_modelCache;
-		static std::unordered_map<ModelType, Texture>		_loadedTextures;
+		static std::unordered_map<ModelType, ModelTexture>		_loadedTextures;
 
 		std::string											_filepath;
 		ModelType											_type;

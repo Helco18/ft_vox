@@ -9,6 +9,7 @@ void BlockData::init()
 {
 	_registry.emplace(0, BlockData("air", false));
 	_registry.emplace(1, BlockData("stone", true));
+	_registry.emplace(2, BlockData("moi", true));
 }
 
 BlockData BlockData::getBlockData(uint8_t type)

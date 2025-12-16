@@ -111,7 +111,6 @@ class VulkanEngine : public AEngine
 		Semaphores							_renderFinishedSemaphores;
 		Fences								_inFlightFences;
 		uint32_t							_presentSemaphoreIndex = 0;
-		uint32_t							_renderSemaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
 		uint32_t							_imageIndex = 0;
 

@@ -6,7 +6,7 @@ void VulkanEngine::_createTextureImage()
 {
 	int width, height;
 	OBJModel model;
-	Texture texture;
+	ModelTexture texture;
 
 	model = OBJModel::getModel(CUBE);
 	texture = model.getTexture();

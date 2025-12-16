@@ -2,8 +2,9 @@
 #include "utils.hpp"
 #include "BlockData.hpp"
 #include "World.hpp"
-#include <iostream>
 #include "Logger.hpp"
+#include "TextureAtlas.hpp"
+#include <iostream>
 
 void Chunk::build()
 {
@@ -17,7 +18,7 @@ void Chunk::build()
 			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
 				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= -1))
-					_blocks[x][y][z] = 1;
+					_blocks[x][y][z] = x % 2 + 1;
 				else
 					_blocks[x][y][z] = 0;
 			}
@@ -196,7 +197,7 @@ void Chunk::generateMesh()
 				// 	}
 				// }
 				uint32_t verticesAdded = _asset.vertices.size();
-				if (_blocks[x][y][z] == 1)
+				if (_blocks[x][y][z] != 0)
 				{
 					// Logger::log(VOXEL, DEBUG, "----------");
 					for (Vertex vertex : model.getVertices())
@@ -205,6 +206,11 @@ void Chunk::generateMesh()
 						tmp.position.x += x + _chunkLocation.x * CHUNK_WIDTH;
 						tmp.position.y += y + _chunkLocation.y * CHUNK_HEIGHT;
 						tmp.position.z += z + _chunkLocation.z * CHUNK_LENGTH;
+						
+						Texture * texture = TextureAtlas::getTexture(_blocks[x][y][z] == 1 ? "assets/textures/gcannaud.jpg" : "assets/textures/stuff.png");
+						tmp.uvMin = texture->uvMin;
+						tmp.uvMax = texture->uvMax;
+
 						// Logger::log(VOXEL, DEBUG, "DEBUG Vertex----------");
 						// Logger::log(VOXEL, DEBUG, "vertices pushed mormal:" + toString(tmp.normal.x) + " " + toString(tmp.normal.y) + " " + toString(tmp.normal.z));
 						// Logger::log(VOXEL, DEBUG, "vertices pushed originalPositionIndex:" + toString(tmp.originalPositionIndex));
@@ -230,7 +236,8 @@ void Chunk::generateMesh()
 
 void Chunk::uploadAsset(AEngine * engine)
 {
-	engine->uploadAsset(_asset);
+	if (!_asset.vertices.empty())
+		engine->uploadAsset(_asset);
 	_state = UPLOADED;
 }
 

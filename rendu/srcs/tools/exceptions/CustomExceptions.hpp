@@ -10,9 +10,10 @@ class CustomException: public std::exception
 		explicit CustomException(LogSource source, const std::string & message): _source(source), _message(message) {}
 		const char *	what() const noexcept override { return _message.c_str(); };
 		LogSource		getSource() const { return _source; }
+
 	private:
-		LogSource	_source;
-		std::string	_message;
+		LogSource		_source;
+		std::string		_message;
 };
 
 class ModelException: public CustomException { public: ModelException(const std::string & message): CustomException(MODEL, message) {} };

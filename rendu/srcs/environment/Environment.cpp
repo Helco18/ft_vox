@@ -5,11 +5,13 @@
 #include "WorldManager.hpp"
 #include "BlockData.hpp"
 #include "Logger.hpp"
+#include "TextureAtlas.hpp"
 #include <iostream>
 
 Environment::~Environment()
 {
 	WorldManager::destroy();
+	TextureAtlas::destroy();
 	delete _windowManager;
 }
 
@@ -18,11 +20,17 @@ void Environment::init(EngineType engineType)
 	if (!OBJModel::loadModels())
 		throw EnvironmentException("Failed to load models.");
 
+	TextureAtlas::pushTexture("assets/textures/gcannaud.jpg");
+	TextureAtlas::pushTexture("assets/textures/stuff.png");
+	TextureAtlas::createAtlas();
+
 	_windowManager = new WindowManager(engineType, this);
 	_windowManager->load();
 
 	BlockData::init();
+
 	WorldManager::createWorld("bozoandzibocircus");
+
 
 	Logger::log(ENVIRONMENT, INFO, "Environment started.");
 }

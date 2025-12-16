@@ -1,15 +1,18 @@
 struct VertexInput
 {
 	float3 inPosition;
-	float3 inNormal;
-	float2 inTexCoord;
+    float3 inNormal;
+    float2 inTexCoord;
+    float2 inUvMin;
+    float2 inUvMax;
 }
 
 struct VertexOutput
 {
 	float4 sv_position : SV_Position;
 	float3 outNormal;
-	float2 outTexCoord;
+    float2 outTexCoord;
+    float2 outUV;
 };
 
 struct UniformBuffer
@@ -28,6 +31,8 @@ VertexOutput vertMain(VertexInput input)
 	output.sv_position = mul(ubo.proj, mul(ubo.view, float4(input.inPosition, 1.0)));
 	output.outNormal = input.inNormal;
 	output.outTexCoord = input.inTexCoord;
+
+    output.outUV = lerp(input.inUvMin, input.inUvMax, input.inTexCoord);
 	return output;
 }
 
@@ -37,5 +42,5 @@ Sampler2D texture;
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
-	return texture.Sample(inVert.outTexCoord);
+    return texture.Sample(inVert.outUV);
 }

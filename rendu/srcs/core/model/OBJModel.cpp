@@ -7,7 +7,7 @@
 #include <filesystem>
 
 std::unordered_map<ModelType, OBJModel> OBJModel::_modelCache;
-std::unordered_map<ModelType, Texture> OBJModel::_loadedTextures;
+std::unordered_map<ModelType, ModelTexture> OBJModel::_loadedTextures;
 
 OBJModel::OBJModel(const std::string & filepath, ModelType type) : _filepath(filepath), _type(type)
 {}
@@ -246,7 +246,7 @@ void OBJModel::_loadMTL(const std::string & filename)
 			std::filesystem::path fullTexturePath = objDir / current->diffuseTexturePath;
 
 			if (_loadedTextures.find(_type) == _loadedTextures.end()) {
-				Texture newTexture = {};
+				ModelTexture newTexture = {};
 				stbi_set_flip_vertically_on_load(true);
 				newTexture.data = stbi_load(fullTexturePath.string().c_str(), &newTexture.width, &newTexture.height, &newTexture.channels, STBI_rgb_alpha);
 
@@ -262,13 +262,13 @@ void OBJModel::_loadMTL(const std::string & filename)
 	}
 }
 
-const Texture & OBJModel::getTexture() const
+const ModelTexture & OBJModel::getTexture() const
 {
-	std::unordered_map<ModelType, Texture>::const_iterator it = _loadedTextures.find(_type);
+	std::unordered_map<ModelType, ModelTexture>::const_iterator it = _loadedTextures.find(_type);
 	if (it != _loadedTextures.end()) {
 		return it->second;
 	}
-	const static Texture emptyTexture = {0, 0, 0, nullptr};
+	const static ModelTexture emptyTexture = {0, 0, 0, nullptr};
 	return emptyTexture;
 }
 
@@ -286,7 +286,7 @@ bool OBJModel::loadModels()
 
 void OBJModel::deleteModels()
 {
-	for (std::unordered_map<ModelType, Texture>::const_iterator it = _loadedTextures.begin(); it != _loadedTextures.end(); ++it)
+	for (std::unordered_map<ModelType, ModelTexture>::const_iterator it = _loadedTextures.begin(); it != _loadedTextures.end(); ++it)
 	{
 		if (it->second.data)
 			stbi_image_free(it->second.data);

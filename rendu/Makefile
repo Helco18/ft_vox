@@ -36,6 +36,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanUniform.cpp \
 						srcs/core/input/InputManager.cpp \
 						srcs/core/model/OBJModel.cpp \
+						srcs/core/texture/TextureAtlas.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
@@ -59,6 +60,7 @@ INCLUDES			=	-I libs \
 						-I srcs/core/engine/vulkan \
 						-I srcs/core/input \
 						-I srcs/core/model \
+						-I srcs/core/texture \
 						-I srcs/core/window \
 						-I srcs/environment \
 						-I srcs/tools \
@@ -137,7 +139,7 @@ sclean:
 	$(SHADERS_CLEAN)
 
 clean :
-	@rm -rf $(OBJ_FOLDER)
+	@rm -rf $(OBJ_PATH)
 	@rm -rf $(SPIRV_PATH)
 	@rm -rf $(GLSL_PATH)
 	$(ALL_CLEAN)
@@ -145,7 +147,7 @@ clean :
 fclean :
 	@rm -f $(NAME)_debug
 	@rm -f $(NAME)
-	@rm -rf $(OBJ_FOLDER)
+	@rm -rf $(OBJ_PATH)
 	@rm -rf $(SPIRV_PATH)
 	@rm -rf $(GLSL_PATH)
 	$(ALL_FCLEAN)
