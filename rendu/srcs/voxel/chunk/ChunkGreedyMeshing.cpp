@@ -205,20 +205,98 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
     }
 }
 
+static glm::ivec3 getFaceDir(int axis, FaceDirection faceDir)
+{
+    switch (axis)
+    {
+        case 0: return (faceDir == FaceDirection::FORWARD ? glm::ivec3(1,0,0) : glm::ivec3(-1,0,0));
+        case 1: return (faceDir == FaceDirection::FORWARD ? glm::ivec3(0,1,0) : glm::ivec3(0,-1,0));
+        case 2: return (faceDir == FaceDirection::FORWARD ? glm::ivec3(0,0,1) : glm::ivec3(0,0,-1));
+    }
+    return glm::ivec3(0);
+}
+
+static BlockFace getBlockFace(int axis, FaceDirection faceDir)
+{
+    switch (axis)
+    {
+        case 0: return (faceDir == FaceDirection::FORWARD ? NORTH : SOUTH);
+        case 1: return (faceDir == FaceDirection::FORWARD ? TOP : BOTTOM);
+        case 2: return (faceDir == FaceDirection::FORWARD ? EAST : WEST);
+    }
+    return NORTH;
+}
+
+static int getProcessedIndex(FaceDirection faceDir)
+{
+    return (faceDir == FaceDirection::FORWARD ? 0 : 1);
+}
+
+void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax)
+{
+    int pIndex = getProcessedIndex(faceDir);
+    glm::ivec3 dir = getFaceDir(axis, faceDir);
+    BlockFace face = getBlockFace(axis, faceDir);
+
+    glm::ivec3 pos = _sliceToWorld(axis, sliceIndex, u, v);
+    uint8_t block = _blocks[pos.x][pos.y][pos.z];
+    if (block == 0 || processed[u][v][pIndex])
+        return;
+
+    uint8_t neighbor = _getNeighborBlock(pos, dir);
+    BlockData blockData = BlockData::getBlockData(neighbor);
+
+    if (blockData.isVisible())
+        return;
+
+    int width = 1;
+    int uNext = u + 1;
+    while (uNext < uMax)
+    {
+        glm::ivec3 nextPos = _sliceToWorld(axis, sliceIndex, uNext, v);
+        uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
+        uint8_t nextNeighbor = _getNeighborBlock(nextPos, dir);
+        blockData = BlockData::getBlockData(nextNeighbor);
+        if (nextBlock != block || blockData.isVisible() || processed[uNext][v][pIndex])
+            break;
+        width++;
+        uNext++;
+    }
+
+    int height = 1;
+    int oldHeight = 0;
+    for (int i = u; i < u + width; ++i)
+    {
+        int vNext = v + 1;
+        height = 1;
+        while (vNext < vMax)
+        {
+            glm::ivec3 nextPos = _sliceToWorld(axis, sliceIndex, i, vNext);
+            uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
+            uint8_t nextNeighbor = _getNeighborBlock(nextPos, dir);
+            blockData = BlockData::getBlockData(nextNeighbor);
+            if (nextBlock != block || blockData.isVisible() || processed[i][vNext][pIndex])
+                break;
+            height++;
+            vNext++;
+        }
+        if (oldHeight == 0 || height < oldHeight)
+            oldHeight = height;
+    }
+    if (oldHeight != 0)
+        height = oldHeight;
+
+    _emitBlocksFace(pos, width, height, face);
+
+    for (int i = u; i < u + width; ++i)
+        for (int j = v; j < v + height; ++j)
+            processed[i][j][pIndex] = true;
+}
+
 void Chunk::_generateSliceMeshing(int axis, int sliceIndex)
 {
     int uMax;
     int vMax;
-
-	//     Y(Y)
-    //     ↑
-    //     |
-    //     |
-    //     o──────→ X(N)
-    //    /
-    //   /
-    //  Z(E)
-
     if (axis == 0)
     {
         uMax = CHUNK_HEIGHT;
@@ -235,63 +313,17 @@ void Chunk::_generateSliceMeshing(int axis, int sliceIndex)
         vMax = CHUNK_HEIGHT;
     }
 
-    bool processed[uMax][vMax][2];
-    std::memset(processed, 0, sizeof(processed));
+    std::vector<std::vector<std::array<bool,2>>> processed( uMax, std::vector<std::array<bool,2>>(vMax, {false,false}));
 
     for (int u = 0; u < uMax; ++u)
     {
         for (int v = 0; v < vMax; ++v)
         {
-            glm::ivec3 pos = _sliceToWorld(axis, sliceIndex, u, v);
-            uint8_t block = _blocks[pos.x][pos.y][pos.z];
-            if (block == 0 || (processed[u][v][0] && processed[u][v][1]))
-                continue;
-
-            uint8_t forward = _getNeighborBlock(pos, (axis == 0 ? glm::ivec3(1, 0, 0) : (axis == 1 ? glm::ivec3(0, 1, 0) : glm::ivec3(0, 0, 1))));
-            BlockData blockData = BlockData::getBlockData(forward);
-            if (!blockData.isVisible() && !processed[u][v][0])
-            {
-                int uNext = u + 1;
-                int width = 1;
-                while (uNext < uMax)
-                {
-                    glm::ivec3 nextPos = _sliceToWorld(axis, sliceIndex, uNext, v);
-                    uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
-                    uint8_t nextForward = _getNeighborBlock(nextPos, (axis == 0 ? glm::ivec3(1, 0, 0) : (axis == 1 ? glm::ivec3(0, 1, 0) : glm::ivec3(0, 0, 1))));
-                    blockData = BlockData::getBlockData(nextForward);
-                    if (nextBlock != block || !blockData.isVisible() || processed[uNext][v][0])
-                        break;
-                    width++;
-                    uNext++;
-                }
-                _emitBlocksFace(pos, width, 1, (axis == 0 ? NORTH  : (axis == 1 ? TOP : EAST)));
-                for (int i = u; i < u + width; ++i)
-                    processed[i][v][0] = true;
-            }
-            
-            uint8_t backward = _getNeighborBlock(pos, (axis == 0 ? glm::ivec3(-1, 0, 0) : (axis == 1 ? glm::ivec3(0, -1, 0) : glm::ivec3(0, 0, -1))));
-            blockData = BlockData::getBlockData(backward);
-            if (!blockData.isVisible() && !processed[u][v][1])
-            {
-                int uNext = u + 1;
-                int width = 1;
-                while (uNext < uMax)
-                {
-                    glm::ivec3 nextPos = _sliceToWorld(axis, sliceIndex, uNext, v);
-                    uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
-                    uint8_t nextBackward = _getNeighborBlock(nextPos, (axis == 0 ? glm::ivec3(-1, 0, 0) : (axis == 1 ? glm::ivec3(0, -1, 0) : glm::ivec3(0, 0, -1))));
-                    blockData = BlockData::getBlockData(nextBackward);
-                    if (nextBlock != block || !blockData.isVisible() || processed[uNext][v][1])
-                        break;
-                    width++;
-                    uNext++;
-                }
-                _emitBlocksFace(pos, width, 1, (axis == 0 ? SOUTH : (axis == 1 ? BOTTOM : WEST)));
-                for (int j = u; j < u + width; ++j)
-                    processed[j][v][1] = true;
-            }
+            _processFace(u, v, processed, FaceDirection::FORWARD, axis, sliceIndex, uMax, vMax);
+            _processFace(u, v, processed, FaceDirection::BACKWARD, axis, sliceIndex, uMax, vMax);
         }
     }
+
 }
 
 void Chunk::_generateGreedyMesh()
