@@ -46,6 +46,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/WorldManager.cpp \
 						srcs/voxel/block/BlockData.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
+						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp
 SHADERS				=	$(SHADER_PATH)/slang/base.slang
 

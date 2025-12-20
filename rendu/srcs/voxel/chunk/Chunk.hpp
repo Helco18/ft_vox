@@ -1,13 +1,14 @@
 #pragma once
 
-#define CHUNK_WIDTH 10
-#define CHUNK_HEIGHT 10
-#define CHUNK_LENGTH 10
+#define CHUNK_WIDTH 16
+#define CHUNK_HEIGHT 16
+#define CHUNK_LENGTH 16
 
 #include <cstdint>
 #include <vector>
 #include "OBJModel.hpp"
 #include "AEngine.hpp"
+#include "BlockData.hpp"
 
 class World;
 
@@ -45,6 +46,10 @@ class Chunk
 		Asset					_asset;
 		ChunkState				_state;
 
-		std::vector<uint8_t>	_getNeighboringBlocks(int x, int y, int z);
-		bool					_blockIsVisible(int x, int y, int z);
+		void					_generateGreedyMesh();
+		Asset					_generateQuadMesh(float width, float height, float depth, int face);
+		void					_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face);
+		void					_generateSliceMeshing(int axis, int sliceIndex);
+		uint8_t					_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
+		glm::ivec3				_sliceToWorld(int axis, int sliceIndex, int u, int v);
 };
