@@ -5,6 +5,7 @@ struct VertexInput
     float2 inTexCoord;
     float2 inUvMin;
     float2 inUvMax;
+    float2 inUvRepeat;
 }
 
 struct VertexOutput
@@ -12,7 +13,9 @@ struct VertexOutput
 	float4 sv_position : SV_Position;
 	float3 outNormal;
     float2 outTexCoord;
-    float2 outUV;
+    float2 outUvMin;
+    float2 outUvMax;
+    float2 outUvRepeat;
 };
 
 struct UniformBuffer
@@ -32,7 +35,9 @@ VertexOutput vertMain(VertexInput input)
 	output.outNormal = input.inNormal;
 	output.outTexCoord = input.inTexCoord;
 
-    output.outUV = lerp(input.inUvMin, input.inUvMax, input.inTexCoord);
+	output.outUvMin = input.inUvMin;
+	output.outUvMax = input.inUvMax;
+	output.outUvRepeat = input.inUvRepeat;
 	return output;
 }
 
@@ -42,5 +47,10 @@ Sampler2D texture;
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
-    return texture.Sample(inVert.outUV);
+    float2 tileSize = inVert.outUvMax - inVert.outUvMin;
+
+	// frac(x) retourne la partie décimale de x (ecivalent a x - floor(x))
+	float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
+
+    return texture.Sample(finalUV);
 }

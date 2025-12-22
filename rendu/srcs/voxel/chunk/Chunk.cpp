@@ -18,8 +18,8 @@ void Chunk::build()
 			{
 				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= (-1 + (std::sin(((_chunkLocation.x * CHUNK_WIDTH) + x) / 5.0) * 5.0 + (std::cos(((_chunkLocation.z * CHUNK_LENGTH) + z) / 5.0) * 5.0))) ))
 				{
-					// _blocks[x][y][z] = x % 2 + 1;
-					_blocks[x][y][z] = 1;
+					_blocks[x][y][z] = x % 2 + 1;
+					// _blocks[x][y][z] = 1;
 				}
 				else
 					_blocks[x][y][z] = 0;

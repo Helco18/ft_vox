@@ -56,7 +56,6 @@ class Chunk
 		void					_generateGreedyMesh();
 		 void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
 		Asset					_generateQuadMesh(float width, float height, float depth, int face);
-		int						_getVisibleBlocksLength();
 		void					_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face);
 		void					_generateSliceMeshing(int axis, int sliceIndex);
 		uint8_t					_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);

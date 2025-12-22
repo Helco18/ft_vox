@@ -16,7 +16,8 @@ VulkanEngine::VertexAttributeDescriptionArray VulkanEngine::_getAttributeDescrip
 		vk::VertexInputAttributeDescription( 1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, normal)),
 		vk::VertexInputAttributeDescription( 2, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, texCoord)),
 		vk::VertexInputAttributeDescription( 3, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, uvMin)),
-		vk::VertexInputAttributeDescription( 4, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, uvMax))
+		vk::VertexInputAttributeDescription( 4, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, uvMax)),
+		vk::VertexInputAttributeDescription( 5, 0, vk::Format::eR32G32Sfloat, offsetof(Vertex, uvRepeat))
 	};
 }
 

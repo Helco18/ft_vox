@@ -74,7 +74,7 @@ class VulkanEngine : public AEngine
 		typedef std::vector<vk::raii::Semaphore>					Semaphores;
 		typedef std::vector<vk::raii::Fence>						Fences;
 		typedef std::vector<vk::raii::DescriptorSet>				DescriptorSets;
-		typedef std::array<vk::VertexInputAttributeDescription, 5>	VertexAttributeDescriptionArray;
+		typedef std::array<vk::VertexInputAttributeDescription, 6>	VertexAttributeDescriptionArray;
 
 		// Window, context, instance
 		vk::raii::Context					_context;

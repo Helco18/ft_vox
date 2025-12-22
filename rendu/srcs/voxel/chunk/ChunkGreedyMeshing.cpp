@@ -49,10 +49,10 @@ Asset Chunk::_generateQuadMesh(float width, float height, float depth, int face)
     {
         case NORTH:
         {
-            v[0].position = { 1 - depth, 0,      height };
+            v[0].position = { 1 - depth, 0,      width };
             v[1].position = { 1 - depth, 0,      0 };
-            v[2].position = { 1 - depth, width, 0 };
-            v[3].position = { 1 - depth, width, height };
+            v[2].position = { 1 - depth, height, 0 };
+            v[3].position = { 1 - depth, height, width };
 			v[0].normal = { 1, 0, 0 };
 			v[1].normal = { 1, 0, 0 };
 			v[2].normal = { 1, 0, 0 };
@@ -62,9 +62,9 @@ Asset Chunk::_generateQuadMesh(float width, float height, float depth, int face)
         case SOUTH:
         {
             v[0].position = { depth, 0,      0 };
-            v[1].position = { depth, 0,      height };
-            v[2].position = { depth, width, height };
-            v[3].position = { depth, width, 0 };
+            v[1].position = { depth, 0,      width };
+            v[2].position = { depth, height, width };
+            v[3].position = { depth, height, 0 };
 			v[3].texCoord = {0.0f, 1.0f};
 			v[0].normal = { -1, 0, 0 };
 			v[1].normal = { -1, 0, 0 };
@@ -196,6 +196,7 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
         Texture * texture = TextureAtlas::getTexture(_blocks[pos.x][pos.y][pos.z] == 1 ? "assets/textures/blue_stone.png" : "assets/textures/stone.png");
         tmp.uvMin = texture->uvMin;
         tmp.uvMax = texture->uvMax;
+        tmp.uvRepeat = { (float)countBlockWidth, (float)countBlockHeight };
 
         _asset.vertices.push_back(tmp);
     }
@@ -286,7 +287,10 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
     if (oldHeight != 0)
         height = oldHeight;
 
-    _emitBlocksFace(pos, width, height, face);
+    if (axis == 0)
+        _emitBlocksFace(pos, height, width, face);
+    else
+        _emitBlocksFace(pos, width, height, face);
 
     for (int i = u; i < u + width; ++i)
         for (int j = v; j < v + height; ++j)
