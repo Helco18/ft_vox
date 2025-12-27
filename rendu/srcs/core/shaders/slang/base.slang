@@ -47,10 +47,18 @@ Sampler2D texture;
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
-    float2 tileSize = inVert.outUvMax - inVert.outUvMin;
+	float3 lightDir = normalize(float3(0.5, 1.0, 0.5));
+	float diffuse = max(dot(inVert.outNormal, lightDir), 0.0);
 
+	float3 ambientColor = float3(0.2, 0.2, 0.2);
+	diffuse = diffuse + ambientColor.r;
+
+    float2 tileSize = inVert.outUvMax - inVert.outUvMin;
 	// frac(x) retourne la partie décimale de x (ecivalent a x - floor(x))
 	float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
+	float4 vertColor = texture.Sample(finalUV);
 
-    return texture.Sample(finalUV);
+	vertColor.rgb *= diffuse;
+
+    return vertColor;
 }
