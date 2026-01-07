@@ -37,14 +37,6 @@ void VulkanEngine::load()
 	// Chaque image view décrit comment une image doit être interprétée (format, aspect, niveau de mipmap, etc.).
 	_createImageViews();
 
-	// On définit la structure de nos *descriptor sets*, qui servent à passer des données aux shaders
-	// (comme les uniform buffers, textures ou samplers).
-	_createDescriptorSetLayout();
-
-	// On construit notre *graphics pipeline*, c’est-à-dire la configuration complète du pipeline graphique :
-	// shaders, entrées vertex, assemblage, rasterization, blending, etc.
-	_createGraphicsPipelines();
-
 	// On crée deux *command pools* :
 	// - un "reset" pool pour des commandes réutilisables (e.g. dessin, rendu)
 	// - un "transient" pool pour des commandes temporaires (e.g. copie de buffer, transfert de ressources)
@@ -59,9 +51,11 @@ void VulkanEngine::load()
 	_createTextureImage();
 	_createTextureImageView();
 	_createTextureSampler();
-
 	_createUniformBuffers();
 
+	// On définit la structure de nos *descriptor sets*, qui servent à passer des données aux shaders
+	// (comme les uniform buffers, textures ou samplers).
+	_createDescriptorSetLayout();
 	_createDescriptorPool();
 	_createDescriptorSets();
 
@@ -72,6 +66,9 @@ void VulkanEngine::load()
 	// On crée les *semaphores* et *fences* pour la synchronisation :
 	// ils permettent de s’assurer que les opérations GPU (rendu, présentation, etc.) s’exécutent dans le bon ordre et ne se chevauchent pas.
 	_createSyncObjects();
+
+	// On construit notre *graphics pipeline*, c’est-à-dire la configuration complète du pipeline graphique :
+	// shaders, entrées vertex, assemblage, rasterization, blending, etc.
 
 	_isInitalized = true;
 	Logger::log(ENGINE_VULKAN, INFO, "Vulkan engine initialized successfully.");
@@ -85,7 +82,8 @@ VulkanEngine::~VulkanEngine()
 
 void VulkanEngine::beginFrame()
 {
-	_drawableAssets.clear();
+	for (std::pair<const PipelineID, std::vector<Asset *>> & pipelinePair : _pipelineAssetMap)
+		pipelinePair.second.clear();
 }
 
 AssetID VulkanEngine::uploadAsset(Asset & asset)
@@ -102,11 +100,14 @@ AssetID VulkanEngine::uploadAsset(Asset & asset)
 	return assetID++;
 }
 
-void VulkanEngine::drawAsset(AssetID assetID)
+void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 {
-	Asset * asset = &_assetMap[assetID];
-	if (!asset->vertices.empty())
-		_drawableAssets.push_back(&_assetMap[assetID]);
+	AssetMap::iterator assetit = _assetMap.find(assetID);
+	if (assetit != _assetMap.end())
+	{
+		Asset & asset = assetit->second;
+		_pipelineAssetMap[pipelineID].push_back(&asset);
+	}
 }
 
 void VulkanEngine::endFrame()

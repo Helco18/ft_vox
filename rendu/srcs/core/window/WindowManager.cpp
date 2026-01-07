@@ -42,6 +42,11 @@ void WindowManager::load()
 
 	_engine->load();
 
+	// Temporary
+	PipelineInfo pipelineInfo;
+	pipelineInfo.shaderPath = "srcs/core/shaders/spir-v/voxel.spv";
+	_engine->uploadPipeline(pipelineInfo);
+
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, WindowManager::framebufferResizeCallback);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);

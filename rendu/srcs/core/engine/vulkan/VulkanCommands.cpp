@@ -1,5 +1,6 @@
 #include "VulkanEngine.hpp"
 #include "Logger.hpp"
+#include "utils.hpp"
 #include <iostream>
 
 void VulkanEngine::_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag)
@@ -150,15 +151,28 @@ void VulkanEngine::_recordCommandBuffer()
 	renderingInfo.pDepthAttachment = &depthAttachmentInfo;
 
 	commands.beginRendering(renderingInfo);
-	commands.bindPipeline(vk::PipelineBindPoint::eGraphics, _isWireframeEnabled ? *_wireframeGraphicsPipeline : *_graphicsPipeline);
-	commands.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width), static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
-	commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
-	commands.bindVertexBuffers(0, *_vertexBuffer, {0});
-	commands.bindIndexBuffer( *_indexBuffer, 0, vk::IndexType::eUint32);
-	commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _isWireframeEnabled ? _wireframePipelineLayout : _pipelineLayout, 0,
-		*_descriptorSets[_currentFrame], nullptr);
-	for (const Asset * asset : _drawableAssets)
-		commands.drawIndexed(asset->indices.size(), 1, asset->ibo, asset->vbo, 0);
+	for (const std::pair<const PipelineID, std::vector<Asset *>> & pipelineAsset : _pipelineAssetMap)
+	{
+		PipelineID pipelineID = pipelineAsset.first;
+		PipelineAssetMap::iterator pipelineassetit = _pipelineAssetMap.find(pipelineID);
+		if (pipelineassetit == _pipelineAssetMap.end())
+			continue;
+		PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
+		if (pipelineit == _pipelineMap.end())
+			continue;
+		PipelineObjects & pipelineObjects = pipelineit->second;
+		commands.bindPipeline(vk::PipelineBindPoint::eGraphics, pipelineObjects.pipeline);
+		commands.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width),
+						static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
+		commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
+		commands.bindVertexBuffers(0, *_vertexBuffer, {0});
+		commands.bindIndexBuffer( *_indexBuffer, 0, vk::IndexType::eUint32);
+		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineObjects.layout, 0,
+			*_descriptorSets[_currentFrame], nullptr);
+		std::vector<Asset *> & drawableAssets = pipelineassetit->second;
+		for (const Asset * asset : drawableAssets)
+			commands.drawIndexed(asset->indices.size(), 1, asset->ibo, asset->vbo, 0);
+	}
 	commands.endRendering();
 
 	TransitionImageViewLayoutInfo presentSrcInfo;

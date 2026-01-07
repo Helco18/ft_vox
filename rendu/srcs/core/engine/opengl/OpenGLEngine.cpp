@@ -50,7 +50,7 @@ void OpenGLEngine::load()
 {
 	glfwSwapInterval(0);
 
-	_createShader("base.vert", "base.frag");
+	_createShader("voxel.vert", "voxel.frag");
 	glUseProgram(_shader);
 
 	glGenBuffers(1, &_ubo);
@@ -71,13 +71,22 @@ void OpenGLEngine::load()
 	_isInitalized = true;
 }
 
+PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
+{
+	static int pipelineID = 0;
+
+	_pipelineMap.try_emplace(pipelineID, pipelineInfo);
+	return pipelineID++;
+}
+
 void OpenGLEngine::beginFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void OpenGLEngine::drawAsset(AssetID assetID)
+void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 {
+	(void) pipelineID;
 	if (_isFramebufferResized)
 		_handleResize();
 

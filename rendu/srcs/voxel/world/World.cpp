@@ -136,6 +136,6 @@ void World::_uploadChunk(std::vector<Chunk *> visibleChunk, AEngine * engine)
 	{
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
-		engine->drawAsset(chunk->getAsset().assetID);
+		engine->drawAsset(chunk->getAsset().assetID, 0);
 	}
 }

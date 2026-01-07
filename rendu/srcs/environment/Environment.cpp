@@ -31,7 +31,6 @@ void Environment::init(EngineType engineType)
 
 	WorldManager::createWorld("bozoandzibocircus");
 
-
 	Logger::log(ENVIRONMENT, INFO, "Environment started.");
 }
 

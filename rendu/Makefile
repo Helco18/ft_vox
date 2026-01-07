@@ -48,7 +48,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp
-SHADERS				=	$(SHADER_PATH)/slang/base.slang
+SHADERS				=	$(SHADER_PATH)/slang/voxel.slang
 
 # Includes
 INCLUDES			=	-I libs \
@@ -116,22 +116,22 @@ $(OBJ_PATH)/%.o: srcs/%.cpp
 run: all
 	./$(NAME)
 
-$(SPIRV_PATH)/base.spv : $(SHADERS)
+$(SPIRV_PATH)/voxel.spv : $(SHADERS)
 	@mkdir -p $(SPIRV_PATH)
 	@slangc $(SHADERS) -target spirv -entry vertMain -entry fragMain -o $@
 	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/base.vert : $(SHADERS)
+$(GLSL_PATH)/voxel.vert : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
 	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry vertMain -o $@
 	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/base.frag : $(SHADERS)
+$(GLSL_PATH)/voxel.frag : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
 	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry fragMain -o $@
 	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
 
-shader: $(SPIRV_PATH)/base.spv $(GLSL_PATH)/base.vert $(GLSL_PATH)/base.frag
+shader: $(SPIRV_PATH)/voxel.spv $(GLSL_PATH)/voxel.vert $(GLSL_PATH)/voxel.frag
 	$(SHADERS_DONE)
 
 sclean:
@@ -178,11 +178,12 @@ download_glfw:
 	rm -rf GLFW_DOWNLOADED
 
 glfw:
-	@mkdir -p libs
 	@if ! ls ./libs/GLFW 2>/dev/null | grep -q "glfw3.h" ; then \
+		mkdir -p libs; \
 		make --no-print-directory download_glfw; \
 	fi
 	@if ! ls ./libs/GLFW 2>/dev/null | grep -q "libglfw3.a" ; then \
+		mkdir -p libs; \
 		make --no-print-directory download_glfw; \
 	fi
 
@@ -197,8 +198,8 @@ download_glm:
 	rm -rf GLM
 
 glm:
-	@mkdir -p libs
 	@if ! ls ./libs/glm 2>/dev/null | grep -q "glm.hpp" ; then \
+		mkdir -p libs; \
 		make --no-print-directory download_glm; \
 	fi
 
@@ -213,8 +214,8 @@ download_stb:
 	rm -rf STB;
 
 stb:
-	@mkdir -p libs
 	@if ! ls ./libs/stb 2>/dev/null | grep -q "stb_image.h" ; then \
+		mkdir -p libs; \
 		make --no-print-directory download_stb; \
 	fi
 

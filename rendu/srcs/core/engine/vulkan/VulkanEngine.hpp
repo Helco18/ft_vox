@@ -55,6 +55,12 @@ struct TransitionImageViewLayoutInfo
 	vk::PipelineStageFlags2	dstStageMask;
 };
 
+struct PipelineObjects
+{
+	vk::raii::Pipeline 			pipeline = nullptr;
+	vk::raii::PipelineLayout 	layout = nullptr;
+};
+
 class VulkanEngine : public AEngine
 {
 	public:
@@ -64,17 +70,20 @@ class VulkanEngine : public AEngine
 		void								load() override;
 		void								beginFrame() override;
 		AssetID								uploadAsset(Asset & asset) override;
-		void								drawAsset(AssetID assetID) override;
+		PipelineID							uploadPipeline(PipelineInfo & pipelineInfo) override;
+		void								drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void								endFrame() override;
 
 	private:
-		typedef std::vector<char const *>							RequiredExtensions;
-		typedef std::vector<char const *>							RequiredLayers;
-		typedef std::vector<vk::raii::CommandBuffer>				CommandBuffers;
-		typedef std::vector<vk::raii::Semaphore>					Semaphores;
-		typedef std::vector<vk::raii::Fence>						Fences;
-		typedef std::vector<vk::raii::DescriptorSet>				DescriptorSets;
-		typedef std::array<vk::VertexInputAttributeDescription, 6>	VertexAttributeDescriptionArray;
+		typedef std::vector<char const *>								RequiredExtensions;
+		typedef std::vector<char const *>								RequiredLayers;
+		typedef std::vector<vk::raii::CommandBuffer>					CommandBuffers;
+		typedef std::vector<vk::raii::Semaphore>						Semaphores;
+		typedef std::vector<vk::raii::Fence>							Fences;
+		typedef std::vector<vk::raii::DescriptorSet>					DescriptorSets;
+		typedef std::array<vk::VertexInputAttributeDescription, 6>		VertexAttributeDescriptionArray;
+		typedef std::unordered_map<PipelineID, std::vector<Asset *>>	PipelineAssetMap;
+		typedef std::unordered_map<PipelineID, PipelineObjects>			PipelineMap;
 
 		// Window, context, instance
 		vk::raii::Context					_context;
@@ -98,10 +107,6 @@ class VulkanEngine : public AEngine
 	
 		// Pipeline & Descriptor
 		vk::raii::DescriptorSetLayout		_descriptorSetLayout = nullptr;
-		vk::raii::PipelineLayout			_pipelineLayout = nullptr;
-		vk::raii::PipelineLayout			_wireframePipelineLayout = nullptr;
-		vk::raii::Pipeline					_graphicsPipeline = nullptr;
-		vk::raii::Pipeline					_wireframeGraphicsPipeline = nullptr;
 		vk::raii::CommandPool				_resetCommandPool = nullptr;
 		vk::raii::CommandPool				_transientCommandPool = nullptr;
 		CommandBuffers						_commandBuffers;
@@ -138,7 +143,8 @@ class VulkanEngine : public AEngine
 		vk::raii::DeviceMemory				_depthImageMemory = nullptr;
 		vk::raii::ImageView					_depthImageView = nullptr;
 
-		std::vector<Asset *>				_drawableAssets;
+		PipelineMap							_pipelineMap;
+		PipelineAssetMap					_pipelineAssetMap;
 
 		void								_createInstance();
 		void								_initDebugMessenger();

@@ -274,8 +274,6 @@ const ModelTexture & OBJModel::getTexture() const
 
 bool OBJModel::loadModels()
 {
-	_modelCache[CUBE] = OBJModel("assets/models/cube.obj", CUBE);
-
 	for (std::unordered_map<ModelType, OBJModel>::iterator it = _modelCache.begin(); it != _modelCache.end(); ++it)
 	{
 		if (!it->second.load())
