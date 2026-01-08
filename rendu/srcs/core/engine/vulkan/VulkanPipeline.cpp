@@ -56,7 +56,9 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	viewportState.scissorCount = 1;
 
 	const vk::VertexInputBindingDescription bindingDescription = _getBindingDescription();
-	const std::array<vk::VertexInputAttributeDescription, 6> attributeDescription = _getAttributeDescription();
+	VertexAttributeDescriptionVector attributeDescription = _getAttributeDescription();
+	attributeDescription.shrink_to_fit();
+
 	vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;

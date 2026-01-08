@@ -82,7 +82,7 @@ class VulkanEngine : public AEngine
 		typedef std::vector<vk::raii::Semaphore>											Semaphores;
 		typedef std::vector<vk::raii::Fence>												Fences;
 		typedef std::vector<vk::raii::DescriptorSet>										DescriptorSets;
-		typedef std::array<vk::VertexInputAttributeDescription, 6>							VertexAttributeDescriptionArray;
+		typedef std::vector<vk::VertexInputAttributeDescription>							VertexAttributeDescriptionVector;
 		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
 		typedef std::unordered_map<PipelineID, PipelineObjects>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
@@ -183,7 +183,7 @@ class VulkanEngine : public AEngine
 		vk::raii::CommandBuffer				_beginSingleTimeCommands();
 		void								_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffer);
 		vk::VertexInputBindingDescription	_getBindingDescription() const;
-		VertexAttributeDescriptionArray		_getAttributeDescription() const;
+		VertexAttributeDescriptionVector		_getAttributeDescription() const;
 		void								_createDescriptorSetLayout();
 		void								_createUniformBuffers();
 		void								_createDescriptorPool();

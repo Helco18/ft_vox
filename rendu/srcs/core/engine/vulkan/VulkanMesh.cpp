@@ -8,7 +8,7 @@ vk::VertexInputBindingDescription VulkanEngine::_getBindingDescription() const
 	return { 0, sizeof(Vertex), vk::VertexInputRate::eVertex };
 }
 
-VulkanEngine::VertexAttributeDescriptionArray VulkanEngine::_getAttributeDescription() const
+VulkanEngine::VertexAttributeDescriptionVector VulkanEngine::_getAttributeDescription() const
 {
 	// Spécifier ce que notre vertex a comme attributs. Ici, nous avons sa position dans la location 0 et sa couleur dans la location 1.
 	// On stocke des coordonnées en couleur.

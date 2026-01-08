@@ -43,17 +43,11 @@ const std::string getFileAsString(const char * name)
 	filename = name;
 	file.open(filename, std::ios::in);
 	if (file.fail())
-	{
-		Logger::log(GENERAL, CRITICAL, "Couldn't find file: " + filename + ".");
-		exit(6);
-	}
+		throw GeneralException("Couldn't find file: " + filename + ".");
 	while (std::getline(file, buffer))
 		content += buffer + '\n';
 	file.close();
 	if (content.empty())
-	{
-		Logger::log(GENERAL, CRITICAL, "File " + filename + " is empty.");
-		exit(6);
-	}
+		throw GeneralException("File " + filename + " is empty.");
 	return (content);
 }
