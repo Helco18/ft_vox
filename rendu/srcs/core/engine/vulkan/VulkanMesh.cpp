@@ -1,5 +1,6 @@
 #include "CustomExceptions.hpp"
 #include "VulkanEngine.hpp"
+#include "utils.hpp"
 
 vk::VertexInputBindingDescription VulkanEngine::_getBindingDescription() const
 {
@@ -89,7 +90,6 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 
 void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 {
-	static std::vector<Vertex> vertices;
 	vk::DeviceSize size = sizeof(Vertex) * (asset.vertices.size() + _vertexSize);
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
@@ -99,8 +99,8 @@ void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	vertices.insert(vertices.end(), asset.vertices.begin(), asset.vertices.end());
-	memcpy(dataStaging, vertices.data(), size);
+	_vertices.insert(_vertices.end(), asset.vertices.begin(), asset.vertices.end());
+	memcpy(dataStaging, _vertices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
@@ -108,12 +108,11 @@ void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 					_vertexBuffer, _vertexBufferMemory);
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
 
-	_vertexSize = vertices.size();
+	_vertexSize = _vertices.size();
 }
 
 void VulkanEngine::_concateneIndexBuffer(Asset & asset)
 {
-	static std::vector<uint32_t> indices;
 	vk::DeviceSize size = sizeof(asset.indices[0]) * (asset.indices.size() + _indexSize);
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
@@ -123,8 +122,8 @@ void VulkanEngine::_concateneIndexBuffer(Asset & asset)
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	indices.insert(indices.end(), asset.indices.begin(), asset.indices.end());
-	memcpy(dataStaging, indices.data(), size);
+	_indices.insert(_indices.end(), asset.indices.begin(), asset.indices.end());
+	memcpy(dataStaging, _indices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
@@ -132,5 +131,5 @@ void VulkanEngine::_concateneIndexBuffer(Asset & asset)
 					_indexBuffer, _indexBufferMemory);
 	_copyBuffer(stagingBuffer, _indexBuffer, size);
 
-	_indexSize = indices.size();
+	_indexSize = _indices.size();
 }

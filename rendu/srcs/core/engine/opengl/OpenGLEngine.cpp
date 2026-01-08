@@ -17,6 +17,7 @@ OpenGLEngine::~OpenGLEngine()
 	}
 	glDeleteTextures(1, &_texture);
 	glDeleteBuffers(1, &_ubo);
+	glDeleteProgram(_shader);
 }
 
 AssetID OpenGLEngine::uploadAsset(Asset & asset)

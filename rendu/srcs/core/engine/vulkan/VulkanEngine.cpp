@@ -106,6 +106,8 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (assetit != _assetMap.end())
 	{
 		Asset & asset = assetit->second;
+		if (asset.vertices.empty())
+			return;
 		_pipelineAssetMap[pipelineID].push_back(&asset);
 	}
 }

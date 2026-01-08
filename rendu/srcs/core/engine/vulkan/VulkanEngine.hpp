@@ -131,6 +131,8 @@ class VulkanEngine : public AEngine
 		std::vector<void *>					_uniformBuffersMapped;
 		vk::raii::DescriptorPool			_descriptorPool = nullptr;
 		DescriptorSets						_descriptorSets;
+		std::vector<Vertex>					_vertices;
+		std::vector<uint32_t>				_indices;
 
 		// Textures
 		vk::raii::Image						_textureImage = nullptr;
