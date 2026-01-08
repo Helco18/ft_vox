@@ -75,7 +75,7 @@ void World::render(AEngine * engine)
 
 	_generateProceduralTerrain(visibleChunk);
 	_generateProceduralMesh(visibleChunk);
-	_uploadChunk(visibleChunk, engine);
+	_drawChunk(visibleChunk, engine);
 }
 
 std::vector<Chunk *> World::_generateVisibleChunk(Camera * camera)
@@ -131,12 +131,15 @@ void World::_generateProceduralMesh(std::vector<Chunk *> visibleChunk)
 	}
 }
 
-void World::_uploadChunk(std::vector<Chunk *> visibleChunk, AEngine * engine)
+void World::_drawChunk(std::vector<Chunk *> visibleChunk, AEngine * engine)
 {
 	for (Chunk * chunk : visibleChunk)
 	{
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
-		engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(PIPELINE_VOXEL));
+		if (engine->isWireframeEnabled())
+			engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(PIPELINE_WIREFRAME));
+		else
+			engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(PIPELINE_VOXEL));
 	}
 }

@@ -6,7 +6,18 @@
 
 OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled) : AEngine(window, camera, isWireframeEnabled) {}
 
-OpenGLEngine::~OpenGLEngine() {}
+OpenGLEngine::~OpenGLEngine()
+{
+	for (std::pair<AssetID, Asset> assetPair : _assetMap)
+	{
+		Asset & asset = assetPair.second;
+		glDeleteBuffers(1, &asset.vbo);
+		glDeleteBuffers(1, &asset.ibo);
+		glDeleteVertexArrays(1, &asset.assetID);
+	}
+	glDeleteTextures(1, &_texture);
+	glDeleteBuffers(1, &_ubo);
+}
 
 AssetID OpenGLEngine::uploadAsset(Asset & asset)
 {
