@@ -1,4 +1,5 @@
 #include "World.hpp"
+#include "PipelineManager.hpp"
 #include <algorithm>
 
 World::~World()
@@ -136,6 +137,6 @@ void World::_uploadChunk(std::vector<Chunk *> visibleChunk, AEngine * engine)
 	{
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
-		engine->drawAsset(chunk->getAsset().assetID, 0);
+		engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(PIPELINE_VOXEL));
 	}
 }

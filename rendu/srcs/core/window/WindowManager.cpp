@@ -4,6 +4,7 @@
 #include "CustomExceptions.hpp"
 #include "InputManager.hpp"
 #include "Logger.hpp"
+#include "PipelineManager.hpp"
 #include <iostream>
 
 WindowManager::WindowManager(EngineType engineType, Environment * environment):
@@ -41,11 +42,7 @@ void WindowManager::load()
 	}
 
 	_engine->load();
-
-	// Temporary
-	PipelineInfo pipelineInfo;
-	pipelineInfo.shaderPath = "srcs/core/shaders/spir-v/voxel.spv";
-	_engine->uploadPipeline(pipelineInfo);
+	PipelineManager::init(_engine);
 
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, WindowManager::framebufferResizeCallback);

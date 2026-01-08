@@ -24,3 +24,4 @@ class EnvironmentException: public CustomException { public: EnvironmentExceptio
 class GeneralException: public CustomException { public: GeneralException(const std::string & message): CustomException(GENERAL, message) {} };
 class VoxelException: public CustomException { public: VoxelException(const std::string & message): CustomException(VOXEL, message) {} };
 class TextureException: public CustomException { public: TextureException(const std::string & message): CustomException(TEXTURE, message) {} };
+class PipelineException: public CustomException { public: PipelineException(const std::string & message): CustomException(PIPELINE, message) {} };

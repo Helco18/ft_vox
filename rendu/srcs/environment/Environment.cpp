@@ -6,6 +6,7 @@
 #include "BlockData.hpp"
 #include "Logger.hpp"
 #include "TextureAtlas.hpp"
+#include "PipelineManager.hpp"
 #include <iostream>
 
 Environment::~Environment()

@@ -61,6 +61,7 @@ const std::string Logger::_getLogSourcePrefix(LogSource source)
 		case WINDOW: return "WINDOW";
 		case GENERAL: return "GENERAL";
 		case TEXTURE: return "TEXTURE";
+		case PIPELINE: return "PIPELINE";
 		default: return "UNKNOWN";
 	}
 }
