@@ -2,9 +2,10 @@
 #include "Logger.hpp"
 #include "CustomExceptions.hpp"
 #include "OBJModel.hpp"
+#include "utils.hpp"
 #include <iostream>
 
-OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled) : AEngine(window, camera, isWireframeEnabled) {}
+OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
 
 OpenGLEngine::~OpenGLEngine()
 {
@@ -85,10 +86,10 @@ void OpenGLEngine::load()
 
 PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 {
-	static int pipelineID = 0;
+	int pipelineID = _pipelineMap.size();
 
 	_pipelineMap.try_emplace(pipelineID, pipelineInfo);
-	return pipelineID++;
+	return pipelineID;
 }
 
 void OpenGLEngine::beginFrame()
@@ -98,7 +99,6 @@ void OpenGLEngine::beginFrame()
 
 void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 {
-	(void) pipelineID;
 	if (_isFramebufferResized)
 		_handleResize();
 
@@ -109,6 +109,14 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	Asset & asset = it->second;
 	if (asset.vertices.empty())
 		return;
+
+	PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
+	if (pipelineit == _pipelineMap.end())
+	{
+		Logger::log(ENGINE_OPENGL, WARNING, "Requested unknown pipeline with ID: " + toString(pipelineID));
+		return;
+	}
+	PipelineInfo & pipelineInfo = pipelineit->second;
 	
 	glBindVertexArray(assetID);
 	_updateUniformBuffer();
@@ -120,7 +128,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		throw OpenGLException("Couldn't find texture uniform.");
 	glUniform1i(textureIndex, 0);
 
-	if (_isWireframeEnabled)
+	if (pipelineInfo.polygonMode == LINE)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawElements(GL_TRIANGLES, asset.indices.size(), GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

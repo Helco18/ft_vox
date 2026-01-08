@@ -52,8 +52,8 @@ struct PipelineInfo
 class AEngine
 {
 	public:
-		AEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled) :
-			_window(window), _camera(camera), _isFramebufferResized(false), _isInitalized(false), _isWireframeEnabled(isWireframeEnabled) {};
+		AEngine(GLFWwindow * window, Camera * camera) :
+			_window(window), _camera(camera), _isFramebufferResized(false), _isInitalized(false) {};
 		virtual ~AEngine() {}
 
 		virtual void		load() = 0;
@@ -66,9 +66,6 @@ class AEngine
 		Camera *			getCamera() const { return _camera; }
 		bool				getFramebufferResized() const { return _isFramebufferResized; }
 		bool				isInitialized() const { return _isInitalized; }
-		bool				isWireframeEnabled() const { return _isWireframeEnabled; }
-
-		void				toggleWireframe() { _isWireframeEnabled = !_isWireframeEnabled; }
 
 		void				setFramebufferResized(bool framebufferResized) { _isFramebufferResized = framebufferResized; }
 
@@ -80,5 +77,4 @@ class AEngine
 		Camera *			_camera;
 		bool				_isFramebufferResized;
 		bool				_isInitalized;
-		bool				_isWireframeEnabled = false;
 };

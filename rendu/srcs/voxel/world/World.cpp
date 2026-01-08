@@ -1,5 +1,4 @@
 #include "World.hpp"
-#include "PipelineManager.hpp"
 #include <algorithm>
 
 World::~World()
@@ -69,13 +68,13 @@ void World::reloadChunks()
 	}
 }
 
-void World::render(AEngine * engine)
+void World::render(AEngine * engine, PipelineType pipelineType)
 {
 	std::vector<Chunk *> visibleChunk = _generateVisibleChunk(engine->getCamera());
 
 	_generateProceduralTerrain(visibleChunk);
 	_generateProceduralMesh(visibleChunk);
-	_drawChunk(visibleChunk, engine);
+	_drawChunk(visibleChunk, engine, pipelineType);
 }
 
 std::vector<Chunk *> World::_generateVisibleChunk(Camera * camera)
@@ -131,15 +130,12 @@ void World::_generateProceduralMesh(std::vector<Chunk *> visibleChunk)
 	}
 }
 
-void World::_drawChunk(std::vector<Chunk *> visibleChunk, AEngine * engine)
+void World::_drawChunk(std::vector<Chunk *> visibleChunk, AEngine * engine, PipelineType pipelineType)
 {
 	for (Chunk * chunk : visibleChunk)
 	{
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
-		if (engine->isWireframeEnabled())
-			engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(PIPELINE_WIREFRAME));
-		else
-			engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(PIPELINE_VOXEL));
+		engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(pipelineType));
 	}
 }

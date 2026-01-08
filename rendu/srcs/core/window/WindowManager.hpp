@@ -20,6 +20,7 @@ class WindowManager
 		Camera *		getCamera() const { return _camera; }
 		int				getWidth() const { return _width; }
 		int				getHeight() const { return _height; }
+		bool			isWireframe() const { return _isWireframeEnabled; }
 		bool			isSwapRequested() const { return _isSwapRequested; }
 
 		void			setWidth(int width) { _width = width; }
@@ -29,7 +30,7 @@ class WindowManager
 		void			requestSwap() { _isSwapRequested = true; }
 
 		void			toggleFullscreen();
-		void			toggleWireframe();
+		void			toggleWireframe() { _isWireframeEnabled = !_isWireframeEnabled; }
 
 		static void		framebufferResizeCallback(GLFWwindow * window, int width, int height);
 

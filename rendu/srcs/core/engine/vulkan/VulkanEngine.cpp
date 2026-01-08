@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 #include <iostream>
 
-VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled) : AEngine(window, camera, isWireframeEnabled) {}
+VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
 
 void VulkanEngine::load()
 {
@@ -88,7 +88,7 @@ void VulkanEngine::beginFrame()
 
 AssetID VulkanEngine::uploadAsset(Asset & asset)
 {
-	static AssetID assetID = 1;
+	AssetID assetID = _assetMap.size();
 
 	asset.vbo = _vertexSize;
 	asset.ibo = _indexSize;

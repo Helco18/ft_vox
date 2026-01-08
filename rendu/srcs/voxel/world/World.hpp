@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 #include "AEngine.hpp"
+#include "PipelineManager.hpp"
 #include "Chunk.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/hash.hpp"
@@ -26,12 +27,12 @@ class World
 		void					addChunk(Chunk * chunk);
 		void					reloadChunks();
 
-		void					render(AEngine * engine);
+		void					render(AEngine * engine, PipelineType pipelineType);
 	private:
 		std::vector<Chunk *>	_generateVisibleChunk(Camera * camera);
 		void					_generateProceduralTerrain(std::vector<Chunk *> visibleChunk);
 		void					_generateProceduralMesh(std::vector<Chunk *> visibleChunk);
-		void					_drawChunk(std::vector<Chunk *> visibleChunk, AEngine * engine);
+		void					_drawChunk(std::vector<Chunk *> visibleChunk, AEngine * engine, PipelineType pipelineType);
 
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 

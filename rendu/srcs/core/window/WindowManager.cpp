@@ -36,8 +36,8 @@ void WindowManager::load()
 
 	switch (static_cast<int>(_engineType))
 	{
-		case VULKAN: _engine = new VulkanEngine(_window, _camera, _isWireframeEnabled); break;
-		case OPENGL: _engine = new OpenGLEngine(_window, _camera, _isWireframeEnabled); break;
+		case VULKAN: _engine = new VulkanEngine(_window, _camera); break;
+		case OPENGL: _engine = new OpenGLEngine(_window, _camera); break;
 		default: throw WindowException("Unknown Engine type.");
 	}
 
@@ -153,10 +153,4 @@ void WindowManager::toggleFullscreen()
 	}
 
 	glfwFocusWindow(_window);
-}
-
-void WindowManager::toggleWireframe()
-{
-	_isWireframeEnabled = !_isWireframeEnabled;
-	_engine->toggleWireframe();
 }

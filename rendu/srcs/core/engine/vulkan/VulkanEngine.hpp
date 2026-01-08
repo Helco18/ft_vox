@@ -64,7 +64,7 @@ struct PipelineObjects
 class VulkanEngine : public AEngine
 {
 	public:
-		VulkanEngine(GLFWwindow * window, Camera * camera, bool isWireframeEnabled);
+		VulkanEngine(GLFWwindow * window, Camera * camera);
 		~VulkanEngine();
 
 		void								load() override;

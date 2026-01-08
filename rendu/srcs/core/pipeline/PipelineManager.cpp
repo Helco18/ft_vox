@@ -24,5 +24,5 @@ PipelineID PipelineManager::getPipeline(PipelineType pipelineType)
 	PipelineMap::iterator it = _pipelineMap.find(pipelineType);
 	if (it != _pipelineMap.end())
 		return it->second;
-	throw PipelineException("Couldn't get pipeline type: " + toString(pipelineType));
+	throw PipelineException("Couldn't get pipeline type: " + toString(pipelineType) + ".");
 }

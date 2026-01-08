@@ -167,5 +167,5 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	if (g_enableValidationLayers)
 		Logger::log(ENGINE_VULKAN, INFO, "Created Pipeline ID: " + toString(pipelineID));
-	return pipelineID++;
+	return pipelineID;
 }
