@@ -15,22 +15,32 @@ vk::raii::ShaderModule VulkanEngine::_createShaderModule(const std::vector<char>
 
 PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 {
-	int pipelineID = _pipelineMap.size();
-	const std::vector<char> shaderSrc = readFile(pipelineInfo.shaderPath);
+	int pipelineID;
+	std::vector<char> shaderSrc;
+	std::shared_ptr<vk::raii::ShaderModule> shaderModule = nullptr;
 
-	// On créé le shader module qui va stocker notre code source
-	vk::raii::ShaderModule shaderModule = _createShaderModule(shaderSrc);
+	pipelineID = _pipelineMap.size();
+	const ShaderCache::iterator & shaderit = _shaderCache.find(pipelineInfo.shaderName);
+	if (shaderit != _shaderCache.end())
+		shaderModule = shaderit->second;
+	else
+	{
+		shaderSrc = readFile(VULKAN_SHADER_PATH + pipelineInfo.shaderName + ".spv");
+		// On créé le shader module qui va stocker notre code source
+		shaderModule = std::make_shared<vk::raii::ShaderModule>(_createShaderModule(shaderSrc));
+		_shaderCache.emplace(pipelineInfo.shaderName, shaderModule);
+	}
 
 	// On indique notre vertex shader ainsi que son point d'entrée
 	vk::PipelineShaderStageCreateInfo vertexInfo;
 	vertexInfo.stage = vk::ShaderStageFlagBits::eVertex;
-	vertexInfo.module = shaderModule;
+	vertexInfo.module = *shaderModule;
 	vertexInfo.pName = "vertMain";
 
 	// On indique notre fragment shader ainsi que son point d'entrée
 	vk::PipelineShaderStageCreateInfo fragInfo;
 	fragInfo.stage = vk::ShaderStageFlagBits::eFragment;
-	fragInfo.module = shaderModule;
+	fragInfo.module = *shaderModule;
 	fragInfo.pName = "fragMain";
 
 	std::vector<vk::PipelineShaderStageCreateInfo> shaderStages = { vertexInfo, fragInfo };

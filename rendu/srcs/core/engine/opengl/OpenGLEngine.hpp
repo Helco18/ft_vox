@@ -1,6 +1,8 @@
 #include "AEngine.hpp"
 #include <string>
 
+#define OPENGL_SHADER_PATH "srcs/core/shaders/glsl/"
+
 class OpenGLEngine : public AEngine
 {
 	public:
@@ -15,15 +17,16 @@ class OpenGLEngine : public AEngine
 		void		endFrame() override;
 
 	private:
-		typedef std::unordered_map<PipelineID, PipelineInfo> PipelineMap;
+		typedef std::unordered_map<PipelineID, PipelineInfo>	PipelineMap;
+		typedef std::unordered_map<std::string, GLuint>			ShaderCache;
 
 		PipelineMap	_pipelineMap;
+		ShaderCache	_shaderCache;
 
 		GLuint		_ubo;
 		GLuint		_texture;
-		GLuint		_shader;
 
-		void		_createShader(const std::string & vertexPath, const std::string & fragmentPath);
+		GLuint		_createShader(const std::string & vertexPath, const std::string & fragmentPath);
 		void		_updateUniformBuffer();
 		void		_handleResize();
 		void		_createTexture();

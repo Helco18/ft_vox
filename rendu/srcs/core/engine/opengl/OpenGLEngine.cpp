@@ -18,7 +18,8 @@ OpenGLEngine::~OpenGLEngine()
 	}
 	glDeleteTextures(1, &_texture);
 	glDeleteBuffers(1, &_ubo);
-	glDeleteProgram(_shader);
+	for (std::pair<std::string, GLuint> shaderPair : _shaderCache)
+		glDeleteProgram(shaderPair.second);
 }
 
 AssetID OpenGLEngine::uploadAsset(Asset & asset)
@@ -63,9 +64,6 @@ void OpenGLEngine::load()
 {
 	glfwSwapInterval(0);
 
-	_createShader("voxel.vert", "voxel.frag");
-	glUseProgram(_shader);
-
 	glGenBuffers(1, &_ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformBuffer), nullptr, GL_DYNAMIC_DRAW);
@@ -85,6 +83,12 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	int pipelineID = _pipelineMap.size();
 
 	_pipelineMap.try_emplace(pipelineID, pipelineInfo);
+	ShaderCache::iterator it = _shaderCache.find(pipelineInfo.shaderName);
+	if (it == _shaderCache.end())
+	{
+		GLuint shader = _createShader(OPENGL_SHADER_PATH + pipelineInfo.shaderName + ".vert", OPENGL_SHADER_PATH + pipelineInfo.shaderName + ".frag");
+		_shaderCache.try_emplace(pipelineInfo.shaderName, shader);
+	}
 	return pipelineID;
 }
 
@@ -118,6 +122,16 @@ void OpenGLEngine::_applyPipeline(PipelineID pipelineID)
 	}
 
 	pipelineInfo.depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+	ShaderCache::iterator shaderit = _shaderCache.find(pipelineInfo.shaderName);
+	if (shaderit != _shaderCache.end())
+		glUseProgram(shaderit->second);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _texture);
+	GLuint textureIndex = glGetUniformLocation(shaderit->second, "texture_0");
+	if (textureIndex == GL_INVALID_INDEX)
+		throw OpenGLException("Couldn't find texture uniform.");
+	glUniform1i(textureIndex, 0);
 }
 
 void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
@@ -133,17 +147,10 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (asset.vertices.empty())
 		return;
 
+	glBindVertexArray(assetID);
 	_applyPipeline(pipelineID);
 	
-	glBindVertexArray(assetID);
 	_updateUniformBuffer();
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, _texture);
-	GLuint textureIndex = glGetUniformLocation(_shader, "texture_0");
-	if (textureIndex == GL_INVALID_INDEX)
-		throw OpenGLException("Couldn't find texture uniform.");
-	glUniform1i(textureIndex, 0);
 
 	glDrawElements(GL_TRIANGLES, asset.indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);

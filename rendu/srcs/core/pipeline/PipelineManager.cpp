@@ -7,7 +7,7 @@ PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 void PipelineManager::init(AEngine * engine)
 {
 	PipelineInfo pipelineInfo;
-	pipelineInfo.shaderPath = "srcs/core/shaders/spir-v/voxel.spv";
+	pipelineInfo.shaderName = "voxel";
 	_uploadPipeline(engine, pipelineInfo, PIPELINE_VOXEL);
 	pipelineInfo.polygonMode = LINE;
 	_uploadPipeline(engine, pipelineInfo, PIPELINE_WIREFRAME);

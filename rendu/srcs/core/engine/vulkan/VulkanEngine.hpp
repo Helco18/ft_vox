@@ -13,6 +13,7 @@
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
 #define MAX_FRAMES_IN_FLIGHT 2
 #define NEAR_PLANE_OFFSET 0.5f
+#define VULKAN_SHADER_PATH "srcs/core/shaders/spir-v/"
 
 const std::vector<const char *> g_validationLayers =
 {
@@ -75,15 +76,16 @@ class VulkanEngine : public AEngine
 		void								endFrame() override;
 
 	private:
-		typedef std::vector<char const *>								RequiredExtensions;
-		typedef std::vector<char const *>								RequiredLayers;
-		typedef std::vector<vk::raii::CommandBuffer>					CommandBuffers;
-		typedef std::vector<vk::raii::Semaphore>						Semaphores;
-		typedef std::vector<vk::raii::Fence>							Fences;
-		typedef std::vector<vk::raii::DescriptorSet>					DescriptorSets;
-		typedef std::array<vk::VertexInputAttributeDescription, 6>		VertexAttributeDescriptionArray;
-		typedef std::unordered_map<PipelineID, std::vector<Asset *>>	PipelineAssetMap;
-		typedef std::unordered_map<PipelineID, PipelineObjects>			PipelineMap;
+		typedef std::vector<char const *>													RequiredExtensions;
+		typedef std::vector<char const *>													RequiredLayers;
+		typedef std::vector<vk::raii::CommandBuffer>										CommandBuffers;
+		typedef std::vector<vk::raii::Semaphore>											Semaphores;
+		typedef std::vector<vk::raii::Fence>												Fences;
+		typedef std::vector<vk::raii::DescriptorSet>										DescriptorSets;
+		typedef std::array<vk::VertexInputAttributeDescription, 6>							VertexAttributeDescriptionArray;
+		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
+		typedef std::unordered_map<PipelineID, PipelineObjects>								PipelineMap;
+		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
 
 		// Window, context, instance
 		vk::raii::Context					_context;
@@ -133,6 +135,7 @@ class VulkanEngine : public AEngine
 		DescriptorSets						_descriptorSets;
 		std::vector<Vertex>					_vertices;
 		std::vector<uint32_t>				_indices;
+		ShaderCache							_shaderCache;
 
 		// Textures
 		vk::raii::Image						_textureImage = nullptr;

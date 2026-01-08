@@ -6,7 +6,6 @@
 #include "OBJModel.hpp"
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
-#define SHADER_PATH "srcs/core/shaders/"
 
 typedef unsigned int AssetID;
 typedef unsigned int PipelineID;
@@ -40,7 +39,7 @@ enum CullMode
 
 struct PipelineInfo
 {
-	std::string		shaderPath;
+	std::string		shaderName;
 	PolygonMode		polygonMode = FILL;
 	CullMode		cullMode = BACK;
 	int				width = -1;

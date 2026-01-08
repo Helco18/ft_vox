@@ -4,12 +4,6 @@
 #include "CustomExceptions.hpp"
 #include <iostream>
 
-static const std::string getShaderAsString(std::string path)
-{
-	path = SHADER_PATH"glsl/" + path;
-	return getFileAsString(path.c_str());
-}
-
 static GLuint compileShader(GLenum type, const std::string & filepath)
 {
 	GLuint shader;
@@ -18,7 +12,7 @@ static GLuint compileShader(GLenum type, const std::string & filepath)
 	char * vertexStr;
 
 	shader = glCreateShader(type);
-	shaderSrc = getShaderAsString(filepath);
+	shaderSrc = getFileAsString(filepath.c_str());
 	vertexStr = (char *)shaderSrc.c_str();
 	glShaderSource(shader, 1, &vertexStr, nullptr);
 	glCompileShader(shader);
@@ -41,24 +35,25 @@ static GLuint compileShader(GLenum type, const std::string & filepath)
 	return shader;
 }
 
-void OpenGLEngine::_createShader(const std::string & vertexPath, const std::string & fragmentPath)
+GLuint OpenGLEngine::_createShader(const std::string & vertexPath, const std::string & fragmentPath)
 {
 	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexPath);
 	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentPath);
-	_shader = glCreateProgram();
-	glAttachShader(_shader, vertexShader);
-	glAttachShader(_shader, fragmentShader);
-	glLinkProgram(_shader);
-	glValidateProgram(_shader);
+	GLuint shader = glCreateProgram();
+	glAttachShader(shader, vertexShader);
+	glAttachShader(shader, fragmentShader);
+	glLinkProgram(shader);
+	glValidateProgram(shader);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	GLuint uboIndex = glGetUniformBlockIndex(_shader, "block_UniformBuffer_0");
+	GLuint uboIndex = glGetUniformBlockIndex(shader, "block_UniformBuffer_0");
 	if (uboIndex == GL_INVALID_INDEX)
-		uboIndex = glGetUniformBlockIndex(_shader, "block_UniformBuffer_std140_0");
+		uboIndex = glGetUniformBlockIndex(shader, "block_UniformBuffer_std140_0");
 	if (uboIndex == GL_INVALID_INDEX)
 		throw OpenGLException("Couldn't find ubo index.");
-	glUniformBlockBinding(_shader, uboIndex, 0);
+	glUniformBlockBinding(shader, uboIndex, 0);
 
-	Logger::log(ENGINE_OPENGL, INFO, "Created Shaders.");
+	Logger::log(ENGINE_OPENGL, INFO, "Created Shader ID: " + toString(shader) + ".");
+	return shader;
 }
