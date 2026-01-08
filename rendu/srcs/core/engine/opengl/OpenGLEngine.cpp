@@ -77,10 +77,6 @@ void OpenGLEngine::load()
 
 	Logger::log(ENGINE_OPENGL, INFO, "OpenGL engine initialized successfully.");
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glEnable(GL_DEPTH_TEST);
-
 	_isInitalized = true;
 }
 
@@ -97,6 +93,33 @@ void OpenGLEngine::beginFrame()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void OpenGLEngine::_applyPipeline(PipelineID pipelineID)
+{
+	PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
+	if (pipelineit == _pipelineMap.end())
+	{
+		Logger::log(ENGINE_OPENGL, WARNING, "Requested unknown pipeline with ID: " + toString(pipelineID));
+		return;
+	}
+	PipelineInfo & pipelineInfo = pipelineit->second;
+
+	// Polygon Mode
+	switch (static_cast<int>(pipelineInfo.polygonMode))
+	{
+		case LINE: glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); break;
+		case FILL: glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); break;
+	}
+
+	// Cull Mode
+	switch (static_cast<int>(pipelineInfo.cullMode))
+	{
+		case BACK: glEnable(GL_CULL_FACE); glCullFace(GL_BACK); break;
+		case OFF: glDisable(GL_CULL_FACE); break;
+	}
+
+	pipelineInfo.depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+}
+
 void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 {
 	if (_isFramebufferResized)
@@ -110,13 +133,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (asset.vertices.empty())
 		return;
 
-	PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
-	if (pipelineit == _pipelineMap.end())
-	{
-		Logger::log(ENGINE_OPENGL, WARNING, "Requested unknown pipeline with ID: " + toString(pipelineID));
-		return;
-	}
-	PipelineInfo & pipelineInfo = pipelineit->second;
+	_applyPipeline(pipelineID);
 	
 	glBindVertexArray(assetID);
 	_updateUniformBuffer();
@@ -128,10 +145,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		throw OpenGLException("Couldn't find texture uniform.");
 	glUniform1i(textureIndex, 0);
 
-	if (pipelineInfo.polygonMode == LINE)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawElements(GL_TRIANGLES, asset.indices.size(), GL_UNSIGNED_INT, 0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindVertexArray(0);
 }
 

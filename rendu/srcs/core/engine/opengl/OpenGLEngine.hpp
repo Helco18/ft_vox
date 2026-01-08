@@ -27,4 +27,5 @@ class OpenGLEngine : public AEngine
 		void		_updateUniformBuffer();
 		void		_handleResize();
 		void		_createTexture();
+		void		_applyPipeline(PipelineID pipelineID);
 };
