@@ -147,6 +147,8 @@ class VulkanEngine : public AEngine
 		vk::raii::Image						_depthImage = nullptr;
 		vk::raii::DeviceMemory				_depthImageMemory = nullptr;
 		vk::raii::ImageView					_depthImageView = nullptr;
+		vk::Format							_depthFormat;
+		vk::ImageAspectFlags				_depthFlags;
 
 		PipelineMap							_pipelineMap;
 		PipelineAssetMap					_pipelineAssetMap;

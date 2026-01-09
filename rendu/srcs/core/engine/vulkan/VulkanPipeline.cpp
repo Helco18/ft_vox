@@ -157,7 +157,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	vk::PipelineRenderingCreateInfo pipelineRenderingInfo;
 	pipelineRenderingInfo.colorAttachmentCount = 1;
 	pipelineRenderingInfo.pColorAttachmentFormats = &_swapChainImageFormat;
-	pipelineRenderingInfo.depthAttachmentFormat = vk::Format::eD24UnormS8Uint;
+	pipelineRenderingInfo.depthAttachmentFormat = _depthFormat;
 
 	// On lie toutes les infos de notre pipeline
 	vk::GraphicsPipelineCreateInfo graphicsPipelineFillInfo;
