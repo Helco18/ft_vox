@@ -22,32 +22,32 @@ OpenGLEngine::~OpenGLEngine()
 		glDeleteProgram(shaderPair.second);
 }
 
-AssetID OpenGLEngine::uploadAsset(Asset & asset)
+AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
+	PipelineMap::iterator it = _pipelineMap.find(pipelineID);
+	if (it == _pipelineMap.end())
+	{
+		throw OpenGLException("Failed to upload Asset ID: " + toString(asset.assetID) + " because Pipeline ID: " +
+			toString(pipelineID) + " doesn't exist.");
+	}
+	PipelineInfo & pipelineInfo = it->second;
+	std::vector<Attribute> attributes = pipelineInfo.attributes;
+	size_t offset = 0;
+
 	glGenVertexArrays(1, &asset.assetID);
 	glBindVertexArray(asset.assetID);
 
 	glGenBuffers(1, &asset.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, asset.vbo);
-	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size() * sizeof(Vertex), asset.vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size() * sizeof(*asset.vertices.data()), asset.vertices.data(), GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
-
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uvMin));
-
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uvMax));
-
-	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, uvRepeat));
+	for (size_t i = 0; i < attributes.size(); ++i)
+	{
+		glEnableVertexAttribArray(i);
+		glVertexAttribPointer(i, attributes[i].count, attributes[i].type, attributes[i].normalized, sizeof(*asset.vertices.data()), 
+			(void *)offset);
+		offset += attributes[i].size;
+	}
 
 	glGenBuffers(1, &asset.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, asset.ibo);

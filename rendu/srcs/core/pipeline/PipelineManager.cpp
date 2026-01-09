@@ -1,5 +1,6 @@
 #include "PipelineManager.hpp"
 #include "CustomExceptions.hpp"
+#include "AEngine.hpp"
 #include "utils.hpp"
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
@@ -8,7 +9,14 @@ void PipelineManager::init(AEngine * engine)
 {
 	PipelineInfo pipelineInfo;
 	pipelineInfo.shaderName = "voxel";
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
 	_uploadPipeline(engine, pipelineInfo, PIPELINE_VOXEL);
+
 	pipelineInfo.polygonMode = LINE;
 	_uploadPipeline(engine, pipelineInfo, PIPELINE_WIREFRAME);
 }

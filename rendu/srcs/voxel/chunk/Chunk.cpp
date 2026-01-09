@@ -37,7 +37,8 @@ void Chunk::generateMesh()
 
 void Chunk::uploadAsset(AEngine * engine)
 {
-	engine->uploadAsset(_asset);
+	if (!_asset.vertices.empty())
+		engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL));
 	_state = UPLOADED;
 }
 

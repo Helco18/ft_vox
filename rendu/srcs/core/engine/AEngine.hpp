@@ -4,11 +4,11 @@
 #include "GLFW/glfw3.h"
 #include "Camera.hpp"
 #include "OBJModel.hpp"
+#include "PipelineManager.hpp"
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
 
 typedef unsigned int AssetID;
-typedef unsigned int PipelineID;
 
 struct Asset
 {
@@ -25,29 +25,6 @@ struct UniformBuffer
 	glm::mat4 proj;
 };
 
-enum PolygonMode
-{
-	FILL,
-	LINE
-};
-
-enum CullMode
-{
-	BACK,
-	OFF
-};
-
-struct PipelineInfo
-{
-	std::string		shaderName;
-	PolygonMode		polygonMode = FILL;
-	CullMode		cullMode = BACK;
-	int				width = -1;
-	int				height = -1;
-	bool			blend = true;
-	bool			depthTest = true;
-};
-
 class AEngine
 {
 	public:
@@ -57,7 +34,7 @@ class AEngine
 
 		virtual void		load() = 0;
 		virtual void		beginFrame() = 0;
-		virtual AssetID		uploadAsset(Asset & asset) = 0;
+		virtual AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) = 0;
 		virtual PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) = 0;
 		virtual void		drawAsset(AssetID assetID, PipelineID pipelineID) = 0;
 		virtual void		endFrame() = 0;

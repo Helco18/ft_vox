@@ -11,7 +11,7 @@ class OpenGLEngine : public AEngine
 
 		void		load() override;
 		void		beginFrame() override;
-		AssetID		uploadAsset(Asset & asset) override;
+		AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) override;
 		void		drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void		endFrame() override;

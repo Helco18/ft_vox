@@ -86,8 +86,9 @@ void VulkanEngine::beginFrame()
 		pipelinePair.second.clear();
 }
 
-AssetID VulkanEngine::uploadAsset(Asset & asset)
+AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
+	(void) pipelineID;
 	AssetID assetID = _assetMap.size();
 
 	asset.vbo = _vertexSize;
