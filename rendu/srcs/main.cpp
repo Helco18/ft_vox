@@ -6,7 +6,7 @@
 
 int main(int ac, char ** av)
 {
-	EngineType engineType = ac == 2 && std::string(av[1]) == "gl" ? OPENGL : VULKAN;
+	EngineType engineType = (ac == 2 && std::string(av[1]) == "gl") ? OPENGL : VULKAN;
 	Environment environment;
 
 	try

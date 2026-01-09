@@ -90,6 +90,8 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 
 void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 {
+	if (asset.vertices.empty())
+		return;
 	vk::DeviceSize size = sizeof(Vertex) * (asset.vertices.size() + _vertexSize);
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
@@ -113,6 +115,8 @@ void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 
 void VulkanEngine::_concateneIndexBuffer(Asset & asset)
 {
+	if (asset.indices.empty())
+		return;
 	vk::DeviceSize size = sizeof(asset.indices[0]) * (asset.indices.size() + _indexSize);
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;

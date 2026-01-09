@@ -38,6 +38,8 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/model/OBJModel.cpp \
 						srcs/core/pipeline/PipelineManager.cpp \
 						srcs/core/texture/TextureAtlas.cpp \
+						srcs/core/thread/ThreadPool.cpp \
+						srcs/core/thread/ThreadWorker.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
@@ -64,6 +66,7 @@ INCLUDES			=	-I libs \
 						-I srcs/core/model \
 						-I srcs/core/pipeline \
 						-I srcs/core/texture \
+						-I srcs/core/thread \
 						-I srcs/core/window \
 						-I srcs/environment \
 						-I srcs/tools \

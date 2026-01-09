@@ -35,7 +35,7 @@ void VulkanEngine::_createDepthResources()
 	viewInfo.image = _depthImage;
 	viewInfo.format = depthFormat;
 	viewInfo.viewType = vk::ImageViewType::e2D;
-	viewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil;
+	viewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth;
 	viewInfo.subresourceRange.baseMipLevel = 0;
 	viewInfo.subresourceRange.levelCount = 1;
 	viewInfo.subresourceRange.baseArrayLayer = 0;

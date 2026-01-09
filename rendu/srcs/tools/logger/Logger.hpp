@@ -23,7 +23,8 @@ enum LogSource
 	WINDOW,
 	GENERAL,
 	TEXTURE,
-	PIPELINE
+	PIPELINE,
+	THREAD
 };
 
 class Logger
