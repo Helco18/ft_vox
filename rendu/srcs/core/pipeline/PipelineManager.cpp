@@ -2,6 +2,7 @@
 #include "CustomExceptions.hpp"
 #include "AEngine.hpp"
 #include "utils.hpp"
+#include <vector>
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 
@@ -9,12 +10,15 @@ void PipelineManager::init(AEngine * engine)
 {
 	PipelineInfo pipelineInfo;
 	pipelineInfo.shaderName = "voxel";
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+
+	for (Attribute attribute : pipelineInfo.attributes)
+		pipelineInfo.attributeSize += attribute.size;
 	_uploadPipeline(engine, pipelineInfo, PIPELINE_VOXEL);
 
 	pipelineInfo.polygonMode = LINE;

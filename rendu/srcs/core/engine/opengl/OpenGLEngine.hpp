@@ -3,6 +3,20 @@
 
 #define OPENGL_SHADER_PATH "srcs/core/shaders/glsl/"
 
+struct GLValueConverter
+{
+	static constexpr GLenum getType(AttributeType type)
+	{
+		switch (static_cast<int>(type))
+		{
+			case FLOAT3:
+			case FLOAT2: return GL_FLOAT;
+			case INT: return GL_INT;
+		}
+		return 0;
+	}
+};
+
 class OpenGLEngine : public AEngine
 {
 	public:

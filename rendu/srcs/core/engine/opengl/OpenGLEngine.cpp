@@ -39,13 +39,13 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 	glGenBuffers(1, &asset.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, asset.vbo);
-	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size() * sizeof(*asset.vertices.data()), asset.vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size() * pipelineInfo.attributeSize, asset.vertices.data(), GL_STATIC_DRAW);
 
 	for (size_t i = 0; i < attributes.size(); ++i)
 	{
 		glEnableVertexAttribArray(i);
-		glVertexAttribPointer(i, attributes[i].count, attributes[i].type, attributes[i].normalized, sizeof(*asset.vertices.data()), 
-			(void *)offset);
+		glVertexAttribPointer(i, attributes[i].count, GLValueConverter::getType(attributes[i].type), attributes[i].normalized,
+		pipelineInfo.attributeSize, (void *)offset);
 		offset += attributes[i].size;
 	}
 

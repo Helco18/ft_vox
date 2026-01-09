@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include <memory>
 #include "GLFW/glfw3.h"
 #include "Camera.hpp"
 #include "OBJModel.hpp"

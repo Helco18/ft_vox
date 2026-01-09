@@ -62,6 +62,19 @@ struct PipelineObjects
 	vk::raii::PipelineLayout 	layout = nullptr;
 };
 
+struct VKValueConverter
+{
+	static constexpr vk::Format getType(AttributeType type)
+	{
+		switch (static_cast<int>(type))
+		{
+			case FLOAT3: return vk::Format::eR32G32B32Sfloat;
+			case FLOAT2: return vk::Format::eR32G32Sfloat;
+		}
+		return vk::Format::eUndefined;
+	}
+};
+
 class VulkanEngine : public AEngine
 {
 	public:
@@ -184,8 +197,8 @@ class VulkanEngine : public AEngine
 		void								_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size);
 		vk::raii::CommandBuffer				_beginSingleTimeCommands();
 		void								_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffer);
-		vk::VertexInputBindingDescription	_getBindingDescription() const;
-		VertexAttributeDescriptionVector		_getAttributeDescription() const;
+		vk::VertexInputBindingDescription	_getBindingDescription(PipelineInfo & pipelineInfo) const;
+		VertexAttributeDescriptionVector	_getAttributeDescription(PipelineInfo & pipelineInfo) const;
 		void								_createDescriptorSetLayout();
 		void								_createUniformBuffers();
 		void								_createDescriptorPool();

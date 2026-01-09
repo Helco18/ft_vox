@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <unordered_map>
 #include <string>
 #include <vector>
@@ -10,7 +11,8 @@ typedef unsigned int PipelineID;
 
 enum AttributeType
 {
-	FLOAT = 0x1406,
+	FLOAT3,
+	FLOAT2,
 	INT
 };
 
@@ -50,6 +52,7 @@ struct PipelineInfo
 	bool					blend = true;
 	bool					depthTest = true;
 	std::vector<Attribute>	attributes;
+	uint32_t				attributeSize = 0;
 };
 
 class PipelineManager

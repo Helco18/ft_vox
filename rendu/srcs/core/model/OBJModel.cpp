@@ -58,9 +58,9 @@ bool OBJModel::load()
 			size_t index2 = _indices[i + 1];
 			size_t index3 = _indices[i + 2];
 
-			size_t posIndex1 = _vertices[index1].originalPositionIndex;
-			size_t posIndex2 = _vertices[index2].originalPositionIndex;
-			size_t posIndex3 = _vertices[index3].originalPositionIndex;
+			size_t posIndex1 = _positionIndexMap[&_vertices[index1]];
+			size_t posIndex2 = _positionIndexMap[&_vertices[index2]];
+			size_t posIndex3 = _positionIndexMap[&_vertices[index3]];
 			if (posIndex1 >= _temp_positions.size() || posIndex2 >= _temp_positions.size() || posIndex3 >= _temp_positions.size())
 			{
 				Logger::log(MODEL, ERROR, "Invalid position indice while computing normal.");
@@ -85,7 +85,7 @@ bool OBJModel::load()
 		normal = normalize(normal);
 	for (size_t i = 0; i < _vertices.size(); ++i)
 	{
-		int posIndex = _vertices[i].originalPositionIndex;
+		int posIndex = _positionIndexMap[&_vertices[i]];
 		if (posIndex >= 0 && (size_t)posIndex < temp_calculated_normals.size())
 		{
 			_vertices[i].normal = temp_calculated_normals[posIndex];
@@ -179,7 +179,7 @@ uint32_t OBJModel::_parseVertexIndex(const std::string & token)
 	v.position = (posIndex >= 0 && (size_t)posIndex < _temp_positions.size()) ? _temp_positions[posIndex] : glm::vec3{0.0f, 0.0f, 0.0f};
 	v.texCoord = (texIndex >= 0 && (size_t)texIndex < _temp_texcoords.size()) ? _temp_texcoords[texIndex] : glm::vec2{0.0f, 0.0f};
 	v.normal = (normIndex >= 0 && (size_t)normIndex < _temp_normals.size()) ? _temp_normals[normIndex] : glm::vec3{0.0f, 0.0f, 0.0f};
-	v.originalPositionIndex = posIndex; 
+	_positionIndexMap.emplace(&v, posIndex);
 
 	uint32_t newIndex = static_cast<uint32_t>(_vertices.size());
 	_vertices.push_back(v);
