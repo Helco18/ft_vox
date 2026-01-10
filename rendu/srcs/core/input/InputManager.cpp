@@ -11,9 +11,9 @@ void InputManager::interceptScroll(GLFWwindow * window, double xoffset, double y
 
 	Camera * camera = windowManager->getCamera();
 	if (yoffset > 0)
-		camera->changeSpeed(0.1f);
+		camera->changeSpeed(SCROLL_SPEED);
 	else if (camera->getSpeed() >= 0.2f)
-		camera->changeSpeed(-0.1f);
+		camera->changeSpeed(-SCROLL_SPEED);
 }
 
 void InputManager::interceptMouse(WindowManager * windowManager)

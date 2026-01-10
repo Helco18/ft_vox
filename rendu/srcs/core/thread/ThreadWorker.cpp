@@ -7,11 +7,6 @@ uint16_t ThreadWorker::_count = 0;
 void ThreadWorker::start()
 {
 	_id = _count;
-	if (_isActive)
-	{
-		Logger::log(THREAD, WARNING, "Attempted to start ThreadWorker #" + toString(_id) + " that's already active.");
-		return;
-	}
 	_thread = std::thread(&ThreadWorker::_loop, this);
 	_count++;
 }

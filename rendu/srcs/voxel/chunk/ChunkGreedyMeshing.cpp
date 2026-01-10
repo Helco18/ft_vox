@@ -154,27 +154,27 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 
 	if (x < 0 || x >= CHUNK_WIDTH)
 	{
-		if (normal.x == -1 && southChunk)
+		if (normal.x == -1 && southChunk && southChunk->getState() >= BUILT)
 			return southChunk->getBlock(CHUNK_WIDTH - 1, y, z);
-		else if (normal.x == 1 && northChunk)
+		else if (normal.x == 1 && northChunk && northChunk->getState() >= BUILT)
 			return northChunk->getBlock(0, y, z);
 		else
 			return 0;
 	}
 	if (y < 0 || y >= CHUNK_HEIGHT)
 	{
-		if (normal.y == -1 && bottomChunk)
+		if (normal.y == -1 && bottomChunk && bottomChunk->getState() >= BUILT)
 			return bottomChunk->getBlock(x, CHUNK_HEIGHT - 1, z);
-		else if (normal.y == 1 && topChunk)
+		else if (normal.y == 1 && topChunk && topChunk->getState() >= BUILT)
 			return topChunk->getBlock(x, 0, z);
 		else
 			return 0;
 	}
 	if (z < 0 || z >= CHUNK_LENGTH)
 	{
-		if (normal.z == -1 && westChunk)
+		if (normal.z == -1 && westChunk && westChunk->getState() >= BUILT)
 			return westChunk->getBlock(x, y, CHUNK_LENGTH - 1);
-		else if (normal.z == 1 && eastChunk)
+		else if (normal.z == 1 && eastChunk && eastChunk->getState() >= BUILT)
 			return eastChunk->getBlock(x, y, 0);
 		else
 			return 0;
@@ -335,8 +335,6 @@ void Chunk::_generateGreedyMesh()
 	for (int i = 0; i < 3; ++i)
 	{
 		for (int sliceIndex = 0; sliceIndex < (i == 0 ? CHUNK_WIDTH : (i == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)); ++sliceIndex)
-		{
 			_generateSliceMeshing(i, sliceIndex);
-		}
 	}
 }

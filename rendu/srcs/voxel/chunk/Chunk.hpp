@@ -1,11 +1,13 @@
 #pragma once
 
+#include <atomic>
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 16
 #define CHUNK_LENGTH 16
 
 #include <cstdint>
 #include <vector>
+#include <mutex>
 #include "OBJModel.hpp"
 #include "AEngine.hpp"
 #include "BlockData.hpp"
@@ -38,9 +40,11 @@ class Chunk
 		int						getChunkX() const { return _chunkLocation.x; }
 		int						getChunkY() const { return _chunkLocation.y; }
 		int						getChunkZ() const { return _chunkLocation.z; }
-		ChunkState				getState() const { return _state; }
+		ChunkState				getState() { const std::lock_guard<std::mutex> lg(_stateMutex); return _state; }
 		Asset &					getAsset() { return _asset; }
 		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
+
+		void					setState(ChunkState state) { const std::lock_guard<std::mutex> lg(_stateMutex); _state = state; }
 
 		void					build();
 		void					generateMesh();
@@ -52,9 +56,11 @@ class Chunk
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 		Asset					_asset;
 		ChunkState				_state;
+		std::mutex				_stateMutex;
+		std::mutex				_workerMutex;
 
 		void					_generateGreedyMesh();
-		 void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
+		void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
 		Asset					_generateQuadMesh(float width, float height, float depth, int face);
 		void					_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face);
 		void					_generateSliceMeshing(int axis, int sliceIndex);

@@ -14,7 +14,7 @@
 
 uint16_t ThreadPool::_count = 0;
 
-static unsigned int getThreadCount()
+unsigned int ThreadPool::getHostThreadCount()
 {
 	unsigned int threadCount = 1;
 
@@ -41,7 +41,7 @@ void ThreadPool::start(uint16_t totalThreads)
 		return;
 	}
 
-	unsigned int threadCount = getThreadCount();
+	unsigned int threadCount = getHostThreadCount();
 	if (totalThreads >= threadCount)
 	{
 		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(totalThreads - threadCount) +
@@ -61,6 +61,11 @@ void ThreadPool::start(uint16_t totalThreads)
 
 void ThreadPool::submitTask(Task task)
 {
+	if (!_isActive)
+	{
+		Logger::log(THREAD, WARNING, "Attempted to submit a task to ThreadPool #" + toString(_id) + " before starting it.");
+		return;
+	}
 	std::lock_guard<std::mutex> lock(_queueMutex);
 	_taskQueue.push(std::move(task));
 	_wakerCv.notify_one();
@@ -68,9 +73,11 @@ void ThreadPool::submitTask(Task task)
 
 void ThreadPool::stop()
 {
-	std::lock_guard<std::mutex> lock(_queueMutex);
-	_isActive = false;
-	_wakerCv.notify_all();
+	{
+		std::lock_guard<std::mutex> lock(_queueMutex);
+		_isActive = false;
+		_wakerCv.notify_all();
+	}
 	for (std::unique_ptr<ThreadWorker> & worker : _workers)
 		worker->stop();
 }

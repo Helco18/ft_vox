@@ -7,7 +7,8 @@
 
 void Chunk::build()
 {
-	if (_state != NONE)
+	std::lock_guard<std::mutex> lg(_workerMutex);
+	if (getState() != NONE)
 		return;
 
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
@@ -16,7 +17,8 @@ void Chunk::build()
 		{
 			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
-				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= (-1 + (std::sin(((_chunkLocation.x * CHUNK_WIDTH) + x) / 5.0) * 5.0 + (std::cos(((_chunkLocation.z * CHUNK_LENGTH) + z) / 5.0) * 5.0))) ))
+				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= (-1 + (std::sin(((_chunkLocation.x * CHUNK_WIDTH) + x) / 5.0) * 5.0 +
+						(std::cos(((_chunkLocation.z * CHUNK_LENGTH) + z) / 5.0) * 5.0))) ))
 				{
 					_blocks[x][y][z] = x % 2 + 1;
 					// _blocks[x][y][z] = 1;
@@ -26,23 +28,32 @@ void Chunk::build()
 			}
 		}
 	}
-	_state = BUILT;
+	setState(BUILT);
 }
 
 void Chunk::generateMesh()
 {
+	std::lock_guard<std::mutex> lg(_workerMutex);
+	if (getState() != BUILT)
+		return;
+
 	_generateGreedyMesh();
-	_state = MESHED;
+	setState(MESHED);
 }
 
 void Chunk::uploadAsset(AEngine * engine)
 {
+	std::lock_guard<std::mutex> lg(_workerMutex);
+	if (getState() != MESHED)
+		return;
+
 	if (!_asset.vertices.empty())
 		engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL));
-	_state = UPLOADED;
+	setState(UPLOADED);
 }
 
 void Chunk::unload()
 {
-	_state = MESHED;
+	std::lock_guard<std::mutex> lg(_workerMutex);
+	setState(MESHED);
 }

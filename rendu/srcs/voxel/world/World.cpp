@@ -3,6 +3,7 @@
 
 World::~World()
 {
+	_chunkPool.stop();
 	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
 		delete chunks.second;
 }
@@ -16,15 +17,16 @@ void World::load()
 			for (int z = 0; z < WORLD_LENGTH; ++z)
 			{
 				Chunk * chunk = new Chunk(x, y, z, this);
-				chunk->build();
+				_chunkPool.submitTask([chunk]() {chunk->build();});
 				_chunkMap[chunk->getChunkLocation()] = chunk;
 			}
 		}
 	}
 	for (std::pair<glm::ivec3, Chunk *> chunkPtr : _chunkMap)
 	{
-		if (chunkPtr.second)
-			chunkPtr.second->generateMesh();
+		Chunk * chunk = chunkPtr.second;
+		if (chunk)
+			_chunkPool.submitTask([chunk]() {chunk->generateMesh();});
 	}
 }
 
@@ -112,30 +114,31 @@ std::vector<Chunk *> World::_generateVisibleChunk(Camera * camera)
 	return visibleChunk;
 }
 
-void World::_generateProceduralTerrain(std::vector<Chunk *> visibleChunk)
+void World::_generateProceduralTerrain(const std::vector<Chunk *> & visibleChunk)
 {
 	for (Chunk * chunk : visibleChunk)
 	{
-		if (chunk->getState() == NONE)
-			chunk->build();
+		if (chunk && chunk->getState() == NONE)
+			_chunkPool.submitTask([chunk]() {chunk->build();});
 	}
 }
 
-void World::_generateProceduralMesh(std::vector<Chunk *> visibleChunk)
+void World::_generateProceduralMesh(const std::vector<Chunk *> & visibleChunk)
 {
 	for (Chunk * chunk : visibleChunk)
 	{
 		if (chunk && chunk->getState() == BUILT)
-			chunk->generateMesh();
+			_chunkPool.submitTask([chunk]() {chunk->generateMesh();});
 	}
 }
 
-void World::_drawChunk(std::vector<Chunk *> visibleChunk, AEngine * engine, PipelineType pipelineType)
+void World::_drawChunk(const std::vector<Chunk *> & visibleChunk, AEngine * engine, PipelineType pipelineType)
 {
 	for (Chunk * chunk : visibleChunk)
 	{
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
-		engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(pipelineType));
+		if (chunk->getState() == UPLOADED)
+			engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(pipelineType));
 	}
 }
