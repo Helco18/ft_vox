@@ -1,4 +1,4 @@
-#include "ThreadWorker.hpp"
+#include "ThreadPool.hpp"
 #include "Logger.hpp"
 #include "utils.hpp"
 
@@ -7,33 +7,37 @@ uint16_t ThreadWorker::_count = 0;
 void ThreadWorker::start()
 {
 	_id = _count;
-	if (_isStarted)
+	if (_isActive)
 	{
-		Logger::log(THREAD, WARNING, "Attempted to start ThreadWorker #" + toString(_id) + " that's already started.");
+		Logger::log(THREAD, WARNING, "Attempted to start ThreadWorker #" + toString(_id) + " that's already active.");
 		return;
 	}
 	_thread = std::thread(&ThreadWorker::_loop, this);
 	_count++;
-	_isStarted = true;
 }
 
 void ThreadWorker::_loop()
 {
-	while (_isStarted)
+	while (_isActive)
 	{
-		_process();
-		USLEEP(100);
-	}
-}
+		Task task;
+		{
+			std::unique_lock<std::mutex> lock(_queueMutex);
+			_wakerCv.wait(lock, [&] { return !_isActive || !_taskQueue.empty(); });
 
-void ThreadWorker::_process()
-{
-	// task
+			if (_isActive)
+			{
+				task = std::move(_taskQueue.front());
+				_taskQueue.pop();
+			}
+		}
+		if (task)
+			task();
+	}
 }
 
 void ThreadWorker::stop()
 {
-	_isStarted = false;
 	if (_thread.joinable())
 		_thread.join();
 }
