@@ -5,6 +5,7 @@
 #include "InputManager.hpp"
 #include "Logger.hpp"
 #include "PipelineManager.hpp"
+#include <iomanip>
 #include <iostream>
 
 WindowManager::WindowManager(EngineType engineType, Environment * environment):
@@ -61,6 +62,8 @@ bool WindowManager::drawFrame()
 {
 	static double currentTime = 0;
 	static int frames = 0;
+	std::ostringstream oss;
+	double fps;
 
 	if (glfwWindowShouldClose(_window))
 	{
@@ -80,8 +83,9 @@ bool WindowManager::drawFrame()
 	currentTime = glfwGetTime();
 	if (currentTime - _lastFpsUpdate >= 1.0)
 	{
-		double fps = frames / (currentTime - _lastFpsUpdate); // average FPS in last second
-		glfwSetWindowTitle(_window, std::string(std::string(_engineType == VULKAN ? "[Vulkan] " : "[OpenGL] ") + toString(fps)).c_str());
+		fps = frames / (currentTime - _lastFpsUpdate); // average FPS in last second
+		oss << std::fixed << std::setprecision(2) << fps;
+		glfwSetWindowTitle(_window, (std::string(_engineType == VULKAN ? "[Vulkan] " : "[OpenGL] ") + oss.str()).c_str());
 
 		frames = 0;
 		_lastFpsUpdate = currentTime;
