@@ -91,11 +91,11 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 	_endSingleTimeCommands(commandCopyBuffer);
 }
 
-void VulkanEngine::_concateneVertexBuffer(Asset & asset)
+void VulkanEngine::_createVertexBuffer()
 {
-	if (asset.vertices.empty())
+	if (_vertices.empty())
 		return;
-	vk::DeviceSize size = sizeof(Vertex) * (asset.vertices.size() + _vertexSize);
+	vk::DeviceSize size = sizeof(Vertex) * _vertices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
@@ -104,7 +104,6 @@ void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	_vertices.insert(_vertices.end(), asset.vertices.begin(), asset.vertices.end());
 	memcpy(dataStaging, _vertices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
@@ -112,15 +111,13 @@ void VulkanEngine::_concateneVertexBuffer(Asset & asset)
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					_vertexBuffer, _vertexBufferMemory);
 	_copyBuffer(stagingBuffer, _vertexBuffer, size);
-
-	_vertexSize = _vertices.size();
 }
 
-void VulkanEngine::_concateneIndexBuffer(Asset & asset)
+void VulkanEngine::_createIndexBuffer()
 {
-	if (asset.indices.empty())
+	if (_indices.empty())
 		return;
-	vk::DeviceSize size = sizeof(asset.indices[0]) * (asset.indices.size() + _indexSize);
+	vk::DeviceSize size = sizeof(_indices[0]) * _indices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
@@ -129,7 +126,6 @@ void VulkanEngine::_concateneIndexBuffer(Asset & asset)
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	_indices.insert(_indices.end(), asset.indices.begin(), asset.indices.end());
 	memcpy(dataStaging, _indices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
@@ -137,6 +133,4 @@ void VulkanEngine::_concateneIndexBuffer(Asset & asset)
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					_indexBuffer, _indexBufferMemory);
 	_copyBuffer(stagingBuffer, _indexBuffer, size);
-
-	_indexSize = _indices.size();
 }

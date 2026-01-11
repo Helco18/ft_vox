@@ -82,6 +82,7 @@ VulkanEngine::~VulkanEngine()
 
 void VulkanEngine::beginFrame()
 {
+	_bufferNeedsRebuild = false;
 	for (std::pair<const PipelineID, std::vector<Asset *>> & pipelinePair : _pipelineAssetMap)
 		pipelinePair.second.clear();
 }
@@ -93,11 +94,14 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 	asset.vbo = _vertexSize;
 	asset.ibo = _indexSize;
-	_concateneVertexBuffer(asset);
-	_concateneIndexBuffer(asset);
+	_vertexSize += asset.vertices.size();
+	_indexSize += asset.indices.size();
+	_vertices.insert(_vertices.end(), asset.vertices.begin(), asset.vertices.end());
+	_indices.insert(_indices.end(), asset.indices.begin(), asset.indices.end());
 	asset.assetID = assetID;
 
 	_assetMap.try_emplace(assetID, asset);
+	_bufferNeedsRebuild = true;
 	return assetID++;
 }
 
@@ -115,9 +119,17 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 
 void VulkanEngine::endFrame()
 {
+	if (_bufferNeedsRebuild)
+	{
+		_createVertexBuffer();
+		_createIndexBuffer();
+	}
+
+	if (_vertexBuffer == nullptr || _indexBuffer == nullptr)
+		return;
+
 	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
 		;
-
 	// Semaphore = on ordonne les tâches
 	// Fence = on attend que le GPU finisse la tâche
 	try
@@ -135,6 +147,7 @@ void VulkanEngine::endFrame()
 		}
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
+		
 		_updateUniformBuffer();
 
 		_commandBuffers[_currentFrame].reset();

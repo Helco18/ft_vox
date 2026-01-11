@@ -149,6 +149,7 @@ class VulkanEngine : public AEngine
 		std::vector<Vertex>					_vertices;
 		std::vector<uint32_t>				_indices;
 		ShaderCache							_shaderCache;
+		bool								_bufferNeedsRebuild = false;
 
 		// Textures
 		vk::raii::Image						_textureImage = nullptr;
@@ -186,6 +187,8 @@ class VulkanEngine : public AEngine
 		void								_createTextureImage();
 		void								_concateneVertexBuffer(Asset & asset);
 		void								_concateneIndexBuffer(Asset & asset);
+		void								_createVertexBuffer();
+		void								_createIndexBuffer();
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

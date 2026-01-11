@@ -27,7 +27,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	PipelineMap::iterator it = _pipelineMap.find(pipelineID);
 	if (it == _pipelineMap.end())
 	{
-		throw OpenGLException("Failed to upload Asset ID: " + toString(asset.assetID) + " because Pipeline ID: " +
+		throw OpenGLException("Failed to upload asset because Pipeline ID: " +
 			toString(pipelineID) + " doesn't exist.");
 	}
 	PipelineInfo & pipelineInfo = it->second;
