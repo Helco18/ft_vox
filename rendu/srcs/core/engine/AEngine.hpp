@@ -36,6 +36,7 @@ class AEngine
 		virtual void		load() = 0;
 		virtual void		beginFrame() = 0;
 		virtual AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) = 0;
+		virtual void		unloadAsset(AssetID assetID) = 0;
 		virtual PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) = 0;
 		virtual void		drawAsset(AssetID assetID, PipelineID pipelineID) = 0;
 		virtual void		endFrame() = 0;

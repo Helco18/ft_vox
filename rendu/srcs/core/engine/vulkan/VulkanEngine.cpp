@@ -1,6 +1,7 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
 #include "Logger.hpp"
+#include "utils.hpp"
 #include <iostream>
 
 VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
@@ -90,19 +91,11 @@ void VulkanEngine::beginFrame()
 AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
 	(void) pipelineID;
-	AssetID assetID = _assetMap.size();
-
-	asset.vbo = _vertexSize;
-	asset.ibo = _indexSize;
-	_vertexSize += asset.vertices.size();
-	_indexSize += asset.indices.size();
-	_vertices.insert(_vertices.end(), asset.vertices.begin(), asset.vertices.end());
-	_indices.insert(_indices.end(), asset.indices.begin(), asset.indices.end());
+	AssetID assetID = _nextAssetID++;
 	asset.assetID = assetID;
-
 	_assetMap.try_emplace(assetID, asset);
 	_bufferNeedsRebuild = true;
-	return assetID++;
+	return assetID;
 }
 
 void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
@@ -117,13 +110,35 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	}
 }
 
+void VulkanEngine::unloadAsset(AssetID assetID)
+{
+	AssetMap::iterator assetit = _assetMap.find(assetID);
+	if (assetit != _assetMap.end())
+		_assetMap.erase(assetit);
+	_bufferNeedsRebuild = true;
+}
+
+void VulkanEngine::_rebuildBuffers()
+{
+	_vertices.clear();
+	_indices.clear();
+
+	for (std::pair<const AssetID, Asset> & assetPair : _assetMap)
+	{
+		Asset & asset = assetPair.second;
+		asset.vbo = _vertices.size();
+		asset.ibo = _indices.size();
+		_vertices.insert(_vertices.end(), asset.vertices.begin(), asset.vertices.end());
+		_indices.insert(_indices.end(), asset.indices.begin(), asset.indices.end());
+	}
+	_createVertexBuffer();
+	_createIndexBuffer();
+}
+
 void VulkanEngine::endFrame()
 {
 	if (_bufferNeedsRebuild)
-	{
-		_createVertexBuffer();
-		_createIndexBuffer();
-	}
+		_rebuildBuffers();
 
 	if (_vertexBuffer == nullptr || _indexBuffer == nullptr)
 		return;
@@ -147,7 +162,6 @@ void VulkanEngine::endFrame()
 		}
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
-		
 		_updateUniformBuffer();
 
 		_commandBuffers[_currentFrame].reset();

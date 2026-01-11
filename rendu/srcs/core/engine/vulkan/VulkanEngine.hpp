@@ -84,6 +84,7 @@ class VulkanEngine : public AEngine
 		void								load() override;
 		void								beginFrame() override;
 		AssetID								uploadAsset(Asset & asset, PipelineID pipelineID) override;
+		void								unloadAsset(AssetID assetID) override;
 		PipelineID							uploadPipeline(PipelineInfo & pipelineInfo) override;
 		void								drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void								endFrame() override;
@@ -136,10 +137,8 @@ class VulkanEngine : public AEngine
 
 		// Buffers & Memory
 		vk::raii::Buffer					_vertexBuffer = nullptr;
-		uint32_t							_vertexSize = 0;
 		vk::raii::DeviceMemory				_vertexBufferMemory = nullptr;
 		vk::raii::Buffer					_indexBuffer = nullptr;
-		uint32_t							_indexSize = 0;
 		vk::raii::DeviceMemory				_indexBufferMemory = nullptr;
 		std::vector<vk::raii::Buffer>		_uniformBuffers;
 		std::vector<vk::raii::DeviceMemory>	_uniformBuffersMemory;
@@ -150,6 +149,7 @@ class VulkanEngine : public AEngine
 		std::vector<uint32_t>				_indices;
 		ShaderCache							_shaderCache;
 		bool								_bufferNeedsRebuild = false;
+		unsigned int						_nextAssetID = 0;
 
 		// Textures
 		vk::raii::Image						_textureImage = nullptr;
@@ -189,6 +189,7 @@ class VulkanEngine : public AEngine
 		void								_concateneIndexBuffer(Asset & asset);
 		void								_createVertexBuffer();
 		void								_createIndexBuffer();
+		void								_rebuildBuffers();
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

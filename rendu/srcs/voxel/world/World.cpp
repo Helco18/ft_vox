@@ -10,24 +10,7 @@ World::~World()
 
 void World::load()
 {
-	for (int x = 0; x < WORLD_WIDTH; ++x)
-	{
-		for (int y = 0; y < WORLD_HEIGHT; ++y)
-		{
-			for (int z = 0; z < WORLD_LENGTH; ++z)
-			{
-				Chunk * chunk = new Chunk(x, y, z, this);
-				_chunkPool.submitTask([chunk]() {chunk->build();});
-				_chunkMap[chunk->getChunkLocation()] = chunk;
-			}
-		}
-	}
-	for (std::pair<glm::ivec3, Chunk *> chunkPtr : _chunkMap)
-	{
-		Chunk * chunk = chunkPtr.second;
-		if (chunk)
-			_chunkPool.submitTask([chunk]() {chunk->generateMesh();});
-	}
+	_chunkPool.start(std::thread::hardware_concurrency()); // max thread
 }
 
 Chunk * World::getChunk(const glm::vec3 & location)
@@ -60,13 +43,13 @@ void World::addChunk(Chunk * chunk)
 	_chunkMap[chunk->getChunkLocation()] = chunk;
 }
 
-void World::reloadChunks()
+void World::reloadChunks(AEngine * engine)
 {
 	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
 	{
 		Chunk * chunk = chunks.second;
 		if (chunk && chunk->getState() == UPLOADED)
-			chunk->unload();// bref
+			chunk->unload(engine);
 	}
 }
 

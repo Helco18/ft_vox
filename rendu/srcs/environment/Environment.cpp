@@ -52,7 +52,7 @@ void Environment::loop()
 		if (!_windowManager->drawFrame())
 		{
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
-				world->reloadChunks();
+				world->reloadChunks(_windowManager->getEngine());
 			continue;
 		}
 		_windowManager->getEngine()->endFrame();

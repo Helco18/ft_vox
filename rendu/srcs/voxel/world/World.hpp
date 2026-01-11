@@ -15,7 +15,7 @@
 class World
 {
 	public:
-		World(const std::string & name): _name(name) { _chunkPool.start(4); }
+		World(const std::string & name): _name(name) {}
 		~World();
 
 		void					load();
@@ -26,7 +26,7 @@ class World
 		Chunk *					getChunk(int x, int y, int z);
 
 		void					addChunk(Chunk * chunk);
-		void					reloadChunks();
+		void					reloadChunks(AEngine * engine);
 
 		void					render(AEngine * engine, PipelineType pipelineType);
 	private:

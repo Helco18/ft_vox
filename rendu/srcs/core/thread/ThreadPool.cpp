@@ -44,7 +44,7 @@ void ThreadPool::start(uint16_t totalThreads)
 	unsigned int threadCount = getHostThreadCount();
 	if (totalThreads >= threadCount)
 	{
-		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(totalThreads - threadCount) +
+		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(totalThreads - threadCount + 1) +
 			". Adjusting to " + toString(threadCount - 1) + " threads.");
 		totalThreads = threadCount - 1;
 	}

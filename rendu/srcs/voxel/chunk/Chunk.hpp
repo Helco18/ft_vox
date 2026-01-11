@@ -49,7 +49,7 @@ class Chunk
 		void					build();
 		void					generateMesh();
 		void					uploadAsset(AEngine * engine);
-		void					unload();
+		void					unload(AEngine * engine);
 	private:
 		World *					_world;
 		glm::vec3				_chunkLocation;
