@@ -2,6 +2,7 @@
 #include "OBJModel.hpp"
 #include "Environment.hpp"
 #include "CustomExceptions.hpp"
+#include "Profiler.hpp"
 #include <iostream>
 
 int main(int ac, char ** av)
@@ -18,8 +19,9 @@ int main(int ac, char ** av)
 	}
 	catch (const CustomException & e)
 	{
-		Logger::log(e.getSource(), CRITICAL, std::string(e.what()));
-		return 3;
+		Logger::log(e.getSource(), FATAL, std::string(e.what()));
+		return 1;
 	}
+	Profiler::print();
 	return EXIT_SUCCESS;
 }

@@ -27,10 +27,10 @@ static GLuint compileShader(GLenum type, const std::string & filepath)
 		error_message = (char *)alloca(sizeof(char) * error_length);
 		// This will store the log of the program into the error_message string.
 		glGetShaderInfoLog(shader, error_length, &error_length, error_message);
-		Logger::log(ENGINE_OPENGL, CRITICAL, (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") + std::string("shader failed to compile: ") + error_message + ".");
 		// Delete the shader to avoid leaks.
 		glDeleteShader(shader);
-		return (0);
+		throw OpenGLException((type == GL_VERTEX_SHADER ? "Vertex" : "Fragment") +
+			std::string("shader failed to compile: ") + error_message + ".");
 	}
 	return shader;
 }

@@ -43,9 +43,10 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
-						srcs/tools/stb_image.cpp \
-						srcs/tools/utils.cpp \
 						srcs/tools/logger/Logger.cpp \
+						srcs/tools/profiler/Profiler.cpp \
+						srcs/tools/utils/stb_image.cpp \
+						srcs/tools/utils/utils.cpp \
 						srcs/voxel/WorldManager.cpp \
 						srcs/voxel/block/BlockData.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
@@ -72,6 +73,8 @@ INCLUDES			=	-I libs \
 						-I srcs/tools \
 						-I srcs/tools/exceptions \
 						-I srcs/tools/logger \
+						-I srcs/tools/profiler \
+						-I srcs/tools/utils \
 						-I srcs/voxel \
 						-I srcs/voxel/block \
 						-I srcs/voxel/chunk \

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <ctime>
 #include <chrono>
+#include <optional>
 #include <sstream>
 
 static const std::string getTimestampAsDate()
@@ -21,20 +22,7 @@ static const std::string getTimestampAsDate()
 	return oss.str();
 }
 
-void Logger::log(LogSource source, LogSeverity severity, const std::string & message)
-{
-	std::ostream * outputStream = severity >= ERROR ? &std::cerr : &std::cout;
-	*outputStream
-		<< getTimestampAsDate()
-		<< _getLogSeverityPrefix(severity)
-		<< '\t'
-		<< _getLogSourcePrefix(source)
-		<< ": "
-		<< message
-		<< RESET << std::endl; 
-}
-
-const std::string Logger::_getLogSeverityPrefix(LogSeverity severity)
+static const std::string getLogSeverityPrefixColor(LogSeverity severity)
 {
 	switch (static_cast<int>(severity))
 	{
@@ -42,12 +30,25 @@ const std::string Logger::_getLogSeverityPrefix(LogSeverity severity)
 		case INFO: return GRAY"[INFO]";
 		case WARNING: return YELLOW"[WARNING]";
 		case ERROR: return RED"[ERROR]";
-		case CRITICAL: return BOLD_RED"[CRITICAL]";
+		case FATAL: return BOLD_RED"[FATAL]";
 		default: return "[UNKNOWN]";
 	}
 }
 
-const std::string Logger::_getLogSourcePrefix(LogSource source)
+static const std::string getLogSeverityPrefix(LogSeverity severity)
+{
+	switch (static_cast<int>(severity))
+	{
+		case DEBUG: return "[DEBUG]";
+		case INFO: return "[INFO]";
+		case WARNING: return "[WARNING]";
+		case ERROR: return "[ERROR]";
+		case FATAL: return "[FATAL]";
+		default: return "[UNKNOWN]";
+	}
+}
+
+static const std::string getLogSourcePrefix(LogSource source)
 {
 	switch (static_cast<int>(source))
 	{
@@ -63,6 +64,20 @@ const std::string Logger::_getLogSourcePrefix(LogSource source)
 		case TEXTURE: return "TEXTURE";
 		case PIPELINE: return "PIPELINE";
 		case THREAD: return "THREAD";
+		case PROFILER: return "PROFILER";
 		default: return "UNKNOWN";
 	}
+}
+
+void Logger::log(LogSource source, LogSeverity severity, const std::string & message, OptionalOutputFile output)
+{
+	std::ostream & outputStream = severity >= ERROR ? std::cerr : output == std::nullopt ? std::cout : output.value().get();
+	outputStream
+		<< getTimestampAsDate()
+		<< (output == std::nullopt ? getLogSeverityPrefixColor(severity) : getLogSeverityPrefix(severity))
+		<< '\t'
+		<< getLogSourcePrefix(source)
+		<< ": "
+		<< message
+		<< (output == std::nullopt ? RESET : "") << std::endl; 
 }

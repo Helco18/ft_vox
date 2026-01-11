@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 enum LogSeverity
@@ -8,7 +9,7 @@ enum LogSeverity
 	INFO,
 	WARNING,
 	ERROR,
-	CRITICAL
+	FATAL
 };
 
 enum LogSource
@@ -24,8 +25,11 @@ enum LogSource
 	GENERAL,
 	TEXTURE,
 	PIPELINE,
-	THREAD
+	THREAD,
+	PROFILER
 };
+
+typedef std::optional<std::reference_wrapper<std::ostream>> OptionalOutputFile;
 
 class Logger
 {
@@ -33,9 +37,6 @@ class Logger
 		Logger() = delete;
 		~Logger() = delete;
 
-		static void					log(LogSource source, LogSeverity severity, const std::string & message);
+		static void	log(LogSource source, LogSeverity severity, const std::string & message, OptionalOutputFile output = std::nullopt);
 
-	private:
-		static const std::string	_getLogSeverityPrefix(LogSeverity severity);
-		static const std::string	_getLogSourcePrefix(LogSource severity);
 };

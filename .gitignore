@@ -15,3 +15,4 @@ rendu_obsolete/
 tutorial.cpp
 *.rdc
 atlas_debug.png
+logs/

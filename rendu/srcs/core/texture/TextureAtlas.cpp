@@ -16,7 +16,7 @@ void TextureAtlas::createAtlas()
 
 	if (_width == 0 || _height == 0 || _textureMap.empty())
 	{
-		Logger::log(TEXTURE, CRITICAL, "Texture Map is empty.");
+		Logger::log(TEXTURE, FATAL, "Texture Map is empty.");
 		return;
 	}
 	_atlasData.resize(_width * _height * 4, 0);

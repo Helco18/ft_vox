@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include "Profiler.hpp"
 #include "utils.hpp"
 #include "World.hpp"
 #include "Logger.hpp"
@@ -11,6 +12,7 @@ void Chunk::build()
 	if (getState() != NONE)
 		return;
 
+	Profiler p("Chunk::build");
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
 		for (int y = 0; y < CHUNK_HEIGHT; ++y)
@@ -37,6 +39,7 @@ void Chunk::generateMesh()
 	if (getState() != BUILT)
 		return;
 
+	Profiler p("Chunk::generateMesh");
 	_generateGreedyMesh();
 	setState(MESHED);
 }
@@ -48,7 +51,10 @@ void Chunk::uploadAsset(AEngine * engine)
 		return;
 
 	if (!_asset.vertices.empty())
+	{
+		Profiler p("Chunk::uploadAsset");
 		engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL));
+	}
 	setState(UPLOADED);
 }
 
