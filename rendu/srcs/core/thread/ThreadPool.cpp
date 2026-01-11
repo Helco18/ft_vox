@@ -3,35 +3,8 @@
 #include "utils.hpp"
 #include <thread>
 
-#ifdef _WIN32
-#include <windows.h>
-#elif defined(__APPLE__)
-#include <sys/types.h>
-#include <sys/sysctl.h>
-#elif defined(__linux__)
-#include <unistd.h>
-#endif
-
 uint16_t ThreadPool::_count = 0;
 uint16_t ThreadPool::_availableThreads = 0;
-
-unsigned int ThreadPool::getHostThreadCount()
-{
-	unsigned int threadCount = 1;
-
-	#ifdef _WIN32
-	SYSTEM_INFO info;
-	GetSystemInfo(&info);
-	threadCount = info.dwNumberOfProcessors;
-	#elif defined(__APPLE__)
-	size_t size = sizeof(threadCount);
-	sysctlbyname("hw.logicalcpu", &threadCount, &size, nullptr, 0);
-	#elif defined(__linux__)
-	threadCount = sysconf(_SC_NPROCESSORS_ONLN);
-	#endif
-
-	return threadCount;
-}
 
 void ThreadPool::start(uint16_t requestedThreads)
 {
@@ -43,7 +16,7 @@ void ThreadPool::start(uint16_t requestedThreads)
 	}
 
 	if (_availableThreads == 0)
-		_availableThreads = getHostThreadCount();
+		_availableThreads = std::thread::hardware_concurrency();
 	if (requestedThreads >= _availableThreads)
 	{
 		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(requestedThreads - _availableThreads + 1) +

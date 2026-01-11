@@ -18,8 +18,6 @@ class ThreadPool
 		void					stop();
 		void					submitTask(Task task); // use Task task = [params]() { func(); }; to send it.
 		
-		static unsigned int		getHostThreadCount();
-
 	private:
 		typedef std::vector<std::unique_ptr<ThreadWorker>> WorkerPool;
 
