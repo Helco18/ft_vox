@@ -4,10 +4,12 @@
 #include <thread>
 
 uint16_t ThreadPool::_count = 0;
-uint16_t ThreadPool::_availableThreads = 0;
+uint16_t ThreadPool::_availableThreads = std::thread::hardware_concurrency();
 
 void ThreadPool::start(uint16_t requestedThreads)
 {
+	if (_availableThreads == 0)
+		throw ThreadException("Can't instantiate ThreadPool #" + toString(_count) + ": No threads are available.");
 	_id = _count;
 	if (_isActive)
 	{
@@ -15,8 +17,6 @@ void ThreadPool::start(uint16_t requestedThreads)
 		return;
 	}
 
-	if (_availableThreads == 0)
-		_availableThreads = std::thread::hardware_concurrency();
 	if (requestedThreads >= _availableThreads)
 	{
 		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(requestedThreads - _availableThreads + 1) +
