@@ -10,7 +10,7 @@ World::~World()
 
 void World::load()
 {
-	_chunkPool.start(std::thread::hardware_concurrency()); // max thread
+	_chunkPool.start(ThreadPool::getHostThreadCount()); // max thread
 }
 
 Chunk * World::getChunk(const glm::vec3 & location)

@@ -2,6 +2,7 @@
 #include "Logger.hpp"
 #include "CustomExceptions.hpp"
 #include "OBJModel.hpp"
+#include "Profiler.hpp"
 #include "utils.hpp"
 #include <iostream>
 
@@ -62,6 +63,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 void OpenGLEngine::load()
 {
+	Profiler p("OpenGLEngine::load");
 	glfwSwapInterval(0);
 
 	glGenBuffers(1, &_ubo);

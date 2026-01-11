@@ -1,6 +1,7 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
 #include "Logger.hpp"
+#include "Profiler.hpp"
 #include "utils.hpp"
 #include <iostream>
 
@@ -8,6 +9,8 @@ VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(windo
 
 void VulkanEngine::load()
 {
+	Profiler p("VulkanEngine::load");
+
 	// On initialise une instance Vulkan, qui représente notre application au niveau de l'API Vulkan.
 	// C'est le point d'entrée principal entre l'application et le driver Vulkan (on y précise nom, version, extensions, etc.)
 	_createInstance();

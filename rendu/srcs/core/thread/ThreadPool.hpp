@@ -14,7 +14,7 @@ class ThreadPool
 		ThreadPool() {};
 		~ThreadPool() {};
 
-		void					start(uint16_t totalThreads);
+		void					start(uint16_t requestedThreads);
 		void					stop();
 		void					submitTask(Task task); // use Task task = [params]() { func(); }; to send it.
 		
@@ -24,6 +24,7 @@ class ThreadPool
 		typedef std::vector<std::unique_ptr<ThreadWorker>> WorkerPool;
 
 		static uint16_t			_count;
+		static uint16_t			_availableThreads;
 		uint16_t				_id;
 		std::queue<Task>		_taskQueue;
 		std::condition_variable _wakerCv;

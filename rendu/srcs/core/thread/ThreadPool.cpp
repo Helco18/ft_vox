@@ -13,6 +13,7 @@
 #endif
 
 uint16_t ThreadPool::_count = 0;
+uint16_t ThreadPool::_availableThreads = 0;
 
 unsigned int ThreadPool::getHostThreadCount()
 {
@@ -32,7 +33,7 @@ unsigned int ThreadPool::getHostThreadCount()
 	return threadCount;
 }
 
-void ThreadPool::start(uint16_t totalThreads)
+void ThreadPool::start(uint16_t requestedThreads)
 {
 	_id = _count;
 	if (_isActive)
@@ -41,16 +42,18 @@ void ThreadPool::start(uint16_t totalThreads)
 		return;
 	}
 
-	unsigned int threadCount = getHostThreadCount();
-	if (totalThreads >= threadCount)
+	if (_availableThreads == 0)
+		_availableThreads = getHostThreadCount();
+	if (requestedThreads >= _availableThreads)
 	{
-		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(totalThreads - threadCount + 1) +
-			". Adjusting to " + toString(threadCount - 1) + " threads.");
-		totalThreads = threadCount - 1;
+		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(requestedThreads - _availableThreads + 1) +
+			". Adjusting to " + toString(_availableThreads - 1) + " threads.");
+		requestedThreads = _availableThreads - 1;
 	}
+	_availableThreads -= requestedThreads;
 
 	_isActive = true;
-	for (int i = 0; i < totalThreads; ++i)
+	for (int i = 0; i < requestedThreads; ++i)
 	{
 		std::unique_ptr<ThreadWorker> worker = std::make_unique<ThreadWorker>(_wakerCv, _queueMutex, _taskQueue, _isActive);
 		worker->start();
@@ -73,6 +76,7 @@ void ThreadPool::submitTask(Task task)
 
 void ThreadPool::stop()
 {
+	_availableThreads += _workers.size();
 	{
 		std::lock_guard<std::mutex> lock(_queueMutex);
 		_isActive = false;
