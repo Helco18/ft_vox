@@ -132,7 +132,9 @@ void VulkanEngine::_rebuildBuffers()
 		asset.vbo = _vertices.size();
 		asset.ibo = _indices.size();
 		_vertices.insert(_vertices.end(), asset.vertices.begin(), asset.vertices.end());
-		_indices.insert(_indices.end(), asset.indices.begin(), asset.indices.end());
+		_indices.reserve(_indices.size() + asset.indices.size());
+		for (uint32_t index : asset.indices)
+			_indices.push_back(index + asset.vbo);
 	}
 	_createVertexBuffer();
 	_createIndexBuffer();

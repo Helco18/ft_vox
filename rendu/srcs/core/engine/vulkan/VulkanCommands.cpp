@@ -171,7 +171,7 @@ void VulkanEngine::_recordCommandBuffer()
 			*_descriptorSets[_currentFrame], nullptr);
 		std::vector<Asset *> & drawableAssets = pipelineassetit->second;
 		for (const Asset * asset : drawableAssets)
-			commands.drawIndexed(asset->indices.size(), 1, asset->ibo, asset->vbo, 0);
+			commands.drawIndexed(asset->indices.size(), 1, asset->ibo, 0, 0);
 	}
 	commands.endRendering();
 
