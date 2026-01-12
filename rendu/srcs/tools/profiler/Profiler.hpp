@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <mutex>
 #include <string>
 #include <chrono>
@@ -27,6 +28,7 @@ class Profiler
 		Profiler(const std::string & name);
 		~Profiler();
 
+		void				stop();
 		static void			print();
 	
 	private:
@@ -36,4 +38,5 @@ class Profiler
 		static std::mutex	_cacheMutex;
 		std::string			_name;
 		MicroTime			_startTime;
+		std::atomic_bool	_earlyStop = false;
 };

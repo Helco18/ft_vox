@@ -79,5 +79,5 @@ void Logger::log(LogSource source, LogSeverity severity, const std::string & mes
 		<< getLogSourcePrefix(source)
 		<< ": "
 		<< message
-		<< (output == nullptr ? RESET : "") << std::endl; 
+		<< (output == nullptr ? RESET : "") << std::endl;
 }

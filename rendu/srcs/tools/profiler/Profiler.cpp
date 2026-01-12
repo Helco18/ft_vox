@@ -103,7 +103,7 @@ void Profiler::print()
 	}
 }
 
-Profiler::~Profiler()
+void Profiler::stop()
 {
 	std::lock_guard<std::mutex> lg(_cacheMutex);
 	MicroTime execTime;
@@ -125,4 +125,11 @@ Profiler::~Profiler()
 	profile.recordedTimes.push_back(execTime);
 	if (profile.recordedTimes.size() >= MAX_RECORDED_TIMES)
 		profile.recordedTimes.pop_front();
+	_earlyStop.store(true);
+}
+
+Profiler::~Profiler()
+{
+	if (!_earlyStop.load())
+		stop();
 }
