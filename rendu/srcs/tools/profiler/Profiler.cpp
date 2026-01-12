@@ -7,6 +7,7 @@
 #include <numeric>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #ifdef __has_include
 	#if __has_include(<valgrind/valgrind.h>)
 		#include <valgrind/valgrind.h>
@@ -36,6 +37,8 @@ static std::string getAverageTime(std::deque<MicroTime> & microTimes)
 
 	if (microTimes.empty())
 		return getFormattedTime(MicroTime(0));
+	else if (microTimes.size() == 1)
+		return getFormattedTime(microTimes[0]);
 
 	// this adds all microTimes and uses as its initializer a duration of 0 microseconds stored as a double (to allow for bigger numbers)
 	average = std::chrono::duration_cast<MicroTime>(std::accumulate(
@@ -43,6 +46,20 @@ static std::string getAverageTime(std::deque<MicroTime> & microTimes)
 		std::chrono::duration<double, std::micro>(0)) / microTimes.size()
 	);
 	return getFormattedTime(MicroTime(average));
+}
+
+static std::string getMedianTime(std::deque<MicroTime> & microTimes)
+{
+	MicroTime median;
+
+	if (microTimes.empty())
+		return getFormattedTime(MicroTime(0));
+	else if (microTimes.size() == 1)
+		return getFormattedTime(microTimes[0]);
+
+	std::sort(microTimes.begin(), microTimes.end());
+	median = microTimes[microTimes.size() / 2 - 1];
+	return getFormattedTime(MicroTime(median));
 }
 
 // Thank you CPP00 ex02
@@ -99,6 +116,7 @@ void Profiler::print()
 		Logger::log(PROFILER, DEBUG, "Slowest execution time: " + getFormattedTime(profile.slowestExecTime), &file);
 		Logger::log(PROFILER, DEBUG, "Fastest execution time: " + getFormattedTime(profile.fastestExecTime), &file);
 		Logger::log(PROFILER, DEBUG, "Average execution time: " + getAverageTime(profile.recordedTimes), &file);
+		Logger::log(PROFILER, DEBUG, "Median execution time: " + getMedianTime(profile.recordedTimes), &file);
 		Logger::log(PROFILER, DEBUG, "--------------------------------", &file);
 	}
 }
