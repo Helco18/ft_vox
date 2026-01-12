@@ -30,7 +30,7 @@ void Environment::init(EngineType engineType)
 
 	BlockData::init();
 
-	WorldManager::createWorld("bozoandzibocircus");
+	WorldManager::createWorld(WORLD_NAME);
 
 	Logger::log(ENVIRONMENT, INFO, "Environment started.");
 }
@@ -46,7 +46,7 @@ void Environment::loop()
 		_windowManager->getEngine()->beginFrame();
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager, deltaTime);
-		World * world = WorldManager::getWorld("bozoandzibocircus");
+		World * world = WorldManager::getWorld(WORLD_NAME);
 		if (world)
 			world->render(_windowManager->getEngine(), _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
 		if (!_windowManager->drawFrame())

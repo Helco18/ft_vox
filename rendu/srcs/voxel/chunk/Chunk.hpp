@@ -32,11 +32,11 @@ enum FaceDirection
 class Chunk
 {
 	public:
-		Chunk(int x = 0, int y = 0, int z = 0, World * world = nullptr): _world(world), _chunkLocation(glm::vec3(x, y, z)), _state(NONE) {}
-		Chunk(const glm::vec3 & chunkLocation, World * world): _world(world), _chunkLocation(chunkLocation), _state(NONE){}
+		Chunk(int x = 0, int y = 0, int z = 0, World * world = nullptr): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE) {}
+		Chunk(const glm::ivec3 & chunkLocation, World * world): _world(world), _chunkLocation(chunkLocation), _state(NONE){}
 		~Chunk() {};
 
-		const glm::vec3 &		getChunkLocation() const { return _chunkLocation; }
+		const glm::ivec3 &		getChunkLocation() const { return _chunkLocation; }
 		int						getChunkX() const { return _chunkLocation.x; }
 		int						getChunkY() const { return _chunkLocation.y; }
 		int						getChunkZ() const { return _chunkLocation.z; }
@@ -52,7 +52,7 @@ class Chunk
 		void					unload(AEngine * engine);
 	private:
 		World *					_world;
-		glm::vec3				_chunkLocation;
+		glm::ivec3				_chunkLocation;
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 		Asset					_asset;
 		ChunkState				_state;

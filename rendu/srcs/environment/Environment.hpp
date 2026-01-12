@@ -3,6 +3,8 @@
 #include "WindowManager.hpp"
 #include "utils.hpp"
 
+#define WORLD_NAME "bozoandzibocircus"
+
 class Environment
 {
 	public:

@@ -97,7 +97,7 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	asset.assetID = assetID;
 	_createVertexBuffer(asset);
 	_createIndexBuffer(asset);
-	_assetMap.try_emplace(asset.assetID, std::move(asset));
+	_assetMap.try_emplace(asset.assetID, asset);
 	return assetID;
 }
 
