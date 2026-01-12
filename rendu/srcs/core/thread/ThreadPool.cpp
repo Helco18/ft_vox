@@ -10,12 +10,12 @@ void ThreadPool::start(uint16_t requestedThreads)
 {
 	if (_availableThreads == 0)
 		throw ThreadException("Can't instantiate ThreadPool #" + toString(_count) + ": No threads are available.");
-	_id = _count;
 	if (_isActive)
 	{
 		Logger::log(THREAD, WARNING, "Attempted to start ThreadPool #" + toString(_id) + " that's already active.");
 		return;
 	}
+	_id = _count;
 
 	if (requestedThreads >= _availableThreads)
 	{

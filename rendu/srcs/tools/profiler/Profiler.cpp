@@ -17,7 +17,7 @@
 Profiler::ProfileMap Profiler::_profileCache;
 std::mutex Profiler::_cacheMutex;
 
-static MicroTime getMicroTime()
+inline static MicroTime getMicroTime()
 {
 	return std::chrono::duration_cast<MicroTime>(std::chrono::high_resolution_clock().now().time_since_epoch());
 }
@@ -60,7 +60,7 @@ static std::string getFilename()
 
 Profiler::Profiler(const std::string & name): _name(name)
 {
-	_startTime = std::chrono::duration_cast<MicroTime>(std::chrono::high_resolution_clock().now().time_since_epoch());
+	_startTime = getMicroTime();
 }
 
 void Profiler::print()
@@ -80,14 +80,19 @@ void Profiler::print()
 		Logger::log(PROFILER, ERROR, "Couldn't create profiler file: " + filename, &file);
 		return;
 	}
+	#ifdef VALGRIND_AVAILABLE
+	if (RUNNING_ON_VALGRIND)
+	{
+		Logger::log(PROFILER, DEBUG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", &file);
+		Logger::log(PROFILER, DEBUG, "!Warning: Valgrind was used. Timing won't be exact.!", &file);
+		Logger::log(PROFILER, DEBUG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", &file);
+	}
+	#endif
 	for (std::pair<const std::string, Profile> & profiles : _profileCache)
 	{
 		Profile & profile = profiles.second;
 		std::string name = profiles.first;
-		#ifdef VALGRIND_AVAILABLE
-		if (RUNNING_ON_VALGRIND)
-			Logger::log(PROFILER, DEBUG, "Warning: Valgrind was used. Timing won't be exact.", &file);
-		#endif
+		
 		Logger::log(PROFILER, DEBUG, "Profile for: " + name + ":", &file);
 		Logger::log(PROFILER, DEBUG, "First execution time: " + getFormattedTime(profile.firstExecTime), &file);
 		Logger::log(PROFILER, DEBUG, "Last execution time: " + getFormattedTime(profile.lastExecTime), &file);
@@ -110,8 +115,8 @@ Profiler::~Profiler()
 		profile.firstExecTime = execTime;
 		profile.slowestExecTime = execTime;
 		profile.fastestExecTime = execTime;
+		profile.name = _name;
 	}
-	profile.name = _name;
 	profile.lastExecTime = execTime;
 	if (execTime > profile.slowestExecTime)
 		profile.slowestExecTime = execTime;

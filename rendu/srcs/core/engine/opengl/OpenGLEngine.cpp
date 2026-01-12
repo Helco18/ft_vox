@@ -80,6 +80,21 @@ void OpenGLEngine::load()
 	_isInitalized = true;
 }
 
+void OpenGLEngine::unloadAsset(AssetID assetID)
+{
+	AssetMap::iterator it = _assetMap.find(assetID);
+	if (it != _assetMap.end())
+	{
+		Asset & asset = it->second;
+		if (asset.vbo)
+			glDeleteBuffers(1, &asset.vbo);
+		if (asset.ibo)
+			glDeleteBuffers(1, &asset.ibo);
+		if (asset.assetID)
+			glDeleteVertexArrays(1, &asset.assetID);
+	}
+}
+
 PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 {
 	int pipelineID = _pipelineMap.size();
