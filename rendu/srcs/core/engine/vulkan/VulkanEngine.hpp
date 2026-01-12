@@ -75,6 +75,12 @@ struct VKValueConverter
 	}
 };
 
+struct BufferData
+{
+	vk::raii::Buffer		buffer = nullptr;
+	vk::raii::DeviceMemory	memory = nullptr;
+};
+
 class VulkanEngine : public AEngine
 {
 	public:
@@ -100,6 +106,7 @@ class VulkanEngine : public AEngine
 		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
 		typedef std::unordered_map<PipelineID, PipelineObjects>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
+		typedef std::unordered_map<AssetID, BufferData>										BufferCache;
 
 		// Window, context, instance
 		vk::raii::Context					_context;
@@ -136,19 +143,14 @@ class VulkanEngine : public AEngine
 		uint32_t							_imageIndex = 0;
 
 		// Buffers & Memory
-		vk::raii::Buffer					_vertexBuffer = nullptr;
-		vk::raii::DeviceMemory				_vertexBufferMemory = nullptr;
-		vk::raii::Buffer					_indexBuffer = nullptr;
-		vk::raii::DeviceMemory				_indexBufferMemory = nullptr;
 		std::vector<vk::raii::Buffer>		_uniformBuffers;
 		std::vector<vk::raii::DeviceMemory>	_uniformBuffersMemory;
 		std::vector<void *>					_uniformBuffersMapped;
 		vk::raii::DescriptorPool			_descriptorPool = nullptr;
 		DescriptorSets						_descriptorSets;
-		std::vector<Vertex>					_vertices;
-		std::vector<uint32_t>				_indices;
 		ShaderCache							_shaderCache;
-		bool								_bufferNeedsRebuild = false;
+		BufferCache							_vboCache;
+		BufferCache							_iboCache;
 		unsigned int						_nextAssetID = 0;
 
 		// Textures
@@ -187,8 +189,8 @@ class VulkanEngine : public AEngine
 		void								_createTextureImage();
 		void								_concateneVertexBuffer(Asset & asset);
 		void								_concateneIndexBuffer(Asset & asset);
-		void								_createVertexBuffer();
-		void								_createIndexBuffer();
+		void								_createVertexBuffer(Asset & asset);
+		void								_createIndexBuffer(Asset & asset);
 		void								_rebuildBuffers();
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer();

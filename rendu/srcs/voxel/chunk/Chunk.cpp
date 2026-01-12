@@ -61,6 +61,9 @@ void Chunk::uploadAsset(AEngine * engine)
 void Chunk::unload(AEngine * engine)
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
+	if (getState() != UPLOADED)
+		return;
+
 	engine->unloadAsset(_asset.assetID);
 	setState(MESHED);
 }

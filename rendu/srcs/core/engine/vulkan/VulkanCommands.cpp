@@ -165,13 +165,21 @@ void VulkanEngine::_recordCommandBuffer()
 		commands.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width),
 						static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
 		commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
-		commands.bindVertexBuffers(0, *_vertexBuffer, {0});
-		commands.bindIndexBuffer( *_indexBuffer, 0, vk::IndexType::eUint32);
 		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineObjects.layout, 0,
-			*_descriptorSets[_currentFrame], nullptr);
+				*_descriptorSets[_currentFrame], nullptr);
 		std::vector<Asset *> & drawableAssets = pipelineassetit->second;
 		for (const Asset * asset : drawableAssets)
-			commands.drawIndexed(asset->indices.size(), 1, asset->ibo, 0, 0);
+		{
+			BufferCache::iterator vertexit = _vboCache.find(asset->assetID);
+			BufferCache::iterator indexit = _iboCache.find(asset->assetID);
+			if (vertexit == _vboCache.end() || indexit == _iboCache.end())
+				continue;
+			BufferData & vertexData = vertexit->second;
+			BufferData & indexData = indexit->second;
+			commands.bindVertexBuffers(0, *vertexData.buffer, {0});
+			commands.bindIndexBuffer( *indexData.buffer, 0, vk::IndexType::eUint32);
+			commands.drawIndexed(asset->indices.size(), 1, 0, 0, 0);
+		}
 	}
 	commands.endRendering();
 

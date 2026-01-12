@@ -86,7 +86,6 @@ VulkanEngine::~VulkanEngine()
 
 void VulkanEngine::beginFrame()
 {
-	_bufferNeedsRebuild = false;
 	for (std::pair<const PipelineID, std::vector<Asset *>> & pipelinePair : _pipelineAssetMap)
 		pipelinePair.second.clear();
 }
@@ -96,8 +95,9 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	(void) pipelineID;
 	AssetID assetID = _nextAssetID++;
 	asset.assetID = assetID;
-	_assetMap.try_emplace(assetID, asset);
-	_bufferNeedsRebuild = true;
+	_createVertexBuffer(asset);
+	_createIndexBuffer(asset);
+	_assetMap.try_emplace(asset.assetID, std::move(asset));
 	return assetID;
 }
 
@@ -118,34 +118,11 @@ void VulkanEngine::unloadAsset(AssetID assetID)
 	AssetMap::iterator assetit = _assetMap.find(assetID);
 	if (assetit != _assetMap.end())
 		_assetMap.erase(assetit);
-	_bufferNeedsRebuild = true;
-}
-
-void VulkanEngine::_rebuildBuffers()
-{
-	_vertices.clear();
-	_indices.clear();
-
-	for (std::pair<const AssetID, Asset> & assetPair : _assetMap)
-	{
-		Asset & asset = assetPair.second;
-		asset.vbo = _vertices.size();
-		asset.ibo = _indices.size();
-		_vertices.insert(_vertices.end(), asset.vertices.begin(), asset.vertices.end());
-		_indices.reserve(_indices.size() + asset.indices.size());
-		for (uint32_t index : asset.indices)
-			_indices.push_back(index + asset.vbo);
-	}
-	_createVertexBuffer();
-	_createIndexBuffer();
 }
 
 void VulkanEngine::endFrame()
 {
-	if (_bufferNeedsRebuild)
-		_rebuildBuffers();
-
-	if (_vertexBuffer == nullptr || _indexBuffer == nullptr)
+	if (_pipelineAssetMap.empty() || _assetMap.empty())
 		return;
 
 	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))

@@ -91,11 +91,12 @@ void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & 
 	_endSingleTimeCommands(commandCopyBuffer);
 }
 
-void VulkanEngine::_createVertexBuffer()
+void VulkanEngine::_createVertexBuffer(Asset & asset)
 {
-	if (_vertices.empty())
+	BufferData bufferData;
+	if (asset.vertices.empty())
 		return;
-	vk::DeviceSize size = sizeof(Vertex) * _vertices.size();
+	vk::DeviceSize size = sizeof(Vertex) * asset.vertices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
@@ -104,20 +105,23 @@ void VulkanEngine::_createVertexBuffer()
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, _vertices.data(), size);
+	memcpy(dataStaging, asset.vertices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
-					_vertexBuffer, _vertexBufferMemory);
-	_copyBuffer(stagingBuffer, _vertexBuffer, size);
+					bufferData.buffer, bufferData.memory);
+	_copyBuffer(stagingBuffer, bufferData.buffer, size);
+
+	_vboCache.try_emplace(asset.assetID, std::move(bufferData));
 }
 
-void VulkanEngine::_createIndexBuffer()
+void VulkanEngine::_createIndexBuffer(Asset & asset)
 {
-	if (_indices.empty())
+	BufferData bufferData;
+	if (asset.indices.empty())
 		return;
-	vk::DeviceSize size = sizeof(_indices[0]) * _indices.size();
+	vk::DeviceSize size = sizeof(asset.indices[0]) * asset.indices.size();
 	vk::raii::Buffer stagingBuffer = nullptr;
 	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
 
@@ -126,11 +130,13 @@ void VulkanEngine::_createIndexBuffer()
 					stagingBuffer, stagingBufferMemory);
 
 	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, _indices.data(), size);
+	memcpy(dataStaging, asset.indices.data(), size);
 	stagingBufferMemory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
-					_indexBuffer, _indexBufferMemory);
-	_copyBuffer(stagingBuffer, _indexBuffer, size);
+					bufferData.buffer, bufferData.memory);
+	_copyBuffer(stagingBuffer, bufferData.buffer, size);
+
+	_iboCache.try_emplace(asset.assetID, std::move(bufferData));
 }
