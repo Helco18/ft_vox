@@ -117,6 +117,7 @@ void Profiler::print()
 		Logger::log(PROFILER, DEBUG, "Fastest execution time: " + getFormattedTime(profile.fastestExecTime), &file);
 		Logger::log(PROFILER, DEBUG, "Average execution time: " + getAverageTime(profile.recordedTimes), &file);
 		Logger::log(PROFILER, DEBUG, "Median execution time: " + getMedianTime(profile.recordedTimes), &file);
+		Logger::log(PROFILER, DEBUG, "Number of executions: " + toString(profile.times), &file);
 		Logger::log(PROFILER, DEBUG, "--------------------------------", &file);
 	}
 }
@@ -130,11 +131,14 @@ void Profiler::stop()
 	execTime = getMicroTime() - _startTime;
 	if (profile.recordedTimes.empty())
 	{
+		profile.times = 1;
 		profile.firstExecTime = execTime;
 		profile.slowestExecTime = execTime;
 		profile.fastestExecTime = execTime;
 		profile.name = _name;
 	}
+	else
+		profile.times++;
 	profile.lastExecTime = execTime;
 	if (execTime > profile.slowestExecTime)
 		profile.slowestExecTime = execTime;

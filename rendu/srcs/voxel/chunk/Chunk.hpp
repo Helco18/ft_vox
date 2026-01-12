@@ -1,6 +1,5 @@
 #pragma once
 
-#include <atomic>
 #define CHUNK_WIDTH 16
 #define CHUNK_HEIGHT 16
 #define CHUNK_LENGTH 16

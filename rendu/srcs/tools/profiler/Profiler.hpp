@@ -15,6 +15,7 @@ typedef std::chrono::microseconds MicroTime;
 struct Profile
 {
 	std::string				name;
+	uint16_t				times;
 	MicroTime				firstExecTime;
 	MicroTime				lastExecTime;
 	MicroTime				slowestExecTime;
