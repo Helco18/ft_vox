@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <string>
+#include <iostream>
 
 enum LogSeverity
 {
@@ -29,7 +30,7 @@ enum LogSource
 	PROFILER
 };
 
-typedef std::optional<std::reference_wrapper<std::ostream>> OptionalOutputFile;
+typedef std::optional<std::ostream> OptionalOutputFile;
 
 class Logger
 {
@@ -37,6 +38,6 @@ class Logger
 		Logger() = delete;
 		~Logger() = delete;
 
-		static void	log(LogSource source, LogSeverity severity, const std::string & message, OptionalOutputFile output = std::nullopt);
+		static void	log(LogSource source, LogSeverity severity, const std::string & message, std::ostream * output = nullptr);
 
 };

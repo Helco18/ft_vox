@@ -69,15 +69,15 @@ static const std::string getLogSourcePrefix(LogSource source)
 	}
 }
 
-void Logger::log(LogSource source, LogSeverity severity, const std::string & message, OptionalOutputFile output)
+void Logger::log(LogSource source, LogSeverity severity, const std::string & message, std::ostream * output)
 {
-	std::ostream & outputStream = severity >= ERROR ? std::cerr : output == std::nullopt ? std::cout : output.value().get();
+	std::ostream & outputStream = severity >= ERROR ? std::cerr : output == nullptr ? std::cout : *output;
 	outputStream
 		<< getTimestampAsDate()
-		<< (output == std::nullopt ? getLogSeverityPrefixColor(severity) : getLogSeverityPrefix(severity))
+		<< (output == nullptr ? getLogSeverityPrefixColor(severity) : getLogSeverityPrefix(severity))
 		<< '\t'
 		<< getLogSourcePrefix(source)
 		<< ": "
 		<< message
-		<< (output == std::nullopt ? RESET : "") << std::endl; 
+		<< (output == nullptr ? RESET : "") << std::endl; 
 }

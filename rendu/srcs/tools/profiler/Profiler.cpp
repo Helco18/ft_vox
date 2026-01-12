@@ -77,7 +77,7 @@ void Profiler::print()
 	file.open(filename, std::ios::out);
 	if (file.fail())
 	{
-		Logger::log(PROFILER, ERROR, "Couldn't create profiler file: " + filename, file);
+		Logger::log(PROFILER, ERROR, "Couldn't create profiler file: " + filename, &file);
 		return;
 	}
 	for (std::pair<const std::string, Profile> & profiles : _profileCache)
@@ -86,15 +86,15 @@ void Profiler::print()
 		std::string name = profiles.first;
 		#ifdef VALGRIND_AVAILABLE
 		if (RUNNING_ON_VALGRIND)
-			Logger::log(PROFILER, DEBUG, "Warning: Valgrind was used. Timing won't be exact.", file);
+			Logger::log(PROFILER, DEBUG, "Warning: Valgrind was used. Timing won't be exact.", &file);
 		#endif
-		Logger::log(PROFILER, DEBUG, "Profile for: " + name + ":", file);
-		Logger::log(PROFILER, DEBUG, "First execution time: " + getFormattedTime(profile.firstExecTime), file);
-		Logger::log(PROFILER, DEBUG, "Last execution time: " + getFormattedTime(profile.lastExecTime), file);
-		Logger::log(PROFILER, DEBUG, "Slowest execution time: " + getFormattedTime(profile.slowestExecTime), file);
-		Logger::log(PROFILER, DEBUG, "Fastest execution time: " + getFormattedTime(profile.fastestExecTime), file);
-		Logger::log(PROFILER, DEBUG, "Average execution time: " + getAverageTime(profile.recordedTimes), file);
-		Logger::log(PROFILER, DEBUG, "--------------------------------", file);
+		Logger::log(PROFILER, DEBUG, "Profile for: " + name + ":", &file);
+		Logger::log(PROFILER, DEBUG, "First execution time: " + getFormattedTime(profile.firstExecTime), &file);
+		Logger::log(PROFILER, DEBUG, "Last execution time: " + getFormattedTime(profile.lastExecTime), &file);
+		Logger::log(PROFILER, DEBUG, "Slowest execution time: " + getFormattedTime(profile.slowestExecTime), &file);
+		Logger::log(PROFILER, DEBUG, "Fastest execution time: " + getFormattedTime(profile.fastestExecTime), &file);
+		Logger::log(PROFILER, DEBUG, "Average execution time: " + getAverageTime(profile.recordedTimes), &file);
+		Logger::log(PROFILER, DEBUG, "--------------------------------", &file);
 	}
 }
 
