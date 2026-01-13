@@ -89,30 +89,6 @@ void VulkanEngine::_recordCommandBuffer()
 	// La barrière doit être validée avant que la pipeline atteigne la phase d'écriture du color attachment
 	transitionImageViewInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
 
-	// Depth testing
-	vk::ImageMemoryBarrier2 depthBarrier;
-	depthBarrier.srcStageMask = vk::PipelineStageFlagBits2::eTopOfPipe;
-	depthBarrier.srcAccessMask = {};
-	depthBarrier.dstStageMask = vk::PipelineStageFlagBits2::eEarlyFragmentTests | vk::PipelineStageFlagBits2::eLateFragmentTests;
-	depthBarrier.dstAccessMask = vk::AccessFlagBits2::eDepthStencilAttachmentRead | vk::AccessFlagBits2::eDepthStencilAttachmentWrite;
-	depthBarrier.oldLayout = vk::ImageLayout::eUndefined;
-	depthBarrier.newLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-	depthBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	depthBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	depthBarrier.image = _depthImage;
-	depthBarrier.subresourceRange.aspectMask = _depthFlags;
-	depthBarrier.subresourceRange.baseMipLevel = 0;
-	depthBarrier.subresourceRange.levelCount = 1;
-	depthBarrier.subresourceRange.baseArrayLayer = 0;
-	depthBarrier.subresourceRange.layerCount = 1;
-
-	vk::DependencyInfo depthDependencyInfo;
-	depthDependencyInfo.dependencyFlags = {};
-	depthDependencyInfo.imageMemoryBarrierCount = 1;
-	depthDependencyInfo.pImageMemoryBarriers = &depthBarrier;
-
-	commands.pipelineBarrier2(depthDependencyInfo);
-
 	// Transitioner le layout de l'image d'undefined à colorattachment dans notre cas
 	_transitionImageViewLayout(transitionImageViewInfo);
 

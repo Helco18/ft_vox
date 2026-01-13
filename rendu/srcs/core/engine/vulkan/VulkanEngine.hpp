@@ -196,6 +196,7 @@ class VulkanEngine : public AEngine
 		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);
 		void								_transitionImageLayout(const vk::raii::Image & image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
+		void								_transitionDepthImage();
 		void								_createSyncObjects();
 		void								_recreateSwapchain();
 		uint32_t							_findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);

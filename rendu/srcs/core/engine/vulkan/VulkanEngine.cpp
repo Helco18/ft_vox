@@ -56,6 +56,7 @@ void VulkanEngine::load()
 	// - index buffer : décrit l’ordre dans lequel les sommets sont connectés.
 	// - uniform buffer : ils contiennent les données variables entre les frames (comme les matrices de transformation / constantes globales utilisées par les shaders)
 	_createDepthResources();
+	_transitionDepthImage();
 	_createTextureImage();
 	_createTextureImageView();
 	_createTextureSampler();

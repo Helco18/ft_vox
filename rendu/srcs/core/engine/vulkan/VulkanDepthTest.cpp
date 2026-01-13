@@ -24,6 +24,50 @@ vk::Format VulkanEngine::_findDepthFormat()
 	return _findSupportedFormat(formats, vk::ImageTiling::eOptimal, vk::FormatFeatureFlagBits::eDepthStencilAttachment);
 }
 
+void VulkanEngine::_transitionDepthImage()
+{
+	vk::CommandBufferAllocateInfo allocInfo;
+    allocInfo.commandPool = _transientCommandPool;
+    allocInfo.level = vk::CommandBufferLevel::ePrimary;
+    allocInfo.commandBufferCount = 1;
+
+    vk::raii::CommandBuffer cmd = std::move(_device.allocateCommandBuffers(allocInfo).front());
+
+	// Depth testing
+	vk::ImageMemoryBarrier2 depthBarrier;
+	depthBarrier.srcStageMask = vk::PipelineStageFlagBits2::eTopOfPipe;
+	depthBarrier.srcAccessMask = {};
+	depthBarrier.dstStageMask = vk::PipelineStageFlagBits2::eEarlyFragmentTests | vk::PipelineStageFlagBits2::eLateFragmentTests;
+	depthBarrier.dstAccessMask = vk::AccessFlagBits2::eDepthStencilAttachmentRead | vk::AccessFlagBits2::eDepthStencilAttachmentWrite;
+	depthBarrier.oldLayout = vk::ImageLayout::eUndefined;
+	depthBarrier.newLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+	depthBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	depthBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	depthBarrier.image = _depthImage;
+	depthBarrier.subresourceRange.aspectMask = _depthFlags;
+	depthBarrier.subresourceRange.baseMipLevel = 0;
+	depthBarrier.subresourceRange.levelCount = 1;
+	depthBarrier.subresourceRange.baseArrayLayer = 0;
+	depthBarrier.subresourceRange.layerCount = 1;
+
+	vk::DependencyInfo depthDependencyInfo;
+	depthDependencyInfo.imageMemoryBarrierCount = 1;
+	depthDependencyInfo.pImageMemoryBarriers = &depthBarrier;
+
+	vk::CommandBufferBeginInfo beginInfo;
+	beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+	cmd.begin(beginInfo);
+	cmd.pipelineBarrier2(depthDependencyInfo);
+	cmd.end();
+
+	vk::SubmitInfo submitInfo;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &*cmd;
+	
+	_queue.submit(submitInfo);
+	_queue.waitIdle();
+}
+
 void VulkanEngine::_createDepthResources()
 {
 	_depthFormat = _findDepthFormat();
