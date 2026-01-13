@@ -48,7 +48,10 @@ void Environment::loop()
 		InputManager::interceptMovements(_windowManager, deltaTime);
 		World * world = WorldManager::getWorld(WORLD_NAME);
 		if (world)
+		{
+			world->generateProcedurally(_windowManager->getCamera());
 			world->render(_windowManager->getEngine(), _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
+		}
 		if (!_windowManager->drawFrame())
 		{
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
@@ -58,4 +61,5 @@ void Environment::loop()
 		_windowManager->getEngine()->endFrame();
 		deltaTime = glfwGetTime() - frameStart;
 	}
+	_windowManager->destroy();
 }

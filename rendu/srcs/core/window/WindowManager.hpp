@@ -32,6 +32,8 @@ class WindowManager
 		void			toggleFullscreen();
 		void			toggleWireframe() { _isWireframeEnabled = !_isWireframeEnabled; }
 
+		void			destroy();
+
 		static void		framebufferResizeCallback(GLFWwindow * window, int width, int height);
 
 	private:
@@ -48,6 +50,7 @@ class WindowManager
 		bool			_isFullscreen;
 		bool			_isSwapRequested;
 		bool			_isWireframeEnabled = false;
+		bool			_isActive = false;
 
 		GLFWwindow *	_createWindow();
 		void			_setIcon(GLFWwindow * window);

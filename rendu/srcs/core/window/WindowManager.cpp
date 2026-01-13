@@ -16,8 +16,10 @@ WindowManager::WindowManager(EngineType engineType, Environment * environment):
 	_lastFpsUpdate = glfwGetTime();
 }
 
-WindowManager::~WindowManager()
+void WindowManager::destroy()
 {
+	if (!_isActive)
+		return;
 	delete _engine;
 	delete _camera;
 	if (_window)
@@ -26,6 +28,13 @@ WindowManager::~WindowManager()
 		glfwTerminate();
 	}
 	OBJModel::deleteModels();
+	_isActive = false;
+}
+
+WindowManager::~WindowManager()
+{
+	if (_isActive)
+		destroy();
 }
 
 void WindowManager::load()
@@ -55,7 +64,8 @@ void WindowManager::load()
 		GLFWmonitor * monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode * mode = glfwGetVideoMode(monitor);
 		glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-	}		
+	}
+	_isActive = true;
 }
 
 bool WindowManager::drawFrame()

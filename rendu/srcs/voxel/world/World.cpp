@@ -1,4 +1,5 @@
 #include "World.hpp"
+#include "Logger.hpp"
 #include <algorithm>
 
 World::~World()
@@ -11,24 +12,6 @@ World::~World()
 void World::load()
 {
 	_chunkPool.start(std::thread::hardware_concurrency() - 1); // max thread minus one for main
-}
-
-Chunk * World::getChunk(const glm::vec3 & location)
-{
-	int floorX = std::floor(location.x);
-	int floorY = std::floor(location.y);
-	int floorZ = std::floor(location.z);
-
-	glm::ivec3 flooredLocation(floorX, floorY, floorZ);
-	ChunkMap::iterator it = _chunkMap.find(flooredLocation);
-	if (it != _chunkMap.end())
-		return it->second;
-	return nullptr;
-}
-
-Chunk * World::getChunk(int x, int y, int z)
-{
-	return getChunk(glm::ivec3(x, y, z));
 }
 
 void World::addChunk(Chunk * chunk)
@@ -53,18 +36,38 @@ void World::reloadChunks(AEngine * engine)
 	}
 }
 
-void World::render(AEngine * engine, PipelineType pipelineType)
+Chunk * World::getChunkAt(int x, int y, int z) const
 {
-	std::vector<Chunk *> visibleChunk = _generateVisibleChunk(engine->getCamera());
+	int chunkX;
+	int chunkY;
+	int chunkZ;
 
-	_generateProceduralTerrain(visibleChunk);
-	_generateProceduralMesh(visibleChunk);
-	_drawChunk(visibleChunk, engine, pipelineType);
+	chunkX = static_cast<int>(std::floor(static_cast<double>(x) / CHUNK_WIDTH));
+	chunkY = static_cast<int>(std::floor(static_cast<double>(y) / CHUNK_HEIGHT));
+	chunkZ = static_cast<int>(std::floor(static_cast<double>(z) / CHUNK_LENGTH));
+	return getChunkAtChunkLocation(chunkX, chunkY, chunkZ);
 }
 
-std::vector<Chunk *> World::_generateVisibleChunk(Camera * camera)
+Chunk * World::getChunkAtChunkLocation(int x, int y, int z) const
 {
-	std::vector<Chunk *> visibleChunk;
+	auto it = _chunkMap.find(glm::ivec3(x, y, z));
+	if (it != _chunkMap.end())
+		return it->second;
+	return nullptr;
+}
+
+inline Chunk * World::getChunkAt(const glm::vec3 & location) const
+{
+	return getChunkAt(location.x, location.y, location.z);
+}
+
+inline Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location) const
+{
+	return getChunkAtChunkLocation(location.x, location.y, location.z);
+}
+
+void World::_generateVisibleChunks(Camera * camera)
+{
 	glm::vec3 cameraPosition = camera->getPosition();
 	cameraPosition.x /= CHUNK_WIDTH;
 	cameraPosition.y /= CHUNK_HEIGHT;
@@ -85,21 +88,20 @@ std::vector<Chunk *> World::_generateVisibleChunk(Camera * camera)
 			{
 				if (_chunkMap[glm::vec3(x, y, z)])
 				{
-					visibleChunk.push_back(_chunkMap[glm::vec3(x, y, z)]);
+					_visibleChunks.push_back(_chunkMap[glm::vec3(x, y, z)]);
 					continue;
 				}
 				Chunk * chunk = new Chunk(x, y, z, this);
 				_chunkMap[chunk->getChunkLocation()] = chunk;
-				visibleChunk.push_back(_chunkMap[chunk->getChunkLocation()]);
+				_visibleChunks.push_back(_chunkMap[chunk->getChunkLocation()]);
 			}
 		}
 	}
-	return visibleChunk;
 }
 
-void World::_generateProceduralTerrain(const std::vector<Chunk *> & visibleChunk)
+void World::_generateProceduralTerrain()
 {
-	for (Chunk * chunk : visibleChunk)
+	for (Chunk * chunk : _visibleChunks)
 	{
 		if (chunk && chunk->getState() == NONE)
 		{
@@ -109,9 +111,9 @@ void World::_generateProceduralTerrain(const std::vector<Chunk *> & visibleChunk
 	}
 }
 
-void World::_generateProceduralMesh(const std::vector<Chunk *> & visibleChunk)
+void World::_generateProceduralMesh()
 {
-	for (Chunk * chunk : visibleChunk)
+	for (Chunk * chunk : _visibleChunks)
 	{
 		if (chunk && chunk->getState() == BUILT)
 		{
@@ -121,9 +123,43 @@ void World::_generateProceduralMesh(const std::vector<Chunk *> & visibleChunk)
 	}
 }
 
-void World::_drawChunk(const std::vector<Chunk *> & visibleChunk, AEngine * engine, PipelineType pipelineType)
+void World::_generateChunks()
 {
-	for (Chunk * chunk : visibleChunk)
+	_generateProceduralTerrain();
+
+	bool allChunksBuilt = false;
+	do
+	{
+		allChunksBuilt = true;
+		for (Chunk * chunk : _visibleChunks)
+		{
+			if (chunk->getState() < BUILT)
+			{
+				allChunksBuilt = false;
+				break;
+			}
+		}
+	} while (!allChunksBuilt);
+
+	_generateProceduralMesh();
+}
+
+void World::generateProcedurally(Camera * camera)
+{
+	static Chunk * lastVisitedChunk = nullptr;
+	Chunk * currentChunk = getChunkAt(camera->getPosition());
+
+	if (lastVisitedChunk == currentChunk && lastVisitedChunk)
+		return;
+	lastVisitedChunk = currentChunk;
+	_visibleChunks.clear();
+	_generateVisibleChunks(camera);
+	_chunkPool.submitTask([this]() { _generateChunks(); });
+}
+
+void World::render(AEngine * engine, PipelineType pipelineType)
+{
+	for (Chunk * chunk : _visibleChunks)
 	{
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);

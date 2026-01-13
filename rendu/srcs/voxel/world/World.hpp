@@ -1,9 +1,5 @@
 #pragma once
 
-#define WORLD_WIDTH 1
-#define WORLD_HEIGHT 1
-#define WORLD_LENGTH 1
-
 #include <unordered_map>
 #include "AEngine.hpp"
 #include "PipelineManager.hpp"
@@ -22,22 +18,28 @@ class World
 
 		const std::string &		getName() { return _name; }
 
-		Chunk *					getChunk(const glm::vec3 & location);
-		Chunk *					getChunk(int x, int y, int z);
+		Chunk *					getChunkAt(int x, int y, int z) const;
+		Chunk *					getChunkAt(const glm::vec3 & location) const;
+		Chunk *					getChunkAtChunkLocation(int x, int y, int z) const;
+		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location) const;
 
 		void					addChunk(Chunk * chunk);
 		void					reloadChunks(AEngine * engine);
 
+		void					generateProcedurally(Camera * camera);
 		void					render(AEngine * engine, PipelineType pipelineType);
 	private:
-		std::vector<Chunk *>	_generateVisibleChunk(Camera * camera);
-		void					_generateProceduralTerrain(const std::vector<Chunk *> & visibleChunk);
-		void					_generateProceduralMesh(const std::vector<Chunk *> & visibleChunk);
-		void					_drawChunk(const std::vector<Chunk *> & visibleChunk, AEngine * engine, PipelineType pipelineType);
+		void					_generateVisibleChunks(Camera * camera);
+		void					_generateProceduralTerrain();
+		void					_generateProceduralMesh();
+		void					_drawChunk(AEngine * engine, PipelineType pipelineType);
+		void					_generateChunks();
 
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
+		typedef std::vector<Chunk *>					VisibleChunks;
 
 		std::string				_name;
 		ChunkMap				_chunkMap;
+		VisibleChunks			_visibleChunks;
 		ThreadPool				_chunkPool;
 };

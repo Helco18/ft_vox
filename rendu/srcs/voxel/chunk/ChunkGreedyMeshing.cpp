@@ -141,12 +141,12 @@ glm::ivec3 Chunk::_sliceToWorld(int axis, int sliceIndex, int u, int v) {
 
 uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal)
 {
-	Chunk * northChunk = _world->getChunk(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
-	Chunk * southChunk = _world->getChunk(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
-	Chunk * eastChunk = _world->getChunk(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
-	Chunk * westChunk = _world->getChunk(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
-	Chunk * topChunk = _world->getChunk(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
-	Chunk * bottomChunk = _world->getChunk(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
+	Chunk * northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
+	Chunk * southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
+	Chunk * eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
+	Chunk * westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
+	Chunk * topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
+	Chunk * bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
 
 	int x = pos.x + normal.x;
 	int y = pos.y + normal.y;
