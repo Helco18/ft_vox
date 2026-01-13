@@ -102,7 +102,10 @@ void World::_generateProceduralTerrain(const std::vector<Chunk *> & visibleChunk
 	for (Chunk * chunk : visibleChunk)
 	{
 		if (chunk && chunk->getState() == NONE)
+		{
+			chunk->setState(BUILDING);
 			_chunkPool.submitTask([chunk]() {chunk->build();});
+		}
 	}
 }
 
@@ -111,7 +114,10 @@ void World::_generateProceduralMesh(const std::vector<Chunk *> & visibleChunk)
 	for (Chunk * chunk : visibleChunk)
 	{
 		if (chunk && chunk->getState() == BUILT)
+		{
+			chunk->setState(MESHING);
 			_chunkPool.submitTask([chunk]() {chunk->generateMesh();});
+		}
 	}
 }
 
@@ -121,7 +127,7 @@ void World::_drawChunk(const std::vector<Chunk *> & visibleChunk, AEngine * engi
 	{
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
-		if (chunk->getState() == UPLOADED)
+		else if (chunk->getState() == UPLOADED)
 			engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(pipelineType));
 	}
 }

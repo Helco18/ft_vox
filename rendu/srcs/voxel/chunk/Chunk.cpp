@@ -9,8 +9,6 @@
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	if (getState() != NONE)
-		return;
 
 	Profiler p("Chunk::build");
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
@@ -36,33 +34,27 @@ void Chunk::build()
 void Chunk::generateMesh()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	if (getState() != BUILT)
-		return;
 
 	Profiler p("Chunk::generateMesh");
 	_generateGreedyMesh();
-	setState(MESHED);
+	if (!_asset.vertices.empty())
+		setState(MESHED);
+	else
+		setState(MESHED_EMPTY);
 }
 
 void Chunk::uploadAsset(AEngine * engine)
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	if (getState() != MESHED)
-		return;
 
-	if (!_asset.vertices.empty())
-	{
-		Profiler p("Chunk::uploadAsset");
-		engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL));
-	}
+	Profiler p("Chunk::uploadAsset");
+	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL));
 	setState(UPLOADED);
 }
 
 void Chunk::unload(AEngine * engine)
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	if (getState() != UPLOADED)
-		return;
 
 	engine->unloadAsset(_asset.assetID);
 	setState(MESHED);

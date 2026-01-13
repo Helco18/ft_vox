@@ -10,12 +10,12 @@ OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(windo
 
 OpenGLEngine::~OpenGLEngine()
 {
-	for (std::pair<AssetID, Asset> assetPair : _assetMap)
+	for (std::pair<AssetID, Asset *> assetPair : _assetMap)
 	{
-		Asset & asset = assetPair.second;
-		glDeleteBuffers(1, &asset.vbo);
-		glDeleteBuffers(1, &asset.ibo);
-		glDeleteVertexArrays(1, &asset.assetID);
+		Asset * asset = assetPair.second;
+		glDeleteBuffers(1, &asset->vbo);
+		glDeleteBuffers(1, &asset->ibo);
+		glDeleteVertexArrays(1, &asset->assetID);
 	}
 	glDeleteTextures(1, &_texture);
 	glDeleteBuffers(1, &_ubo);
@@ -56,7 +56,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 	glBindVertexArray(0);
 
-	_assetMap.try_emplace(asset.assetID, asset);
+	_assetMap.try_emplace(asset.assetID, &asset);
 
 	return asset.assetID;
 }
@@ -85,13 +85,13 @@ void OpenGLEngine::unloadAsset(AssetID assetID)
 	AssetMap::iterator it = _assetMap.find(assetID);
 	if (it != _assetMap.end())
 	{
-		Asset & asset = it->second;
-		if (asset.vbo)
-			glDeleteBuffers(1, &asset.vbo);
-		if (asset.ibo)
-			glDeleteBuffers(1, &asset.ibo);
-		if (asset.assetID)
-			glDeleteVertexArrays(1, &asset.assetID);
+		Asset * asset = it->second;
+		if (asset->vbo)
+			glDeleteBuffers(1, &asset->vbo);
+		if (asset->ibo)
+			glDeleteBuffers(1, &asset->ibo);
+		if (asset->assetID)
+			glDeleteVertexArrays(1, &asset->assetID);
 	}
 }
 
@@ -160,8 +160,8 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (it == _assetMap.end())
 		return;
 
-	Asset & asset = it->second;
-	if (asset.vertices.empty())
+	Asset * asset = it->second;
+	if (asset->vertices.empty())
 		return;
 
 	glBindVertexArray(assetID);
@@ -169,7 +169,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	
 	_updateUniformBuffer();
 
-	glDrawElements(GL_TRIANGLES, asset.indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, asset->indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 

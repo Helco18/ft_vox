@@ -16,8 +16,11 @@ class World;
 enum ChunkState
 {
 	NONE,
+	BUILDING,
 	BUILT,
+	MESHING,
 	MESHED,
+	MESHED_EMPTY,
 	UPLOADED
 };
 

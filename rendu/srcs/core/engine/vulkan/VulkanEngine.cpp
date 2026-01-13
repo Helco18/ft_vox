@@ -95,9 +95,12 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	(void) pipelineID;
 	AssetID assetID = _nextAssetID++;
 	asset.assetID = assetID;
-	_createVertexBuffer(asset);
-	_createIndexBuffer(asset);
-	_assetMap.try_emplace(asset.assetID, asset);
+	if (!asset.vertices.empty())
+	{
+		_createVertexBuffer(asset);
+		_createIndexBuffer(asset);
+	}
+	_assetMap.try_emplace(asset.assetID, &asset);
 	return assetID;
 }
 
@@ -106,10 +109,10 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	AssetMap::iterator assetit = _assetMap.find(assetID);
 	if (assetit != _assetMap.end())
 	{
-		Asset & asset = assetit->second;
-		if (asset.vertices.empty())
+		Asset * asset = assetit->second;
+		if (asset->vertices.empty())
 			return;
-		_pipelineAssetMap[pipelineID].push_back(&asset);
+		_pipelineAssetMap[pipelineID].push_back(asset);
 	}
 }
 
