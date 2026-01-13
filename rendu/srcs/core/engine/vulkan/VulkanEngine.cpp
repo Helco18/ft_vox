@@ -47,6 +47,10 @@ void VulkanEngine::load()
 	_createCommandPool(_resetCommandPool, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
 	_createCommandPool(_transientCommandPool, vk::CommandPoolCreateFlagBits::eTransient);
 
+	// On enregistre dans un *command buffer* toutes les commandes Vulkan nécessaires pour dessiner nos objets.
+	// Ce buffer sera soumis à une file de commandes à chaque frame.
+	_createCommandBuffer();
+
 	// On crée les buffers pour stocker les données géométriques :
 	// - vertex buffer : contient les positions, couleurs, normales, etc.
 	// - index buffer : décrit l’ordre dans lequel les sommets sont connectés.
@@ -62,10 +66,6 @@ void VulkanEngine::load()
 	_createDescriptorSetLayout();
 	_createDescriptorPool();
 	_createDescriptorSets();
-
-	// On enregistre dans un *command buffer* toutes les commandes Vulkan nécessaires pour dessiner nos objets.
-	// Ce buffer sera soumis à une file de commandes à chaque frame.
-	_createCommandBuffer();
 
 	// On crée les *semaphores* et *fences* pour la synchronisation :
 	// ils permettent de s’assurer que les opérations GPU (rendu, présentation, etc.) s’exécutent dans le bon ordre et ne se chevauchent pas.
@@ -128,13 +128,11 @@ void VulkanEngine::endFrame()
 	if (_pipelineAssetMap.empty() || _assetMap.empty())
 		return;
 
-	while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
-		;
 	// Semaphore = on ordonne les tâches
 	// Fence = on attend que le GPU finisse la tâche
 	try
 	{
-		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(std::numeric_limits<uint64_t>::max(), *_presentCompleteSemaphores[_presentSemaphoreIndex], nullptr);
+		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(UINT64_MAX, *_presentCompleteSemaphores[_presentSemaphoreIndex], nullptr);
 		_imageIndex = result.second;
 		if (result.first != vk::Result::eSuccess && result.first != vk::Result::eSuboptimalKHR)
 		{
@@ -145,6 +143,9 @@ void VulkanEngine::endFrame()
 			}
 			throw VulkanException("Couldn't acquire next image.");
 		}
+		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
+		if (res != vk::Result::eSuccess)
+			return;
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
 		_updateUniformBuffer();
@@ -184,9 +185,6 @@ void VulkanEngine::endFrame()
 				throw VulkanException("Couldn't present next image.");
 		}
 
-		while (vk::Result::eTimeout == _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, std::numeric_limits<uint64_t>::max()))
-			;
-		_commandBuffers[_currentFrame].reset();
 		_presentSemaphoreIndex = (_presentSemaphoreIndex + 1) % _presentCompleteSemaphores.size();
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	} catch (const vk::OutOfDateKHRError & e)

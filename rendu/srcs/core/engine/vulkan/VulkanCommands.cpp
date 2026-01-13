@@ -154,9 +154,6 @@ void VulkanEngine::_recordCommandBuffer()
 	for (const std::pair<const PipelineID, std::vector<Asset *>> & pipelineAsset : _pipelineAssetMap)
 	{
 		PipelineID pipelineID = pipelineAsset.first;
-		PipelineAssetMap::iterator pipelineassetit = _pipelineAssetMap.find(pipelineID);
-		if (pipelineassetit == _pipelineAssetMap.end())
-			continue;
 		PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
 		if (pipelineit == _pipelineMap.end())
 			continue;
@@ -167,7 +164,7 @@ void VulkanEngine::_recordCommandBuffer()
 		commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
 		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineObjects.layout, 0,
 				*_descriptorSets[_currentFrame], nullptr);
-		std::vector<Asset *> & drawableAssets = pipelineassetit->second;
+		const std::vector<Asset *> & drawableAssets = pipelineAsset.second;
 		for (const Asset * asset : drawableAssets)
 		{
 			BufferCache::iterator vertexit = _vboCache.find(asset->assetID);
