@@ -17,6 +17,7 @@
 
 Profiler::ProfileMap Profiler::_profileCache;
 std::mutex Profiler::_cacheMutex;
+bool Profiler::_isEnabled = false;
 
 inline static MicroTime getMicroTime()
 {
@@ -82,6 +83,8 @@ Profiler::Profiler(const std::string & name): _name(name)
 
 void Profiler::print()
 {
+	if (!_isEnabled)
+		return;
 	std::string filename;
 	std::filesystem::path filepath = LOGFILE_DIR;
 	std::fstream file;
@@ -124,6 +127,8 @@ void Profiler::print()
 
 void Profiler::stop()
 {
+	if (!_isEnabled)
+		return;
 	std::lock_guard<std::mutex> lg(_cacheMutex);
 	MicroTime execTime;
 	Profile & profile = _profileCache[_name];

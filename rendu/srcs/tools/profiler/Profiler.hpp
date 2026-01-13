@@ -30,6 +30,8 @@ class Profiler
 		~Profiler();
 
 		void				stop();
+
+		static void			enable() { _isEnabled = true; };
 		static void			print();
 	
 	private:
@@ -40,4 +42,5 @@ class Profiler
 		std::string			_name;
 		MicroTime			_startTime;
 		std::atomic_bool	_earlyStop = false;
+		static bool			_isEnabled;
 };

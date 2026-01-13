@@ -7,6 +7,8 @@
 
 int main(int ac, char ** av)
 {
+	if ((ac == 2 && std::string(av[1]) == "-p") || (ac == 3 && std::string(av[2]) == "-p"))
+		Profiler::enable();
 	EngineType engineType = (ac == 2 && std::string(av[1]) == "gl") ? OPENGL : VULKAN;
 	Environment environment;
 
