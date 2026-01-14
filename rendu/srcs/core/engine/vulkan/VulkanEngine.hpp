@@ -81,6 +81,15 @@ struct BufferData
 	vk::raii::DeviceMemory	memory = nullptr;
 };
 
+struct PendingAsset
+{
+	Asset *		asset;
+	BufferData	vertexData;
+	BufferData	stagingVertexData;
+	BufferData	indexData;
+	BufferData	stagingIndexData;
+};
+
 class VulkanEngine : public AEngine
 {
 	public:
@@ -167,6 +176,7 @@ class VulkanEngine : public AEngine
 
 		PipelineMap							_pipelineMap;
 		PipelineAssetMap					_pipelineAssetMap;
+		std::vector<PendingAsset>			_pendingAssets;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -188,9 +198,9 @@ class VulkanEngine : public AEngine
 		void								_createTextureImage();
 		void								_concateneVertexBuffer(Asset & asset);
 		void								_concateneIndexBuffer(Asset & asset);
-		void								_createVertexBuffer(Asset & asset);
-		void								_createIndexBuffer(Asset & asset);
-		void								_rebuildBuffers();
+		void								_createVertexBuffer(PendingAsset & pendingAsset);
+		void								_createIndexBuffer(PendingAsset & pendingAsset);
+		void								_uploadPendingAssets();
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

@@ -92,12 +92,16 @@ void VulkanEngine::beginFrame()
 AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
 	(void) pipelineID;
+	PendingAsset pendingAsset;
+	pendingAsset.asset = &asset;
+
 	AssetID assetID = _nextAssetID++;
 	asset.assetID = assetID;
 	if (!asset.vertices.empty())
 	{
-		_createVertexBuffer(asset);
-		_createIndexBuffer(asset);
+		_createVertexBuffer(pendingAsset);
+		_createIndexBuffer(pendingAsset);
+		_pendingAssets.push_back(std::move(pendingAsset));
 	}
 	_assetMap.try_emplace(asset.assetID, &asset);
 	return assetID;
@@ -120,6 +124,12 @@ void VulkanEngine::unloadAsset(AssetID assetID)
 	AssetMap::iterator assetit = _assetMap.find(assetID);
 	if (assetit != _assetMap.end())
 		_assetMap.erase(assetit);
+	BufferCache::iterator vertexit = _vboCache.find(assetID);
+	BufferCache::iterator indexit = _iboCache.find(assetID);
+	if (vertexit == _vboCache.end() || indexit == _iboCache.end())
+		return;
+	_vboCache.erase(vertexit);
+	_iboCache.erase(indexit);
 }
 
 void VulkanEngine::endFrame()
@@ -149,6 +159,7 @@ void VulkanEngine::endFrame()
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 		_updateUniformBuffer();
 
+		_uploadPendingAssets();
 		_commandBuffers[_currentFrame].reset();
 		_recordCommandBuffer();
 

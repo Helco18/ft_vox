@@ -84,59 +84,73 @@ void VulkanEngine::_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffe
 	_queue.waitIdle();
 }
 
-void VulkanEngine::_copyBuffer(vk::raii::Buffer & srcBuffer, vk::raii::Buffer & dstBuffer, vk::DeviceSize size)
+void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 {
-	vk::raii::CommandBuffer commandCopyBuffer = _beginSingleTimeCommands();
-	commandCopyBuffer.copyBuffer(srcBuffer, dstBuffer, vk::BufferCopy(0, 0, size));
-	_endSingleTimeCommands(commandCopyBuffer);
-}
-
-void VulkanEngine::_createVertexBuffer(Asset & asset)
-{
-	BufferData bufferData;
-	if (asset.vertices.empty())
+	Asset * asset = pendingAsset.asset;
+	if (asset->vertices.empty())
 		return;
-	vk::DeviceSize size = sizeof(Vertex) * asset.vertices.size();
-	vk::raii::Buffer stagingBuffer = nullptr;
-	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
+
+	BufferData & vertexData = pendingAsset.vertexData;
+	BufferData & stagingVertexData = pendingAsset.stagingVertexData;
+	vk::DeviceSize size = sizeof(Vertex) * asset->vertices.size();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc,
 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-					stagingBuffer, stagingBufferMemory);
+					stagingVertexData.buffer, stagingVertexData.memory);
 
-	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, asset.vertices.data(), size);
-	stagingBufferMemory.unmapMemory();
+	void * dataStaging = stagingVertexData.memory.mapMemory(0, size);
+	memcpy(dataStaging, asset->vertices.data(), size);
+	stagingVertexData.memory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
-					bufferData.buffer, bufferData.memory);
-	_copyBuffer(stagingBuffer, bufferData.buffer, size);
+					vertexData.buffer, vertexData.memory);
 
-	_vboCache.try_emplace(asset.assetID, std::move(bufferData));
 }
 
-void VulkanEngine::_createIndexBuffer(Asset & asset)
+void VulkanEngine::_createIndexBuffer(PendingAsset & pendingAsset)
 {
-	BufferData bufferData;
-	if (asset.indices.empty())
+	Asset * asset = pendingAsset.asset;
+	if (asset->vertices.empty())
 		return;
-	vk::DeviceSize size = sizeof(asset.indices[0]) * asset.indices.size();
-	vk::raii::Buffer stagingBuffer = nullptr;
-	vk::raii::DeviceMemory stagingBufferMemory = nullptr;
+
+	BufferData & indexData = pendingAsset.indexData;
+	BufferData & stagingIndexData = pendingAsset.stagingIndexData;
+	vk::DeviceSize size = sizeof(asset->indices[0]) * asset->indices.size();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-					stagingBuffer, stagingBufferMemory);
+					stagingIndexData.buffer, stagingIndexData.memory);
 
-	void * dataStaging = stagingBufferMemory.mapMemory(0, size);
-	memcpy(dataStaging, asset.indices.data(), size);
-	stagingBufferMemory.unmapMemory();
+	void * dataStaging = stagingIndexData.memory.mapMemory(0, size);
+	memcpy(dataStaging, asset->indices.data(), size);
+	stagingIndexData.memory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
-					bufferData.buffer, bufferData.memory);
-	_copyBuffer(stagingBuffer, bufferData.buffer, size);
+					indexData.buffer, indexData.memory);
+}
 
-	_iboCache.try_emplace(asset.assetID, std::move(bufferData));
+void VulkanEngine::_uploadPendingAssets()
+{
+	if (_pendingAssets.empty())
+		return;
+
+	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
+	for (PendingAsset & pendingAsset : _pendingAssets)
+	{
+		Asset * asset = pendingAsset.asset;
+		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
+			vk::BufferCopy(0, 0, sizeof(Vertex) * asset->vertices.size()));
+		commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
+			vk::BufferCopy(0, 0, sizeof(asset->indices[0]) * asset->indices.size()));
+	}
+	_endSingleTimeCommands(commandBuffer);
+	for (PendingAsset & pendingAsset : _pendingAssets)
+	{
+		Asset * asset = pendingAsset.asset;
+		_vboCache.try_emplace(asset->assetID, std::move(pendingAsset.vertexData));
+		_iboCache.try_emplace(asset->assetID, std::move(pendingAsset.indexData));
+	}
+	_pendingAssets.clear();
 }
