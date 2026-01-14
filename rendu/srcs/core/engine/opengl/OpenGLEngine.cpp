@@ -112,6 +112,7 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 void OpenGLEngine::beginFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	_updateUniformBuffer();
 }
 
 void OpenGLEngine::_applyPipeline(PipelineID pipelineID)
@@ -166,8 +167,6 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 
 	glBindVertexArray(assetID);
 	_applyPipeline(pipelineID);
-	
-	_updateUniformBuffer();
 
 	glDrawElements(GL_TRIANGLES, asset->indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
