@@ -123,6 +123,7 @@ void Profiler::print()
 		Logger::log(PROFILER, DEBUG, "Number of executions: " + toString(profile.times), &file);
 		Logger::log(PROFILER, DEBUG, "--------------------------------", &file);
 	}
+	Logger::log(PROFILER, INFO, "Logged output in: " + filename);
 }
 
 void Profiler::stop()
