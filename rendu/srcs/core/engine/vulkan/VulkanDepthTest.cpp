@@ -90,4 +90,5 @@ void VulkanEngine::_createDepthResources()
 	viewInfo.subresourceRange.layerCount = 1;
 
 	_depthImageView = vk::raii::ImageView( _device, viewInfo );
+	_transitionDepthImage();
 }
