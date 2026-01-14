@@ -154,7 +154,8 @@ void World::generateProcedurally(Camera * camera)
 	lastVisitedChunk = currentChunk;
 	_visibleChunks.clear();
 	_generateVisibleChunks(camera);
-	_chunkPool.submitTask([this]() { _generateChunks(); });
+	if (lastVisitedChunk)
+		_chunkPool.submitTask([this]() { _generateChunks(); });
 }
 
 void World::render(AEngine * engine, PipelineType pipelineType)

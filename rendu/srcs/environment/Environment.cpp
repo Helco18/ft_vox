@@ -2,6 +2,7 @@
 #include "CustomExceptions.hpp"
 #include "OBJModel.hpp"
 #include "InputManager.hpp"
+#include "Profiler.hpp"
 #include "WorldManager.hpp"
 #include "BlockData.hpp"
 #include "Logger.hpp"
@@ -42,21 +43,22 @@ void Environment::loop()
 
 	while (_running)
 	{
+		Profiler p("Environment::loop-while(_running)");
 		frameStart = glfwGetTime();
 		_windowManager->getEngine()->beginFrame();
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager, deltaTime);
 		World * world = WorldManager::getWorld(WORLD_NAME);
-		if (world)
-		{
-			world->generateProcedurally(_windowManager->getCamera());
-			world->render(_windowManager->getEngine(), _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
-		}
 		if (!_windowManager->drawFrame())
 		{
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
 				world->reloadChunks(_windowManager->getEngine());
 			continue;
+		}
+		if (world)
+		{
+			world->generateProcedurally(_windowManager->getCamera());
+			world->render(_windowManager->getEngine(), _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
 		}
 		_windowManager->getEngine()->endFrame();
 		deltaTime = glfwGetTime() - frameStart;
