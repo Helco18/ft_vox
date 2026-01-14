@@ -78,14 +78,14 @@ void VulkanEngine::_recordCommandBuffer()
 	// ColorAttachmentOptimal : Utilisée comme cible de rendu (render target)
 	// PresentSrcKHR : Prête à être affichée à l'écran
 	// TransferDstOptimal : Prête à recevoir un transfert de données (un upload de texture par exemple)
-	transitionImageViewInfo.oldLayout = _swapChainImageLayouts[_imageIndex];
+	transitionImageViewInfo.oldLayout = vk::ImageLayout::eUndefined;
 	transitionImageViewInfo.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	// Il n'y a pas d'opération à attendre avant, l'image est undefined donc non-utilisée
 	transitionImageViewInfo.srcAccessMask = {};
 	// Après la barrière, on veut écrire dans cette image (on écrit les pixels du framebuffer)
 	transitionImageViewInfo.dstAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
 	// La barrière doit se placer avant toute opération de la pipeline
-	transitionImageViewInfo.srcStageMask = vk::PipelineStageFlagBits2::eTopOfPipe;
+	transitionImageViewInfo.srcStageMask = vk::PipelineStageFlagBits2::eNone;
 	// La barrière doit être validée avant que la pipeline atteigne la phase d'écriture du color attachment
 	transitionImageViewInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
 
@@ -158,7 +158,7 @@ void VulkanEngine::_recordCommandBuffer()
 
 	TransitionImageViewLayoutInfo presentSrcInfo;
 	presentSrcInfo.imageIndex = _imageIndex;
-	presentSrcInfo.oldLayout = _swapChainImageLayouts[_imageIndex];
+	presentSrcInfo.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	presentSrcInfo.newLayout = vk::ImageLayout::ePresentSrcKHR;
 	presentSrcInfo.srcAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
 	presentSrcInfo.dstAccessMask = {};

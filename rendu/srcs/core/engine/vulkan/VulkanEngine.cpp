@@ -132,6 +132,11 @@ void VulkanEngine::endFrame()
 	// Fence = on attend que le GPU finisse la tâche
 	try
 	{
+		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
+		if (res != vk::Result::eSuccess)
+			return;
+		_device.resetFences(*_inFlightFences[_currentFrame]);
+
 		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(UINT64_MAX, *_presentCompleteSemaphores[_presentSemaphoreIndex], nullptr);
 		_imageIndex = result.second;
 		if (result.first != vk::Result::eSuccess && result.first != vk::Result::eSuboptimalKHR)
@@ -143,10 +148,7 @@ void VulkanEngine::endFrame()
 			}
 			throw VulkanException("Couldn't acquire next image.");
 		}
-		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
-		if (res != vk::Result::eSuccess)
-			return;
-		_device.resetFences(*_inFlightFences[_currentFrame]);
+		
 
 		_updateUniformBuffer();
 

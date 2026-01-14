@@ -107,7 +107,6 @@ void VulkanEngine::_createSwapChain()
 	_swapChainImageFormat = _swapChainSurfaceFormat.format;
 	_swapChain = vk::raii::SwapchainKHR(_device, swapChainCreateInfo);
 	_swapChainImages = _swapChain.getImages();
-	_swapChainImageLayouts.resize(_swapChainImages.size(), vk::ImageLayout::eUndefined);
 
 	if (g_enableValidationLayers && !_isInitalized)
 		Logger::log(ENGINE_VULKAN, INFO, "Created Swapchain.");
