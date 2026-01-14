@@ -66,19 +66,40 @@ inline Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location) const
 	return getChunkAtChunkLocation(location.x, location.y, location.z);
 }
 
+static int getRenderDistanceMin()
+{
+	if (CHUNK_HEIGHT <= CHUNK_WIDTH && CHUNK_HEIGHT <= CHUNK_LENGTH)
+		return CHUNK_HEIGHT;
+	if (CHUNK_WIDTH <= CHUNK_HEIGHT && CHUNK_WIDTH <= CHUNK_LENGTH)
+		return CHUNK_WIDTH;
+	if (CHUNK_LENGTH <= CHUNK_HEIGHT && CHUNK_LENGTH <= CHUNK_WIDTH)
+		return CHUNK_WIDTH;
+	return CHUNK_LENGTH;
+}
+
 void World::_generateVisibleChunks(Camera * camera)
 {
 	glm::vec3 cameraPosition = camera->getPosition();
+	int renderDistanceMin = getRenderDistanceMin();
 	cameraPosition.x /= CHUNK_WIDTH;
 	cameraPosition.y /= CHUNK_HEIGHT;
 	cameraPosition.z /= CHUNK_LENGTH;
+
+	int ratioW = CHUNK_WIDTH / renderDistanceMin;
+	int ratioH = CHUNK_HEIGHT / renderDistanceMin;
+	int ratioL = CHUNK_LENGTH / renderDistanceMin;
+
 	int renderDistance = (camera->getRenderDistance());
-	int renderDistanceNorth = renderDistance + cameraPosition.x;
-	int renderDistanceSouth = cameraPosition.x - renderDistance;
-	int renderDistanceEast = renderDistance + cameraPosition.z;
-	int renderDistanceWest = cameraPosition.z - renderDistance;
-	int renderDistanceUp = renderDistance + cameraPosition.y;
-	int renderDistanceDown = cameraPosition.y - renderDistance;
+	int renderDistanceX = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
+	int renderDistanceY = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
+	int renderDistanceZ = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
+
+	int renderDistanceNorth = renderDistanceX + cameraPosition.x;
+	int renderDistanceSouth = cameraPosition.x - renderDistanceX;
+	int renderDistanceEast = renderDistanceZ + cameraPosition.z;
+	int renderDistanceWest = cameraPosition.z - renderDistanceZ;
+	int renderDistanceUp = renderDistanceY + cameraPosition.y;
+	int renderDistanceDown = cameraPosition.y - renderDistanceY;
 
 	for (int x = renderDistanceSouth; x < renderDistanceNorth; ++x)
 	{
