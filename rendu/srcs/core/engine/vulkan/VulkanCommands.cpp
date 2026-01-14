@@ -78,7 +78,7 @@ void VulkanEngine::_recordCommandBuffer()
 	// ColorAttachmentOptimal : Utilisée comme cible de rendu (render target)
 	// PresentSrcKHR : Prête à être affichée à l'écran
 	// TransferDstOptimal : Prête à recevoir un transfert de données (un upload de texture par exemple)
-	transitionImageViewInfo.oldLayout = vk::ImageLayout::eUndefined;
+	transitionImageViewInfo.oldLayout = _swapChainImageLayouts[_imageIndex];
 	transitionImageViewInfo.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
 	// Il n'y a pas d'opération à attendre avant, l'image est undefined donc non-utilisée
 	transitionImageViewInfo.srcAccessMask = {};
@@ -158,7 +158,7 @@ void VulkanEngine::_recordCommandBuffer()
 
 	TransitionImageViewLayoutInfo presentSrcInfo;
 	presentSrcInfo.imageIndex = _imageIndex;
-	presentSrcInfo.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
+	presentSrcInfo.oldLayout = _swapChainImageLayouts[_imageIndex];
 	presentSrcInfo.newLayout = vk::ImageLayout::ePresentSrcKHR;
 	presentSrcInfo.srcAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
 	presentSrcInfo.dstAccessMask = {};

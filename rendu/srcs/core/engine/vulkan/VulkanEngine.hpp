@@ -127,6 +127,7 @@ class VulkanEngine : public AEngine
 		vk::Format							_swapChainImageFormat;
 		std::vector<vk::Image>				_swapChainImages;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
+		std::vector<vk::ImageLayout>		_swapChainImageLayouts;
 	
 		// Pipeline & Descriptor
 		vk::raii::DescriptorSetLayout		_descriptorSetLayout = nullptr;
