@@ -1,6 +1,7 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
 #include "Logger.hpp"
+#include "GLFW/glfw3.h"
 #include <iostream>
 #include <map>
 

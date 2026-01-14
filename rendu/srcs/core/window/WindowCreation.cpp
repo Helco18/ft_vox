@@ -1,3 +1,4 @@
+#include "OpenGLEngine.hpp"
 #include "WindowManager.hpp"
 #include "CustomExceptions.hpp"
 #include "stb/stb_image.h"

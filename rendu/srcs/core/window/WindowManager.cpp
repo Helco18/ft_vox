@@ -1,6 +1,6 @@
-#include "Environment.hpp"
 #include "OpenGLEngine.hpp"
 #include "VulkanEngine.hpp"
+#include "Environment.hpp"
 #include "CustomExceptions.hpp"
 #include "InputManager.hpp"
 #include "Logger.hpp"

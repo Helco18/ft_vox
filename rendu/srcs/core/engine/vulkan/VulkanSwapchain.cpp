@@ -2,6 +2,7 @@
 #include "Logger.hpp"
 #include <iostream>
 #include <valgrind/valgrind.h>
+#include "GLFW/glfw3.h"
 
 vk::SurfaceFormatKHR VulkanEngine::_chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR> & formats)
 {

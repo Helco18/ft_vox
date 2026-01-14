@@ -1,8 +1,6 @@
 #pragma once
 
-#include <GL/glew.h>
 #include <memory>
-#include "GLFW/glfw3.h"
 #include "Camera.hpp"
 #include "OBJModel.hpp"
 #include "PipelineManager.hpp"
@@ -10,6 +8,8 @@
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
 
 typedef unsigned int AssetID;
+
+class GLFWwindow;
 
 struct Asset
 {

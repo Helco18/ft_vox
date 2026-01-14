@@ -159,8 +159,8 @@ void VulkanEngine::endFrame()
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 		_updateUniformBuffer();
 
-		_uploadPendingAssets();
 		_commandBuffers[_currentFrame].reset();
+		_uploadPendingAssets();
 		_recordCommandBuffer();
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;

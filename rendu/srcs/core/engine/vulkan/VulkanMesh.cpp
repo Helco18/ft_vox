@@ -105,7 +105,6 @@ void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					vertexData.buffer, vertexData.memory);
-
 }
 
 void VulkanEngine::_createIndexBuffer(PendingAsset & pendingAsset)

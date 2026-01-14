@@ -2,6 +2,7 @@
 
 #include "AEngine.hpp"
 #include "utils.hpp"
+#include "GLFW/glfw3.h"
 
 class Environment;
 
