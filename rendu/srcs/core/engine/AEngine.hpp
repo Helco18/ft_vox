@@ -7,6 +7,12 @@
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
 
+enum EngineType
+{
+	VULKAN,
+	OPENGL
+};
+
 typedef unsigned int AssetID;
 
 class GLFWwindow;

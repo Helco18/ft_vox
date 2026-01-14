@@ -6,7 +6,7 @@
 /*   By: scraeyme <scraeyme@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 19:33:36 by gcannaud          #+#    #+#             */
-/*   Updated: 2025/10/31 14:58:25 by scraeyme         ###   ########.fr       */
+/*   Updated: 2026/01/14 11:54:04 by scraeyme         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,6 @@
 
 #include <sstream>
 #include <vector>
-
-enum EngineType
-{
-	VULKAN,
-	OPENGL
-};
 
 #define WIDTH	800
 #define HEIGHT	600
