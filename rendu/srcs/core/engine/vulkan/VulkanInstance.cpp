@@ -21,6 +21,14 @@ void VulkanEngine::_createInstance()
 	// On récupère les informations concernant les extensions Vulkan dont GLFW a besoin
 	RequiredExtensions requiredExtensions = _getRequiredExtensions();
 
+	const std::vector<vk::ValidationFeatureEnableEXT> enabledFeatures = {
+		vk::ValidationFeatureEnableEXT::eSynchronizationValidation
+	};
+
+	vk::ValidationFeaturesEXT features;
+	features.enabledValidationFeatureCount = enabledFeatures.size();
+	features.pEnabledValidationFeatures = enabledFeatures.data();
+
 	// Puis on les stocke dans Vulkan
 	vk::InstanceCreateInfo createInfo;
 	createInfo.pApplicationInfo = &appInfo;
@@ -28,19 +36,26 @@ void VulkanEngine::_createInstance()
 	createInfo.ppEnabledLayerNames = requiredLayers.data();
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
 	createInfo.ppEnabledExtensionNames = requiredExtensions.data();
+	createInfo.pNext = g_debug ? &features : nullptr;
 
 	// On créé ensuite notre instance Vulkan (On passe par RAII pour qu'elle soit détruite automatiquement)
 	_instance = vk::raii::Instance(_context, createInfo);
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Instance.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Instance.");
 }
 
 VulkanEngine::RequiredLayers VulkanEngine::_getRequiredLayers() const
 {
 	RequiredLayers requiredLayers;
-	if (g_enableValidationLayers)
-		requiredLayers.assign(g_validationLayers.begin(), g_validationLayers.end());
+
+	if (g_debug)
+	{
+		const std::vector<const char *> validationLayers =
+		{
+			"VK_LAYER_KHRONOS_validation"
+		};
+		requiredLayers.assign(validationLayers.begin(), validationLayers.end());
+	}
 
 	// On regarde si les layers requis sont supportés par notre implémentation Vulkan
 	std::vector<vk::LayerProperties> layerProperties = _context.enumerateInstanceLayerProperties();
@@ -74,7 +89,7 @@ VulkanEngine::RequiredExtensions VulkanEngine::_getRequiredExtensions() const
 	// On récupère le nombre et le nom des extensions dont GLFW a besoin.
 	const char ** glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 	requiredExtensions = { glfwExtensions, glfwExtensions + extensionCount };
-	if (g_enableValidationLayers)
+	if (g_debug)
 		requiredExtensions.push_back(vk::EXTDebugUtilsExtensionName);
 
 	// On récupère les extensions dont dispose notre contexte Vulkan
@@ -153,13 +168,13 @@ QueueIndices VulkanEngine::_findQueueFamilies() const
 	throw VulkanException("No queue family supporting graphics and present found.");
 }
 
-void VulkanEngine::_checkDeviceExtensions() const
+void VulkanEngine::_checkDeviceExtensions(const std::vector<const char *> & deviceExtensions) const
 {
 	// On récupère les device extensions dont dispose notre GPU.
 	std::vector<vk::ExtensionProperties> deviceExtensionProperties = _physicalDevice.enumerateDeviceExtensionProperties();
 	// Pour chaque extension requises par Vulkan, on regarde si elle existe dans notre GPU.
 	// Si une manque, alors on ne peut pas initialiser Vulkan.
-	for (const char * tmp : g_deviceExtensions)
+	for (const char * tmp : deviceExtensions)
 	{
 		bool foundExtension = false;
 		for (vk::ExtensionProperties extension : deviceExtensionProperties)
@@ -177,6 +192,21 @@ void VulkanEngine::_checkDeviceExtensions() const
 
 void VulkanEngine::_createLogicalDevice()
 {
+	// La swapchain servira à présenter des images à la fenêtre
+	// Les autres ajoutent des fonctionnalités supplémentaires (?)
+	const std::vector<const char *> deviceExtensions =
+	{
+		vk::KHRSwapchainExtensionName,
+		vk::KHRSpirv14ExtensionName,
+		vk::KHRSynchronization2ExtensionName,
+		vk::KHRCreateRenderpass2ExtensionName,
+		vk::KHRShaderDrawParametersExtensionName,
+	};
+
+	// On regarde si notre machine est compatible avec les extensions Vulkan dont on a besoin
+	// (par exemple VK_KHR_swapchain, nécessaire pour l’affichage).
+	_checkDeviceExtensions(deviceExtensions);
+
 	std::vector<vk::QueueFamilyProperties> qfp = _physicalDevice.getQueueFamilyProperties();
 	float queuePriority = 0.0f;
 	_queueIndices = _findQueueFamilies();
@@ -210,15 +240,14 @@ void VulkanEngine::_createLogicalDevice()
 	deviceCreateInfo.pNext = &features;
 	deviceCreateInfo.queueCreateInfoCount = 1;
 	deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
-	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(g_deviceExtensions.size());
-	deviceCreateInfo.ppEnabledExtensionNames = g_deviceExtensions.data();
+	deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+	deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
 	_device = vk::raii::Device(_physicalDevice, deviceCreateInfo);
 
 	_queue = vk::raii::Queue(_device, _queueIndices.graphicsIndex, 0);
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Logical Device.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Logical Device.");
 }
 
 void VulkanEngine::_createSurface()
@@ -230,6 +259,5 @@ void VulkanEngine::_createSurface()
 
 	_surface = vk::raii::SurfaceKHR(_instance, surface);
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Surface.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Surface.");
 }

@@ -7,6 +7,8 @@
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
 
+inline bool g_debug = false;
+
 enum EngineType
 {
 	VULKAN,

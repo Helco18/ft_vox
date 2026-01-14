@@ -29,8 +29,7 @@ void VulkanEngine::_createDescriptorSetLayout()
 
 	_descriptorSetLayout = vk::raii::DescriptorSetLayout( _device, layoutInfo );
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool Set.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool Set.");
 }
 
 void VulkanEngine::_createDescriptorPool()
@@ -53,8 +52,7 @@ void VulkanEngine::_createDescriptorPool()
 
 	_descriptorPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool.");
 }
 
 void VulkanEngine::_createDescriptorSets()
@@ -101,6 +99,5 @@ void VulkanEngine::_createDescriptorSets()
 		_device.updateDescriptorSets(writeSets, {});
 	}
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Sets.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Sets.");
 }

@@ -18,6 +18,7 @@ GLSL_PATH			=	$(SHADER_PATH)/glsl
 # Sources
 SRCS				=	srcs/main.cpp \
 						srcs/core/camera/Camera.cpp \
+						srcs/core/engine/opengl/OpenGLDebug.cpp \
 						srcs/core/engine/opengl/OpenGLEngine.cpp \
 						srcs/core/engine/opengl/OpenGLShader.cpp \
 						srcs/core/engine/opengl/OpenGLTexture.cpp \

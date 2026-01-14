@@ -75,6 +75,13 @@ void OpenGLEngine::load()
 
 	glBindVertexArray(0);
 
+	if (g_debug)
+	{
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(_debugCallback, this);
+	}
+
 	Logger::log(ENGINE_OPENGL, INFO, "OpenGL engine initialized successfully.");
 
 	_isInitalized = true;

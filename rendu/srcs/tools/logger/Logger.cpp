@@ -1,4 +1,5 @@
 #include "Logger.hpp"
+#include "AEngine.hpp"
 #include "colors.hpp"
 #include <iomanip>
 #include <iostream>
@@ -73,6 +74,8 @@ static const std::string getLogSourcePrefix(LogSource source)
 
 void Logger::log(LogSource source, LogSeverity severity, const std::string & message, std::ostream * output)
 {
+	if (severity == DEBUG && !g_debug)
+		return;
 	std::lock_guard<std::mutex> lg(_printLock);
 	std::ostream & outputStream = severity >= ERROR ? std::cerr : output == nullptr ? std::cout : *output;
 	outputStream

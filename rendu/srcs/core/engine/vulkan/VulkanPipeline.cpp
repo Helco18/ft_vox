@@ -178,7 +178,6 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	pipelineObjects.pipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineFillInfo);
 	pipelineObjects.pipelineInfo = pipelineInfo;
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Pipeline ID: " + toString(pipelineID));
+	Logger::log(ENGINE_VULKAN, INFO, "Created Pipeline ID: " + toString(pipelineID));
 	return pipelineID;
 }

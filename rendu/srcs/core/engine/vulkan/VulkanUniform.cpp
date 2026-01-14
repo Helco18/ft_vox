@@ -33,8 +33,7 @@ void VulkanEngine::_createUniformBuffers()
 		_uniformBuffersMapped.emplace_back(_uniformBuffersMemory[i].mapMemory(0, size));
 	}
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Uniform Buffers.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Uniform Buffers.");
 }
 
 void VulkanEngine::_updateUniformBuffer()

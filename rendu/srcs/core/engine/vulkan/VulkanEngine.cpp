@@ -25,10 +25,6 @@ void VulkanEngine::load()
 	// On choisit la carte graphique compatible avec Vulkan et ses extensions à utiliser
 	_selectPhysicalDevice();
 
-	// On regarde si notre machine est compatible avec les extensions Vulkan dont on a besoin
-	// (par exemple VK_KHR_swapchain, nécessaire pour l’affichage).
-	_checkDeviceExtensions();
-
 	// On crée un *logical device*, c’est-à-dire une interface logique vers le GPU physique sélectionné.
 	// On active les queue families (graphics, presentation, ...) et on active les features de Vulkan que l'on veut.
 	_createLogicalDevice();

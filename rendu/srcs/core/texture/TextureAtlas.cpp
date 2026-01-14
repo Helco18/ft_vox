@@ -1,4 +1,5 @@
 #include "TextureAtlas.hpp"
+#include "AEngine.hpp"
 #include "Logger.hpp"
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
@@ -39,9 +40,8 @@ void TextureAtlas::createAtlas()
 		}
 		offsetX += texture->width;
 	}
-	#ifdef DEBUG
-	stbi_write_png("atlas_debug.png", _width, _height, 4, _atlasData.data(), _width * 4);
-	#endif
+	if (g_debug)
+		stbi_write_png("atlas_debug.png", _width, _height, 4, _atlasData.data(), _width * 4);
 	Logger::log(TEXTURE, INFO, "Texture Atlas created.");
 }
 

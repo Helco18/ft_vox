@@ -14,7 +14,7 @@ void VulkanEngine::_createCommandPool(vk::CommandPoolCreateFlags flags)
 
 	_commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
 
-	if (g_enableValidationLayers)
+	if (g_debug)
 		Logger::log(ENGINE_VULKAN, INFO, "Created Command Pool.");
 }
 
@@ -32,8 +32,7 @@ void VulkanEngine::_createCommandBuffer()
 
 	_commandBuffers = vk::raii::CommandBuffers(_device, commandBufferInfo);
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Command Buffer.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Command Buffer.");
 }
 
 void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info)
@@ -188,8 +187,7 @@ void VulkanEngine::_createSyncObjects()
 		_renderFinishedSemaphores.emplace_back(vk::raii::Semaphore(_device, vk::SemaphoreCreateInfo()));
 	}
 
-	if (g_enableValidationLayers)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Sync Objects.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Sync Objects.");
 }
 
 vk::raii::CommandBuffer VulkanEngine::_beginSingleTimeCommands()

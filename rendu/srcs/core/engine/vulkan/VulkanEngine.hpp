@@ -15,30 +15,6 @@
 #define NEAR_PLANE_OFFSET 0.5f
 #define VULKAN_SHADER_PATH "srcs/core/shaders/spir-v/"
 
-const std::vector<const char *> g_validationLayers =
-{
-	"VK_LAYER_KHRONOS_validation"
-};
-
-// La swapchain servira à présenter des images à la fenêtre
-// Les autres ajoutent des fonctionnalités supplémentaires (?)
-const std::vector<const char *> g_deviceExtensions =
-{
-    vk::KHRSwapchainExtensionName,
-    vk::KHRSpirv14ExtensionName,
-    vk::KHRSynchronization2ExtensionName,
-    vk::KHRCreateRenderpass2ExtensionName,
-	vk::KHRShaderDrawParametersExtensionName,
-};
-
-constexpr bool g_enableValidationLayers = true;
-
-// #ifdef DEBUG
-// constexpr bool g_enableValidationLayers = true;
-// #else
-// constexpr bool g_enableValidationLayers = false;
-// #endif
-
 struct QueueIndices
 {
 	uint32_t	graphicsIndex;
@@ -188,7 +164,7 @@ class VulkanEngine : public AEngine
 		void								_selectPhysicalDevice();
 		QueueIndices						_findQueueFamilies() const;
 		void								_createLogicalDevice();
-		void								_checkDeviceExtensions() const;
+		void								_checkDeviceExtensions(const std::vector<const char *> & deviceExtensions) const;
 		vk::SurfaceFormatKHR				_chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR> & formats);
 		vk::PresentModeKHR					_chooseSwapPresentMode(const std::vector<vk::PresentModeKHR> & presentModes);
 		vk::Extent2D						_chooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities);

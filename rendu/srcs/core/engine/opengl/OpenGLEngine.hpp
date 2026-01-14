@@ -43,6 +43,7 @@ class OpenGLEngine : public AEngine
 		GLuint		_ubo;
 		GLuint		_texture;
 
+		static void	_debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *message, const void *);
 		GLuint		_createShader(const std::string & vertexPath, const std::string & fragmentPath);
 		void		_updateUniformBuffer();
 		void		_handleResize();
