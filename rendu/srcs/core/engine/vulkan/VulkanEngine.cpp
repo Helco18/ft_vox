@@ -95,8 +95,14 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	asset.assetID = assetID;
 	if (!asset.vertices.empty())
 	{
-		_createVertexBuffer(pendingAsset);
-		_createIndexBuffer(pendingAsset);
+		try
+		{
+			_createVertexBuffer(pendingAsset);
+			_createIndexBuffer(pendingAsset);
+		} catch (const vk::OutOfDeviceMemoryError & e)
+		{
+			throw VulkanException(e.what());
+		}
 		_pendingAssets.push_back(std::move(pendingAsset));
 	}
 	_assetMap.try_emplace(asset.assetID, &asset);
