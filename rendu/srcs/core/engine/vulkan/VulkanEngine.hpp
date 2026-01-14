@@ -130,8 +130,7 @@ class VulkanEngine : public AEngine
 	
 		// Pipeline & Descriptor
 		vk::raii::DescriptorSetLayout		_descriptorSetLayout = nullptr;
-		vk::raii::CommandPool				_resetCommandPool = nullptr;
-		vk::raii::CommandPool				_transientCommandPool = nullptr;
+		vk::raii::CommandPool				_commandPool = nullptr;
 		CommandBuffers						_commandBuffers;
 
 		// Sync primitives
@@ -185,7 +184,7 @@ class VulkanEngine : public AEngine
 		void								_createImageViews();
 		void								_createGraphicsPipelines();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
-		void								_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag);
+		void								_createCommandPool(vk::CommandPoolCreateFlags flags);
 		void								_createTextureImage();
 		void								_concateneVertexBuffer(Asset & asset);
 		void								_concateneIndexBuffer(Asset & asset);

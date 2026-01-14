@@ -60,7 +60,7 @@ void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage
 vk::raii::CommandBuffer VulkanEngine::_beginSingleTimeCommands()
 {
 	vk::CommandBufferAllocateInfo allocInfo;
-	allocInfo.commandPool = _transientCommandPool;
+	allocInfo.commandPool = _commandPool;
 	allocInfo.level = vk::CommandBufferLevel::ePrimary;
 	allocInfo.commandBufferCount = 1;
 

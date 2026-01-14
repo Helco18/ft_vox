@@ -41,11 +41,10 @@ void VulkanEngine::load()
 	// Chaque image view décrit comment une image doit être interprétée (format, aspect, niveau de mipmap, etc.).
 	_createImageViews();
 
-	// On crée deux *command pools* :
-	// - un "reset" pool pour des commandes réutilisables (e.g. dessin, rendu)
-	// - un "transient" pool pour des commandes temporaires (e.g. copie de buffer, transfert de ressources)
-	_createCommandPool(_resetCommandPool, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
-	_createCommandPool(_transientCommandPool, vk::CommandPoolCreateFlagBits::eTransient);
+	// On crée un *command pool* avec les flags :
+	// - "reset" pour avoir la possibilité de reset chaque buffer individuellement (sinon on ne pourrait que reset la pool entière)
+	// - "transient" pour optimiser les commandes qui vont etre fréquemment reset
+	_createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
 
 	// On enregistre dans un *command buffer* toutes les commandes Vulkan nécessaires pour dessiner nos objets.
 	// Ce buffer sera soumis à une file de commandes à chaque frame.
@@ -132,11 +131,6 @@ void VulkanEngine::endFrame()
 	// Fence = on attend que le GPU finisse la tâche
 	try
 	{
-		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
-		if (res != vk::Result::eSuccess)
-			return;
-		_device.resetFences(*_inFlightFences[_currentFrame]);
-
 		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(UINT64_MAX, *_presentCompleteSemaphores[_presentSemaphoreIndex], nullptr);
 		_imageIndex = result.second;
 		if (result.first != vk::Result::eSuccess && result.first != vk::Result::eSuboptimalKHR)
@@ -149,7 +143,10 @@ void VulkanEngine::endFrame()
 			throw VulkanException("Couldn't acquire next image.");
 		}
 		
-
+		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
+		if (res != vk::Result::eSuccess)
+			return;
+		_device.resetFences(*_inFlightFences[_currentFrame]);
 		_updateUniformBuffer();
 
 		_commandBuffers[_currentFrame].reset();

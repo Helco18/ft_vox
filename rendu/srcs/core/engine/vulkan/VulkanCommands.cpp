@@ -3,16 +3,16 @@
 #include "utils.hpp"
 #include <iostream>
 
-void VulkanEngine::_createCommandPool(vk::raii::CommandPool & commandPool, vk::CommandPoolCreateFlagBits flag)
+void VulkanEngine::_createCommandPool(vk::CommandPoolCreateFlags flags)
 {
 	// La command pool va stocker nos command buffers
 	vk::CommandPoolCreateInfo commandPoolInfo;
 	// On veut record nos commandes à chaque frame donc on reset la pool et re-record avec ce flag
 	// L'autre flag est pour les commandes à courtes durée de vie (Transient)
-	commandPoolInfo.flags = flag;
+	commandPoolInfo.flags = flags;
 	commandPoolInfo.queueFamilyIndex = _queueIndices.graphicsIndex;
 
-	commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
+	_commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
 
 	if (g_enableValidationLayers)
 		Logger::log(ENGINE_VULKAN, INFO, "Created Command Pool.");
@@ -24,7 +24,7 @@ void VulkanEngine::_createCommandBuffer()
 
 	// Les command buffers sont des instructions que l'on va donner au GPU, comme celle de draw.
 	vk::CommandBufferAllocateInfo commandBufferInfo;
-	commandBufferInfo.commandPool = _resetCommandPool;
+	commandBufferInfo.commandPool = _commandPool;
 	// Primaire : Peut être submit à la queue pour être exécutée
 	// Secondaire : Ne peut pas être submit directement et doit être appelée par une primaire
 	commandBufferInfo.level = vk::CommandBufferLevel::ePrimary;
@@ -127,6 +127,9 @@ void VulkanEngine::_recordCommandBuffer()
 	renderingInfo.pDepthAttachment = &depthAttachmentInfo;
 
 	commands.beginRendering(renderingInfo);
+	commands.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width),
+					static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
+	commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
 	for (const std::pair<const PipelineID, std::vector<Asset *>> & pipelineAsset : _pipelineAssetMap)
 	{
 		PipelineID pipelineID = pipelineAsset.first;
@@ -135,9 +138,6 @@ void VulkanEngine::_recordCommandBuffer()
 			continue;
 		PipelineObjects & pipelineObjects = pipelineit->second;
 		commands.bindPipeline(vk::PipelineBindPoint::eGraphics, pipelineObjects.pipeline);
-		commands.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width),
-						static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
-		commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
 		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineObjects.layout, 0,
 				*_descriptorSets[_currentFrame], nullptr);
 		const std::vector<Asset *> & drawableAssets = pipelineAsset.second;
