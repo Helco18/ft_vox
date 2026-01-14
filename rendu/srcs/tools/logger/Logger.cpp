@@ -7,6 +7,8 @@
 #include <optional>
 #include <sstream>
 
+std::mutex Logger::_printLock;
+
 static const std::string getTimestampAsDate()
 {
 	std::ostringstream oss;
@@ -71,6 +73,7 @@ static const std::string getLogSourcePrefix(LogSource source)
 
 void Logger::log(LogSource source, LogSeverity severity, const std::string & message, std::ostream * output)
 {
+	std::lock_guard<std::mutex> lg(_printLock);
 	std::ostream & outputStream = severity >= ERROR ? std::cerr : output == nullptr ? std::cout : *output;
 	outputStream
 		<< getTimestampAsDate()

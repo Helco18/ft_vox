@@ -191,3 +191,30 @@ void VulkanEngine::_createSyncObjects()
 	if (g_enableValidationLayers)
 		Logger::log(ENGINE_VULKAN, INFO, "Created Sync Objects.");
 }
+
+vk::raii::CommandBuffer VulkanEngine::_beginSingleTimeCommands()
+{
+	vk::CommandBufferAllocateInfo allocInfo;
+	allocInfo.commandPool = _commandPool;
+	allocInfo.level = vk::CommandBufferLevel::ePrimary;
+	allocInfo.commandBufferCount = 1;
+
+	vk::raii::CommandBuffer commandCopyBuffer = std::move(_device.allocateCommandBuffers(allocInfo).front());
+
+	vk::CommandBufferBeginInfo commandBufferBeginInfo;
+	commandBufferBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+	commandCopyBuffer.begin(commandBufferBeginInfo);
+
+	return commandCopyBuffer;
+}
+
+void VulkanEngine::_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffer)
+{
+	commandBuffer.end();
+
+	vk::SubmitInfo submitInfo;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &*commandBuffer;
+	_queue.submit(submitInfo);
+	_queue.waitIdle();
+}

@@ -111,6 +111,7 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 void OpenGLEngine::beginFrame()
 {
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	_updateUniformBuffer();
 }
@@ -179,8 +180,6 @@ void OpenGLEngine::endFrame()
 
 void OpenGLEngine::_handleResize()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, _camera->getWidth(), _camera->getHeight());
 	_isFramebufferResized = false;
 }

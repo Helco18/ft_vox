@@ -3,6 +3,7 @@
 #include <optional>
 #include <string>
 #include <iostream>
+#include <mutex>
 
 enum LogSeverity
 {
@@ -39,5 +40,8 @@ class Logger
 		~Logger() = delete;
 
 		static void	log(LogSource source, LogSeverity severity, const std::string & message, std::ostream * output = nullptr);
+	
+	private:
+		static std::mutex	_printLock;
 
 };

@@ -37,7 +37,7 @@ void Chunk::generateMesh()
 
 	Profiler p("Chunk::generateMesh");
 	_generateGreedyMesh();
-	if (!_asset.vertices.empty())
+	if (!_asset.vertices.empty() && !_asset.indices.empty())
 		setState(MESHED);
 	else
 		setState(MESHED_EMPTY);
@@ -58,4 +58,16 @@ void Chunk::unload(AEngine * engine)
 
 	engine->unloadAsset(_asset.assetID);
 	setState(MESHED);
+}
+
+ChunkState Chunk::getState()
+{
+	const std::lock_guard<std::mutex> lg(_stateMutex);
+	return _state;
+}
+
+void Chunk::setState(ChunkState state)
+{
+	const std::lock_guard<std::mutex> lg(_stateMutex);
+	_state = state;
 }

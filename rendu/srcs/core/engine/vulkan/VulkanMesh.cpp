@@ -57,33 +57,6 @@ void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage
 	buffer.bindMemory(*deviceMemory, 0);
 }
 
-vk::raii::CommandBuffer VulkanEngine::_beginSingleTimeCommands()
-{
-	vk::CommandBufferAllocateInfo allocInfo;
-	allocInfo.commandPool = _commandPool;
-	allocInfo.level = vk::CommandBufferLevel::ePrimary;
-	allocInfo.commandBufferCount = 1;
-
-	vk::raii::CommandBuffer commandCopyBuffer = std::move(_device.allocateCommandBuffers(allocInfo).front());
-
-	vk::CommandBufferBeginInfo commandBufferBeginInfo;
-	commandBufferBeginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-	commandCopyBuffer.begin(commandBufferBeginInfo);
-
-	return commandCopyBuffer;
-}
-
-void VulkanEngine::_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffer)
-{
-	commandBuffer.end();
-
-	vk::SubmitInfo submitInfo;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &*commandBuffer;
-	_queue.submit(submitInfo);
-	_queue.waitIdle();
-}
-
 void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 {
 	Asset * asset = pendingAsset.asset;
@@ -142,7 +115,7 @@ void VulkanEngine::_uploadPendingAssets()
 		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
 			vk::BufferCopy(0, 0, sizeof(Vertex) * asset->vertices.size()));
 		commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
-			vk::BufferCopy(0, 0, sizeof(asset->indices[0]) * asset->indices.size()));
+			vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
 	}
 	_endSingleTimeCommands(commandBuffer);
 	for (PendingAsset & pendingAsset : _pendingAssets)

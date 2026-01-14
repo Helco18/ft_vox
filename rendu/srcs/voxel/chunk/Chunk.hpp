@@ -1,12 +1,13 @@
 #pragma once
 
 #define CHUNK_WIDTH 16
-#define CHUNK_HEIGHT 256
+#define CHUNK_HEIGHT 16
 #define CHUNK_LENGTH 16
 
 #include <cstdint>
 #include <vector>
 #include <mutex>
+#include <fstream>
 #include "OBJModel.hpp"
 #include "AEngine.hpp"
 #include "BlockData.hpp"
@@ -30,7 +31,6 @@ enum FaceDirection
 	BACKWARD
 };
 
-
 class Chunk
 {
 	public:
@@ -42,11 +42,11 @@ class Chunk
 		int						getChunkX() const { return _chunkLocation.x; }
 		int						getChunkY() const { return _chunkLocation.y; }
 		int						getChunkZ() const { return _chunkLocation.z; }
-		ChunkState				getState() { const std::lock_guard<std::mutex> lg(_stateMutex); return _state; }
+		ChunkState				getState();
 		Asset &					getAsset() { return _asset; }
 		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
 
-		void					setState(ChunkState state) { const std::lock_guard<std::mutex> lg(_stateMutex); _state = state; }
+		void					setState(ChunkState state);
 
 		void					build();
 		void					generateMesh();

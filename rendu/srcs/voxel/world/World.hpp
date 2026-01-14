@@ -23,23 +23,27 @@ class World
 		Chunk *					getChunkAtChunkLocation(int x, int y, int z) const;
 		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location) const;
 
-		void					addChunk(Chunk * chunk);
 		void					reloadChunks(AEngine * engine);
 
 		void					generateProcedurally(Camera * camera);
 		void					render(AEngine * engine, PipelineType pipelineType);
 	private:
-		void					_generateVisibleChunks(Camera * camera);
-		void					_generateProceduralTerrain();
-		void					_generateProceduralMesh();
-		void					_drawChunk(AEngine * engine, PipelineType pipelineType);
-		void					_generateChunks();
-
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 		typedef std::vector<Chunk *>					VisibleChunks;
+
+		VisibleChunks			_generateVisibleChunks(Camera * camera);
+		void					_generateChunks(Camera * camera);
+		void					_generateProceduralTerrain(Camera * camera);
+		void					_generateProceduralMesh(Camera * camera);
+		void					_drawChunk(AEngine * engine, PipelineType pipelineType);
 
 		std::string				_name;
 		ChunkMap				_chunkMap;
 		VisibleChunks			_visibleChunks;
 		ThreadPool				_chunkPool;
+		std::mutex				_chunkMutex;
+		std::condition_variable	_chunkCv;
+		std::atomic_bool		_isLoaded = false;
+		std::atomic_bool		_isProceduralRequested = false;
+		Camera *				_camera;
 };
