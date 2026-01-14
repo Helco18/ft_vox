@@ -201,9 +201,7 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 		_asset.vertices.push_back(tmp);
 	}
 	for (uint32_t indice : quad.indices)
-	{
 		_asset.indices.push_back(indice + verticesAdded);
-	}
 }
 
 static glm::ivec3 getFaceDir(int axis, FaceDirection faceDir)

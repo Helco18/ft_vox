@@ -91,9 +91,9 @@ void VulkanEngine::beginFrame()
 
 AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
-	(void) pipelineID;
 	PendingAsset pendingAsset;
 	pendingAsset.asset = &asset;
+	pendingAsset.pipelineID = pipelineID;
 
 	AssetID assetID = _nextAssetID++;
 	asset.assetID = assetID;

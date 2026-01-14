@@ -65,7 +65,11 @@ void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 
 	BufferData & vertexData = pendingAsset.vertexData;
 	BufferData & stagingVertexData = pendingAsset.stagingVertexData;
-	vk::DeviceSize size = sizeof(Vertex) * asset->vertices.size();
+	PipelineMap::iterator it = _pipelineMap.find(pendingAsset.pipelineID);
+	if (it == _pipelineMap.end())
+		return;
+	PipelineInfo & pipelineInfo = it->second.pipelineInfo;
+	vk::DeviceSize size = pipelineInfo.attributeSize * asset->vertices.size();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc,
 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
@@ -112,8 +116,12 @@ void VulkanEngine::_uploadPendingAssets()
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
+		PipelineMap::iterator it = _pipelineMap.find(pendingAsset.pipelineID);
+		if (it == _pipelineMap.end())
+			continue;
+		PipelineInfo & pipelineInfo = it->second.pipelineInfo;
 		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
-			vk::BufferCopy(0, 0, sizeof(Vertex) * asset->vertices.size()));
+			vk::BufferCopy(0, 0, pipelineInfo.attributeSize * asset->vertices.size()));
 		commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
 			vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
 	}

@@ -58,6 +58,7 @@ struct TransitionImageViewLayoutInfo
 
 struct PipelineObjects
 {
+	PipelineInfo				pipelineInfo;
 	vk::raii::Pipeline 			pipeline = nullptr;
 	vk::raii::PipelineLayout 	layout = nullptr;
 };
@@ -83,11 +84,12 @@ struct BufferData
 
 struct PendingAsset
 {
-	Asset *		asset;
-	BufferData	vertexData;
-	BufferData	stagingVertexData;
-	BufferData	indexData;
-	BufferData	stagingIndexData;
+	Asset *			asset;
+	PipelineID		pipelineID;
+	BufferData		vertexData;
+	BufferData		stagingVertexData;
+	BufferData		indexData;
+	BufferData		stagingIndexData;
 };
 
 class VulkanEngine : public AEngine
