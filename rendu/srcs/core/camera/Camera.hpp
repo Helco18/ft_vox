@@ -19,7 +19,7 @@ class Camera
 		float		getFOV() const { return _FOV; }
 		float		getSensitivity() const { return _sensitivity; }
 		float		getSpeed() const { return _speed; }
-		int			getRenderDistance() const {return _renderDistance; }
+		int			getRenderDistance() const { return _renderDistance; }
 
 		void		setPosition(const glm::vec3 & position) { _position = position; }
 		void		setOrientation(glm::vec3 orientation) { _orientation = orientation; }

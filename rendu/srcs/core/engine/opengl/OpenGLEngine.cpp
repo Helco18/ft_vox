@@ -16,6 +16,8 @@ OpenGLEngine::~OpenGLEngine()
 		glDeleteBuffers(1, &asset->vbo);
 		glDeleteBuffers(1, &asset->ibo);
 		glDeleteVertexArrays(1, &asset->assetID);
+		for (UniformStream stream : asset->uniforms)
+			glDeleteBuffers(1, &stream.ubo);
 	}
 	glDeleteTextures(1, &_texture);
 	glDeleteBuffers(1, &_ubo);
@@ -50,10 +52,19 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 		offset += attributes[i].size;
 	}
 
+	for (UniformStream & futureUbo : asset.uniforms)
+	{
+		glGenBuffers(1, &futureUbo.ubo);
+		glBindBuffer(GL_UNIFORM_BUFFER, futureUbo.ubo);
+		glBufferData(GL_UNIFORM_BUFFER, futureUbo.bytes.size(), futureUbo.bytes.data(), GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, futureUbo.binding, futureUbo.ubo);
+	}
+
 	glGenBuffers(1, &asset.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, asset.ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, asset.indices.size() * sizeof(uint32_t), asset.indices.data(), GL_STATIC_DRAW);
 
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindVertexArray(0);
 
 	_assetMap.try_emplace(asset.assetID, &asset);
@@ -182,9 +193,17 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		return;
 
 	glBindVertexArray(assetID);
-	_applyPipeline(pipelineID);
 
+	for (UniformStream & stream : asset->uniforms)
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, stream.ubo);
+		glBindBufferBase(GL_UNIFORM_BUFFER, stream.binding, stream.ubo);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, stream.bytes.size(), stream.bytes.data());
+	}
+
+	_applyPipeline(pipelineID);
 	glDrawElements(GL_TRIANGLES, asset->indices.size(), GL_UNSIGNED_INT, 0);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindVertexArray(0);
 }
 

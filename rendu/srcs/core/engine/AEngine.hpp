@@ -19,6 +19,13 @@ typedef unsigned int AssetID;
 
 class GLFWwindow;
 
+struct UniformStream
+{
+	std::vector<std::byte>	bytes;
+	int						binding;
+	unsigned int			ubo;
+};
+
 struct VertexStream
 {
 	std::vector<std::byte>	bytes;
@@ -28,11 +35,12 @@ struct VertexStream
 
 struct Asset
 {
-	VertexStream			vertices;
-	std::vector<uint32_t>	indices;
-	AssetID					assetID;
-	unsigned int			vbo;
-	unsigned int			ibo;
+	AssetID						assetID;
+	VertexStream				vertices;
+	std::vector<uint32_t>		indices;
+	std::vector<UniformStream>	uniforms;
+	unsigned int				vbo;
+	unsigned int				ibo;
 };
 
 struct UniformBuffer

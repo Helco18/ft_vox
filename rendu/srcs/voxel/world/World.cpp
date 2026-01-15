@@ -221,6 +221,6 @@ void World::render(AEngine * engine, PipelineType pipelineType)
 		if (chunk->getState() == MESHED)
 			chunk->uploadAsset(engine);
 		else if (chunk->getState() == UPLOADED)
-			engine->drawAsset(chunk->getAsset().assetID, PipelineManager::getPipeline(pipelineType));
+			chunk->drawAsset(engine, pipelineType);
 	}
 }
