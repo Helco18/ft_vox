@@ -2,12 +2,13 @@
 #include "World.hpp"
 #include "TextureAtlas.hpp"
 #include "Logger.hpp"
+#include "utils.hpp"
 #include <iostream>
 #include <cstring>
 
-Asset Chunk::_generateQuadMesh(float width, float height, float depth, int face)
+ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int face)
 {
-	Asset asset;
+	ChunkAsset asset;
 	asset.vertices.reserve(4);
 	asset.indices.reserve(6);
 
@@ -184,8 +185,9 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 
 void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face)
 {
-	Asset quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
-	uint32_t verticesAdded = _asset.vertices.size();
+	ChunkAsset quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
+	uint32_t verticesAdded = _asset.vertices.vertexCount;
+	_asset.vertices.bytes.reserve(_asset.vertices.bytes.size() + quad.vertices.size() * sizeof(Vertex));
 	for (Vertex & vertex : quad.vertices)
 	{
 		Vertex tmp = vertex;
@@ -198,7 +200,11 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 		tmp.uvMax = texture->uvMax;
 		tmp.uvRepeat = { (float)countBlockWidth, (float)countBlockHeight };
 
-		_asset.vertices.push_back(tmp);
+		size_t oldSize = _asset.vertices.bytes.size();
+		_asset.vertices.bytes.resize(oldSize + sizeof(Vertex));
+		Vertex * dst = reinterpret_cast<Vertex *>(_asset.vertices.bytes.data() + oldSize);
+		*dst = tmp;
+		 _asset.vertices.vertexCount++;
 	}
 	for (uint32_t indice : quad.indices)
 		_asset.indices.push_back(indice + verticesAdded);
@@ -325,7 +331,6 @@ void Chunk::_generateSliceMeshing(int axis, int sliceIndex)
 			_processFace(u, v, processed, FaceDirection::BACKWARD, axis, sliceIndex, uMax, vMax);
 		}
 	}
-
 }
 
 void Chunk::_generateGreedyMesh()
@@ -335,4 +340,5 @@ void Chunk::_generateGreedyMesh()
 		for (int sliceIndex = 0; sliceIndex < (i == 0 ? CHUNK_WIDTH : (i == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)); ++sliceIndex)
 			_generateSliceMeshing(i, sliceIndex);
 	}
+	_asset.vertices.stride = sizeof(Vertex);
 }

@@ -37,7 +37,7 @@ void Chunk::generateMesh()
 
 	Profiler p("Chunk::generateMesh");
 	_generateGreedyMesh();
-	if (!_asset.vertices.empty() && !_asset.indices.empty())
+	if (!_asset.vertices.bytes.empty() && !_asset.indices.empty())
 		setState(MESHED);
 	else
 		setState(MESHED_EMPTY);

@@ -103,9 +103,9 @@ void Profiler::print()
 	#ifdef VALGRIND_AVAILABLE
 	if (RUNNING_ON_VALGRIND)
 	{
-		Logger::log(PROFILER, DEBUG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", &file);
-		Logger::log(PROFILER, DEBUG, "!Warning: Valgrind was used. Timing won't be exact.!", &file);
-		Logger::log(PROFILER, DEBUG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", &file);
+		Logger::log(PROFILER, INFO, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", &file);
+		Logger::log(PROFILER, INFO, "!Warning: Valgrind was used. Timing won't be exact.!", &file);
+		Logger::log(PROFILER, INFO, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", &file);
 	}
 	#endif
 	for (std::pair<const std::string, Profile> & profiles : _profileCache)
@@ -113,15 +113,15 @@ void Profiler::print()
 		Profile & profile = profiles.second;
 		std::string name = profiles.first;
 		
-		Logger::log(PROFILER, DEBUG, "Profile for: " + name + ":", &file);
-		Logger::log(PROFILER, DEBUG, "First execution time: " + getFormattedTime(profile.firstExecTime), &file);
-		Logger::log(PROFILER, DEBUG, "Last execution time: " + getFormattedTime(profile.lastExecTime), &file);
-		Logger::log(PROFILER, DEBUG, "Slowest execution time: " + getFormattedTime(profile.slowestExecTime), &file);
-		Logger::log(PROFILER, DEBUG, "Fastest execution time: " + getFormattedTime(profile.fastestExecTime), &file);
-		Logger::log(PROFILER, DEBUG, "Average execution time: " + getAverageTime(profile.recordedTimes), &file);
-		Logger::log(PROFILER, DEBUG, "Median execution time: " + getMedianTime(profile.recordedTimes), &file);
-		Logger::log(PROFILER, DEBUG, "Number of executions: " + toString(profile.times), &file);
-		Logger::log(PROFILER, DEBUG, "--------------------------------", &file);
+		Logger::log(PROFILER, INFO, "Profile for: " + name + ":", &file);
+		Logger::log(PROFILER, INFO, "First execution time: " + getFormattedTime(profile.firstExecTime), &file);
+		Logger::log(PROFILER, INFO, "Last execution time: " + getFormattedTime(profile.lastExecTime), &file);
+		Logger::log(PROFILER, INFO, "Slowest execution time: " + getFormattedTime(profile.slowestExecTime), &file);
+		Logger::log(PROFILER, INFO, "Fastest execution time: " + getFormattedTime(profile.fastestExecTime), &file);
+		Logger::log(PROFILER, INFO, "Average execution time: " + getAverageTime(profile.recordedTimes), &file);
+		Logger::log(PROFILER, INFO, "Median execution time: " + getMedianTime(profile.recordedTimes), &file);
+		Logger::log(PROFILER, INFO, "Number of executions: " + toString(profile.times), &file);
+		Logger::log(PROFILER, INFO, "--------------------------------", &file);
 	}
 	Logger::log(PROFILER, INFO, "Logged output in: " + filename);
 }

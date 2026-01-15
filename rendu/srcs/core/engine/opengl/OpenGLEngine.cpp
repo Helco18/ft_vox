@@ -40,7 +40,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 	glGenBuffers(1, &asset.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, asset.vbo);
-	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size() * pipelineInfo.attributeSize, asset.vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, asset.vertices.bytes.size(), asset.vertices.bytes.data(), GL_STATIC_DRAW);
 
 	for (size_t i = 0; i < attributes.size(); ++i)
 	{
@@ -170,7 +170,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		return;
 
 	Asset * asset = it->second;
-	if (asset->vertices.empty())
+	if (asset->vertices.bytes.empty())
 		return;
 
 	glBindVertexArray(assetID);

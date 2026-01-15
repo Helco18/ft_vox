@@ -19,9 +19,16 @@ typedef unsigned int AssetID;
 
 class GLFWwindow;
 
+struct VertexStream
+{
+	std::vector<std::byte>	bytes;
+	uint32_t				vertexCount;
+	uint32_t				stride;
+};
+
 struct Asset
 {
-	std::vector<Vertex> 	vertices;
+	VertexStream			vertices;
 	std::vector<uint32_t>	indices;
 	AssetID					assetID;
 	unsigned int			vbo;

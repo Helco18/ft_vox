@@ -83,8 +83,7 @@ void VulkanEngine::_recordCommandBuffer()
 	transitionImageViewInfo.srcAccessMask = {};
 	// Après la barrière, on veut écrire dans cette image (on écrit les pixels du framebuffer)
 	transitionImageViewInfo.dstAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
-	// Pas besoin d'attendre un stage en particulier car les images sont nouvelles et n'ont donc pas encore été utilisées
-	transitionImageViewInfo.srcStageMask = vk::PipelineStageFlagBits2::eNone;
+	transitionImageViewInfo.srcStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
 	// La barrière doit être validée avant que la pipeline atteigne la phase d'écriture du color attachment
 	transitionImageViewInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
 

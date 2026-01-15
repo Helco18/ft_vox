@@ -19,6 +19,8 @@ static void parseArgs(int ac, char ** av, EngineType * engineType)
 					g_debug = true;
 				else if (str[i] == 'p')
 					Profiler::enable();
+				else
+					throw GeneralException("Invalid argument: '" + toString(str[i]) + "'.");
 			}
 		}
 		else if (str == "gl" || str == "opengl")
@@ -31,11 +33,11 @@ int main(int ac, char ** av)
 	EngineType engineType = VULKAN;
 	Environment environment;
 
-	if (ac > 1)
-		parseArgs(ac, av, &engineType);
-
 	try
 	{
+		if (ac > 1)
+			parseArgs(ac, av, &engineType);
+
 		environment.init(engineType);
 		environment.loop();
 

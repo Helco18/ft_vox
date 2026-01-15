@@ -31,6 +31,12 @@ enum FaceDirection
 	BACKWARD
 };
 
+struct ChunkAsset
+{
+	std::vector<Vertex>		vertices;
+	std::vector<uint32_t>	indices;
+};
+
 class Chunk
 {
 	public:
@@ -56,14 +62,16 @@ class Chunk
 		World *					_world;
 		glm::ivec3				_chunkLocation;
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
+		ChunkAsset				_chunkAsset;
 		Asset					_asset;
+		std::vector<Vertex>		_vertices;
 		ChunkState				_state;
 		std::mutex				_stateMutex;
 		std::mutex				_workerMutex;
 
 		void					_generateGreedyMesh();
 		void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
-		Asset					_generateQuadMesh(float width, float height, float depth, int face);
+		ChunkAsset				_generateQuadMesh(float width, float height, float depth, int face);
 		void					_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face);
 		void					_generateSliceMeshing(int axis, int sliceIndex);
 		uint8_t					_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
