@@ -73,14 +73,14 @@ void OpenGLEngine::load()
 
 	_createTexture();
 
-	glBindVertexArray(0);
-
 	if (g_debug)
 	{
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(_debugCallback, this);
 	}
+
+	glEnable(GL_FRAMEBUFFER_SRGB);
 
 	Logger::log(ENGINE_OPENGL, INFO, "OpenGL engine initialized successfully.");
 
@@ -148,6 +148,14 @@ void OpenGLEngine::_applyPipeline(PipelineID pipelineID)
 	}
 
 	pipelineInfo.depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+	if (pipelineInfo.blend)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+		glDisable(GL_BLEND);
+
 	ShaderCache::iterator shaderit = _shaderCache.find(pipelineInfo.shaderName);
 	if (shaderit != _shaderCache.end())
 		glUseProgram(shaderit->second);
