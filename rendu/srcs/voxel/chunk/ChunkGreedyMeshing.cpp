@@ -186,8 +186,7 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face)
 {
 	ChunkAsset quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
-	uint32_t verticesAdded = _asset.vertices.vertexCount;
-	_asset.vertices.bytes.reserve(_asset.vertices.bytes.size() + quad.vertices.size() * sizeof(Vertex));
+	uint32_t verticesAdded = _chunkAsset.vertices.size();
 	for (Vertex & vertex : quad.vertices)
 	{
 		Vertex tmp = vertex;
@@ -200,14 +199,10 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 		tmp.uvMax = texture->uvMax;
 		tmp.uvRepeat = { (float)countBlockWidth, (float)countBlockHeight };
 
-		size_t oldSize = _asset.vertices.bytes.size();
-		_asset.vertices.bytes.resize(oldSize + sizeof(Vertex));
-		Vertex * dst = reinterpret_cast<Vertex *>(_asset.vertices.bytes.data() + oldSize);
-		*dst = tmp;
-		 _asset.vertices.vertexCount++;
+		_chunkAsset.vertices.push_back(tmp);
 	}
 	for (uint32_t indice : quad.indices)
-		_asset.indices.push_back(indice + verticesAdded);
+		_chunkAsset.indices.push_back(indice + verticesAdded);
 }
 
 static glm::ivec3 getFaceDir(int axis, FaceDirection faceDir)
@@ -339,6 +334,19 @@ void Chunk::_generateGreedyMesh()
 	{
 		for (int sliceIndex = 0; sliceIndex < (i == 0 ? CHUNK_WIDTH : (i == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)); ++sliceIndex)
 			_generateSliceMeshing(i, sliceIndex);
+	}
+	if (!_chunkAsset.vertices.empty() && !_chunkAsset.indices.empty())
+	{
+		_asset.vertices.bytes.assign(
+			reinterpret_cast<const std::byte*>(_chunkAsset.vertices.data()),
+			reinterpret_cast<const std::byte*>(_chunkAsset.vertices.data()) + _chunkAsset.vertices.size() * sizeof(Vertex)
+		);
+		_asset.vertices.vertexCount = _chunkAsset.vertices.size();
+		_asset.indices = _chunkAsset.indices;
+		_chunkAsset.vertices.clear();
+		_chunkAsset.vertices.shrink_to_fit();
+		_chunkAsset.indices.clear();
+		_chunkAsset.indices.shrink_to_fit();
 	}
 	_asset.vertices.stride = sizeof(Vertex);
 }
