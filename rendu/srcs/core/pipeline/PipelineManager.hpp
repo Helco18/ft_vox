@@ -17,17 +17,16 @@ enum PipelineType
 class PipelineManager
 {
 	public:
-		typedef std::unordered_map<PipelineType, Pipeline> PipelineCache;
-
 		PipelineManager() = delete;
 		~PipelineManager() = delete;
 
-		static void						init(AEngine * engine);
-		static Pipeline					getPipeline(PipelineType pipelineType);
-		static const PipelineCache &	getAllPipelines() { return _pipelineCache; }
+		static void			init(AEngine * engine);
+		static Pipeline		getPipeline(PipelineType pipelineType);
 
 	private:
-		static void						_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType);
-		static PipelineCache			_pipelineCache;
+		typedef std::unordered_map<PipelineType, Pipeline> PipelineMap;
+
+		static void			_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType);
+		static PipelineMap	_pipelineMap;
 
 };

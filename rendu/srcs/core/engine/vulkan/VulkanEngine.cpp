@@ -58,8 +58,8 @@ void VulkanEngine::load()
 
 	// On définit la structure de nos *descriptor sets*, qui servent à passer des données aux shaders
 	// (comme les uniform buffers, textures ou samplers).
-	_createDescriptorPool();
 	_createDescriptorSetLayout();
+	_createDescriptorPool();
 	_createDescriptorSets();
 
 	// On crée les *semaphores* et *fences* pour la synchronisation :

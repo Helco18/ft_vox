@@ -4,77 +4,33 @@
 
 void VulkanEngine::_createDescriptorSetLayout()
 {
-	vk::raii::DescriptorSetLayout descriptorSetLayout = nullptr;
 	// Décrit la structure des ressources accessibles par le shader
 
-	const PipelineManager::PipelineCache & pipelineCache = PipelineManager::getAllPipelines();
+	vk::DescriptorSetLayoutBinding uboLayoutBinding;
+	uboLayoutBinding.binding = 0;
+	uboLayoutBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
+	uboLayoutBinding.descriptorCount = 1;
+	uboLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
+	uboLayoutBinding.pImmutableSamplers = nullptr;
 
-	for (const std::pair<const PipelineType, Pipeline> & pipelinePair : pipelineCache)
-	{
-		const Pipeline & pipeline = pipelinePair.second;
-		const PipelineInfo & pipelineInfo = pipeline.getPipelineInfo();
-		std::vector<vk::DescriptorSetLayoutBinding> descriptorLayouts;
+	vk::DescriptorSetLayoutBinding texLayoutBinding;
+	texLayoutBinding.binding = 1;
+	texLayoutBinding.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+	texLayoutBinding.descriptorCount = 1;
+	texLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
+	texLayoutBinding.pImmutableSamplers = nullptr;
 
-		for ()
-		{
-			vk::DescriptorSetLayoutBinding layoutBinding;
-			layoutBinding.binding = ;
-			layoutBinding.descriptorType = ;
-			layoutBinding.descriptorCount = 1;
-			layoutBinding.stageFlags = ;
-			descriptorLayouts.push_back(layoutBinding);
-			// uboLayoutBinding.binding = 0;
-			// uboLayoutBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
-			// uboLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-			// uboLayoutBinding.pImmutableSamplers = nullptr;
+	std::array descriptorLayouts = { uboLayoutBinding, texLayoutBinding };
 
-			// vk::DescriptorSetLayoutBinding texLayoutBinding;
-			// texLayoutBinding.binding = 1;
-			// texLayoutBinding.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-			// texLayoutBinding.descriptorCount = 1;
-			// texLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
-			// texLayoutBinding.pImmutableSamplers = nullptr;
-		}
+	vk::DescriptorSetLayoutCreateInfo layoutInfo;
+	layoutInfo.flags = {};
+	layoutInfo.bindingCount = descriptorLayouts.size();
+	layoutInfo.pBindings = descriptorLayouts.data();
 
-		vk::DescriptorSetLayoutCreateInfo layoutInfo;
-		layoutInfo.flags = {};
-		layoutInfo.bindingCount = descriptorLayouts.size();
-		layoutInfo.pBindings = descriptorLayouts.data();
+	_descriptorSetLayout = vk::raii::DescriptorSetLayout( _device, layoutInfo );
 
-		_descriptorSetLayoutMap.emplace(pipelineInfo.id, std::make_shared<vk::raii::DescriptorSetLayout>( _device, layoutInfo ));
-	}
+	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool Set.");
 }
-
-// vk::raii::DescriptorSetLayout VulkanEngine::_createDescriptorSetLayout()
-// {
-// 	vk::raii::DescriptorSetLayout descriptorSetLayout = nullptr;
-// 	// Décrit la structure des ressources accessibles par le shader
-
-// 	vk::DescriptorSetLayoutBinding uboLayoutBinding;
-// 	uboLayoutBinding.binding = 0;
-// 	uboLayoutBinding.descriptorType = vk::DescriptorType::eUniformBuffer;
-// 	uboLayoutBinding.descriptorCount = 1;
-// 	uboLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eVertex;
-// 	uboLayoutBinding.pImmutableSamplers = nullptr;
-
-// 	vk::DescriptorSetLayoutBinding texLayoutBinding;
-// 	texLayoutBinding.binding = 1;
-// 	texLayoutBinding.descriptorType = vk::DescriptorType::eCombinedImageSampler;
-// 	texLayoutBinding.descriptorCount = 1;
-// 	texLayoutBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
-// 	texLayoutBinding.pImmutableSamplers = nullptr;
-
-// 	std::array descriptorLayouts = { uboLayoutBinding, texLayoutBinding };
-
-// 	vk::DescriptorSetLayoutCreateInfo layoutInfo;
-// 	layoutInfo.flags = {};
-// 	layoutInfo.bindingCount = descriptorLayouts.size();
-// 	layoutInfo.pBindings = descriptorLayouts.data();
-
-// 	descriptorSetLayout = vk::raii::DescriptorSetLayout( _device, layoutInfo );
-
-// 	return descriptorSetLayout;
-// }
 
 void VulkanEngine::_createDescriptorPool()
 {
@@ -99,7 +55,7 @@ void VulkanEngine::_createDescriptorPool()
 	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool.");
 }
 
-void VulkanEngine::_createDescriptorSets(Asset & asset)
+void VulkanEngine::_createDescriptorSets()
 {
 	std::vector<vk::DescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, *_descriptorSetLayout);
 	vk::DescriptorSetAllocateInfo descriptorSetAllocInfo;

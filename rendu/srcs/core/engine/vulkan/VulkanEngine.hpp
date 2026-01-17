@@ -91,7 +91,6 @@ class VulkanEngine : public AEngine
 		typedef std::vector<vk::raii::DescriptorSet>										DescriptorSets;
 		typedef std::vector<vk::VertexInputAttributeDescription>							VertexAttributeDescriptionVector;
 		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
-		typedef std::unordered_map<PipelineID, std::shared_ptr<vk::DescriptorSetLayout>>	DescriptorSetLayoutMap;
 		typedef std::unordered_map<PipelineID, PipelineObjects>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
 		typedef std::unordered_map<AssetID, BufferData>										BufferCache;
@@ -116,9 +115,8 @@ class VulkanEngine : public AEngine
 		std::vector<vk::Image>				_swapChainImages;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
 	
-		// Commands & Descriptors
-		vk::raii::DescriptorPool			_descriptorPool = nullptr;
-		DescriptorSetLayoutMap				_descriptorSetLayoutMap;
+		// Pipeline & Descriptor
+		vk::raii::DescriptorSetLayout		_descriptorSetLayout = nullptr;
 		vk::raii::CommandPool				_commandPool = nullptr;
 		CommandBuffers						_commandBuffers;
 
@@ -134,6 +132,8 @@ class VulkanEngine : public AEngine
 		std::vector<vk::raii::Buffer>		_uniformBuffers;
 		std::vector<vk::raii::DeviceMemory>	_uniformBuffersMemory;
 		std::vector<void *>					_uniformBuffersMapped;
+		vk::raii::DescriptorPool			_descriptorPool = nullptr;
+		DescriptorSets						_descriptorSets;
 		ShaderCache							_shaderCache;
 		BufferCache							_vboCache;
 		BufferCache							_iboCache;

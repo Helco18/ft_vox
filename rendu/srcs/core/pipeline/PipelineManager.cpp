@@ -4,7 +4,7 @@
 #include "utils.hpp"
 #include <vector>
 
-PipelineManager::PipelineCache PipelineManager::_pipelineCache;
+PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 
 void PipelineManager::init(AEngine * engine)
 {
@@ -28,13 +28,13 @@ void PipelineManager::init(AEngine * engine)
 void PipelineManager::_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)
 {
 	pipelineInfo.id = engine->uploadPipeline(pipelineInfo);
-	_pipelineCache.try_emplace(pipelineType, pipelineInfo);
+	_pipelineMap.try_emplace(pipelineType, pipelineInfo);
 }
 
 Pipeline PipelineManager::getPipeline(PipelineType pipelineType)
 {
-	PipelineCache::iterator it = _pipelineCache.find(pipelineType);
-	if (it != _pipelineCache.end())
+	PipelineMap::iterator it = _pipelineMap.find(pipelineType);
+	if (it != _pipelineMap.end())
 		return it->second;
 	throw PipelineException("Couldn't get pipeline type: " + toString(pipelineType) + ".");
 }
