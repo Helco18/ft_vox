@@ -27,11 +27,11 @@ void PipelineManager::init(AEngine * engine)
 
 void PipelineManager::_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)
 {
-	PipelineID pipelineID = engine->uploadPipeline(pipelineInfo);
-	_pipelineMap.try_emplace(pipelineType, pipelineID);
+	pipelineInfo.id = engine->uploadPipeline(pipelineInfo);
+	_pipelineMap.try_emplace(pipelineType, pipelineInfo);
 }
 
-PipelineID PipelineManager::getPipeline(PipelineType pipelineType)
+Pipeline PipelineManager::getPipeline(PipelineType pipelineType)
 {
 	PipelineMap::iterator it = _pipelineMap.find(pipelineType);
 	if (it != _pipelineMap.end())
