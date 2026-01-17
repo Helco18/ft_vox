@@ -8,21 +8,33 @@ PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 
 void PipelineManager::init(AEngine * engine)
 {
-	PipelineInfo pipelineInfo;
-	pipelineInfo.shaderName = "voxel";
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	pipelineInfo.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	PipelineInfo pipelineInfoVoxel;
+	pipelineInfoVoxel.shaderName = "voxel";
+	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
 
-	for (Attribute attribute : pipelineInfo.attributes)
-		pipelineInfo.attributeSize += attribute.size;
-	_uploadPipeline(engine, pipelineInfo, PIPELINE_VOXEL);
+	for (Attribute attribute : pipelineInfoVoxel.attributes)
+		pipelineInfoVoxel.attributeSize += attribute.size;
+	_uploadPipeline(engine, pipelineInfoVoxel, PIPELINE_VOXEL);
 
-	pipelineInfo.polygonMode = LINE;
-	_uploadPipeline(engine, pipelineInfo, PIPELINE_WIREFRAME);
+	PipelineInfo pipelineInfoWireframe(pipelineInfoVoxel);
+	pipelineInfoWireframe.polygonMode = LINE;
+	_uploadPipeline(engine, pipelineInfoWireframe, PIPELINE_WIREFRAME);
+
+	PipelineInfo pipelineInfoBasic;
+	pipelineInfoBasic.shaderName = "basic";
+	pipelineInfoBasic.attributes.clear();
+	pipelineInfoBasic.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	pipelineInfoBasic.attributeSize = sizeof(glm::vec2);
+	pipelineInfoBasic.blend = false;
+	pipelineInfoBasic.cullMode = OFF;
+	pipelineInfoBasic.depthTest = false;
+	_uploadPipeline(engine, pipelineInfoBasic, PIPELINE_BASIC);
+
 }
 
 void PipelineManager::_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)

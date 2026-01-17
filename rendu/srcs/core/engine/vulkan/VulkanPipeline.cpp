@@ -107,8 +107,8 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	// Depth
 	vk::PipelineDepthStencilStateCreateInfo depthStencil;
-	depthStencil.depthTestEnable = vk::True;
-	depthStencil.depthWriteEnable = vk::True;
+	depthStencil.depthTestEnable = pipelineInfo.depthTest;
+	depthStencil.depthWriteEnable = pipelineInfo.depthTest;
 	depthStencil.depthCompareOp = vk::CompareOp::eLess;
 	depthStencil.depthBoundsTestEnable = vk::False;
 	depthStencil.stencilTestEnable = vk::False;
@@ -125,7 +125,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	// On écrit sur les 4 composantes de couleur
 	colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
 	// Est-ce qu'on active le blending ou non
-	colorBlendAttachment.blendEnable = vk::True;
+	colorBlendAttachment.blendEnable = pipelineInfo.blend;
 	// Comment la couleur source (nouvelle) et la couleur de destination (déjà présente) sont pondérées avant d’être additionnées.
 	colorBlendAttachment.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
 	colorBlendAttachment.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;

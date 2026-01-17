@@ -11,7 +11,8 @@ class AEngine;
 enum PipelineType
 {
 	PIPELINE_VOXEL,
-	PIPELINE_WIREFRAME
+	PIPELINE_WIREFRAME,
+	PIPELINE_BASIC
 };
 
 class PipelineManager
