@@ -33,10 +33,10 @@ void Camera::updateOrientation(double mouseX, double mouseY)
 	_yaw += rotY;
 	_pitch -= rotX;
 
-	if (_pitch> 89.99f)
-		_pitch = 89.99f;
-	else if (_pitch< -89.99f)
-		_pitch = -89.99f;
+	if (_pitch> 89.98f)
+		_pitch = 89.98f;
+	else if (_pitch< -89.98f)
+		_pitch = -89.98f;
 
 	if (_yaw > 180.0f)
 		_yaw -= 360.0f;
