@@ -85,8 +85,8 @@ GLFWwindow * WindowManager::_createWindow()
 		if (_engineType == OPENGL)
 		{
 			glfwMakeContextCurrent(window);
-			if (glewInit() != GLEW_OK)
-				throw WindowException("Couldn't initialize GLEW.");
+			if (!gladLoadGL(glfwGetProcAddress))
+				throw WindowException("Couldn't initialize GLAD.");
 		}
 		glfwSetWindowSizeLimits(window, WIDTH / 2, HEIGHT / 2, GLFW_DONT_CARE, GLFW_DONT_CARE);
 		_setIcon(window);

@@ -1,7 +1,7 @@
 # Compilation
 CC					=	g++
 CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD
-LDFLAGS				=	-lvulkan -lGL -lGLEW
+LDFLAGS				=	-lvulkan -lGL -ldl
 
 # Names
 NAME				=	ft_vox
@@ -9,6 +9,7 @@ NAME				=	ft_vox
 # Paths
 SHADER_PATH			=	srcs/core/shaders
 OBJ_PATH			=	objs
+GLAD_PATH			=	libs/glad
 GLFW_PATH			=	libs/GLFW
 GLM_PATH			=	libs/glm
 STB_PATH			=	libs/stb
@@ -53,6 +54,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp
+LIBS_SRC			=	libs/glad/gl.c
 SHADERS				=	$(SHADER_PATH)/slang/voxel.slang
 
 # Includes
@@ -85,12 +87,10 @@ GLFW				=	$(GLFW_PATH)/libglfw3.a
 
 # Objects
 OBJS				=	$(patsubst srcs/%.cpp, $(OBJ_PATH)/%.o, $(SRCS)) \
-						$(patsubst %.c, $(OBJ_PATH)/%.o, $(LIBS)) \
-						$(patsubst %.cpp, $(OBJ_PATH)/%.o, $(LIBS))
+						$(patsubst libs/%.c, $(OBJ_PATH)/%.o, $(LIBS_SRC))
 
 DEPS				=	$(patsubst srcs/%.cpp, $(OBJ_PATH)/%.d, $(SRCS)) \
-						$(patsubst %.c, $(OBJ_PATH)/%.d, $(LIBS)) \
-						$(patsubst %.cpp, $(OBJ_PATH)/%.d, $(LIBS))
+						$(patsubst libs/%.c, $(OBJ_PATH)/%.d, $(LIBS_SRC))
 
 # Custom Makefile Flags
 MAKEFLAGS			+=	--no-print-directory --silent
@@ -111,13 +111,18 @@ ALL_FCLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects & Executables clean
 
 # Rules
 
-all : glfw glm stb shader $(NAME)
+all : glfw glm stb glad shader $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) $(LDFLAGS)
 	$(EXE_DONE)
 
 $(OBJ_PATH)/%.o: srcs/%.cpp
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@echo "[SRCS] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
+
+$(OBJ_PATH)/%.o: libs/%.c
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@echo "[SRCS] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
@@ -201,7 +206,6 @@ download_glm:
 	echo "\033[31;1;4mglm Not Found\033[0m"; \
 	echo "\033[31;1mDownloading it from github\033[0m"; \
 	git clone https://github.com/g-truc/glm.git GLM; \
-	echo "\033[31;1mGetting the Headers\033[0m"; \
 	mkdir -p glm; \
 	mv GLM/glm .; \
 	rm -rf GLM
@@ -217,7 +221,6 @@ download_stb:
 	echo "\033[31;1;4mstb Not Found\033[0m"; \
 	echo "\033[31;1mDownloading it from github\033[0m"; \
 	git clone https://github.com/nothings/stb.git STB; \
-	echo "\033[31;1mGetting the Headers\033[0m"; \
 	mkdir -p stb; \
 	mv STB/* stb/; \
 	rm -rf STB;
@@ -228,6 +231,20 @@ stb:
 		make --no-print-directory download_stb; \
 	fi
 
-.PHONY: all shader clean sclean fclean re debug stb download_stb glm download_glm glfw download_glfw
+download_glad:
+	@cd libs; \
+	echo "\033[31;1;4mglad Not Found\033[0m"; \
+	echo "\033[31;1mDownloading it from my google drive which is very unsafe and needs to be changed but I'm too lazy right now\033[0m"; \
+	wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1m5uKvKhd8hvi6pQ7lvgL6U9O5RIkBtm2' -O glad.tar.gz; \
+	tar -xpf glad.tar.gz; \
+	rm -rf glad.tar.gz;
+
+glad:
+	@if ! ls ./libs/glad 2>/dev/null | grep -q "gl.h" ; then \
+		mkdir -p libs; \
+		make --no-print-directory download_glad; \
+	fi
+
+.PHONY: all shader clean sclean fclean re debug stb download_stb glm download_glm glfw download_glfw glad download_glad
 
 -include $(DEPS)

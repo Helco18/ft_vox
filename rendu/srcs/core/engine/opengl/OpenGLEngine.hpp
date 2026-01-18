@@ -1,5 +1,6 @@
 #include "AEngine.hpp"
-#include <GL/glew.h>
+#include "glad/gl.h"
+#include <GL/glext.h>
 #include "GLFW/glfw3.h"
 #include <string>
 
