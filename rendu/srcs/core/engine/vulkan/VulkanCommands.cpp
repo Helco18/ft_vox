@@ -134,10 +134,10 @@ void VulkanEngine::_recordCommandBuffer()
 		PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
 		if (pipelineit == _pipelineMap.end())
 			continue;
-		PipelineObjects & pipelineObjects = pipelineit->second;
-		commands.bindPipeline(vk::PipelineBindPoint::eGraphics, pipelineObjects.pipeline);
-		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineObjects.layout, 0,
-				*_descriptorSets[_currentFrame], nullptr);
+		PipelineData & pipelineData = pipelineit->second;
+		commands.bindPipeline(vk::PipelineBindPoint::eGraphics, pipelineData.pipeline);
+		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineData.layout, 0,
+				*pipelineData.descriptorSets[_currentFrame], nullptr);
 		const std::vector<Asset *> & drawableAssets = pipelineAsset.second;
 		for (const Asset * asset : drawableAssets)
 		{

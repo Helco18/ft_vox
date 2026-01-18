@@ -1,11 +1,13 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
 #include "TextureAtlas.hpp"
+#include "utils.hpp"
 
-void VulkanEngine::_createTextureImage()
+void VulkanEngine::_createTextureImage(PipelineData & pipelineData)
 {
 	int width, height;
 
+	Logger::log(ENGINE_VULKAN, DEBUG, "Texture buffer: " + toString(&pipelineData.textures.image));
 	width = TextureAtlas::getWidth();
 	height = TextureAtlas::getHeight();
 	unsigned char * pixels = TextureAtlas::getData();
@@ -24,11 +26,13 @@ void VulkanEngine::_createTextureImage()
 
 	_createImage(width, height, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal,
 					vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
-					vk::MemoryPropertyFlagBits::eDeviceLocal, _textureImage, _textureImageMemory, vk::SampleCountFlagBits::e1);
+					vk::MemoryPropertyFlagBits::eDeviceLocal, pipelineData.textures.image, pipelineData.textures.memory,
+					vk::SampleCountFlagBits::e1);
 	
-	_transitionImageLayout(_textureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-    _copyBufferToImage(stagingBuffer, _textureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-    _transitionImageLayout(_textureImage, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+	_transitionImageLayout(pipelineData.textures.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+    _copyBufferToImage(stagingBuffer, pipelineData.textures.image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    _transitionImageLayout(pipelineData.textures.image, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+	Logger::log(ENGINE_VULKAN, DEBUG, "Texture buffer: " + toString(&pipelineData.textures.image));
 }
 
 void VulkanEngine::_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height)
@@ -50,14 +54,14 @@ void VulkanEngine::_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii:
 	_endSingleTimeCommands(commandBuffer);
 }
 
-void VulkanEngine::_createTextureImageView()
+void VulkanEngine::_createTextureImageView(PipelineData & pipelineData)
 {
 	vk::ImageViewCreateInfo imageViewCreateInfo;
 	// On utilise le 2D pour les opérations basiques.
 	// On peut utiliser 1D pour des lookup tables par exemple.
 	// On peut utiliser 3D pour des textures 3D (nuages, fumée, IRM...)
 	imageViewCreateInfo.viewType = vk::ImageViewType::e2D;
-	imageViewCreateInfo.image = _textureImage;
+	imageViewCreateInfo.image = pipelineData.textures.image;
 	imageViewCreateInfo.format = vk::Format::eR8G8B8A8Srgb;
 	imageViewCreateInfo.subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 };
 	// Nos images vont être utilisées en tant que cible pour les couleurs, sans mipmap et avec un seul layer
@@ -67,10 +71,10 @@ void VulkanEngine::_createTextureImageView()
 	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 	imageViewCreateInfo.subresourceRange.layerCount = 1;
 
-	_textureImageView = vk::raii::ImageView( _device, imageViewCreateInfo );
+	pipelineData.textures.textureImageView = vk::raii::ImageView( _device, imageViewCreateInfo );
 }
 
-void VulkanEngine::_createTextureSampler()
+void VulkanEngine::_createTextureSampler(PipelineData & pipelineData)
 {
 	vk::PhysicalDeviceProperties properties = _physicalDevice.getProperties();
 
@@ -90,5 +94,5 @@ void VulkanEngine::_createTextureSampler()
 	samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
 	samplerInfo.unnormalizedCoordinates = vk::False;
 
-	_textureSampler = vk::raii::Sampler( _device, samplerInfo );
+	pipelineData.textures.textureSampler = vk::raii::Sampler( _device, samplerInfo );
 }

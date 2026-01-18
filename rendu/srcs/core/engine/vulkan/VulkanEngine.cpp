@@ -51,16 +51,10 @@ void VulkanEngine::load()
 	// - index buffer : décrit l’ordre dans lequel les sommets sont connectés.
 	// - uniform buffer : ils contiennent les données variables entre les frames (comme les matrices de transformation / constantes globales utilisées par les shaders)
 	_createDepthResources();
-	_createTextureImage();
-	_createTextureImageView();
-	_createTextureSampler();
-	_createUniformBuffers();
 
 	// On définit la structure de nos *descriptor sets*, qui servent à passer des données aux shaders
 	// (comme les uniform buffers, textures ou samplers).
-	_createDescriptorSetLayout();
 	_createDescriptorPool();
-	_createDescriptorSets();
 
 	// On crée les *semaphores* et *fences* pour la synchronisation :
 	// ils permettent de s’assurer que les opérations GPU (rendu, présentation, etc.) s’exécutent dans le bon ordre et ne se chevauchent pas.
@@ -155,9 +149,7 @@ void VulkanEngine::endFrame()
 			throw VulkanException("Couldn't acquire next image.");
 		}
 		
-		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
-		if (res != vk::Result::eSuccess)
-			return;
+		_device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 		_updateUniformBuffer();
 

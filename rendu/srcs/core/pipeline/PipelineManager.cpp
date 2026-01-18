@@ -8,32 +8,47 @@ PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 
 void PipelineManager::init(AEngine * engine)
 {
-	PipelineInfo pipelineInfoVoxel;
-	pipelineInfoVoxel.shaderName = "voxel";
-	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
-	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
-	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	pipelineInfoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	PipelineInfo infoVoxel;
+	infoVoxel.shaderName = "voxel";
+	infoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	infoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	
+	DescriptorInfo cameraMatrix;
+	cameraMatrix.binding = 0;
+	cameraMatrix.count = 1;
+	cameraMatrix.size = sizeof(UniformBuffer);
+	cameraMatrix.stage = ShaderStage::VERTEX;
+	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
 
-	for (Attribute attribute : pipelineInfoVoxel.attributes)
-		pipelineInfoVoxel.attributeSize += attribute.size;
-	_uploadPipeline(engine, pipelineInfoVoxel, PIPELINE_VOXEL);
+	DescriptorInfo textureAtlas;
+	textureAtlas.binding = 1;
+	textureAtlas.count = 1;
+	textureAtlas.stage = ShaderStage::FRAGMENT;
+	textureAtlas.type = DescriptorType::COMBINED_IMAGE_SAMPLER;
 
-	PipelineInfo pipelineInfoWireframe(pipelineInfoVoxel);
-	pipelineInfoWireframe.polygonMode = LINE;
-	_uploadPipeline(engine, pipelineInfoWireframe, PIPELINE_WIREFRAME);
+	infoVoxel.descriptors.push_back(cameraMatrix);
+	infoVoxel.descriptors.push_back(textureAtlas);
+	for (Attribute attribute : infoVoxel.attributes)
+		infoVoxel.attributeSize += attribute.size;
+	_uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);
 
-	PipelineInfo pipelineInfoBasic;
-	pipelineInfoBasic.shaderName = "basic";
-	pipelineInfoBasic.attributes.clear();
-	pipelineInfoBasic.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	pipelineInfoBasic.attributeSize = sizeof(glm::vec2);
-	pipelineInfoBasic.blend = false;
-	pipelineInfoBasic.cullMode = OFF;
-	pipelineInfoBasic.depthTest = false;
-	_uploadPipeline(engine, pipelineInfoBasic, PIPELINE_BASIC);
+	// PipelineInfo infoWireframe(infoVoxel);
+	// infoWireframe.polygonMode = LINE;
+	// _uploadPipeline(engine, infoWireframe, PIPELINE_WIREFRAME);
+
+	// PipelineInfo infoBasic;
+	// infoBasic.shaderName = "basic";
+	// infoBasic.attributes.clear();
+	// infoBasic.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	// infoBasic.attributeSize = sizeof(glm::vec2);
+	// infoBasic.blend = false;
+	// infoBasic.cullMode = OFF;
+	// infoBasic.depthTest = false;
+	// _uploadPipeline(engine, infoBasic, PIPELINE_BASIC);
 
 }
 
@@ -43,7 +58,7 @@ void PipelineManager::_uploadPipeline(AEngine * engine, PipelineInfo & pipelineI
 	_pipelineMap.try_emplace(pipelineType, pipelineInfo);
 }
 
-Pipeline PipelineManager::getPipeline(PipelineType pipelineType)
+const PipelineInfo & PipelineManager::getPipeline(PipelineType pipelineType)
 {
 	PipelineMap::iterator it = _pipelineMap.find(pipelineType);
 	if (it != _pipelineMap.end())

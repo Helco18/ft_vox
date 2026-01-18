@@ -144,15 +144,24 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	colorBlending.logicOp = vk::LogicOp::eCopy;
 	colorBlending.attachmentCount = 1;
 	colorBlending.pAttachments = &colorBlendAttachment;
-	
+
+	PipelineData pipelineData;
+	pipelineData.pipelineInfo = &pipelineInfo;
+	if (!pipelineInfo.descriptors.empty())
+	{
+		_createTextureImage(pipelineData);
+		_createTextureImageView(pipelineData);
+		_createTextureSampler(pipelineData);
+		_createUniformBuffers(pipelineData);
+		_createDescriptorSetLayout(pipelineData);
+		_createDescriptorSets(pipelineData);
+	}
 	vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
 	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &*_descriptorSetLayout;
+	pipelineLayoutInfo.pSetLayouts = &*pipelineData.descriptorSetLayout;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-	_pipelineMap.try_emplace(pipelineID);
-	PipelineObjects & pipelineObjects = _pipelineMap[pipelineID];
-	pipelineObjects.layout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
+	pipelineData.layout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
 
 	vk::PipelineRenderingCreateInfo pipelineRenderingInfo;
 	pipelineRenderingInfo.colorAttachmentCount = 1;
@@ -172,12 +181,12 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	graphicsPipelineFillInfo.pDepthStencilState = &depthStencil;
 	graphicsPipelineFillInfo.pColorBlendState = &colorBlending;
 	graphicsPipelineFillInfo.pDynamicState = &dynamicStateInfo;
-	graphicsPipelineFillInfo.layout = pipelineObjects.layout;
+	graphicsPipelineFillInfo.layout = pipelineData.layout;
 	graphicsPipelineFillInfo.renderPass = nullptr;
 
-	pipelineObjects.pipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineFillInfo);
-	pipelineObjects.pipelineInfo = pipelineInfo;
+	pipelineData.pipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineFillInfo);
 
+	_pipelineMap.try_emplace(pipelineID, std::move(pipelineData));
 	Logger::log(ENGINE_VULKAN, INFO, "Created Pipeline ID: " + toString(pipelineID));
 	return pipelineID;
 }

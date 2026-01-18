@@ -1,36 +1,41 @@
 #include "VulkanEngine.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Logger.hpp"
+#include "utils.hpp"
 #include <iostream>
 
-void VulkanEngine::_createUniformBuffers()
+void VulkanEngine::_createUniformBuffers(PipelineData & pipelineData)
 {
-	_uniformBuffers.clear();
-	_uniformBuffersMemory.clear();
-	_uniformBuffersMapped.clear();
-
 	// On crée un uniform buffer par frame en vol (MAX_FRAMES_IN_FLIGHT)
 	// pour éviter les conflits d’écriture entre le CPU (qui met à jour les uniforms)
 	// et le GPU (qui lit ces données pendant le rendu).
+	vk::DeviceSize size = 0;
+	for (DescriptorInfo & descriptorInfo : pipelineData.pipelineInfo->descriptors)
+	{
+		if (descriptorInfo.type == DescriptorType::UNIFORM_BUFFER)
+			size += descriptorInfo.size;
+	}
+	pipelineData.uniforms.size = size;
+	if (size == 0)
+		return;
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 	{
-		vk::DeviceSize size = sizeof(UniformBuffer);
 		vk::raii::Buffer buffer = nullptr;
 		vk::raii::DeviceMemory bufferMemory = nullptr;
-
 		// On crée un buffer de type "uniform buffer" et on lui alloue de la mémoire visible par le CPU
 		// (HOST_VISIBLE) pour pouvoir écrire directement dedans depuis l’application,
 		// et "HOST_COHERENT" pour s’assurer que les écritures CPU soient immédiatement visibles du GPU
 		// sans nécessiter d’appels explicites à vkFlushMappedMemoryRanges.
 		_createBuffer(size, vk::BufferUsageFlagBits::eUniformBuffer,
-				vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible, buffer, bufferMemory);
+				vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible, 
+				buffer, bufferMemory);
+
+		pipelineData.uniforms.bufferData.emplace_back(BufferData{std::move(buffer), std::move(bufferMemory)});
 
 		// On mappe la mémoire du buffer pour obtenir un pointeur CPU accessible en écriture.
 		// On garde ce pointeur persistant pendant tout le programme pour pouvoir mettre à jour
 		// facilement le contenu du uniform buffer à chaque frame.
-		_uniformBuffers.emplace_back(std::move(buffer));
-		_uniformBuffersMemory.emplace_back(std::move(bufferMemory));
-		_uniformBuffersMapped.emplace_back(_uniformBuffersMemory[i].mapMemory(0, size));
+		pipelineData.uniforms.mapped.emplace_back(pipelineData.uniforms.bufferData[i].memory.mapMemory(0, size));
 	}
 
 	Logger::log(ENGINE_VULKAN, INFO, "Created Uniform Buffers.");
@@ -54,5 +59,6 @@ void VulkanEngine::_updateUniformBuffer()
 		0.01f * NEAR_PLANE_OFFSET, 1500.0f);
 	ubo.proj[1][1] *= -1;
 
-	memcpy(_uniformBuffersMapped[_currentFrame], &ubo, sizeof(ubo));
+	// very hardcoded for now
+	memcpy(_pipelineMap[PipelineManager::getPipeline(PIPELINE_VOXEL).id].uniforms.mapped[_currentFrame], &ubo, sizeof(ubo));
 }

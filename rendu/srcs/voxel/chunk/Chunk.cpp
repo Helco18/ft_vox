@@ -48,13 +48,13 @@ void Chunk::uploadAsset(AEngine * engine)
 	std::lock_guard<std::mutex> lg(_workerMutex);
  
 	Profiler p("Chunk::uploadAsset");
-	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).getPipelineInfo().id);
+	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
 	setState(UPLOADED);
 }
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
-	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).getPipelineInfo().id);
+	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 }
 
 void Chunk::unload(AEngine * engine)
