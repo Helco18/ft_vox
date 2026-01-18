@@ -63,12 +63,17 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 
 	pipelineData.descriptorSets = _device.allocateDescriptorSets(descriptorSetAllocInfo);
 
-	std::vector<vk::WriteDescriptorSet> writeSets;
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+	for (const DescriptorInfo & descriptorInfo : pipelineData.pipelineInfo->descriptors)
 	{
-		for (DescriptorInfo & descriptorInfo : pipelineData.pipelineInfo->descriptors)
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 		{
 			vk::WriteDescriptorSet writeSet;
+			writeSet.dstSet = pipelineData.descriptorSets[i];
+			writeSet.dstBinding = descriptorInfo.binding;
+			writeSet.dstArrayElement = 0;
+			writeSet.descriptorCount = descriptorInfo.count;
+			writeSet.descriptorType = VKValueConverter::getDescriptorType(descriptorInfo.type);
+
 			if (descriptorInfo.type == UNIFORM_BUFFER)
 			{
 				vk::DescriptorBufferInfo uniformBufferInfo;
@@ -76,6 +81,7 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 				uniformBufferInfo.offset = 0;
 				uniformBufferInfo.range = pipelineData.uniforms.size;
 				writeSet.pBufferInfo = &uniformBufferInfo;
+				_device.updateDescriptorSets(writeSet, {});
 			}
 			else if (descriptorInfo.type == COMBINED_IMAGE_SAMPLER)
 			{
@@ -84,20 +90,11 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 				textureBufferInfo.imageView = pipelineData.textures.textureImageView;
 				textureBufferInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 				writeSet.pImageInfo = &textureBufferInfo;
+				_device.updateDescriptorSets(writeSet, {});
 			}
 			else
 				throw VulkanException("Unknown descriptor found for pipeline ID: " + toString(pipelineData.pipelineInfo->id));
-
-			writeSet.dstSet = pipelineData.descriptorSets[i];
-			writeSet.dstBinding = descriptorInfo.binding;
-			writeSet.dstArrayElement = 0;
-			writeSet.descriptorCount = descriptorInfo.count;
-			writeSet.descriptorType = VKValueConverter::getDescriptorType(descriptorInfo.type);
-
-			writeSets.push_back(writeSet);
-			writeSets.shrink_to_fit();
 		}
-		_device.updateDescriptorSets(writeSets, {});
 	}
 	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Sets.");
 }

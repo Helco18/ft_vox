@@ -128,7 +128,6 @@ class VulkanEngine : public AEngine
 		typedef std::vector<vk::raii::CommandBuffer>										CommandBuffers;
 		typedef std::vector<vk::raii::Semaphore>											Semaphores;
 		typedef std::vector<vk::raii::Fence>												Fences;
-		typedef std::vector<vk::raii::DescriptorSet>										DescriptorSets;
 		typedef std::vector<vk::VertexInputAttributeDescription>							VertexAttributeDescriptionVector;
 		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
 		typedef std::unordered_map<PipelineID, PipelineData>								PipelineMap;

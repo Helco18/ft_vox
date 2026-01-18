@@ -7,7 +7,6 @@ void VulkanEngine::_createTextureImage(PipelineData & pipelineData)
 {
 	int width, height;
 
-	Logger::log(ENGINE_VULKAN, DEBUG, "Texture buffer: " + toString(&pipelineData.textures.image));
 	width = TextureAtlas::getWidth();
 	height = TextureAtlas::getHeight();
 	unsigned char * pixels = TextureAtlas::getData();
@@ -32,7 +31,6 @@ void VulkanEngine::_createTextureImage(PipelineData & pipelineData)
 	_transitionImageLayout(pipelineData.textures.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
     _copyBufferToImage(stagingBuffer, pipelineData.textures.image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
     _transitionImageLayout(pipelineData.textures.image, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
-	Logger::log(ENGINE_VULKAN, DEBUG, "Texture buffer: " + toString(&pipelineData.textures.image));
 }
 
 void VulkanEngine::_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height)
