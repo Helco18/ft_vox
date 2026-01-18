@@ -149,7 +149,9 @@ void VulkanEngine::endFrame()
 			throw VulkanException("Couldn't acquire next image.");
 		}
 		
-		_device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
+		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
+		if (res != vk::Result::eSuccess)
+			throw VulkanException("Waiting for fences on draw call failed.");
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 		_updateUniformBuffer();
 

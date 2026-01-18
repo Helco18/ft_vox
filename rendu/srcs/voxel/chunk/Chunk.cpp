@@ -6,6 +6,14 @@
 #include "TextureAtlas.hpp"
 #include <iostream>
 
+Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE)
+{
+	UniformStream fadeValueUniform;
+	fadeValueUniform.binding = 2;
+	fadeValueUniform.bytes = valueToBytes(_chunkFade);
+	_asset.uniforms.push_back(fadeValueUniform);
+}
+
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
@@ -54,6 +62,9 @@ void Chunk::uploadAsset(AEngine * engine)
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
+	if (_chunkFade < 1.0f)
+		_chunkFade += 0.01f;
+	_asset.uniforms[0].bytes = valueToBytes(_chunkFade); // TODO: Make UniformStream take pointers instead to not have to update everytime
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 }
 

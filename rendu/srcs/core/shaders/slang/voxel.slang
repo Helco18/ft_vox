@@ -65,8 +65,8 @@ float4 fragMain(VertexOutput inVert) : SV_Target
 	float2 tileSize = inVert.outUvMax - inVert.outUvMin;
 	// frac(x) retourne la partie décimale de x (equivalent a x - floor(x))
 	float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
-	// float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue);
-	float4 vertColor = texture.Sample(finalUV);
+	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue);
+	// float4 vertColor = texture.Sample(finalUV);
 
 	vertColor.rgb *= diffuse;
 

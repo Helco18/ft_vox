@@ -337,10 +337,7 @@ void Chunk::_generateGreedyMesh()
 	}
 	if (!_chunkAsset.vertices.empty() && !_chunkAsset.indices.empty())
 	{
-		_asset.vertices.bytes.assign(
-			reinterpret_cast<const std::byte*>(_chunkAsset.vertices.data()),
-			reinterpret_cast<const std::byte*>(_chunkAsset.vertices.data()) + _chunkAsset.vertices.size() * sizeof(Vertex)
-		);
+		_asset.vertices.bytes = vectorToBytes(_chunkAsset.vertices);
 		_asset.vertices.vertexCount = _chunkAsset.vertices.size();
 		_asset.indices = _chunkAsset.indices;
 		_chunkAsset.vertices.clear();

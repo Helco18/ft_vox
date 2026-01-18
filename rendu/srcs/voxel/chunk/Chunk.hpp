@@ -40,8 +40,8 @@ struct ChunkAsset
 class Chunk
 {
 	public:
-		Chunk(int x = 0, int y = 0, int z = 0, World * world = nullptr): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE) {}
-		Chunk(const glm::ivec3 & chunkLocation, World * world): _world(world), _chunkLocation(chunkLocation), _state(NONE){}
+		Chunk(int x = 0, int y = 0, int z = 0, World * world = nullptr);
+		Chunk(const glm::ivec3 & chunkLocation, World * world = nullptr): Chunk(chunkLocation.x, chunkLocation.y, chunkLocation.z, world) {}
 		~Chunk() {};
 
 		const glm::ivec3 &		getChunkLocation() const { return _chunkLocation; }

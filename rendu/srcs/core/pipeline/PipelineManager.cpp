@@ -30,8 +30,16 @@ void PipelineManager::init(AEngine * engine)
 	textureAtlas.stage = ShaderStage::FRAGMENT;
 	textureAtlas.type = DescriptorType::COMBINED_IMAGE_SAMPLER;
 
+	DescriptorInfo chunkValues;
+	chunkValues.binding = 2;
+	chunkValues.count = 1;
+	chunkValues.size = sizeof(float);
+	chunkValues.stage = ShaderStage::FRAGMENT;
+	chunkValues.type = DescriptorType::UNIFORM_BUFFER;
+
 	infoVoxel.descriptors.push_back(cameraMatrix);
 	infoVoxel.descriptors.push_back(textureAtlas);
+	infoVoxel.descriptors.push_back(chunkValues);
 	for (Attribute attribute : infoVoxel.attributes)
 		infoVoxel.attributeSize += attribute.size;
 	_uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);

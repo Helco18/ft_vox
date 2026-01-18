@@ -16,7 +16,7 @@ class Camera
 		int			getHeight() const { return _height; }
 		float		getYaw() const { return _yaw; }
 		float		getPitch() const { return _pitch; }
-		float		getFOV() const { return _FOV; }
+		float		getFOV() const { return _fov; }
 		float		getSensitivity() const { return _sensitivity; }
 		float		getSpeed() const { return _speed; }
 		int			getRenderDistance() const { return _renderDistance; }
@@ -41,12 +41,12 @@ class Camera
 		glm::vec3	_position;
 		glm::vec3	_orientation;
 		glm::vec3	_altitude;
-		int			_renderDistance = 8;
+		uint16_t	_renderDistance = 8;
 		int			_width;
 		int			_height;
 		float		_yaw;
 		float		_pitch;
-		int			_FOV;
+		float		_fov;
 		float		_sensitivity;
 		float		_speed;
 };

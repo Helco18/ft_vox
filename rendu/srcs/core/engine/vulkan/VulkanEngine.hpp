@@ -7,7 +7,6 @@
 #define GLFW_EXPOSE_NATIVE_GLX
 #include "AEngine.hpp"
 #include "OBJModel.hpp"
-#define VULKAN_HPP_NO_NODISCARD_WARNINGS
 #include <vulkan/vulkan_raii.hpp>
 
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
