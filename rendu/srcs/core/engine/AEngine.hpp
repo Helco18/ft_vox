@@ -21,7 +21,8 @@ class GLFWwindow;
 
 struct UniformStream
 {
-	std::vector<std::byte>	bytes;
+	void *					data;
+	size_t					size;
 	int						binding;
 	unsigned int			ubo;
 };

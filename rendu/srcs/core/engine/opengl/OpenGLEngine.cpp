@@ -56,7 +56,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	{
 		glGenBuffers(1, &futureUbo.ubo);
 		glBindBuffer(GL_UNIFORM_BUFFER, futureUbo.ubo);
-		glBufferData(GL_UNIFORM_BUFFER, futureUbo.bytes.size(), futureUbo.bytes.data(), GL_DYNAMIC_DRAW);
+		glBufferData(GL_UNIFORM_BUFFER, futureUbo.size, futureUbo.data, GL_DYNAMIC_DRAW);
 		glBindBufferBase(GL_UNIFORM_BUFFER, futureUbo.binding, futureUbo.ubo);
 	}
 
@@ -198,7 +198,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, stream.ubo);
 		glBindBufferBase(GL_UNIFORM_BUFFER, stream.binding, stream.ubo);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, stream.bytes.size(), stream.bytes.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, stream.size, stream.data);
 	}
 
 	_applyPipeline(pipelineID);

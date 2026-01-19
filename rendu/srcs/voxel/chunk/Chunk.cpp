@@ -11,7 +11,8 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 {
 	UniformStream fadeValueUniform;
 	fadeValueUniform.binding = 2;
-	fadeValueUniform.bytes = valueToBytes(_chunkFade);
+	fadeValueUniform.data = &_chunkFade;
+	fadeValueUniform.size = sizeof(float);
 	_asset.uniforms.push_back(fadeValueUniform);
 }
 
@@ -65,7 +66,6 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
 	if (_chunkFade < 1.0f)
 		_chunkFade += 3.0f * reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()))->getDeltaTime();
-	_asset.uniforms[0].bytes = valueToBytes(_chunkFade); // TODO: Make UniformStream take pointers instead to not have to update everytime
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 }
 
