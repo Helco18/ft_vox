@@ -43,7 +43,6 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	glGenBuffers(1, &asset.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, asset.vbo);
 	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size, asset.vertices.data, GL_STATIC_DRAW);
-	Logger::log(ENGINE_OPENGL, DEBUG, "Size: " + toString(asset.vertices.size));
 
 	for (size_t i = 0; i < attributes.size(); ++i)
 	{
