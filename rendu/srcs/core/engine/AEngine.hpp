@@ -29,9 +29,10 @@ struct UniformStream
 
 struct VertexStream
 {
-	std::vector<std::byte>	bytes;
+	void *					data;
 	uint32_t				vertexCount;
 	uint32_t				stride;
+	uint32_t				size;
 };
 
 struct Asset

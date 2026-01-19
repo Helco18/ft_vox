@@ -60,7 +60,7 @@ void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage
 void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 {
 	Asset * asset = pendingAsset.asset;
-	if (asset->vertices.bytes.empty())
+	if (!asset->vertices.data)
 		return;
 
 	BufferData & vertexData = pendingAsset.vertexData;
@@ -68,14 +68,14 @@ void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 	PipelineMap::iterator it = _pipelineMap.find(pendingAsset.pipelineID);
 	if (it == _pipelineMap.end())
 		return;
-	vk::DeviceSize size = asset->vertices.bytes.size();
+	vk::DeviceSize size = asset->vertices.size;
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc,
 					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
 					stagingVertexData.buffer, stagingVertexData.memory);
 
 	void * dataStaging = stagingVertexData.memory.mapMemory(0, size);
-	memcpy(dataStaging, asset->vertices.bytes.data(), size);
+	memcpy(dataStaging, asset->vertices.data, size);
 	stagingVertexData.memory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
@@ -86,7 +86,7 @@ void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 void VulkanEngine::_createIndexBuffer(PendingAsset & pendingAsset)
 {
 	Asset * asset = pendingAsset.asset;
-	if (asset->vertices.bytes.empty())
+	if (!asset->vertices.data)
 		return;
 
 	BufferData & indexData = pendingAsset.indexData;
@@ -119,7 +119,7 @@ void VulkanEngine::_uploadPendingAssets()
 		if (it == _pipelineMap.end())
 			continue;
 		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
-			vk::BufferCopy(0, 0, asset->vertices.bytes.size()));
+			vk::BufferCopy(0, 0, asset->vertices.size));
 		commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
 			vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
 	}

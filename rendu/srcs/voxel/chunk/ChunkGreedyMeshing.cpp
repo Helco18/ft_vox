@@ -337,11 +337,10 @@ void Chunk::_generateGreedyMesh()
 	}
 	if (!_chunkAsset.vertices.empty() && !_chunkAsset.indices.empty())
 	{
-		_asset.vertices.bytes = vectorToBytes(_chunkAsset.vertices);
+		_asset.vertices.data = _chunkAsset.vertices.data();
 		_asset.vertices.vertexCount = _chunkAsset.vertices.size();
 		_asset.indices = _chunkAsset.indices;
-		_chunkAsset.vertices.clear();
-		_chunkAsset.vertices.shrink_to_fit();
+		_asset.vertices.size = _chunkAsset.vertices.size() * sizeof(Vertex);
 		_chunkAsset.indices.clear();
 		_chunkAsset.indices.shrink_to_fit();
 	}

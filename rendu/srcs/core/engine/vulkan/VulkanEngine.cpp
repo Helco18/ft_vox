@@ -87,7 +87,7 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 	AssetID assetID = _nextAssetID++;
 	asset.assetID = assetID;
-	if (!asset.vertices.bytes.empty())
+	if (asset.vertices.data)
 	{
 		try
 		{
@@ -109,7 +109,7 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (assetit != _assetMap.end())
 	{
 		Asset * asset = assetit->second;
-		if (asset->vertices.bytes.empty())
+		if (!asset->vertices.data)
 			return;
 		_pipelineAssetMap[pipelineID].push_back(asset);
 	}

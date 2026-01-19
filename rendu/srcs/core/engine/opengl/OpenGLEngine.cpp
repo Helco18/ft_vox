@@ -42,7 +42,8 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 	glGenBuffers(1, &asset.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, asset.vbo);
-	glBufferData(GL_ARRAY_BUFFER, asset.vertices.bytes.size(), asset.vertices.bytes.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size, asset.vertices.data, GL_STATIC_DRAW);
+	Logger::log(ENGINE_OPENGL, DEBUG, "Size: " + toString(asset.vertices.size));
 
 	for (size_t i = 0; i < attributes.size(); ++i)
 	{
@@ -121,7 +122,8 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	ShaderCache::iterator it = _shaderCache.find(pipelineInfo.shaderName);
 	if (it == _shaderCache.end())
 	{
-		GLuint shader = _createShader(OPENGL_SHADER_PATH + pipelineInfo.shaderName + ".vert", OPENGL_SHADER_PATH + pipelineInfo.shaderName + ".frag");
+		GLuint shader = _createShader(OPENGL_SHADER_PATH + pipelineInfo.shaderName + ".vert",
+				OPENGL_SHADER_PATH + pipelineInfo.shaderName + ".frag");
 		_shaderCache.try_emplace(pipelineInfo.shaderName, shader);
 	}
 	return pipelineID;
@@ -189,7 +191,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		return;
 
 	Asset * asset = it->second;
-	if (asset->vertices.bytes.empty())
+	if (!asset->vertices.data)
 		return;
 
 	glBindVertexArray(assetID);
