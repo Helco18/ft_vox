@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <any>
 #include <sstream>
 #include <vector>
 #include <cstring>
@@ -34,21 +33,6 @@ const std::string			toString(const T & value)
 	std::ostringstream os;
 	os << value;
 	return os.str();
-}
-
-template <typename T>
-std::vector<std::byte>		valueToBytes(const T & value)
-{
-	std::vector<std::byte> bytes(sizeof(T));
-	memcpy(bytes.data(), &value, sizeof(T));
-	return bytes;
-}
-
-template <typename T>
-std::vector<std::byte>		vectorToBytes(const std::vector<T> & value)
-{
-	return { reinterpret_cast<const std::byte *>(value.data()),
-		reinterpret_cast<const std::byte *>(value.data()) + value.size() * sizeof(T)};
 }
 
 const std::vector<char>		readFile(const std::string & filename);
