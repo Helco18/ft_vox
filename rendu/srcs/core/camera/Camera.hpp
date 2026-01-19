@@ -5,6 +5,13 @@
 
 #define CAMERA_SPEED 2.0f
 
+enum CameraType
+{
+	EULER,
+	SIX_DOF,
+	FPS
+};
+
 class Camera
 {
 	public:
@@ -31,12 +38,15 @@ class Camera
 		void		setHeight(int height) { _height = height; }
 		void		setSpeed(float speed) { _speed = speed; }
 		void		setRenderDistance(int renderDistance) { _renderDistance = renderDistance; }
+		void		setCameraType(CameraType type);
 
 		void		changeYaw(float yaw) { _yaw += yaw; }
 		void		changePitch(float pitch) { _pitch += pitch; }
 		void		changeSpeed(float speed) { _speed += speed; }
 
 		glm::vec3	computeForward() const;
+		glm::vec3	computeRight() const;
+		glm::vec3	computeUp() const;
 		glm::mat4	getView() const;
 
 		void		updateOrientation(double mouseX, double mouseY, float roll);
@@ -55,4 +65,5 @@ class Camera
 		float		_fov;
 		float		_sensitivity;
 		float		_speed;
+		CameraType	_type = EULER;
 };

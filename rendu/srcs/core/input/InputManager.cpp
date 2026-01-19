@@ -73,9 +73,9 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 
 	velocity = speed * deltaTime;
 	pos = camera->getPosition();
-	up = camera->getAltitude();
+	up = camera->computeUp();
 	forward = camera->computeForward();
-	right = glm::normalize(glm::cross(forward, up));
+	right = camera->computeRight();
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		pos += forward * velocity;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -100,6 +100,7 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action, int)
 {
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+	Camera * camera = windowManager->getCamera();
 
 	if (!windowManager->getEngine()->isInitialized())
 		return;
@@ -119,4 +120,11 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		windowManager->toggleFullscreen();
 	if (key == GLFW_KEY_F7)
 		windowManager->toggleWireframe();
+
+	if (key == GLFW_KEY_1)
+		camera->setCameraType(EULER);
+	if (key == GLFW_KEY_2)
+		camera->setCameraType(SIX_DOF);
+	if (key == GLFW_KEY_3)
+		camera->setCameraType(FPS);
 }
