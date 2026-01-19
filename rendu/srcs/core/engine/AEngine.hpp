@@ -64,6 +64,7 @@ class AEngine
 		virtual void		drawAsset(AssetID assetID, PipelineID pipelineID) = 0;
 		virtual void		endFrame() = 0;
 
+		GLFWwindow *		getWindow() const { return _window; }
 		Camera *			getCamera() const { return _camera; }
 		bool				getFramebufferResized() const { return _isFramebufferResized; }
 		bool				isInitialized() const { return _isInitalized; }

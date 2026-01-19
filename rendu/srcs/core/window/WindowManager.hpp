@@ -19,11 +19,13 @@ class WindowManager
 		AEngine *		getEngine() const { return _engine; }
 		GLFWwindow *	getWindow() const { return _window; }
 		Camera *		getCamera() const { return _camera; }
+		double			getDeltaTime() const { return _deltaTime; }
 		int				getWidth() const { return _width; }
 		int				getHeight() const { return _height; }
 		bool			isWireframe() const { return _isWireframeEnabled; }
 		bool			isSwapRequested() const { return _isSwapRequested; }
 
+		void			setDeltaTime(double deltaTime) { _deltaTime = deltaTime; }
 		void			setWidth(int width) { _width = width; }
 		void			setHeight(int height) { _height = height; }
 		void			setWindowPosX(int windowPosX) { _windowPosX = windowPosX; }
@@ -44,6 +46,7 @@ class WindowManager
 		GLFWwindow *	_window;
 		Camera *		_camera;
 		double			_lastFpsUpdate;
+		double			_deltaTime = 0.0;
 		int				_width;
 		int				_height;
 		int				_windowPosX;

@@ -20,7 +20,6 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 	float rotX = -_sensitivity * static_cast<float>(mouseX - (static_cast<float>(_width) / 2)) / static_cast<float>(_width);
 	float rotY = -_sensitivity * static_cast<float>(mouseY - (static_cast<float>(_height) / 2)) / static_cast<float>(_height);
 
-
 	glm::vec3 up;
 	glm::quat qYaw;
 
@@ -33,7 +32,7 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 	_pitch += rotY;
 	switch (static_cast<int>(_type))
 	{
-		case EULER :
+		case EULER:
 		{
 			roll = 0;
 			up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -52,7 +51,7 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 			}
 			break;
 		}
-		case SIX_DOF :
+		case SIX_DOF:
 		{
 			up = glm::normalize(_orientation * glm::vec3(0.0f, 1.0f, 0.0f));
 			right = glm::normalize(_orientation * glm::vec3(1.0f, 0.0f, 0.0f));
@@ -60,7 +59,7 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 			qRoll = glm::angleAxis(glm::radians(roll), forward);
 			break;
 		}
-		case FPS :
+		case FPS:
 		{
 			up = glm::normalize(_orientation * glm::vec3(0.0f, 1.0f, 0.0f));
 			right = glm::normalize(_orientation * glm::vec3(1.0f, 0.0f, 0.0f));
@@ -113,8 +112,8 @@ glm::mat4 Camera::getView() const
 	{
 		case EULER :
 		{
-			glm::mat4 View = glm::lookAt(_position, _position + computeForward(), glm::vec3(0.0f, 1.0f, 0.0f));
-			return(View);
+			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), glm::vec3(0.0f, 1.0f, 0.0f));
+			return(view);
 		}
 		case SIX_DOF :
 		{
@@ -124,13 +123,11 @@ glm::mat4 Camera::getView() const
 		}
 		case FPS :
 		{
-			glm::mat4 View = glm::lookAt(_position, _position + computeForward(), glm::vec3(0.0f, 1.0f, 0.0f));
-			return(View);
+			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), glm::vec3(0.0f, 1.0f, 0.0f));
+			return(view);
 		}
+		default: return (glm::mat4());
 	}
-	glm::mat4 rot = glm::mat4_cast(glm::conjugate(_orientation));
-	glm::mat4 trans = glm::translate(glm::mat4(1.0f), -_position);
-	return(rot * trans);
 }
 
 glm::vec3 Camera::getEulerAngles() const

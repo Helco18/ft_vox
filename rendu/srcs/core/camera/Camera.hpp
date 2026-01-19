@@ -18,7 +18,6 @@ class Camera
 		Camera(glm::vec3 position, int width, int height);
 
 		glm::vec3	getPosition() const { return _position; }
-		// glm::vec3	getOrientation() const { return _orientation; }
 		glm::quat	getOrientation() const { return _orientation; }
 		glm::vec3	getAltitude() const { return _altitude; }
 		int			getWidth() const { return _width; }
@@ -54,7 +53,6 @@ class Camera
 		glm::vec3	getEulerAngles() const;
 	private:
 		glm::vec3	_position;
-		// glm::vec3	_orientation;
 		glm::quat	_orientation;
 		glm::vec3	_altitude;
 		uint16_t	_renderDistance = 8;

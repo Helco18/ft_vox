@@ -57,7 +57,6 @@ void PipelineManager::init(AEngine * engine)
 	// infoBasic.cullMode = OFF;
 	// infoBasic.depthTest = false;
 	// _uploadPipeline(engine, infoBasic, PIPELINE_BASIC);
-
 }
 
 void PipelineManager::_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)

@@ -47,7 +47,7 @@ void Environment::loop()
 		frameStart = glfwGetTime();
 		_windowManager->getEngine()->beginFrame();
 		InputManager::interceptMouse(_windowManager);
-		InputManager::interceptMovements(_windowManager, deltaTime);
+		InputManager::interceptMovements(_windowManager);
 		World * world = WorldManager::getWorld(WORLD_NAME);
 		if (!_windowManager->drawFrame())
 		{
@@ -62,6 +62,7 @@ void Environment::loop()
 		}
 		_windowManager->getEngine()->endFrame();
 		deltaTime = glfwGetTime() - frameStart;
+		_windowManager->setDeltaTime(deltaTime);
 	}
 	_windowManager->destroy();
 }

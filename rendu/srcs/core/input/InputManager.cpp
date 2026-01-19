@@ -1,10 +1,8 @@
 #include "InputManager.hpp"
 #include <iostream>
 
-void InputManager::interceptScroll(GLFWwindow * window, double xoffset, double yoffset)
+void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
 {
-	(void) xoffset;
-
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
 	if (!windowManager->getEngine()->isInitialized())
 		return;
@@ -48,7 +46,7 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 	}
 }
 
-void InputManager::interceptMovements(WindowManager * windowManager, float deltaTime)
+void InputManager::interceptMovements(WindowManager * windowManager)
 {
 	if (!windowManager->getEngine()->isInitialized())
 		return;
@@ -60,6 +58,7 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 	width = windowManager->getWidth();
 	height = windowManager->getHeight();
 
+	double deltaTime;
 	float velocity;
 	float speed;
 	glm::vec3 forward;
@@ -71,6 +70,7 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		speed *= 5.0f;
 
+	deltaTime = windowManager->getDeltaTime();
 	velocity = speed * deltaTime;
 	pos = camera->getPosition();
 	up = camera->computeUp();
@@ -85,16 +85,14 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		pos += right * velocity;
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), -1.0f);
+		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), -15.0f * velocity);
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), 1.0f);
+		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), 15.0f * velocity);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		pos += up * velocity;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		pos -= up * velocity;
 	camera->setPosition(pos);
-
-	// std::cout << camera->getPosition().x << " " << camera->getPosition().y << " " << camera->getPosition().z << " | " << camera->getPitch() << " " << camera->getYaw() << std::endl;
 }
 
 void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action, int)
