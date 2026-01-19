@@ -8,54 +8,49 @@ Camera::Camera(glm::vec3 position, int width, int height): _position(position), 
 	_fov = 90.0f;
 	_sensitivity = 200.0f;
 	_speed = CAMERA_SPEED;
-
-	glm::vec3 direction;
-	direction.x = cosf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));
-	direction.y = sinf(glm::radians(_pitch));
-	direction.z = sinf(glm::radians(_yaw)) * cosf(glm::radians(_pitch));
-	_orientation = glm::normalize(direction);
+	glm::quat pitch = glm::angleAxis(glm::radians(_pitch), glm::vec3(1, 0, 0));
+	glm::quat yaw = glm::angleAxis(glm::radians(_yaw), glm::vec3(0, 1, 0));
+	glm::quat roll = glm::angleAxis(glm::radians(0.0f), glm::vec3(0, 0, -1));
+	_orientation = yaw * roll * pitch;
 }
 
-static glm::vec3 translateDirection(const float yaw, const float pitch)
+void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 {
-	glm::vec3 direction;
-	direction.x = cosf(glm::radians(yaw)) * cosf(glm::radians(pitch));
-	direction.y = sinf(glm::radians(pitch));
-	direction.z = sinf(glm::radians(yaw)) * cosf(glm::radians(pitch));
-	return (direction);
-}
+	const float rotX = -_sensitivity * static_cast<float>(mouseX - (static_cast<float>(_width) / 2)) / static_cast<float>(_width);
+	const float rotY = -_sensitivity * static_cast<float>(mouseY - (static_cast<float>(_height) / 2)) / static_cast<float>(_height);
 
-void Camera::updateOrientation(double mouseX, double mouseY)
-{
-	const float rotX = _sensitivity * static_cast<float>(mouseY - (static_cast<float>(_height) / 2)) / static_cast<float>(_height);
-	const float rotY = _sensitivity * static_cast<float>(mouseX - (static_cast<float>(_width) / 2)) / static_cast<float>(_width);
+	glm::vec3 up = glm::normalize(_orientation * glm::vec3(0, 1, 0));
+	glm::quat qYaw = glm::angleAxis(glm::radians(rotX), up);
 
-	_yaw += rotY;
-	_pitch -= rotX;
+	glm::vec3 right = glm::normalize(_orientation * glm::vec3(1, 0, 0));
+	glm::quat qPitch = glm::angleAxis(glm::radians(rotY), right);
 
-	if (_pitch> 89.98f)
-		_pitch = 89.98f;
-	else if (_pitch< -89.98f)
-		_pitch = -89.98f;
+	glm::vec3 rollD = glm::normalize(_orientation * glm::vec3(0, 0, -1));
+	glm::quat qRoll = glm::angleAxis(glm::radians(roll), rollD);
+	_orientation = qYaw * qRoll * qPitch * _orientation;
 
-	if (_yaw > 180.0f)
-		_yaw -= 360.0f;
-	else if (_yaw < -180.0f)
-		_yaw += 360.0f;
-
-	setOrientation(translateDirection(_yaw, _pitch));
+	_orientation = glm::normalize(_orientation);
 }
 
 glm::vec3 Camera::computeForward() const
 {
-	const float radYaw = glm::radians(_yaw);
-	const float radPitch = glm::radians(_pitch);
-
 	glm::vec3 forward;
-	forward.x = cosf(radPitch) * sinf(radYaw);
-	forward.y = sinf(radPitch);
-	forward.z = -cosf(radPitch) * cosf(radYaw);
-	forward = glm::normalize(forward);
+	forward = glm::normalize(_orientation * glm::vec3(0.0f, 0.0f, -1.0f));
 	
 	return forward;
+}
+
+glm::mat4 Camera::getView() const
+{
+	glm::mat4 rot = glm::mat4_cast(glm::conjugate(_orientation));
+	glm::mat4 trans = glm::translate(glm::mat4(1.0f), -_position);
+	return(rot * trans);
+}
+
+glm::vec3 Camera::getEulerAngles() const
+{
+    glm::vec3 euler = glm::eulerAngles(_orientation);
+    euler = glm::degrees(euler);
+
+    return euler;
 }

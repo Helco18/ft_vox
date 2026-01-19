@@ -34,7 +34,7 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
-		camera->updateOrientation(mouseX, mouseY);
+		camera->updateOrientation(mouseX, mouseY, 0);
 
 		glfwSetCursorPos(window, (static_cast<float>(width) / 2), (static_cast<float>(height) / 2));
 	}
@@ -55,6 +55,10 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 
 	GLFWwindow * window = windowManager->getWindow();
 	Camera * camera = windowManager->getCamera();
+
+	int width, height;
+	width = windowManager->getWidth();
+	height = windowManager->getHeight();
 
 	float velocity;
 	float speed;
@@ -80,6 +84,10 @@ void InputManager::interceptMovements(WindowManager * windowManager, float delta
 		pos -= right * velocity;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		pos += right * velocity;
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), -1.0f);
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), 1.0f);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		pos += up * velocity;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)

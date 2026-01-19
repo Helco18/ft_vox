@@ -46,12 +46,13 @@ void VulkanEngine::_updateUniformBuffer()
 	UniformBuffer ubo{};
 
 	// Camera orientation (Y-up)
-	glm::vec3 camPos = _camera->getPosition();
+	// glm::vec3 camPos = _camera->getPosition();
 
-	glm::vec3 forward = _camera->computeForward();
+	// glm::vec3 forward = _camera->computeForward();
 
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-	ubo.view = glm::lookAt(camPos, camPos + forward, up);
+	// glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+	// ubo.view = glm::lookAt(camPos, camPos + forward, up);
+	ubo.view = _camera->getView();
 
 	// Vulkan projection (flip Y)
 	ubo.proj = glm::perspective(glm::radians(_camera->getFOV()),

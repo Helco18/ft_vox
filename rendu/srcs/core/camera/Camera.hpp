@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 
 #define CAMERA_SPEED 2.0f
 
@@ -10,7 +11,8 @@ class Camera
 		Camera(glm::vec3 position, int width, int height);
 
 		glm::vec3	getPosition() const { return _position; }
-		glm::vec3	getOrientation() const { return _orientation; }
+		// glm::vec3	getOrientation() const { return _orientation; }
+		glm::quat	getOrientation() const { return _orientation; }
 		glm::vec3	getAltitude() const { return _altitude; }
 		int			getWidth() const { return _width; }
 		int			getHeight() const { return _height; }
@@ -35,11 +37,15 @@ class Camera
 		void		changeSpeed(float speed) { _speed += speed; }
 
 		glm::vec3	computeForward() const;
+		glm::mat4	getView() const;
 
-		void		updateOrientation(double mouseX, double mouseY);
+		void		updateOrientation(double mouseX, double mouseY, float roll);
+
+		glm::vec3	getEulerAngles() const;
 	private:
 		glm::vec3	_position;
-		glm::vec3	_orientation;
+		// glm::vec3	_orientation;
+		glm::quat	_orientation;
 		glm::vec3	_altitude;
 		uint16_t	_renderDistance = 8;
 		int			_width;
