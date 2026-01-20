@@ -141,12 +141,12 @@ void VulkanEngine::_recordCommandBuffer()
 		const std::vector<Asset *> & drawableAssets = pipelineAsset.second;
 		for (const Asset * asset : drawableAssets)
 		{
-			BufferCache::iterator vertexit = _vboCache.find(asset->assetID);
-			BufferCache::iterator indexit = _iboCache.find(asset->assetID);
-			if (vertexit == _vboCache.end() || indexit == _iboCache.end())
+			AssetDataCache::iterator datait = _assetDataCache.find(asset->assetID);
+			if (datait == _assetDataCache.end())
 				continue;
-			BufferData & vertexData = vertexit->second;
-			BufferData & indexData = indexit->second;
+			const AssetData & assetData = datait->second;
+			const BufferData & vertexData = assetData.vbo;
+			const BufferData & indexData = assetData.ibo;
 			commands.bindVertexBuffers(0, *vertexData.buffer, {0});
 			commands.bindIndexBuffer( *indexData.buffer, 0, vk::IndexType::eUint32);
 			commands.drawIndexed(asset->indices.size(), 1, 0, 0, 0);

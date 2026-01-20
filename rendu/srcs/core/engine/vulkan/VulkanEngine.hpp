@@ -15,6 +15,39 @@
 #define NEAR_PLANE_OFFSET 0.5f
 #define VULKAN_SHADER_PATH "srcs/core/shaders/spir-v/"
 
+struct VKValueConverter
+{
+	static constexpr vk::Format getType(AttributeType type)
+	{
+		switch (static_cast<int>(type))
+		{
+			case FLOAT3: return vk::Format::eR32G32B32Sfloat;
+			case FLOAT2: return vk::Format::eR32G32Sfloat;
+		}
+		return vk::Format::eUndefined;
+	}
+
+	static constexpr vk::DescriptorType getDescriptorType(DescriptorType type)
+	{
+		switch (static_cast<int>(type))
+		{
+			case UNIFORM_BUFFER: return vk::DescriptorType::eUniformBuffer;
+			case COMBINED_IMAGE_SAMPLER: return vk::DescriptorType::eCombinedImageSampler;
+		}
+		return vk::DescriptorType::eSampler;
+	}
+
+	static constexpr vk::ShaderStageFlagBits getShaderStage(ShaderStage stage)
+	{
+		switch (static_cast<int>(stage))
+		{
+			case VERTEX: return vk::ShaderStageFlagBits::eVertex;
+			case FRAGMENT: return vk::ShaderStageFlagBits::eFragment;
+		}
+		return vk::ShaderStageFlagBits::eAll;
+	}
+};
+
 struct QueueIndices
 {
 	uint32_t	graphicsIndex;
@@ -59,42 +92,9 @@ struct PipelineData
 	vk::raii::Pipeline 						pipeline = nullptr;
 	vk::raii::PipelineLayout 				layout = nullptr;
 	vk::raii::DescriptorSetLayout			descriptorSetLayout = nullptr;
-	std::vector<vk::raii::DescriptorSet>	descriptorSets;
 	UniformBufferData						uniforms;
+	std::vector<vk::raii::DescriptorSet>	descriptorSets;
 	TextureData								textures;
-};
-
-struct VKValueConverter
-{
-	static constexpr vk::Format getType(AttributeType type)
-	{
-		switch (static_cast<int>(type))
-		{
-			case FLOAT3: return vk::Format::eR32G32B32Sfloat;
-			case FLOAT2: return vk::Format::eR32G32Sfloat;
-		}
-		return vk::Format::eUndefined;
-	}
-
-	static constexpr vk::DescriptorType getDescriptorType(DescriptorType type)
-	{
-		switch (static_cast<int>(type))
-		{
-			case UNIFORM_BUFFER: return vk::DescriptorType::eUniformBuffer;
-			case COMBINED_IMAGE_SAMPLER: return vk::DescriptorType::eCombinedImageSampler;
-		}
-		return vk::DescriptorType::eSampler;
-	}
-
-	static constexpr vk::ShaderStageFlagBits getShaderStage(ShaderStage stage)
-	{
-		switch (static_cast<int>(stage))
-		{
-			case VERTEX: return vk::ShaderStageFlagBits::eVertex;
-			case FRAGMENT: return vk::ShaderStageFlagBits::eFragment;
-		}
-		return vk::ShaderStageFlagBits::eAll;
-	}
 };
 
 struct PendingAsset
@@ -105,6 +105,16 @@ struct PendingAsset
 	BufferData		stagingVertexData;
 	BufferData		indexData;
 	BufferData		stagingIndexData;
+};
+
+struct AssetData
+{
+	Asset *									asset;
+	PipelineID								pipelineID;
+	BufferData								vbo;
+	BufferData								ibo;
+	std::vector<UniformBufferData>			uniforms;
+	std::vector<vk::raii::DescriptorSet>	descriptorSets;
 };
 
 class VulkanEngine : public AEngine
@@ -131,7 +141,7 @@ class VulkanEngine : public AEngine
 		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
 		typedef std::unordered_map<PipelineID, PipelineData>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
-		typedef std::unordered_map<AssetID, BufferData>										BufferCache;
+		typedef std::unordered_map<AssetID, AssetData>										AssetDataCache;
 
 		// Window, context, instance
 		vk::raii::Context					_context;
@@ -168,8 +178,7 @@ class VulkanEngine : public AEngine
 
 		// Buffers & Memory
 		ShaderCache							_shaderCache;
-		BufferCache							_vboCache;
-		BufferCache							_iboCache;
+		AssetDataCache						_assetDataCache;
 		unsigned int						_nextAssetID = 0;
 
 		// Depth test

@@ -127,8 +127,12 @@ void VulkanEngine::_uploadPendingAssets()
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
-		_vboCache.try_emplace(asset->assetID, std::move(pendingAsset.vertexData));
-		_iboCache.try_emplace(asset->assetID, std::move(pendingAsset.indexData));
+		AssetData assetData;
+		assetData.asset = asset;
+		assetData.vbo = std::move(pendingAsset.vertexData);
+		assetData.ibo = std::move(pendingAsset.indexData);
+		assetData.pipelineID = pendingAsset.pipelineID;
+		_assetDataCache.try_emplace(asset->assetID, std::move(assetData));
 	}
 	_pendingAssets.clear();
 }

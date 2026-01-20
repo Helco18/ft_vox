@@ -120,12 +120,10 @@ void VulkanEngine::unloadAsset(AssetID assetID)
 	AssetMap::iterator assetit = _assetMap.find(assetID);
 	if (assetit != _assetMap.end())
 		_assetMap.erase(assetit);
-	BufferCache::iterator vertexit = _vboCache.find(assetID);
-	BufferCache::iterator indexit = _iboCache.find(assetID);
-	if (vertexit == _vboCache.end() || indexit == _iboCache.end())
+	AssetDataCache::iterator datait = _assetDataCache.find(assetID);
+	if (datait == _assetDataCache.end())
 		return;
-	_vboCache.erase(vertexit);
-	_iboCache.erase(indexit);
+	_assetDataCache.erase(datait);
 }
 
 void VulkanEngine::endFrame()
