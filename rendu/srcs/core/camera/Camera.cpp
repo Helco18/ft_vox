@@ -61,10 +61,21 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 		}
 		case FPS:
 		{
-			up = glm::normalize(_orientation * glm::vec3(0.0f, 1.0f, 0.0f));
-			right = glm::normalize(_orientation * glm::vec3(1.0f, 0.0f, 0.0f));
-			forward = glm::normalize(_orientation * glm::vec3(0.0f, 0.0f, -1.0f));
-			qRoll = glm::angleAxis(glm::radians(roll), forward);
+			roll = 0;
+			up = glm::vec3(0.0f, 1.0f, 0.0f);
+			right = glm::vec3(1.0f, 0.0f, 0.0f);
+			forward = glm::vec3(0.0f, 0.0f, -1.0f);
+			qRoll = glm::angleAxis(glm::radians(0.0f), forward);
+			if (_pitch > 89.0f)
+			{
+				rotY -= _pitch - 89.0f;
+				_pitch = 89.0f;
+			}
+			else if (_pitch < -89.0f)
+			{
+				rotY -= _pitch - -89.0f;
+				_pitch = -89.0f;
+			}
 			break;
 		}
 	}

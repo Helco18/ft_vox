@@ -85,9 +85,9 @@ void InputManager::interceptMovements(WindowManager * windowManager)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		pos += right * velocity;
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), -15.0f * velocity);
+		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), -120.0f * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), 15.0f * velocity);
+		camera->updateOrientation((static_cast<float>(width) / 2), (static_cast<float>(height) / 2), 120.0f * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		pos += up * velocity;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
