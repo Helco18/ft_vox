@@ -46,9 +46,9 @@ void Environment::loop()
 	double deltaTime = 0.0;
 	AEngine * engine;
 
+	engine = _windowManager->getEngine();
 	while (_running)
 	{
-		engine = _windowManager->getEngine();
 		Profiler p("Environment::loop-while(_running)");
 		frameStart = glfwGetTime();
 		engine->beginFrame();
@@ -58,6 +58,7 @@ void Environment::loop()
 		World * world = WorldManager::getWorld(WORLD_NAME);
 		if (!_windowManager->drawFrame())
 		{
+			engine = _windowManager->getEngine();
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
 				world->reloadChunks(engine);
 			continue;

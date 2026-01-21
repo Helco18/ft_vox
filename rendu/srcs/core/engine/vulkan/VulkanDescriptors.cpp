@@ -67,6 +67,8 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 	{
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 		{
+			if (descriptorInfo.type != UNIFORM_BUFFER && descriptorInfo.type != COMBINED_IMAGE_SAMPLER)
+				continue;
 			vk::WriteDescriptorSet writeSet;
 			writeSet.dstSet = pipelineData.descriptorSets[i];
 			writeSet.dstBinding = descriptorInfo.binding;
@@ -92,8 +94,6 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 				writeSet.pImageInfo = &textureBufferInfo;
 				_device.updateDescriptorSets(writeSet, {});
 			}
-			else
-				throw VulkanException("Unknown descriptor found for pipeline ID: " + toString(pipelineData.pipelineInfo.id));
 		}
 	}
 	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Sets.");

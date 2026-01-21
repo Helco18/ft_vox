@@ -44,6 +44,7 @@ void PipelineManager::init(AEngine * engine)
 	infoVoxel.uniformSize = sizeof(ChunkData);
 	infoVoxel.descriptors.push_back(cameraMatrix);
 	infoVoxel.descriptors.push_back(textureAtlas);
+	infoVoxel.descriptors.push_back(chunkData);
 	for (Attribute attribute : infoVoxel.attributes)
 		infoVoxel.attributeSize += attribute.size;
 	_uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);

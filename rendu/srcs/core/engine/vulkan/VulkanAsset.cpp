@@ -1,5 +1,6 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
+#include "utils.hpp"
 
 AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
@@ -21,16 +22,16 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 		}
 		_pendingAssets.push_back(std::move(pendingAsset));
 	}
-	_assetMap.try_emplace(asset.assetID, &asset);
 	return assetID;
 }
 
 void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 {
-	AssetMap::iterator assetit = _assetMap.find(assetID);
-	if (assetit != _assetMap.end())
+	AssetDataCache::iterator assetit = _assetDataCache.find(assetID);
+	if (assetit != _assetDataCache.end())
 	{
-		Asset * asset = assetit->second;
+		AssetData & assetData = assetit->second;
+		Asset * asset = assetData.asset;
 		if (!asset->vertices.data)
 			return;
 		_pipelineAssetMap[pipelineID].push_back(asset);
@@ -39,9 +40,6 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 
 void VulkanEngine::unloadAsset(AssetID assetID)
 {
-	AssetMap::iterator assetit = _assetMap.find(assetID);
-	if (assetit != _assetMap.end())
-		_assetMap.erase(assetit);
 	AssetDataCache::iterator datait = _assetDataCache.find(assetID);
 	if (datait == _assetDataCache.end())
 		return;

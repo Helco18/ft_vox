@@ -55,7 +55,6 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindVertexArray(0);
 
-	_assetMap.try_emplace(asset.assetID, &asset);
 	_assetCache.try_emplace(asset.assetID, assetInfo);
 
 	return asset.assetID;
@@ -63,16 +62,19 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 void OpenGLEngine::unloadAsset(AssetID assetID)
 {
-	AssetMap::iterator it = _assetMap.find(assetID);
-	if (it != _assetMap.end())
+	AssetCache::iterator it = _assetCache.find(assetID);
+	if (it != _assetCache.end())
 	{
-		Asset * asset = it->second;
+		AssetInfo & assetInfo = it->second;
+		Asset * asset = assetInfo.asset;
 		if (asset->vbo)
 			glDeleteBuffers(1, &asset->vbo);
 		if (asset->ibo)
 			glDeleteBuffers(1, &asset->ibo);
 		if (asset->assetID)
 			glDeleteVertexArrays(1, &asset->assetID);
+		for (UniformBufferStream & ubs : assetInfo.uniformBufferStreams)
+			glDeleteBuffers(1, &ubs.ubo);
 	}
 }
 

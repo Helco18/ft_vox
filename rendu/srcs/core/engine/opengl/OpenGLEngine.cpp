@@ -11,17 +11,15 @@ OpenGLEngine::OpenGLEngine(GLFWwindow * window) : AEngine(window) { _engineType 
 
 OpenGLEngine::~OpenGLEngine()
 {
-	for (std::pair<AssetID, Asset *> assetPair : _assetMap)
+	for (std::pair<AssetID, AssetInfo> assetPair : _assetCache)
 	{
-		Asset * asset = assetPair.second;
+		AssetInfo & assetInfo = assetPair.second;
+		Asset * asset = assetInfo.asset;
 		glDeleteBuffers(1, &asset->vbo);
 		glDeleteBuffers(1, &asset->ibo);
 		glDeleteVertexArrays(1, &asset->assetID);
-		for (std::pair<AssetID, AssetInfo> assetInfoPair : _assetCache)
-		{
-			for (UniformBufferStream & uniformInfo : assetInfoPair.second.uniformBufferStreams)
-				glDeleteBuffers(1, &uniformInfo.ubo);
-		}
+		for (UniformBufferStream & uniformInfo : assetInfo.uniformBufferStreams)
+			glDeleteBuffers(1, &uniformInfo.ubo);
 	}
 	glDeleteTextures(1, &_texture);
 	glDeleteBuffers(1, &_ubo);

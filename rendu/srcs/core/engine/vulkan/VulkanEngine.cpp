@@ -77,9 +77,6 @@ void VulkanEngine::beginFrame()
 
 void VulkanEngine::endFrame()
 {
-	if (_pipelineAssetMap.empty() || _assetMap.empty())
-		return;
-
 	// Semaphore = on ordonne les tâches
 	// Fence = on attend que le GPU finisse la tâche
 	try

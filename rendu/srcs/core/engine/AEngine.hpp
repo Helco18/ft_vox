@@ -74,9 +74,6 @@ class AEngine
 		void				setFramebufferResized(bool framebufferResized) { _isFramebufferResized = framebufferResized; }
 
 	protected:
-		typedef std::unordered_map<AssetID, Asset *>	AssetMap;
-
-		AssetMap			_assetMap;
 		EngineType			_engineType;
 		GLFWwindow *		_window;
 		bool				_isFramebufferResized;
