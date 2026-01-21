@@ -19,11 +19,14 @@ GLSL_PATH			=	$(SHADER_PATH)/glsl
 # Sources
 SRCS				=	srcs/main.cpp \
 						srcs/core/camera/Camera.cpp \
+						srcs/core/engine/opengl/OpenGLAsset.cpp \
 						srcs/core/engine/opengl/OpenGLDebug.cpp \
 						srcs/core/engine/opengl/OpenGLEngine.cpp \
+						srcs/core/engine/opengl/OpenGLPipeline.cpp \
 						srcs/core/engine/opengl/OpenGLShader.cpp \
 						srcs/core/engine/opengl/OpenGLTexture.cpp \
 						srcs/core/engine/opengl/OpenGLUniform.cpp \
+						srcs/core/engine/vulkan/VulkanAsset.cpp \
 						srcs/core/engine/vulkan/VulkanCommands.cpp \
 						srcs/core/engine/vulkan/VulkanDebug.cpp \
 						srcs/core/engine/vulkan/VulkanDepthTest.cpp \
@@ -55,7 +58,8 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp
 LIBS_SRC			=	libs/glad/gl.c
-SHADERS				=	$(SHADER_PATH)/slang/voxel.slang
+GL_SHADERS			=	$(SHADER_PATH)/slang/gl/voxel.slang
+VK_SHADERS			=	$(SHADER_PATH)/slang/vk/voxel.slang
 
 # Includes
 INCLUDES			=	-I libs \
@@ -130,19 +134,19 @@ $(OBJ_PATH)/%.o: libs/%.c
 run: all
 	./$(NAME)
 
-$(SPIRV_PATH)/voxel.spv : $(SHADERS)
+$(SPIRV_PATH)/voxel.spv : $(VK_SHADERS)
 	@mkdir -p $(SPIRV_PATH)
-	@slangc $(SHADERS) -target spirv -entry vertMain -entry fragMain -o $@
+	@slangc $(VK_SHADERS) -target spirv -entry vertMain -entry fragMain -o $@
 	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/voxel.vert : $(SHADERS)
+$(GLSL_PATH)/voxel.vert : $(GL_SHADERS)
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(SHADERS) -profile glsl_330 -target glsl -entry vertMain -o $@
+	@slangc $(GL_SHADERS) -profile glsl_330 -target glsl -entry vertMain -o $@
 	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/voxel.frag : $(SHADERS)
+$(GLSL_PATH)/voxel.frag : $(GL_SHADERS)
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(SHADERS) -profile glsl_330 -target glsl -entry fragMain -o $@
+	@slangc $(GL_SHADERS) -profile glsl_330 -target glsl -entry fragMain -o $@
 	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
 
 shader: $(SPIRV_PATH)/voxel.spv $(GLSL_PATH)/voxel.vert $(GLSL_PATH)/voxel.frag

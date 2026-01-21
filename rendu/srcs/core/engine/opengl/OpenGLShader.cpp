@@ -35,7 +35,7 @@ static GLuint compileShader(GLenum type, const std::string & filepath)
 	return shader;
 }
 
-GLuint OpenGLEngine::_createShader(const std::string & vertexPath, const std::string & fragmentPath)
+GLuint OpenGLEngine::_createShader(const std::string & vertexPath, const std::string & fragmentPath, PipelineInfo & pipelineInfo)
 {
 	GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexPath);
 	GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentPath);
@@ -47,12 +47,18 @@ GLuint OpenGLEngine::_createShader(const std::string & vertexPath, const std::st
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	GLuint uboIndex = glGetUniformBlockIndex(shader, "block_UniformBuffer_0");
-	if (uboIndex == GL_INVALID_INDEX)
-		uboIndex = glGetUniformBlockIndex(shader, "block_UniformBuffer_std140_0");
-	if (uboIndex == GL_INVALID_INDEX)
-		throw OpenGLException("Couldn't find ubo index.");
-	glUniformBlockBinding(shader, uboIndex, 0);
+	for (DescriptorInfo & descriptorInfo : pipelineInfo.descriptors)
+	{
+		if (descriptorInfo.type == DescriptorType::UNIFORM_BUFFER || descriptorInfo.type == DescriptorType::PUSH_CONSTANT)
+		{
+			GLuint uboIndex = glGetUniformBlockIndex(shader, std::string("block_" + descriptorInfo.name + "_0").c_str());
+			if (uboIndex == GL_INVALID_INDEX)
+				uboIndex = glGetUniformBlockIndex(shader, std::string("block_" + descriptorInfo.name + "_std140_0").c_str());
+			if (uboIndex == GL_INVALID_INDEX)
+				throw OpenGLException("Couldn't find ubo index.");
+			glUniformBlockBinding(shader, uboIndex, descriptorInfo.binding);
+		}
+	}
 
 	Logger::log(ENGINE_OPENGL, INFO, "Created Shader ID: " + toString(shader) + ".");
 	return shader;

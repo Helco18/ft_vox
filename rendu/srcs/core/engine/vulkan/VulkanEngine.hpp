@@ -82,7 +82,6 @@ struct BufferData
 struct UniformBufferData
 {
 	vk::DeviceSize			size;
-	
 	std::vector<BufferData>	bufferData;
 	std::vector<void *>		mapped;
 };

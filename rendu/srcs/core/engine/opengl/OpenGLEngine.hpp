@@ -20,6 +20,19 @@ struct GLValueConverter
 	}
 };
 
+struct PipelineLayout
+{
+	PipelineInfo	pipelineInfo;
+	GLuint			ubo;
+	size_t			uboSize;
+};
+
+struct AssetInfo
+{
+	Asset *								asset;
+	std::vector<UniformBufferStream>	uniformBufferStreams;
+};
+
 class OpenGLEngine : public AEngine
 {
 	public:
@@ -31,23 +44,24 @@ class OpenGLEngine : public AEngine
 		AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		void		unloadAsset(AssetID assetID) override;
 		PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) override;
-		void		updateUniformBuffer(PipelineID, void *, size_t) override {};
+		void		updateUniformBuffer(PipelineID pipelineID, void * data, size_t size) override;
 		void		drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void		endFrame() override;
 
 	private:
-		typedef std::unordered_map<PipelineID, PipelineInfo>	PipelineMap;
+		typedef std::unordered_map<PipelineID, PipelineLayout>	PipelineMap;
 		typedef std::unordered_map<std::string, GLuint>			ShaderCache;
+		typedef std::unordered_map<AssetID, AssetInfo>			AssetCache;
 
 		PipelineMap	_pipelineMap;
 		ShaderCache	_shaderCache;
+		AssetCache	_assetCache;
 
 		GLuint		_ubo;
 		GLuint		_texture;
 
 		static void	_debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *message, const void *);
-		GLuint		_createShader(const std::string & vertexPath, const std::string & fragmentPath);
-		void		_updateUniformBuffer();
+		GLuint		_createShader(const std::string & vertexPath, const std::string & fragmentPath, PipelineInfo & pipelineInfo);
 		void		_handleResize();
 		void		_createTexture();
 		void		_applyPipeline(PipelineID pipelineID);

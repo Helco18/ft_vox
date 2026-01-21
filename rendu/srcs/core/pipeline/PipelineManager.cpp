@@ -19,6 +19,7 @@ void PipelineManager::init(AEngine * engine)
 	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
 	
 	DescriptorInfo cameraMatrix;
+	cameraMatrix.name = "CameraMatrix";
 	cameraMatrix.binding = 0;
 	cameraMatrix.count = 1;
 	cameraMatrix.size = sizeof(UniformBuffer);
@@ -26,10 +27,19 @@ void PipelineManager::init(AEngine * engine)
 	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
 
 	DescriptorInfo textureAtlas;
+	textureAtlas.name = "texture_0";
 	textureAtlas.binding = 1;
 	textureAtlas.count = 1;
 	textureAtlas.stage = ShaderStage::FRAGMENT;
 	textureAtlas.type = DescriptorType::COMBINED_IMAGE_SAMPLER;
+
+	DescriptorInfo chunkData;
+	chunkData.name = "ChunkData";
+	chunkData.binding = 2;
+	chunkData.count = 1;
+	chunkData.size = sizeof(ChunkData);
+	chunkData.stage = ShaderStage::VERTEX;
+	chunkData.type = DescriptorType::PUSH_CONSTANT;
 
 	infoVoxel.uniformSize = sizeof(ChunkData);
 	infoVoxel.descriptors.push_back(cameraMatrix);

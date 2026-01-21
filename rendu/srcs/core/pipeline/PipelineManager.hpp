@@ -38,7 +38,8 @@ enum CullMode
 enum DescriptorType
 {
 	UNIFORM_BUFFER,
-	COMBINED_IMAGE_SAMPLER
+	COMBINED_IMAGE_SAMPLER,
+	PUSH_CONSTANT
 };
 
 enum ShaderStage
@@ -58,6 +59,7 @@ struct Attribute
 
 struct DescriptorInfo
 {
+	std::string		name;
 	uint32_t		binding;
 	DescriptorType	type;
 	uint32_t		count;

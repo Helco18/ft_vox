@@ -1,0 +1,106 @@
+#include "OpenGLEngine.hpp"
+#include "CustomExceptions.hpp"
+#include "utils.hpp"
+
+AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
+{
+	PipelineMap::iterator it = _pipelineMap.find(pipelineID);
+	if (it == _pipelineMap.end())
+	{
+		throw OpenGLException("Failed to upload asset because Pipeline ID: " +
+			toString(pipelineID) + " doesn't exist.");
+	}
+	PipelineLayout & pipelineLayout = it->second;
+	PipelineInfo & pipelineInfo = pipelineLayout.pipelineInfo;
+	std::vector<Attribute> attributes = pipelineInfo.attributes;
+	size_t offset = 0;
+
+	glGenVertexArrays(1, &asset.assetID);
+	glBindVertexArray(asset.assetID);
+
+	glGenBuffers(1, &asset.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, asset.vbo);
+	glBufferData(GL_ARRAY_BUFFER, asset.vertices.size, asset.vertices.data, GL_STATIC_DRAW);
+
+	for (size_t i = 0; i < attributes.size(); ++i)
+	{
+		glEnableVertexAttribArray(i);
+		glVertexAttribPointer(i, attributes[i].count, GLValueConverter::getType(attributes[i].type), attributes[i].normalized,
+		pipelineInfo.attributeSize, (void *)offset);
+		offset += attributes[i].size;
+	}
+
+	AssetInfo assetInfo;
+	assetInfo.asset = &asset;
+	for (DescriptorInfo & descriptorInfo : pipelineLayout.pipelineInfo.descriptors)
+	{
+		if (descriptorInfo.type == DescriptorType::PUSH_CONSTANT)
+		{
+			UniformBufferStream uniformBuffer;
+			uniformBuffer.binding = descriptorInfo.binding;
+			uniformBuffer.data = asset.uniforms;
+			uniformBuffer.size = descriptorInfo.size;
+			glGenBuffers(1, &uniformBuffer.ubo);
+			glBindBuffer(GL_UNIFORM_BUFFER, uniformBuffer.ubo);
+			glBufferData(GL_UNIFORM_BUFFER, uniformBuffer.size, uniformBuffer.data, GL_DYNAMIC_DRAW);
+			glBindBufferBase(GL_UNIFORM_BUFFER, uniformBuffer.binding, uniformBuffer.ubo);
+			assetInfo.uniformBufferStreams.push_back(uniformBuffer);
+		}
+	}
+
+	glGenBuffers(1, &asset.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, asset.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, asset.indices.size() * sizeof(uint32_t), asset.indices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindVertexArray(0);
+
+	_assetMap.try_emplace(asset.assetID, &asset);
+	_assetCache.try_emplace(asset.assetID, assetInfo);
+
+	return asset.assetID;
+}
+
+void OpenGLEngine::unloadAsset(AssetID assetID)
+{
+	AssetMap::iterator it = _assetMap.find(assetID);
+	if (it != _assetMap.end())
+	{
+		Asset * asset = it->second;
+		if (asset->vbo)
+			glDeleteBuffers(1, &asset->vbo);
+		if (asset->ibo)
+			glDeleteBuffers(1, &asset->ibo);
+		if (asset->assetID)
+			glDeleteVertexArrays(1, &asset->assetID);
+	}
+}
+
+void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
+{
+	if (_isFramebufferResized)
+		_handleResize();
+
+	AssetCache::iterator it = _assetCache.find(assetID);
+	if (it == _assetCache.end())
+		return;
+
+	AssetInfo & assetInfo = it->second;
+	Asset * asset = assetInfo.asset;
+	if (!asset->vertices.data)
+		return;
+
+	glBindVertexArray(assetID);
+
+	for (UniformBufferStream & uniformInfo : assetInfo.uniformBufferStreams)
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, uniformInfo.ubo);
+		glBindBufferBase(GL_UNIFORM_BUFFER, uniformInfo.binding, uniformInfo.ubo);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, uniformInfo.size, uniformInfo.data);
+	}
+
+	_applyPipeline(pipelineID);
+	glDrawElements(GL_TRIANGLES, asset->indices.size(), GL_UNSIGNED_INT, 0);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindVertexArray(0);
+}

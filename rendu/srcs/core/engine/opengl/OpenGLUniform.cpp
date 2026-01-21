@@ -1,24 +1,19 @@
 #include "OpenGLEngine.hpp"
+#include "Logger.hpp"
+#include "utils.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <iostream>
 
-void OpenGLEngine::_updateUniformBuffer()
+void OpenGLEngine::updateUniformBuffer(PipelineID pipelineID, void * data, size_t size)
 {
-	// UniformBuffer ubo;
-	// glm::vec3 camPos;
-	// glm::vec3 forward;
-	// glm::vec3 up;
-
-	// glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
-	// camPos = _camera->getPosition();
-	// forward = _camera->computeForward();
-	// up = glm::vec3(0.0f, 1.0f, 0.0f);
-	// // ubo.view = glm::lookAt(camPos, camPos + forward, up);
-	// ubo.view = _camera->getView();
-
-	// ubo.proj = glm::perspective(glm::radians(_camera->getFOV()),
-	// 	static_cast<float>(_camera->getWidth()) / static_cast<float>(_camera->getHeight()),
-	// 	0.01f, 1500.0f);
-	// glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformBuffer), &ubo);
-	// glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
+	if (pipelineit == _pipelineMap.end())
+	{
+		Logger::log(ENGINE_OPENGL, WARNING, "Tried to update uniform buffer to unknown Pipeline ID #" + toString(pipelineID));
+		return;
+	}
+	PipelineLayout & pipelineLayout = pipelineit->second;
+	glBindBuffer(GL_UNIFORM_BUFFER, pipelineLayout.ubo);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

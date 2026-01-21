@@ -41,7 +41,6 @@ struct Asset
 	std::vector<uint32_t>				indices;
 	unsigned int						vbo;
 	unsigned int						ibo;
-	std::vector<UniformBufferStream>	uniformBuffers;
 	void *								uniforms = nullptr;
 };
 
