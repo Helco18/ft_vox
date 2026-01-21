@@ -43,7 +43,7 @@ void Environment::init(EngineType engineType)
 void Environment::loop()
 {
 	double frameStart;
-	double deltaTime = 0.0;
+	double deltaTime;
 	AEngine * engine;
 
 	engine = _windowManager->getEngine();

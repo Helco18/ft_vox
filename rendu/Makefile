@@ -58,8 +58,15 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp
 LIBS_SRC			=	libs/glad/gl.c
+SHARED_SHADERS		=	$(SHADER_PATH)/slang/basic.slang
 GL_SHADERS			=	$(SHADER_PATH)/slang/gl/voxel.slang
 VK_SHADERS			=	$(SHADER_PATH)/slang/vk/voxel.slang
+SPIRV_OBJS			=	$(patsubst $(SHADER_PATH)/slang/vk/%.slang, $(SPIRV_PATH)/%.spv, $(VK_SHADERS)) \
+						$(patsubst $(SHADER_PATH)/slang/%.slang, $(SPIRV_PATH)/%.spv, $(SHARED_SHADERS))
+GLSL_VERT_OBJS		=	$(patsubst $(SHADER_PATH)/slang/gl/%.slang, $(GLSL_PATH)/%.vert, $(GL_SHADERS)) \
+						$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.vert, $(SHARED_SHADERS))
+GLSL_FRAG_OBJS		=	$(patsubst $(SHADER_PATH)/slang/gl/%.slang, $(GLSL_PATH)/%.frag, $(GL_SHADERS)) \
+						$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.frag, $(SHARED_SHADERS))
 
 # Includes
 INCLUDES			=	-I libs \
@@ -114,7 +121,6 @@ ALL_CLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects cleaned!$(RESET)"
 ALL_FCLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects & Executables cleaned!$(RESET)"
 
 # Rules
-
 all : glfw glm stb glad shader $(NAME)
 
 $(NAME): $(OBJS)
@@ -134,22 +140,40 @@ $(OBJ_PATH)/%.o: libs/%.c
 run: all
 	./$(NAME)
 
-$(SPIRV_PATH)/voxel.spv : $(VK_SHADERS)
+# SPV (Vulkan)
+$(SPIRV_PATH)/%.spv: $(SHADER_PATH)/slang/vk/%.slang
 	@mkdir -p $(SPIRV_PATH)
-	@slangc $(VK_SHADERS) -target spirv -entry vertMain -entry fragMain -o $@
+	@slangc $< -target spirv -entry vertMain -entry fragMain -o $@
 	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/voxel.vert : $(GL_SHADERS)
+$(SPIRV_PATH)/%.spv: $(SHADER_PATH)/slang/%.slang
+	@mkdir -p $(SPIRV_PATH)
+	@slangc $< -target spirv -entry vertMain -entry fragMain -o $@
+	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
+
+# VERT (OpenGL)
+$(GLSL_PATH)/%.vert: $(SHADER_PATH)/slang/gl/%.slang
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(GL_SHADERS) -profile glsl_330 -target glsl -entry vertMain -o $@
+	@slangc $< -profile glsl_330 -target glsl -entry vertMain -o $@
 	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
 
-$(GLSL_PATH)/voxel.frag : $(GL_SHADERS)
+$(GLSL_PATH)/%.vert: $(SHADER_PATH)/slang/%.slang
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(GL_SHADERS) -profile glsl_330 -target glsl -entry fragMain -o $@
+	@slangc $< -profile glsl_330 -target glsl -entry vertMain -o $@
+	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
+
+# FRAG (OpenGL)
+$(GLSL_PATH)/%.frag: $(SHADER_PATH)/slang/gl/%.slang
+	@mkdir -p $(GLSL_PATH)
+	@slangc $< -profile glsl_330 -target glsl -entry fragMain -o $@
 	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
 
-shader: $(SPIRV_PATH)/voxel.spv $(GLSL_PATH)/voxel.vert $(GLSL_PATH)/voxel.frag
+$(GLSL_PATH)/%.frag: $(SHADER_PATH)/slang/%.slang
+	@mkdir -p $(GLSL_PATH)
+	@slangc $< -profile glsl_330 -target glsl -entry fragMain -o $@
+	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
+
+shader: $(SPIRV_OBJS) $(GLSL_VERT_OBJS) $(GLSL_FRAG_OBJS)
 	$(SHADERS_DONE)
 
 sclean:

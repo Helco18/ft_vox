@@ -22,7 +22,6 @@ OpenGLEngine::~OpenGLEngine()
 			glDeleteBuffers(1, &uniformInfo.ubo);
 	}
 	glDeleteTextures(1, &_texture);
-	glDeleteBuffers(1, &_ubo);
 	for (std::pair<std::string, GLuint> shaderPair : _shaderCache)
 		glDeleteProgram(shaderPair.second);
 }
@@ -31,11 +30,6 @@ void OpenGLEngine::load()
 {
 	Profiler p("OpenGLEngine::load");
 	glfwSwapInterval(0);
-
-	glGenBuffers(1, &_ubo);
-	glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformBuffer), nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, _ubo);
 
 	_createTexture();
 

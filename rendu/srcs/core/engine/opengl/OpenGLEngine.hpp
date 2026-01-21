@@ -57,7 +57,6 @@ class OpenGLEngine : public AEngine
 		ShaderCache	_shaderCache;
 		AssetCache	_assetCache;
 
-		GLuint		_ubo;
 		GLuint		_texture;
 
 		static void	_debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *message, const void *);
