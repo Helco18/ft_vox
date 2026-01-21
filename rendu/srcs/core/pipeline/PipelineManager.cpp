@@ -38,9 +38,9 @@ void PipelineManager::init(AEngine * engine)
 		infoVoxel.attributeSize += attribute.size;
 	_uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);
 
-	// PipelineInfo infoWireframe(infoVoxel);
-	// infoWireframe.polygonMode = LINE;
-	// _uploadPipeline(engine, infoWireframe, PIPELINE_WIREFRAME);
+	PipelineInfo infoWireframe(infoVoxel);
+	infoWireframe.polygonMode = LINE;
+	_uploadPipeline(engine, infoWireframe, PIPELINE_WIREFRAME);
 
 	// PipelineInfo infoBasic;
 	// infoBasic.shaderName = "basic";

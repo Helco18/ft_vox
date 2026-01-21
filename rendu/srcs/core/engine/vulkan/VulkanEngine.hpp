@@ -12,7 +12,6 @@
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
 #define MAX_FRAMES_IN_FLIGHT 2
-#define NEAR_PLANE_OFFSET 0.5f
 #define VULKAN_SHADER_PATH "srcs/core/shaders/spir-v/"
 
 struct VKValueConverter
@@ -83,6 +82,7 @@ struct BufferData
 struct UniformBufferData
 {
 	vk::DeviceSize			size;
+	
 	std::vector<BufferData>	bufferData;
 	std::vector<void *>		mapped;
 };
@@ -122,7 +122,7 @@ struct AssetData
 class VulkanEngine : public AEngine
 {
 	public:
-		VulkanEngine(GLFWwindow * window, Camera * camera);
+		VulkanEngine(GLFWwindow * window);
 		~VulkanEngine();
 
 		void								load() override;
@@ -130,6 +130,7 @@ class VulkanEngine : public AEngine
 		AssetID								uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		void								unloadAsset(AssetID assetID) override;
 		PipelineID							uploadPipeline(PipelineInfo & pipelineInfo) override;
+		void								updateUniformBuffer(PipelineID pipelineID, void * data, size_t size) override;
 		void								drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void								endFrame() override;
 
@@ -235,7 +236,6 @@ class VulkanEngine : public AEngine
 		void								_createDescriptorSetLayout(PipelineData & pipelineData);
 		void								_createDescriptorSets(PipelineData & pipelineData);
 		void								_createUniformBuffers(PipelineData & pipelineData);
-		void								_updateUniformBuffer();
 		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory, vk::SampleCountFlagBits sampling);
 		void								_createTextureImage(PipelineData & pipelineData);
 		void								_createTextureImageView(PipelineData & pipelineData);

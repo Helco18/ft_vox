@@ -41,25 +41,7 @@ void VulkanEngine::_createUniformBuffers(PipelineData & pipelineData)
 	Logger::log(ENGINE_VULKAN, INFO, "Created Uniform Buffers.");
 }
 
-void VulkanEngine::_updateUniformBuffer()
+void VulkanEngine::updateUniformBuffer(PipelineID pipelineID, void * data, size_t size)
 {
-	UniformBuffer ubo{};
-
-	// Camera orientation (Y-up)
-	// glm::vec3 camPos = _camera->getPosition();
-
-	// glm::vec3 forward = _camera->computeForward();
-
-	// glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-	// ubo.view = glm::lookAt(camPos, camPos + forward, up);
-	ubo.view = _camera->getView();
-
-	// Vulkan projection (flip Y)
-	ubo.proj = glm::perspective(glm::radians(_camera->getFOV()),
-		static_cast<float>(_swapChainExtent.width) / static_cast<float>(_swapChainExtent.height),
-		0.01f * NEAR_PLANE_OFFSET, 1500.0f);
-	ubo.proj[1][1] *= -1;
-
-	// very hardcoded for now
-	memcpy(_pipelineMap[PipelineManager::getPipeline(PIPELINE_VOXEL).id].uniforms.mapped[_currentFrame], &ubo, sizeof(ubo));
+	memcpy(_pipelineMap[pipelineID].uniforms.mapped[_currentFrame], data, size);
 }

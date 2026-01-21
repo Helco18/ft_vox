@@ -29,6 +29,10 @@ void Environment::init(EngineType engineType)
 	_windowManager = new WindowManager(engineType, this);
 	_windowManager->load();
 
+	Camera * camera = _windowManager->getCamera();
+	camera->addPipelineToRender(PIPELINE_VOXEL);
+	camera->addPipelineToRender(PIPELINE_WIREFRAME);
+
 	BlockData::init();
 
 	WorldManager::createWorld(WORLD_NAME);
@@ -40,27 +44,30 @@ void Environment::loop()
 {
 	double frameStart;
 	double deltaTime = 0.0;
+	AEngine * engine;
 
 	while (_running)
 	{
+		engine = _windowManager->getEngine();
 		Profiler p("Environment::loop-while(_running)");
 		frameStart = glfwGetTime();
-		_windowManager->getEngine()->beginFrame();
+		engine->beginFrame();
+		_windowManager->getCamera()->renderViewMatrix(engine, engine->getEngineType());
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
 		World * world = WorldManager::getWorld(WORLD_NAME);
 		if (!_windowManager->drawFrame())
 		{
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
-				world->reloadChunks(_windowManager->getEngine());
+				world->reloadChunks(engine);
 			continue;
 		}
 		if (world)
 		{
 			world->generateProcedurally(_windowManager->getCamera());
-			world->render(_windowManager->getEngine(), _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
+			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
 		}
-		_windowManager->getEngine()->endFrame();
+		engine->endFrame();
 		deltaTime = glfwGetTime() - frameStart;
 		_windowManager->setDeltaTime(deltaTime);
 	}

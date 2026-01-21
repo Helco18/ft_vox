@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include "AEngine.hpp"
+#include "Camera.hpp"
 #include "PipelineManager.hpp"
 #include "Chunk.hpp"
 #include "ThreadPool.hpp"

@@ -163,3 +163,33 @@ void Camera::setCameraType(CameraType type)
 	}
 	_type = type;
 }
+
+void Camera::addPipelineToRender(PipelineType pipelineType)
+{
+	std::vector<PipelineType>::iterator pipelineit = std::find(_pipelines.begin(), _pipelines.end(), pipelineType);
+	if (pipelineit == _pipelines.end())
+		_pipelines.push_back(pipelineType);
+}
+
+void Camera::removePipelineToRender(PipelineType pipelineType)
+{
+	std::vector<PipelineType>::iterator pipelineit = std::find(_pipelines.begin(), _pipelines.end(), pipelineType);
+	if (pipelineit != _pipelines.end())
+		_pipelines.erase(pipelineit);
+}
+
+void Camera::renderViewMatrix(AEngine * engine, EngineType engineType)
+{
+	bool onVulkan = engineType == VULKAN;
+	float nearPlane = 0.01f * (onVulkan ? 1 : NEAR_PLANE_OFFSET);
+	CameraBuffer cb;
+
+	cb.view = getView();
+	cb.proj = glm::perspective(glm::radians(_fov),
+		static_cast<float>(_width) / static_cast<float>(_height),
+		nearPlane, 1500.0f);
+	if (onVulkan)
+		cb.proj[1][1] *= -1;
+	for (PipelineType pipelineType : _pipelines)
+		engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, &cb, sizeof(CameraBuffer));
+}

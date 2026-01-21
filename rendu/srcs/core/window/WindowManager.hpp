@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AEngine.hpp"
+#include "Camera.hpp"
 #include "utils.hpp"
 #include "GLFW/glfw3.h"
 
@@ -41,10 +42,10 @@ class WindowManager
 
 	private:
 		Environment *	_environment;
-		EngineType		_engineType;
 		AEngine *		_engine;
 		GLFWwindow *	_window;
 		Camera *		_camera;
+		EngineType		_engineType;
 		double			_lastFpsUpdate;
 		double			_deltaTime = 0.0;
 		int				_width;

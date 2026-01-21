@@ -3,10 +3,11 @@
 #include "CustomExceptions.hpp"
 #include "OBJModel.hpp"
 #include "Profiler.hpp"
+#include "WindowManager.hpp"
 #include "utils.hpp"
 #include <iostream>
 
-OpenGLEngine::OpenGLEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
+OpenGLEngine::OpenGLEngine(GLFWwindow * window) : AEngine(window) { _engineType = OPENGL; }
 
 OpenGLEngine::~OpenGLEngine()
 {
@@ -215,6 +216,7 @@ void OpenGLEngine::endFrame()
 
 void OpenGLEngine::_handleResize()
 {
-	glViewport(0, 0, _camera->getWidth(), _camera->getHeight());
+	Camera * camera = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(_window))->getCamera();
+	glViewport(0, 0, camera->getWidth(), camera->getHeight());
 	_isFramebufferResized = false;
 }

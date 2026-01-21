@@ -46,8 +46,8 @@ void WindowManager::load()
 
 	switch (static_cast<int>(_engineType))
 	{
-		case VULKAN: _engine = new VulkanEngine(_window, _camera); break;
-		case OPENGL: _engine = new OpenGLEngine(_window, _camera); break;
+		case VULKAN: _engine = new VulkanEngine(_window); break;
+		case OPENGL: _engine = new OpenGLEngine(_window); break;
 		default: throw WindowException("Unknown Engine type.");
 	}
 
@@ -129,7 +129,7 @@ void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, in
 {
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
 	AEngine * engine = windowManager->getEngine();
-	Camera * camera = engine->getCamera();
+	Camera * camera = windowManager->getCamera();
 	camera->setWidth(width);
 	camera->setHeight(height);
 	windowManager->setWidth(width);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "Camera.hpp"
 #include "OBJModel.hpp"
 #include "PipelineManager.hpp"
 
@@ -40,9 +39,9 @@ struct Asset
 	AssetID								assetID;
 	VertexStream						vertices;
 	std::vector<uint32_t>				indices;
-	std::vector<UniformBufferStream>	uniformBuffers;
 	unsigned int						vbo;
 	unsigned int						ibo;
+	std::vector<UniformBufferStream>	uniformBuffers;
 	void *								uniforms = nullptr;
 };
 
@@ -55,8 +54,8 @@ struct UniformBuffer
 class AEngine
 {
 	public:
-		AEngine(GLFWwindow * window, Camera * camera) :
-			_window(window), _camera(camera), _isFramebufferResized(false), _isInitalized(false) {};
+		AEngine(GLFWwindow * window) :
+			_window(window), _isFramebufferResized(false), _isInitalized(false) {};
 		virtual ~AEngine() {}
 
 		virtual void		load() = 0;
@@ -64,11 +63,12 @@ class AEngine
 		virtual AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) = 0;
 		virtual void		unloadAsset(AssetID assetID) = 0;
 		virtual PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) = 0;
+		virtual void		updateUniformBuffer(PipelineID pipelineID, void * data, size_t size) = 0;
 		virtual void		drawAsset(AssetID assetID, PipelineID pipelineID) = 0;
 		virtual void		endFrame() = 0;
 
+		EngineType			getEngineType() const { return _engineType; }
 		GLFWwindow *		getWindow() const { return _window; }
-		Camera *			getCamera() const { return _camera; }
 		bool				getFramebufferResized() const { return _isFramebufferResized; }
 		bool				isInitialized() const { return _isInitalized; }
 
@@ -78,8 +78,8 @@ class AEngine
 		typedef std::unordered_map<AssetID, Asset *>	AssetMap;
 
 		AssetMap			_assetMap;
+		EngineType			_engineType;
 		GLFWwindow *		_window;
-		Camera *			_camera;
 		bool				_isFramebufferResized;
 		bool				_isInitalized;
 };

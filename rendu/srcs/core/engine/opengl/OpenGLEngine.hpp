@@ -23,7 +23,7 @@ struct GLValueConverter
 class OpenGLEngine : public AEngine
 {
 	public:
-		OpenGLEngine(GLFWwindow * window, Camera * camera);
+		OpenGLEngine(GLFWwindow * window);
 		~OpenGLEngine();
 
 		void		load() override;
@@ -31,6 +31,7 @@ class OpenGLEngine : public AEngine
 		AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		void		unloadAsset(AssetID assetID) override;
 		PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) override;
+		void		updateUniformBuffer(PipelineID, void *, size_t) override {};
 		void		drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void		endFrame() override;
 

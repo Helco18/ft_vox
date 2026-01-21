@@ -5,7 +5,7 @@
 #include "utils.hpp"
 #include <iostream>
 
-VulkanEngine::VulkanEngine(GLFWwindow * window, Camera * camera) : AEngine(window, camera) {}
+VulkanEngine::VulkanEngine(GLFWwindow * window) : AEngine(window) { _engineType = VULKAN; }
 
 void VulkanEngine::load()
 {
@@ -147,7 +147,6 @@ void VulkanEngine::endFrame()
 		if (res != vk::Result::eSuccess)
 			throw VulkanException("Waiting for fences on draw call failed.");
 		_device.resetFences(*_inFlightFences[_currentFrame]);
-		_updateUniformBuffer();
 
 		_commandBuffers[_currentFrame].reset();
 		_uploadPendingAssets();
