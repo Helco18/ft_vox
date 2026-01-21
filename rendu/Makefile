@@ -137,12 +137,12 @@ $(SPIRV_PATH)/voxel.spv : $(SHADERS)
 
 $(GLSL_PATH)/voxel.vert : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry vertMain -o $@
+	@slangc $(SHADERS) -profile glsl_330 -target glsl -entry vertMain -o $@
 	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
 
 $(GLSL_PATH)/voxel.frag : $(SHADERS)
 	@mkdir -p $(GLSL_PATH)
-	@slangc $(SHADERS) -target glsl -profile glsl_330 -entry fragMain -o $@
+	@slangc $(SHADERS) -profile glsl_330 -target glsl -entry fragMain -o $@
 	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
 
 shader: $(SPIRV_PATH)/voxel.spv $(GLSL_PATH)/voxel.vert $(GLSL_PATH)/voxel.frag

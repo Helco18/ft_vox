@@ -67,6 +67,7 @@ struct TransitionImageViewLayoutInfo
 
 struct TextureData
 {
+	unsigned int			textureID;
 	vk::raii::Sampler		textureSampler = nullptr;
 	vk::raii::ImageView		textureImageView = nullptr;
 	vk::raii::Image			image = nullptr;
@@ -91,6 +92,7 @@ struct PipelineData
 	PipelineInfo *							pipelineInfo;
 	vk::raii::Pipeline 						pipeline = nullptr;
 	vk::raii::PipelineLayout 				layout = nullptr;
+	vk::raii::DescriptorPool				descriptorPool = nullptr;
 	vk::raii::DescriptorSetLayout			descriptorSetLayout = nullptr;
 	UniformBufferData						uniforms;
 	std::vector<vk::raii::DescriptorSet>	descriptorSets;
@@ -164,7 +166,6 @@ class VulkanEngine : public AEngine
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
 	
 		// Commands & Descriptor
-		vk::raii::DescriptorPool			_descriptorPool = nullptr;
 		vk::raii::CommandPool				_commandPool = nullptr;
 		CommandBuffers						_commandBuffers;
 
@@ -180,6 +181,7 @@ class VulkanEngine : public AEngine
 		ShaderCache							_shaderCache;
 		AssetDataCache						_assetDataCache;
 		unsigned int						_nextAssetID = 0;
+		unsigned int						_nextTextureID = 0;
 
 		// Depth test
 		vk::raii::Image						_depthImage = nullptr;
@@ -229,7 +231,7 @@ class VulkanEngine : public AEngine
 		void								_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffer);
 		vk::VertexInputBindingDescription	_getBindingDescription(PipelineInfo & pipelineInfo) const;
 		VertexAttributeDescriptionVector	_getAttributeDescription(PipelineInfo & pipelineInfo) const;
-		void								_createDescriptorPool();
+		void								_createDescriptorPool(PipelineData & pipelineData);
 		void								_createDescriptorSetLayout(PipelineData & pipelineData);
 		void								_createDescriptorSets(PipelineData & pipelineData);
 		void								_createUniformBuffers(PipelineData & pipelineData);

@@ -4,7 +4,7 @@
 #include "utils.hpp"
 #include <iostream>
 
-void VulkanEngine::_createDescriptorPool()
+void VulkanEngine::_createDescriptorPool(PipelineData & pipelineData)
 {
 	vk::DescriptorPoolSize uniformSize;
 	uniformSize.type = vk::DescriptorType::eUniformBuffer;
@@ -22,7 +22,7 @@ void VulkanEngine::_createDescriptorPool()
 	descriptorPoolInfo.poolSizeCount = descriptorsSize.size();
 	descriptorPoolInfo.pPoolSizes = descriptorsSize.data();
 
-	_descriptorPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
+	pipelineData.descriptorPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
 
 	Logger::log(ENGINE_VULKAN, INFO, "Created Descriptor Pool.");
 }
@@ -57,7 +57,7 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 {
 	std::vector<vk::DescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, *pipelineData.descriptorSetLayout);
 	vk::DescriptorSetAllocateInfo descriptorSetAllocInfo;
-	descriptorSetAllocInfo.descriptorPool = _descriptorPool;
+	descriptorSetAllocInfo.descriptorPool = pipelineData.descriptorPool;
 	descriptorSetAllocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
 	descriptorSetAllocInfo.pSetLayouts = layouts.data();
 

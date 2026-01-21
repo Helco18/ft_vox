@@ -200,7 +200,7 @@ void VulkanEngine::_createLogicalDevice()
 		vk::KHRSpirv14ExtensionName,
 		vk::KHRSynchronization2ExtensionName,
 		vk::KHRCreateRenderpass2ExtensionName,
-		vk::KHRShaderDrawParametersExtensionName,
+		vk::KHRShaderDrawParametersExtensionName
 	};
 
 	// On regarde si notre machine est compatible avec les extensions Vulkan dont on a besoin
@@ -226,12 +226,15 @@ void VulkanEngine::_createLogicalDevice()
 	features.features.sampleRateShading = vk::True; // Activer le MSAA (rajout hors-tutoriel)
 	features.features.samplerAnisotropy = vk::True;
 	features.features.fillModeNonSolid = vk::True;
+	vk::PhysicalDeviceVulkan12Features vulkan12features;
+	vulkan12features.runtimeDescriptorArray = vk::True;
 	vk::PhysicalDeviceVulkan13Features vulkan13features;
 	vulkan13features.dynamicRendering = true;
 	vulkan13features.synchronization2 = true; // Eviter un segfault (rajout hors-tutoriel)
 	vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT dynamicStateFeatures;
 	dynamicStateFeatures.extendedDynamicState = true;
-	features.pNext = vulkan13features;
+	features.pNext = vulkan12features;
+	vulkan12features.pNext = vulkan13features;
 	vulkan13features.pNext = dynamicStateFeatures;
 	dynamicStateFeatures.pNext = nullptr;
 

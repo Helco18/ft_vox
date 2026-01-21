@@ -52,10 +52,6 @@ void VulkanEngine::load()
 	// - uniform buffer : ils contiennent les données variables entre les frames (comme les matrices de transformation / constantes globales utilisées par les shaders)
 	_createDepthResources();
 
-	// On définit la structure de nos *descriptor sets*, qui servent à passer des données aux shaders
-	// (comme les uniform buffers, textures ou samplers).
-	_createDescriptorPool();
-
 	// On crée les *semaphores* et *fences* pour la synchronisation :
 	// ils permettent de s’assurer que les opérations GPU (rendu, présentation, etc.) s’exécutent dans le bon ordre et ne se chevauchent pas.
 	_createSyncObjects();

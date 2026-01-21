@@ -18,21 +18,33 @@ struct VertexOutput
 	float2 outUvRepeat;
 };
 
-struct UniformBuffer
+struct CameraMatrix
 {
 	float4x4 view;
 	float4x4 proj;
 };
 
+struct PushConstant
+{
+	int		textureID;
+	float	fadeValue;
+};
+
 [[vk::binding(0,0)]]
-ConstantBuffer<UniformBuffer> ubo;
+ConstantBuffer<CameraMatrix> camMatrix;
+
+[[vk::binding(1,0)]]
+uniform Sampler2D texture[];
+
+[[push_constant]]
+ConstantBuffer<PushConstant> pushConstant;
 
 [shader("vertex")]
 VertexOutput vertMain(VertexInput input)
 {
 	VertexOutput output;
 	// x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
-	output.sv_position = mul(ubo.proj, mul(ubo.view, float4(input.inPosition, 1.0)));
+	output.sv_position = mul(camMatrix.proj, mul(camMatrix.view, float4(input.inPosition, 1.0)));
 	output.outNormal = input.inNormal;
 	output.outTexCoord = input.inTexCoord;
 
@@ -41,17 +53,6 @@ VertexOutput vertMain(VertexInput input)
 	output.outUvRepeat = input.inUvRepeat;
 	return output;
 }
-
-[[vk::binding(1,0)]]
-Sampler2D texture;
-
-struct ChunkData
-{
-	float fadeValue;
-};
-
-[[vk::binding(2,0)]]
-ConstantBuffer<ChunkData> chunkData;
 
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
@@ -65,7 +66,7 @@ float4 fragMain(VertexOutput inVert) : SV_Target
 	float2 tileSize = inVert.outUvMax - inVert.outUvMin;
 	// frac(x) retourne la partie décimale de x (equivalent a x - floor(x))
 	float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
-	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue);
+	float4 vertColor = texture[pushConstant.textureID].Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, pushConstant.fadeValue);
 	// float4 vertColor = texture.Sample(finalUV);
 
 	vertColor.rgb *= diffuse;

@@ -141,12 +141,21 @@ void VulkanEngine::_recordCommandBuffer()
 		const std::vector<Asset *> & drawableAssets = pipelineAsset.second;
 		for (const Asset * asset : drawableAssets)
 		{
+			struct test
+			{
+				unsigned int texID;
+				float chunkFade;
+			};
+			test xd;
+			xd.texID = pipelineData.textures.textureID;
+			xd.chunkFade = *static_cast<float *>(asset->uniforms[0].data);
 			AssetDataCache::iterator datait = _assetDataCache.find(asset->assetID);
 			if (datait == _assetDataCache.end())
 				continue;
 			const AssetData & assetData = datait->second;
 			const BufferData & vertexData = assetData.vbo;
 			const BufferData & indexData = assetData.ibo;
+			commands.pushConstants(pipelineData.layout, vk::ShaderStageFlagBits::eAll, 0, sizeof(test), &xd);
 			commands.bindVertexBuffers(0, *vertexData.buffer, {0});
 			commands.bindIndexBuffer( *indexData.buffer, 0, vk::IndexType::eUint32);
 			commands.drawIndexed(asset->indices.size(), 1, 0, 0, 0);

@@ -92,5 +92,6 @@ void VulkanEngine::_createTextureSampler(PipelineData & pipelineData)
 	samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
 	samplerInfo.unnormalizedCoordinates = vk::False;
 
+	pipelineData.textures.textureID = _nextTextureID++;
 	pipelineData.textures.textureSampler = vk::raii::Sampler( _device, samplerInfo );
 }
