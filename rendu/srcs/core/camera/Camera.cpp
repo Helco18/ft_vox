@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include "Logger.hpp"
+#include <algorithm>
 
 Camera::Camera(glm::vec3 position, int width, int height): _position(position), _width(width), _height(height)
 {
