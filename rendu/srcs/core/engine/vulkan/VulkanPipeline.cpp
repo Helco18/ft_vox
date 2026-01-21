@@ -146,7 +146,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	colorBlending.pAttachments = &colorBlendAttachment;
 
 	PipelineData pipelineData;
-	pipelineData.pipelineInfo = &pipelineInfo;
+	pipelineData.pipelineInfo = pipelineInfo;
 	if (!pipelineInfo.descriptors.empty())
 	{
 		_createTextureImage(pipelineData);
@@ -160,7 +160,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	vk::PushConstantRange pcr;
 	pcr.offset = 0;
-	pcr.size = 8;
+	pcr.size = pipelineInfo.uniformSize;
 	pcr.stageFlags = vk::ShaderStageFlagBits::eAll;
 
 	vk::PipelineLayoutCreateInfo pipelineLayoutInfo;

@@ -26,7 +26,6 @@ struct CameraMatrix
 
 struct PushConstant
 {
-	int		textureID;
 	float	fadeValue;
 };
 
@@ -34,7 +33,7 @@ struct PushConstant
 ConstantBuffer<CameraMatrix> camMatrix;
 
 [[vk::binding(1,0)]]
-uniform Sampler2D texture[];
+Sampler2D texture;
 
 [[push_constant]]
 ConstantBuffer<PushConstant> pushConstant;
@@ -66,7 +65,7 @@ float4 fragMain(VertexOutput inVert) : SV_Target
 	float2 tileSize = inVert.outUvMax - inVert.outUvMin;
 	// frac(x) retourne la partie décimale de x (equivalent a x - floor(x))
 	float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
-	float4 vertColor = texture[pushConstant.textureID].Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, pushConstant.fadeValue);
+	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, pushConstant.fadeValue);
 	// float4 vertColor = texture.Sample(finalUV);
 
 	vertColor.rgb *= diffuse;

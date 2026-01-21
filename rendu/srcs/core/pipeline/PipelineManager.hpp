@@ -65,6 +65,12 @@ struct DescriptorInfo
 	uint32_t		size;
 };
 
+struct UniformInfo
+{
+	size_t	size;
+	void *	data;
+};
+
 struct PipelineInfo
 {
 	PipelineID					id;
@@ -77,7 +83,8 @@ struct PipelineInfo
 	bool						depthTest = true;
 	std::vector<Attribute>		attributes;
 	uint32_t					attributeSize = 0;
-	std::vector<DescriptorInfo>	descriptors;
+	std::vector<DescriptorInfo>	descriptors; // For uniform buffers
+	size_t						uniformSize; // For small uniforms/push constants
 };
 
 class PipelineManager

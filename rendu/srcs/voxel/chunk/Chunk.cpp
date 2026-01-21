@@ -9,11 +9,7 @@
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE)
 {
-	UniformStream fadeValueUniform;
-	fadeValueUniform.binding = 2;
-	fadeValueUniform.data = &_chunkFade;
-	fadeValueUniform.size = sizeof(float);
-	_asset.uniforms.push_back(fadeValueUniform);
+	_asset.uniforms = &_chunkData;
 }
 
 void Chunk::build()
@@ -64,8 +60,8 @@ void Chunk::uploadAsset(AEngine * engine)
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
-	if (_chunkFade < 1.0f)
-		_chunkFade += 3.0f * reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()))->getDeltaTime();
+	if (_chunkData.fadeValue < 1.0f)
+		_chunkData.fadeValue += 3.0f * reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()))->getDeltaTime();
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 }
 

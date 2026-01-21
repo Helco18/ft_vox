@@ -37,6 +37,11 @@ struct ChunkAsset
 	std::vector<uint32_t>	indices;
 };
 
+struct ChunkData
+{
+	float	fadeValue;
+};
+
 class Chunk
 {
 	public:
@@ -69,7 +74,7 @@ class Chunk
 		ChunkState				_state;
 		std::mutex				_stateMutex;
 		std::mutex				_workerMutex;
-		float					_chunkFade = 0.0f;
+		ChunkData				_chunkData { 0.0f };
 
 		void					_generateGreedyMesh();
 		void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);

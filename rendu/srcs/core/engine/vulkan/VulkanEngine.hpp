@@ -89,7 +89,7 @@ struct UniformBufferData
 
 struct PipelineData
 {
-	PipelineInfo *							pipelineInfo;
+	PipelineInfo							pipelineInfo;
 	vk::raii::Pipeline 						pipeline = nullptr;
 	vk::raii::PipelineLayout 				layout = nullptr;
 	vk::raii::DescriptorPool				descriptorPool = nullptr;

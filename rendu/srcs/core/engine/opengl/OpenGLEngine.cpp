@@ -16,7 +16,7 @@ OpenGLEngine::~OpenGLEngine()
 		glDeleteBuffers(1, &asset->vbo);
 		glDeleteBuffers(1, &asset->ibo);
 		glDeleteVertexArrays(1, &asset->assetID);
-		for (UniformStream stream : asset->uniforms)
+		for (UniformBufferStream stream : asset->uniformBuffers)
 			glDeleteBuffers(1, &stream.ubo);
 	}
 	glDeleteTextures(1, &_texture);
@@ -52,7 +52,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 		offset += attributes[i].size;
 	}
 
-	for (UniformStream & futureUbo : asset.uniforms)
+	for (UniformBufferStream & futureUbo : asset.uniformBuffers)
 	{
 		glGenBuffers(1, &futureUbo.ubo);
 		glBindBuffer(GL_UNIFORM_BUFFER, futureUbo.ubo);
@@ -195,7 +195,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 
 	glBindVertexArray(assetID);
 
-	for (UniformStream & stream : asset->uniforms)
+	for (UniformBufferStream & stream : asset->uniformBuffers)
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, stream.ubo);
 		glBindBufferBase(GL_UNIFORM_BUFFER, stream.binding, stream.ubo);

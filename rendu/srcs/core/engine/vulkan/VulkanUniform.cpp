@@ -10,7 +10,7 @@ void VulkanEngine::_createUniformBuffers(PipelineData & pipelineData)
 	// pour éviter les conflits d’écriture entre le CPU (qui met à jour les uniforms)
 	// et le GPU (qui lit ces données pendant le rendu).
 	vk::DeviceSize size = 0;
-	for (DescriptorInfo & descriptorInfo : pipelineData.pipelineInfo->descriptors)
+	for (DescriptorInfo & descriptorInfo : pipelineData.pipelineInfo.descriptors)
 	{
 		if (descriptorInfo.type == DescriptorType::UNIFORM_BUFFER)
 			size += descriptorInfo.size;

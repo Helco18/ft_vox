@@ -19,7 +19,7 @@ typedef unsigned int AssetID;
 
 class GLFWwindow;
 
-struct UniformStream
+struct UniformBufferStream
 {
 	void *					data;
 	size_t					size;
@@ -37,12 +37,13 @@ struct VertexStream
 
 struct Asset
 {
-	AssetID						assetID;
-	VertexStream				vertices;
-	std::vector<uint32_t>		indices;
-	std::vector<UniformStream>	uniforms;
-	unsigned int				vbo;
-	unsigned int				ibo;
+	AssetID								assetID;
+	VertexStream						vertices;
+	std::vector<uint32_t>				indices;
+	std::vector<UniformBufferStream>	uniformBuffers;
+	unsigned int						vbo;
+	unsigned int						ibo;
+	void *								uniforms = nullptr;
 };
 
 struct UniformBuffer
