@@ -8,22 +8,11 @@ struct VertexOutput
 	float4 sv_position : SV_Position;
 }
 
-struct UniformBuffer
-{
-	float4x4 view;
-	float4x4 proj;
-};
-
-[[vk::binding(0,0)]]
-ConstantBuffer<UniformBuffer> ubo;
-
 [shader("vertex")]
 VertexOutput vertMain(VertexInput input)
 {
 	VertexOutput output;
 
-	if (ubo.proj[1][1] < 0)
-		input.position.y *= -1;
 	output.sv_position = float4(input.position, 1.0f, 1.0f);
 	return output;
 }

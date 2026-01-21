@@ -58,15 +58,11 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp
 LIBS_SRC			=	libs/glad/gl.c
-SHARED_SHADERS		=	$(SHADER_PATH)/slang/basic.slang
-GL_SHADERS			=	$(SHADER_PATH)/slang/gl/voxel.slang
-VK_SHADERS			=	$(SHADER_PATH)/slang/vk/voxel.slang
-SPIRV_OBJS			=	$(patsubst $(SHADER_PATH)/slang/vk/%.slang, $(SPIRV_PATH)/%.spv, $(VK_SHADERS)) \
-						$(patsubst $(SHADER_PATH)/slang/%.slang, $(SPIRV_PATH)/%.spv, $(SHARED_SHADERS))
-GLSL_VERT_OBJS		=	$(patsubst $(SHADER_PATH)/slang/gl/%.slang, $(GLSL_PATH)/%.vert, $(GL_SHADERS)) \
-						$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.vert, $(SHARED_SHADERS))
-GLSL_FRAG_OBJS		=	$(patsubst $(SHADER_PATH)/slang/gl/%.slang, $(GLSL_PATH)/%.frag, $(GL_SHADERS)) \
-						$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.frag, $(SHARED_SHADERS))
+SHADERS_SRC			=	$(SHADER_PATH)/slang/basic.slang \
+						$(SHADER_PATH)/slang/voxel.slang
+SPIRV_OBJS			=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(SPIRV_PATH)/%.spv, $(SHADERS_SRC))
+GLSL_VERT_OBJS		=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.vert, $(SHADERS_SRC))
+GLSL_FRAG_OBJS		=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.frag, $(SHADERS_SRC))
 
 # Includes
 INCLUDES			=	-I libs \
@@ -93,7 +89,6 @@ INCLUDES			=	-I libs \
 						-I srcs/voxel/block \
 						-I srcs/voxel/chunk \
 						-I srcs/voxel/world
-
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 
 # Objects
@@ -141,33 +136,18 @@ run: all
 	./$(NAME)
 
 # SPV (Vulkan)
-$(SPIRV_PATH)/%.spv: $(SHADER_PATH)/slang/vk/%.slang
-	@mkdir -p $(SPIRV_PATH)
-	@slangc $< -target spirv -entry vertMain -entry fragMain -o $@
-	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
-
 $(SPIRV_PATH)/%.spv: $(SHADER_PATH)/slang/%.slang
 	@mkdir -p $(SPIRV_PATH)
-	@slangc $< -target spirv -entry vertMain -entry fragMain -o $@
+	@slangc $< -target spirv -D __VULKAN__ -entry vertMain -entry fragMain -o $@
 	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
 
 # VERT (OpenGL)
-$(GLSL_PATH)/%.vert: $(SHADER_PATH)/slang/gl/%.slang
-	@mkdir -p $(GLSL_PATH)
-	@slangc $< -profile glsl_330 -target glsl -entry vertMain -o $@
-	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
-
 $(GLSL_PATH)/%.vert: $(SHADER_PATH)/slang/%.slang
 	@mkdir -p $(GLSL_PATH)
 	@slangc $< -profile glsl_330 -target glsl -entry vertMain -o $@
 	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
 
 # FRAG (OpenGL)
-$(GLSL_PATH)/%.frag: $(SHADER_PATH)/slang/gl/%.slang
-	@mkdir -p $(GLSL_PATH)
-	@slangc $< -profile glsl_330 -target glsl -entry fragMain -o $@
-	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
-
 $(GLSL_PATH)/%.frag: $(SHADER_PATH)/slang/%.slang
 	@mkdir -p $(GLSL_PATH)
 	@slangc $< -profile glsl_330 -target glsl -entry fragMain -o $@

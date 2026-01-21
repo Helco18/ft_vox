@@ -29,14 +29,17 @@ struct ChunkData
 	float fadeValue;
 };
 
-
 [[vk::binding(0,0)]]
 ConstantBuffer<CameraMatrix> ubo;
 
 [[vk::binding(1,0)]]
 Sampler2D texture;
 
+#ifdef __VULKAN__
+[[push_constant]]
+#else
 [[vk::binding(2,0)]]
+#endif
 ConstantBuffer<ChunkData> chunkData;
 
 [shader("vertex")]
