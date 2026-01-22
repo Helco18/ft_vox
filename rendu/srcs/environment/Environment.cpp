@@ -45,8 +45,10 @@ void Environment::loop()
 	double frameStart;
 	double deltaTime;
 	AEngine * engine;
+	World * world;
 
 	engine = _windowManager->getEngine();
+	world = WorldManager::getWorld(WORLD_NAME);
 	while (_running)
 	{
 		Profiler p("Environment::loop-while(_running)");
@@ -54,7 +56,6 @@ void Environment::loop()
 		engine->beginFrame();
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
-		World * world = WorldManager::getWorld(WORLD_NAME);
 		if (!_windowManager->drawFrame())
 		{
 			engine = _windowManager->getEngine();

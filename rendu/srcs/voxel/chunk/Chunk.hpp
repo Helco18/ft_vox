@@ -4,6 +4,7 @@
 #define CHUNK_HEIGHT 16
 #define CHUNK_LENGTH 16
 
+#include <atomic>
 #include <cstdint>
 #include <vector>
 #include <mutex>
@@ -53,17 +54,18 @@ class Chunk
 		int						getChunkX() const { return _chunkLocation.x; }
 		int						getChunkY() const { return _chunkLocation.y; }
 		int						getChunkZ() const { return _chunkLocation.z; }
-		ChunkState				getState();
+		ChunkState				getState() const { return _state.load(); }
 		Asset &					getAsset() { return _asset; }
 		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
 
-		void					setState(ChunkState state);
+		void					setState(ChunkState state) { _state.store(state); }
 
 		void					build();
 		void					generateMesh();
 		void					uploadAsset(AEngine * engine);
 		void					drawAsset(AEngine * engine, PipelineType pipelineType);
 		void					unload(AEngine * engine);
+
 	private:
 		World *					_world;
 		glm::ivec3				_chunkLocation;
@@ -71,8 +73,7 @@ class Chunk
 		ChunkAsset				_chunkAsset;
 		Asset					_asset;
 		std::vector<Vertex>		_vertices;
-		ChunkState				_state;
-		std::mutex				_stateMutex;
+		std::atomic<ChunkState>	_state;
 		std::mutex				_workerMutex;
 		ChunkData				_chunkData { 0.0f };
 
@@ -82,9 +83,6 @@ class Chunk
 		Chunk * 				_westChunk = nullptr;
 		Chunk * 				_topChunk = nullptr;
 		Chunk * 				_bottomChunk = nullptr;
-
-
-
 
 		void					_generateGreedyMesh();
 		void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);

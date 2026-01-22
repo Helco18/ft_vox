@@ -235,9 +235,10 @@ void World::render(AEngine * engine, PipelineType pipelineType)
 	std::lock_guard<std::mutex> lg(_mapMutex);
 	for (Chunk * chunk : _visibleChunks)
 	{
-		if (chunk->getState() == MESHED)
+		ChunkState state = chunk->getState();
+		if (state == MESHED)
 			chunk->uploadAsset(engine);
-		else if (chunk->getState() == UPLOADED)
+		else if (state == UPLOADED)
 			chunk->drawAsset(engine, pipelineType);
 	}
 }

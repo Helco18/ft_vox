@@ -72,15 +72,3 @@ void Chunk::unload(AEngine * engine)
 	engine->unloadAsset(_asset.assetID);
 	setState(MESHED);
 }
-
-ChunkState Chunk::getState()
-{
-	const std::lock_guard<std::mutex> lg(_stateMutex);
-	return _state;
-}
-
-void Chunk::setState(ChunkState state)
-{
-	const std::lock_guard<std::mutex> lg(_stateMutex);
-	_state = state;
-}
