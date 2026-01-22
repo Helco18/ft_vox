@@ -2,6 +2,7 @@
 #include "World.hpp"
 #include "TextureAtlas.hpp"
 #include "Logger.hpp"
+#include "Profiler.hpp"
 #include "utils.hpp"
 #include <iostream>
 #include <cstring>
@@ -142,41 +143,34 @@ glm::ivec3 Chunk::_sliceToWorld(int axis, int sliceIndex, int u, int v) {
 
 uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal)
 {
-	Chunk * northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
-	Chunk * southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
-	Chunk * eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
-	Chunk * westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
-	Chunk * topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
-	Chunk * bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
-
 	int x = pos.x + normal.x;
 	int y = pos.y + normal.y;
 	int z = pos.z + normal.z;
 
 	if (x < 0 || x >= CHUNK_WIDTH)
 	{
-		if (normal.x == -1 && southChunk && southChunk->getState() >= BUILT)
-			return southChunk->getBlock(CHUNK_WIDTH - 1, y, z);
-		else if (normal.x == 1 && northChunk && northChunk->getState() >= BUILT)
-			return northChunk->getBlock(0, y, z);
+		if (normal.x == -1 && _southChunk && _southChunk->getState() >= BUILT)
+			return _southChunk->getBlock(CHUNK_WIDTH - 1, y, z);
+		else if (normal.x == 1 && _northChunk && _northChunk->getState() >= BUILT)
+			return _northChunk->getBlock(0, y, z);
 		else
 			return 0;
 	}
 	if (y < 0 || y >= CHUNK_HEIGHT)
 	{
-		if (normal.y == -1 && bottomChunk && bottomChunk->getState() >= BUILT)
-			return bottomChunk->getBlock(x, CHUNK_HEIGHT - 1, z);
-		else if (normal.y == 1 && topChunk && topChunk->getState() >= BUILT)
-			return topChunk->getBlock(x, 0, z);
+		if (normal.y == -1 && _bottomChunk && _bottomChunk->getState() >= BUILT)
+			return _bottomChunk->getBlock(x, CHUNK_HEIGHT - 1, z);
+		else if (normal.y == 1 && _topChunk && _topChunk->getState() >= BUILT)
+			return _topChunk->getBlock(x, 0, z);
 		else
 			return 0;
 	}
 	if (z < 0 || z >= CHUNK_LENGTH)
 	{
-		if (normal.z == -1 && westChunk && westChunk->getState() >= BUILT)
-			return westChunk->getBlock(x, y, CHUNK_LENGTH - 1);
-		else if (normal.z == 1 && eastChunk && eastChunk->getState() >= BUILT)
-			return eastChunk->getBlock(x, y, 0);
+		if (normal.z == -1 && _westChunk && _westChunk->getState() >= BUILT)
+			return _westChunk->getBlock(x, y, CHUNK_LENGTH - 1);
+		else if (normal.z == 1 && _eastChunk && _eastChunk->getState() >= BUILT)
+			return _eastChunk->getBlock(x, y, 0);
 		else
 			return 0;
 	}
@@ -330,6 +324,20 @@ void Chunk::_generateSliceMeshing(int axis, int sliceIndex)
 
 void Chunk::_generateGreedyMesh()
 {
+	Profiler p("_generateGreedyMesh");
+	if (!_northChunk)
+		_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
+	if (!_southChunk)
+		_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
+	if (!_eastChunk)
+		_eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
+	if (!_westChunk)
+		_westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
+	if (!_topChunk)
+		_topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
+	if (!_bottomChunk)
+		_bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
+
 	for (int i = 0; i < 3; ++i)
 	{
 		for (int sliceIndex = 0; sliceIndex < (i == 0 ? CHUNK_WIDTH : (i == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)); ++sliceIndex)

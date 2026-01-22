@@ -76,6 +76,16 @@ class Chunk
 		std::mutex				_workerMutex;
 		ChunkData				_chunkData { 0.0f };
 
+		Chunk * 				_northChunk = nullptr;
+		Chunk * 				_southChunk = nullptr;
+		Chunk * 				_eastChunk = nullptr;
+		Chunk * 				_westChunk = nullptr;
+		Chunk * 				_topChunk = nullptr;
+		Chunk * 				_bottomChunk = nullptr;
+
+
+
+
 		void					_generateGreedyMesh();
 		void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
 		ChunkAsset				_generateQuadMesh(float width, float height, float depth, int face);

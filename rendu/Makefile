@@ -1,6 +1,6 @@
 # Compilation
 CC					=	g++
-CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD -fsanitize=address
+CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD
 LDFLAGS				=	-lvulkan -lGL -ldl
 
 # Names

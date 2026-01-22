@@ -33,6 +33,7 @@ Chunk * World::getChunkAt(int x, int y, int z) const
 	int chunkY;
 	int chunkZ;
 
+	Profiler p("getChunkAt");
 	chunkX = static_cast<int>(std::floor(static_cast<double>(x) / CHUNK_WIDTH));
 	chunkY = static_cast<int>(std::floor(static_cast<double>(y) / CHUNK_HEIGHT));
 	chunkZ = static_cast<int>(std::floor(static_cast<double>(z) / CHUNK_LENGTH));
@@ -41,6 +42,7 @@ Chunk * World::getChunkAt(int x, int y, int z) const
 
 Chunk * World::getChunkAtChunkLocation(int x, int y, int z) const
 {
+	Profiler p("getChunkAtChunkLocation");
 	ChunkMap::const_iterator it = _chunkMap.find(glm::ivec3(x, y, z));
 	if (it != _chunkMap.end())
 		return it->second;
@@ -173,6 +175,8 @@ void World::_generateChunks(Camera * camera)
 		_isProceduralRequested = false;
 
 		VisibleChunks visibleChunks = _generateVisibleChunks(camera);
+		if (_visibleChunks.empty())
+			_visibleChunks = visibleChunks;
 		_generateProceduralTerrain(camera);
 
 		bool allChunksBuilt = false;
@@ -198,11 +202,20 @@ void World::_generateChunks(Camera * camera)
 	}
 }
 
+static glm::ivec3 posToChunkPos(glm::vec3 pos)
+{
+	glm::vec3 chunkPos;
+	chunkPos.x = static_cast<int>(std::floor(static_cast<double>(pos.x) / CHUNK_WIDTH));
+	chunkPos.y = static_cast<int>(std::floor(static_cast<double>(pos.y) / CHUNK_HEIGHT));
+	chunkPos.z = static_cast<int>(std::floor(static_cast<double>(pos.z) / CHUNK_LENGTH));
+	return pos;
+}
+
 void World::generateProcedurally(Camera * camera)
 {
 	static bool firstLoad = true;
-	static Chunk * lastVisitedChunk = nullptr;
-	Chunk * currentChunk = getChunkAt(camera->getPosition());
+	static glm::ivec3 lastVisitedChunk(0, 0, 0);
+	glm::ivec3 currentChunk = posToChunkPos(camera->getPosition());
 
 	if (lastVisitedChunk == currentChunk && !firstLoad)
 		return;
