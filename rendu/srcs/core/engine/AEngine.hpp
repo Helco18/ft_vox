@@ -44,12 +44,6 @@ struct Asset
 	void *								uniforms = nullptr;
 };
 
-struct UniformBuffer
-{
-	glm::mat4 view;
-	glm::mat4 proj;
-};
-
 class AEngine
 {
 	public:

@@ -3,6 +3,7 @@
 #include "CustomExceptions.hpp"
 #include "AEngine.hpp"
 #include "utils.hpp"
+#include "Camera.hpp"
 #include <vector>
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
@@ -22,7 +23,7 @@ void PipelineManager::init(AEngine * engine)
 	cameraMatrix.name = "CameraMatrix";
 	cameraMatrix.binding = 0;
 	cameraMatrix.count = 1;
-	cameraMatrix.size = sizeof(UniformBuffer);
+	cameraMatrix.size = sizeof(CameraBuffer);
 	cameraMatrix.stage = ShaderStage::VERTEX;
 	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
 

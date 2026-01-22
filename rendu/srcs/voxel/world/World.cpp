@@ -1,5 +1,6 @@
 #include "World.hpp"
 #include "Logger.hpp"
+#include "Profiler.hpp"
 #include <algorithm>
 
 World::~World()
@@ -40,7 +41,7 @@ Chunk * World::getChunkAt(int x, int y, int z) const
 
 Chunk * World::getChunkAtChunkLocation(int x, int y, int z) const
 {
-	auto it = _chunkMap.find(glm::ivec3(x, y, z));
+	ChunkMap::const_iterator it = _chunkMap.find(glm::ivec3(x, y, z));
 	if (it != _chunkMap.end())
 		return it->second;
 	return nullptr;
@@ -79,11 +80,11 @@ static bool isWithinRenderDistance(Chunk * chunk, Camera * camera)
 	int renderDistanceZ = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
 
 	return !(chunk->getChunkX() > static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) + renderDistanceX
-	|| chunk->getChunkX() < static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) - renderDistanceX
-	|| chunk->getChunkY() > static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) + renderDistanceY
-	|| chunk->getChunkY() < static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) - renderDistanceY
-	|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - renderDistanceZ
-	|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - renderDistanceZ);
+		|| chunk->getChunkX() < static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) - renderDistanceX
+		|| chunk->getChunkY() > static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) + renderDistanceY
+		|| chunk->getChunkY() < static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) - renderDistanceY
+		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - renderDistanceZ
+		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - renderDistanceZ);
 }
 
 World::VisibleChunks World::_generateVisibleChunks(Camera * camera)
@@ -199,15 +200,17 @@ void World::_generateChunks(Camera * camera)
 
 void World::generateProcedurally(Camera * camera)
 {
+	static bool firstLoad = true;
 	static Chunk * lastVisitedChunk = nullptr;
 	Chunk * currentChunk = getChunkAt(camera->getPosition());
 
-	if (lastVisitedChunk == currentChunk && lastVisitedChunk)
+	if (lastVisitedChunk == currentChunk && !firstLoad)
 		return;
 	lastVisitedChunk = currentChunk;
 	_isProceduralRequested = true;
-	if (!_isLoaded.load())
+	if (firstLoad)
 	{
+		firstLoad = false;
 		_isLoaded.store(true);
 		_chunkPool.submitTask([this, camera]() { _generateChunks(camera); });
 	}
