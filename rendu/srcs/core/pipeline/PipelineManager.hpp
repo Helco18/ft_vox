@@ -57,6 +57,14 @@ struct Attribute
 	bool			normalized;
 };
 
+struct TextureInfo
+{
+	int		width;
+	int		height;
+	int		colorChannels;
+	void *	data;
+};
+
 struct DescriptorInfo
 {
 	std::string		name;
@@ -65,6 +73,7 @@ struct DescriptorInfo
 	uint32_t		count;
 	ShaderStage		stage;
 	uint32_t		size;
+	TextureInfo		textureInfo;
 };
 
 struct UniformInfo

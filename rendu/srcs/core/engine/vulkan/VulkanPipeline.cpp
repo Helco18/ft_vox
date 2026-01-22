@@ -149,9 +149,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	pipelineData.pipelineInfo = pipelineInfo;
 	if (!pipelineInfo.descriptors.empty())
 	{
-		_createTextureImage(pipelineData);
-		_createTextureImageView(pipelineData);
-		_createTextureSampler(pipelineData);
+		_createTextures(pipelineData);
 		_createUniformBuffers(pipelineData);
 		_createDescriptorPool(pipelineData);
 		_createDescriptorSetLayout(pipelineData);

@@ -10,6 +10,7 @@ TextureAtlas::TextureMap TextureAtlas::_textureMap;
 TextureAtlas::AtlasData TextureAtlas::_atlasData;
 int TextureAtlas::_width = 0;
 int TextureAtlas::_height = 0;
+int TextureAtlas::_colorChannels = TARGET_COLOR_CHANNELS;
 
 void TextureAtlas::createAtlas()
 {
@@ -20,7 +21,7 @@ void TextureAtlas::createAtlas()
 		Logger::log(TEXTURE, FATAL, "Texture Map is empty.");
 		return;
 	}
-	_atlasData.resize(_width * _height * 4, 0);
+	_atlasData.resize(_width * _height * _colorChannels, 0);
 	for (std::pair<const std::string, Texture *> & textures : _textureMap)
 	{
 		Texture * texture = textures.second;
@@ -33,15 +34,15 @@ void TextureAtlas::createAtlas()
 		{
 			for (int x = 0; x < texture->width; ++x)
 			{
-				int atlasIndex = ((y * _width) + (x + offsetX)) * 4;
-				int texIndex = (y * texture->width + x) * 4;
-				memcpy(&_atlasData[atlasIndex], &texture->data[texIndex], 4);
+				int atlasIndex = ((y * _width) + (x + offsetX)) * _colorChannels;
+				int texIndex = (y * texture->width + x) * _colorChannels;
+				memcpy(&_atlasData[atlasIndex], &texture->data[texIndex], _colorChannels);
 			}
 		}
 		offsetX += texture->width;
 	}
 	if (g_debug)
-		stbi_write_png("atlas_debug.png", _width, _height, 4, _atlasData.data(), _width * 4);
+		stbi_write_png("atlas_debug.png", _width, _height, _colorChannels, _atlasData.data(), _width * _colorChannels);
 	Logger::log(TEXTURE, INFO, "Texture Atlas created.");
 }
 

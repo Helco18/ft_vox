@@ -88,8 +88,8 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 			else if (descriptorInfo.type == COMBINED_IMAGE_SAMPLER)
 			{
 				vk::DescriptorImageInfo textureBufferInfo;
-				textureBufferInfo.sampler = pipelineData.textures.textureSampler;
-				textureBufferInfo.imageView = pipelineData.textures.textureImageView;
+				textureBufferInfo.sampler = pipelineData.textures[descriptorInfo.binding].textureSampler;
+				textureBufferInfo.imageView = pipelineData.textures[descriptorInfo.binding].textureImageView;
 				textureBufferInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 				writeSet.pImageInfo = &textureBufferInfo;
 				_device.updateDescriptorSets(writeSet, {});

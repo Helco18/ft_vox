@@ -3,14 +3,15 @@
 #include "TextureAtlas.hpp"
 #include "utils.hpp"
 
-void VulkanEngine::_createTextureImage(PipelineData & pipelineData)
+void VulkanEngine::_createTextureImage(TextureData & textureData, TextureInfo & textureInfo)
 {
-	int width, height;
+	int width, height, colorChannels;
 
-	width = TextureAtlas::getWidth();
-	height = TextureAtlas::getHeight();
-	unsigned char * pixels = TextureAtlas::getData();
-	vk::DeviceSize size = width * height * 4;
+	width = textureInfo.width;
+	height = textureInfo.height;
+	colorChannels = textureInfo.colorChannels;
+	void * pixels = textureInfo.data;
+	vk::DeviceSize size = width * height * colorChannels;
 	if (!pixels)
 		throw VulkanException("Failed to load image.");
 
@@ -25,12 +26,12 @@ void VulkanEngine::_createTextureImage(PipelineData & pipelineData)
 
 	_createImage(width, height, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal,
 					vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
-					vk::MemoryPropertyFlagBits::eDeviceLocal, pipelineData.textures.image, pipelineData.textures.memory,
+					vk::MemoryPropertyFlagBits::eDeviceLocal, textureData.image, textureData.memory,
 					vk::SampleCountFlagBits::e1);
 	
-	_transitionImageLayout(pipelineData.textures.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-    _copyBufferToImage(stagingBuffer, pipelineData.textures.image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-    _transitionImageLayout(pipelineData.textures.image, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+	_transitionImageLayout(textureData.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+    _copyBufferToImage(stagingBuffer, textureData.image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+    _transitionImageLayout(textureData.image, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
 }
 
 void VulkanEngine::_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height)
@@ -52,14 +53,14 @@ void VulkanEngine::_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii:
 	_endSingleTimeCommands(commandBuffer);
 }
 
-void VulkanEngine::_createTextureImageView(PipelineData & pipelineData)
+void VulkanEngine::_createTextureImageView(TextureData & textureData)
 {
 	vk::ImageViewCreateInfo imageViewCreateInfo;
 	// On utilise le 2D pour les opérations basiques.
 	// On peut utiliser 1D pour des lookup tables par exemple.
 	// On peut utiliser 3D pour des textures 3D (nuages, fumée, IRM...)
 	imageViewCreateInfo.viewType = vk::ImageViewType::e2D;
-	imageViewCreateInfo.image = pipelineData.textures.image;
+	imageViewCreateInfo.image = textureData.image;
 	imageViewCreateInfo.format = vk::Format::eR8G8B8A8Srgb;
 	imageViewCreateInfo.subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 };
 	// Nos images vont être utilisées en tant que cible pour les couleurs, sans mipmap et avec un seul layer
@@ -69,10 +70,10 @@ void VulkanEngine::_createTextureImageView(PipelineData & pipelineData)
 	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 	imageViewCreateInfo.subresourceRange.layerCount = 1;
 
-	pipelineData.textures.textureImageView = vk::raii::ImageView( _device, imageViewCreateInfo );
+	textureData.textureImageView = vk::raii::ImageView( _device, imageViewCreateInfo );
 }
 
-void VulkanEngine::_createTextureSampler(PipelineData & pipelineData)
+void VulkanEngine::_createTextureSampler(TextureData & textureData)
 {
 	vk::PhysicalDeviceProperties properties = _physicalDevice.getProperties();
 
@@ -92,6 +93,20 @@ void VulkanEngine::_createTextureSampler(PipelineData & pipelineData)
 	samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
 	samplerInfo.unnormalizedCoordinates = vk::False;
 
-	pipelineData.textures.textureID = _nextTextureID++;
-	pipelineData.textures.textureSampler = vk::raii::Sampler( _device, samplerInfo );
+	textureData.textureID = _nextTextureID++;
+	textureData.textureSampler = vk::raii::Sampler( _device, samplerInfo );
+}
+
+void VulkanEngine::_createTextures(PipelineData & pipelineData)
+{
+	for (DescriptorInfo & descriptorInfo : pipelineData.pipelineInfo.descriptors)
+	{
+		if (descriptorInfo.type == DescriptorType::COMBINED_IMAGE_SAMPLER)
+		{
+			TextureData & textureData = pipelineData.textures[descriptorInfo.binding];
+			_createTextureImage(textureData, descriptorInfo.textureInfo);
+			_createTextureImageView(textureData);
+			_createTextureSampler(textureData);
+		}
+	}
 }

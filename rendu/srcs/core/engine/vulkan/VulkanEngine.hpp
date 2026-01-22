@@ -93,9 +93,9 @@ struct PipelineData
 	vk::raii::PipelineLayout 							layout = nullptr;
 	vk::raii::DescriptorPool							descriptorPool = nullptr;
 	vk::raii::DescriptorSetLayout						descriptorSetLayout = nullptr;
-	std::unordered_map<unsigned int, UniformBufferData>	uniforms;
 	std::vector<vk::raii::DescriptorSet>				descriptorSets;
-	TextureData											textures;
+	std::unordered_map<unsigned int, UniformBufferData>	uniforms;
+	std::unordered_map<unsigned int, TextureData>		textures;
 };
 
 struct PendingAsset
@@ -245,9 +245,10 @@ class VulkanEngine : public AEngine
 		void								_createDescriptorSets(PipelineData & pipelineData);
 		void								_createUniformBuffers(PipelineData & pipelineData);
 		void								_createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::raii::Image & image, vk::raii::DeviceMemory & imageMemory, vk::SampleCountFlagBits sampling);
-		void								_createTextureImage(PipelineData & pipelineData);
-		void								_createTextureImageView(PipelineData & pipelineData);
-		void								_createTextureSampler(PipelineData & pipelineData);
+		void								_createTextures(PipelineData & pipelineData);
+		void								_createTextureImage(TextureData & textureData, TextureInfo & textureInfo);
+		void								_createTextureImageView(TextureData & textureData);
+		void								_createTextureSampler(TextureData & textureData);
 		void								_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height);
 		void								_createDepthResources();
 		vk::Format							_findSupportedFormat(const std::vector<vk::Format> & candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features);

@@ -3,6 +3,8 @@
 #include <string>
 #include "glm/glm.hpp"
 
+#define TARGET_COLOR_CHANNELS 4
+
 struct Texture
 {
 	int				width;
@@ -27,6 +29,7 @@ class TextureAtlas
 		static unsigned char *	getData() { return _atlasData.data(); };
 		static int				getWidth() { return _width; };
 		static int				getHeight() { return _height; };
+		static int				getColorChannels() { return _colorChannels; };
 
 		static void				destroy();
 
@@ -38,5 +41,6 @@ class TextureAtlas
 		static AtlasData		_atlasData;
 		static int				_width;
 		static int				_height;
+		static int				_colorChannels;
 
 };

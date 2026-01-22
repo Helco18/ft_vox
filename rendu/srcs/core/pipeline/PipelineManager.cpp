@@ -4,6 +4,7 @@
 #include "AEngine.hpp"
 #include "utils.hpp"
 #include "Camera.hpp"
+#include "TextureAtlas.hpp"
 #include <vector>
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
@@ -33,6 +34,12 @@ void PipelineManager::init(AEngine * engine)
 	textureAtlas.count = 1;
 	textureAtlas.stage = ShaderStage::FRAGMENT;
 	textureAtlas.type = DescriptorType::COMBINED_IMAGE_SAMPLER;
+	TextureInfo textureInfo;
+	textureInfo.width = TextureAtlas::getWidth();
+	textureInfo.height = TextureAtlas::getHeight();
+	textureInfo.data = TextureAtlas::getData();
+	textureInfo.colorChannels = TextureAtlas::getColorChannels();
+	textureAtlas.textureInfo = textureInfo;
 
 	DescriptorInfo chunkData;
 	chunkData.name = "ChunkData";
