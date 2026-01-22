@@ -183,14 +183,13 @@ void Camera::renderViewMatrix(AEngine * engine, EngineType engineType)
 {
 	bool onVulkan = engineType == VULKAN;
 	float nearPlane = 0.01f * (onVulkan ? 1 : NEAR_PLANE_OFFSET);
-	CameraBuffer cb;
 
-	cb.view = getView();
-	cb.proj = glm::perspective(glm::radians(_fov),
+	_cameraBuffer.view = getView();
+	_cameraBuffer.proj = glm::perspective(glm::radians(_fov),
 		static_cast<float>(_width) / static_cast<float>(_height),
 		nearPlane, 1500.0f);
 	if (onVulkan)
-		cb.proj[1][1] *= -1;
+		_cameraBuffer.proj[1][1] *= -1;
 	for (PipelineType pipelineType : _pipelines)
-		engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, &cb, sizeof(CameraBuffer));
+		engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, &_cameraBuffer, sizeof(CameraBuffer));
 }

@@ -110,9 +110,9 @@ RESET				=	\033[0m
 # Custom messages
 EXE_DONE			=	@echo "[PROGRAM] $(PURPLE)$(NAME) compiled!$(RESET)"
 SHADERS_DONE		=	@echo "[SHADER] $(PURPLE)Shaders compiled!$(RESET)"
-SHADERS_CLEAN		=	@echo "[SHADER] $(LIGHT_GREEN)Shaders cleaned!$(RESET)"
-ALL_CLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects cleaned!$(RESET)"
-ALL_FCLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects & Executables cleaned!$(RESET)"
+SHADERS_CLEAN		=	@echo "[SHADER] $(YELLOW)Shaders cleaned!$(RESET)"
+ALL_CLEAN			=	@echo "[SRCS] $(YELLOW)Project's objects cleaned!$(RESET)"
+ALL_FCLEAN			=	@echo "[SRCS] $(YELLOW)Project's objects & Executables cleaned!$(RESET)"
 
 # Rules
 all : glfw glm stb glad shader $(NAME)

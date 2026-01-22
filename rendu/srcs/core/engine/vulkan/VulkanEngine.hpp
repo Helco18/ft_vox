@@ -108,6 +108,13 @@ struct PendingAsset
 	BufferData		stagingIndexData;
 };
 
+struct PendingUniform
+{
+	PipelineID	pipelineID;
+	void *		data;
+	size_t		size;
+};
+
 struct AssetData
 {
 	Asset *									asset;
@@ -194,6 +201,7 @@ class VulkanEngine : public AEngine
 		PipelineMap							_pipelineMap;
 		PipelineAssetMap					_pipelineAssetMap;
 		std::vector<PendingAsset>			_pendingAssets;
+		std::vector<PendingUniform>			_pendingUniforms;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -217,6 +225,7 @@ class VulkanEngine : public AEngine
 		void								_createVertexBuffer(PendingAsset & pendingAsset);
 		void								_createIndexBuffer(PendingAsset & pendingAsset);
 		void								_uploadPendingAssets();
+		void								_processPendingUniforms();
 		void								_createCommandBuffer();
 		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

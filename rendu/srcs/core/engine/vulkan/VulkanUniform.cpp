@@ -43,5 +43,16 @@ void VulkanEngine::_createUniformBuffers(PipelineData & pipelineData)
 
 void VulkanEngine::updateUniformBuffer(PipelineID pipelineID, void * data, size_t size)
 {
-	memcpy(_pipelineMap[pipelineID].uniforms.mapped[_currentFrame], data, size);
+	PendingUniform uniform;
+	uniform.pipelineID = pipelineID;
+	uniform.data = data;
+	uniform.size = size;
+	_pendingUniforms.push_back(uniform);
+}
+
+void VulkanEngine::_processPendingUniforms()
+{
+	for (PendingUniform & uniform : _pendingUniforms)
+		memcpy(_pipelineMap[uniform.pipelineID].uniforms.mapped[_currentFrame], uniform.data, uniform.size);
+	_pendingUniforms.clear();
 }

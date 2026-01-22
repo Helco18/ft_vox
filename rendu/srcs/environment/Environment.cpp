@@ -52,7 +52,6 @@ void Environment::loop()
 		Profiler p("Environment::loop-while(_running)");
 		frameStart = glfwGetTime();
 		engine->beginFrame();
-		_windowManager->getCamera()->renderViewMatrix(engine, engine->getEngineType());
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
 		World * world = WorldManager::getWorld(WORLD_NAME);
@@ -68,6 +67,7 @@ void Environment::loop()
 			world->generateProcedurally(_windowManager->getCamera());
 			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
 		}
+		_windowManager->getCamera()->renderViewMatrix(engine, engine->getEngineType());
 		engine->endFrame();
 		deltaTime = glfwGetTime() - frameStart;
 		_windowManager->setDeltaTime(deltaTime);

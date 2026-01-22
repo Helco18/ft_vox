@@ -78,4 +78,5 @@ class Camera
 		float						_speed;
 		std::vector<PipelineType>	_pipelines;
 		CameraType					_type = EULER;
+		CameraBuffer				_cameraBuffer;
 };
