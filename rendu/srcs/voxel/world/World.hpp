@@ -19,10 +19,10 @@ class World
 
 		const std::string &		getName() { return _name; }
 
-		Chunk *					getChunkAt(int x, int y, int z) const;
-		Chunk *					getChunkAt(const glm::vec3 & location) const;
-		Chunk *					getChunkAtChunkLocation(int x, int y, int z) const;
-		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location) const;
+		Chunk *					getChunkAt(int x, int y, int z);
+		Chunk *					getChunkAt(const glm::vec3 & location);
+		Chunk *					getChunkAtChunkLocation(int x, int y, int z);
+		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location);
 
 		void					reloadChunks(AEngine * engine);
 
@@ -34,8 +34,8 @@ class World
 
 		VisibleChunks			_generateVisibleChunks(Camera * camera);
 		void					_generateChunks(Camera * camera);
-		void					_generateProceduralTerrain(Camera * camera);
-		void					_generateProceduralMesh(Camera * camera);
+		void					_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleChunks);
+		void					_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChunks);
 		void					_drawChunk(AEngine * engine, PipelineType pipelineType);
 
 		std::string				_name;
@@ -43,6 +43,8 @@ class World
 		VisibleChunks			_visibleChunks;
 		ThreadPool				_chunkPool;
 		std::mutex				_chunkMutex;
+		std::mutex				_visibleMutex;
+		std::mutex				_mapMutex;
 		std::condition_variable	_chunkCv;
 		std::atomic_bool		_isLoaded = false;
 		std::atomic_bool		_isProceduralRequested = false;

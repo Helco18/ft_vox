@@ -27,7 +27,7 @@ void World::reloadChunks(AEngine * engine)
 	}
 }
 
-Chunk * World::getChunkAt(int x, int y, int z) const
+Chunk * World::getChunkAt(int x, int y, int z)
 {
 	int chunkX;
 	int chunkY;
@@ -40,21 +40,21 @@ Chunk * World::getChunkAt(int x, int y, int z) const
 	return getChunkAtChunkLocation(chunkX, chunkY, chunkZ);
 }
 
-Chunk * World::getChunkAtChunkLocation(int x, int y, int z) const
+Chunk * World::getChunkAtChunkLocation(int x, int y, int z)
 {
-	Profiler p("getChunkAtChunkLocation");
+	std::lock_guard<std::mutex> lg(_mapMutex);
 	ChunkMap::const_iterator it = _chunkMap.find(glm::ivec3(x, y, z));
 	if (it != _chunkMap.end())
 		return it->second;
 	return nullptr;
 }
 
-inline Chunk * World::getChunkAt(const glm::vec3 & location) const
+inline Chunk * World::getChunkAt(const glm::vec3 & location)
 {
 	return getChunkAt(location.x, location.y, location.z);
 }
 
-inline Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location) const
+inline Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location)
 {
 	return getChunkAtChunkLocation(location.x, location.y, location.z);
 }
@@ -121,6 +121,7 @@ World::VisibleChunks World::_generateVisibleChunks(Camera * camera)
 			for (int z = renderDistanceWest; z < renderDistanceEast; ++z)
 			{
 				glm::vec3 location(x, y, z);
+				std::lock_guard<std::mutex> lg(_mapMutex);
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
 				{
@@ -136,9 +137,9 @@ World::VisibleChunks World::_generateVisibleChunks(Camera * camera)
 	return visibleChunks;
 }
 
-void World::_generateProceduralTerrain(Camera * camera)
+void World::_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleChunks)
 {
-	for (Chunk * chunk : _visibleChunks)
+	for (Chunk * chunk : visibleChunks)
 	{
 		if (!chunk || !isWithinRenderDistance(chunk, camera))
 			continue;
@@ -150,9 +151,9 @@ void World::_generateProceduralTerrain(Camera * camera)
 	}
 }
 
-void World::_generateProceduralMesh(Camera * camera)
+void World::_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChunks)
 {
-	for (Chunk * chunk : _visibleChunks)
+	for (Chunk * chunk : visibleChunks)
 	{
 		if (!chunk || !isWithinRenderDistance(chunk, camera))
 			continue;
@@ -175,15 +176,13 @@ void World::_generateChunks(Camera * camera)
 		_isProceduralRequested = false;
 
 		VisibleChunks visibleChunks = _generateVisibleChunks(camera);
-		if (_visibleChunks.empty())
-			_visibleChunks = visibleChunks;
-		_generateProceduralTerrain(camera);
+		_generateProceduralTerrain(camera, visibleChunks);
 
 		bool allChunksBuilt = false;
 		do
 		{
 			allChunksBuilt = true;
-			for (Chunk * chunk : _visibleChunks)
+			for (Chunk * chunk : visibleChunks)
 			{
 				if (_isProceduralRequested)
 					break;
@@ -197,7 +196,8 @@ void World::_generateChunks(Camera * camera)
 			}
 		} while (!allChunksBuilt && !_isProceduralRequested);
 
-		_generateProceduralMesh(camera);
+		_generateProceduralMesh(camera, visibleChunks);
+		std::lock_guard<std::mutex> lg(_mapMutex);
 		_visibleChunks = visibleChunks;
 	}
 }
@@ -232,6 +232,7 @@ void World::generateProcedurally(Camera * camera)
 
 void World::render(AEngine * engine, PipelineType pipelineType)
 {
+	std::lock_guard<std::mutex> lg(_mapMutex);
 	for (Chunk * chunk : _visibleChunks)
 	{
 		if (chunk->getState() == MESHED)
