@@ -16,3 +16,4 @@ tutorial.cpp
 *.rdc
 atlas_debug.png
 logs/
+imgui.ini

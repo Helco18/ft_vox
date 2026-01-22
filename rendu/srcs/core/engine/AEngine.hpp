@@ -60,12 +60,15 @@ class AEngine
 		virtual void		drawAsset(AssetID assetID, PipelineID pipelineID) = 0;
 		virtual void		endFrame() = 0;
 
+		virtual void		beginImGui() = 0;
+
 		EngineType			getEngineType() const { return _engineType; }
 		GLFWwindow *		getWindow() const { return _window; }
 		bool				getFramebufferResized() const { return _isFramebufferResized; }
 		bool				isInitialized() const { return _isInitalized; }
 
 		void				setFramebufferResized(bool framebufferResized) { _isFramebufferResized = framebufferResized; }
+
 
 	protected:
 		EngineType			_engineType;

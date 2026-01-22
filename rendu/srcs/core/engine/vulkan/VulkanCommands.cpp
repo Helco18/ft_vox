@@ -153,6 +153,7 @@ void VulkanEngine::_recordCommandBuffer()
 			commands.drawIndexed(asset->indices.size(), 1, 0, 0, 0);
 		}
 	}
+	_renderImGui();
 	commands.endRendering();
 
 	TransitionImageViewLayoutInfo presentSrcInfo;

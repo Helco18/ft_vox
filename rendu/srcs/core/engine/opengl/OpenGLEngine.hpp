@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AEngine.hpp"
 #include "glad/gl.h"
 #include <GL/glext.h>
@@ -54,6 +56,8 @@ class OpenGLEngine : public AEngine
 		void		drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void		endFrame() override;
 
+		void		beginImGui() override;
+	
 	private:
 		typedef std::unordered_map<PipelineID, PipelineLayout>	PipelineMap;
 		typedef std::unordered_map<std::string, GLuint>			ShaderCache;
@@ -68,4 +72,10 @@ class OpenGLEngine : public AEngine
 		void		_handleResize();
 		void		_createTexture(TextureBuffer & textureBuffer, TextureInfo & textureInfo);
 		void		_applyPipeline(PipelineID pipelineID);
+
+		// ImGui
+		void		_initImGui();
+		void		_renderImGui();
+		void		_shutdownImGui();
+
 };

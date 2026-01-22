@@ -54,6 +54,7 @@ void Environment::loop()
 		Profiler p("Environment::loop-while(_running)");
 		frameStart = glfwGetTime();
 		engine->beginFrame();
+		engine->beginImGui();
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
 		if (!_windowManager->drawFrame())

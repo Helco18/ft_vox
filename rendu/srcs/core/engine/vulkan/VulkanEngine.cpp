@@ -11,6 +11,7 @@ VulkanEngine::~VulkanEngine()
 {
 	_device.waitIdle();
 	_queue.waitIdle();
+	_shutdownImGui();
 }
 
 void VulkanEngine::load()
@@ -65,6 +66,7 @@ void VulkanEngine::load()
 	// On construit notre *graphics pipeline*, c’est-à-dire la configuration complète du pipeline graphique :
 	// shaders, entrées vertex, assemblage, rasterization, blending, etc.
 
+	_initImGui();
 	_isInitalized = true;
 	Logger::log(ENGINE_VULKAN, INFO, "Vulkan engine initialized successfully.");
 }

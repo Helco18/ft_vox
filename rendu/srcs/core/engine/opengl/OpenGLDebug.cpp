@@ -11,7 +11,7 @@ void OpenGLEngine::_debugCallback(GLenum source, GLenum type, GLuint id, GLenum 
 		return;
 	logSeverity = (severity == GL_DEBUG_SEVERITY_NOTIFICATION) ? INFO :
 			(severity == GL_DEBUG_SEVERITY_LOW || severity == GL_DEBUG_SEVERITY_LOW_AMD || severity == GL_DEBUG_SEVERITY_LOW_ARB) ? WARNING :
-			(severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_MEDIUM_AMD || severity == GL_DEBUG_SEVERITY_MEDIUM_ARB) ? ERROR :
+			(severity == GL_DEBUG_SEVERITY_MEDIUM || severity == GL_DEBUG_SEVERITY_MEDIUM_AMD || severity == GL_DEBUG_SEVERITY_MEDIUM_ARB) ? WARNING :
 			FATAL;
 
 	Logger::log(ENGINE_OPENGL, logSeverity, 

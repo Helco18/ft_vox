@@ -140,6 +140,8 @@ class VulkanEngine : public AEngine
 		void								drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void								endFrame() override;
 
+		void								beginImGui() override;
+
 	private:
 		typedef std::vector<char const *>													RequiredExtensions;
 		typedef std::vector<char const *>													RequiredLayers;
@@ -253,4 +255,10 @@ class VulkanEngine : public AEngine
 		void								_createDepthResources();
 		vk::Format							_findSupportedFormat(const std::vector<vk::Format> & candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features);
 		vk::Format							_findDepthFormat();
+
+		// ImGui
+		void								_initImGui();
+		void								_renderImGui();
+		void								_shutdownImGui();
+		vk::raii::DescriptorPool			_imGuiPool = nullptr;
 };

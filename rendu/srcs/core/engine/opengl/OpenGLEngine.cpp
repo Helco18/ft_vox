@@ -30,6 +30,7 @@ OpenGLEngine::~OpenGLEngine()
 		for (std::pair<const unsigned int, TextureBuffer> & texturePair : pipelinePair.second.textureBuffers)
 			glDeleteTextures(1, &texturePair.second.tbo);
 	}
+	_shutdownImGui();
 }
 
 void OpenGLEngine::load()
@@ -46,9 +47,10 @@ void OpenGLEngine::load()
 
 	glEnable(GL_FRAMEBUFFER_SRGB);
 
-	Logger::log(ENGINE_OPENGL, INFO, "OpenGL engine initialized successfully.");
+	_initImGui();
 
 	_isInitalized = true;
+	Logger::log(ENGINE_OPENGL, INFO, "OpenGL engine initialized successfully.");
 }
 
 void OpenGLEngine::beginFrame()
@@ -59,6 +61,7 @@ void OpenGLEngine::beginFrame()
 
 void OpenGLEngine::endFrame()
 {
+	_renderImGui();
 	glfwSwapBuffers(_window);
 }
 

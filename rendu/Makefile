@@ -11,8 +11,6 @@ SHADER_PATH			=	srcs/core/shaders
 OBJ_PATH			=	objs
 GLAD_PATH			=	libs/glad
 GLFW_PATH			=	libs/GLFW
-GLM_PATH			=	libs/glm
-STB_PATH			=	libs/stb
 SPIRV_PATH			=	$(SHADER_PATH)/spir-v
 GLSL_PATH			=	$(SHADER_PATH)/glsl
 
@@ -22,6 +20,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/opengl/OpenGLAsset.cpp \
 						srcs/core/engine/opengl/OpenGLDebug.cpp \
 						srcs/core/engine/opengl/OpenGLEngine.cpp \
+						srcs/core/engine/opengl/OpenGLImGui.cpp \
 						srcs/core/engine/opengl/OpenGLPipeline.cpp \
 						srcs/core/engine/opengl/OpenGLShader.cpp \
 						srcs/core/engine/opengl/OpenGLTexture.cpp \
@@ -32,6 +31,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanDepthTest.cpp \
 						srcs/core/engine/vulkan/VulkanDescriptors.cpp \
 						srcs/core/engine/vulkan/VulkanEngine.cpp \
+						srcs/core/engine/vulkan/VulkanImGui.cpp \
 						srcs/core/engine/vulkan/VulkanImage.cpp \
 						srcs/core/engine/vulkan/VulkanInstance.cpp \
 						srcs/core/engine/vulkan/VulkanMesh.cpp \
@@ -50,6 +50,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/environment/Environment.cpp \
 						srcs/tools/logger/Logger.cpp \
 						srcs/tools/profiler/Profiler.cpp \
+						srcs/tools/utils/imgui_utils.cpp \
 						srcs/tools/utils/stb_image.cpp \
 						srcs/tools/utils/utils.cpp \
 						srcs/voxel/WorldManager.cpp \
@@ -57,7 +58,15 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp
-LIBS_SRC			=	libs/glad/gl.c
+LIBS_C				=	libs/glad/gl.c
+LIBS_CPP			=	libs/imgui/imgui_demo.cpp \
+						libs/imgui/imgui_draw.cpp \
+						libs/imgui/imgui_tables.cpp \
+						libs/imgui/imgui_impl_glfw.cpp \
+						libs/imgui/imgui_impl_opengl3.cpp \
+						libs/imgui/imgui_impl_vulkan.cpp \
+						libs/imgui/imgui_widgets.cpp \
+						libs/imgui/imgui.cpp
 SHADERS_SRC			=	$(SHADER_PATH)/slang/basic.slang \
 						$(SHADER_PATH)/slang/voxel.slang
 SPIRV_OBJS			=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(SPIRV_PATH)/%.spv, $(SHADERS_SRC))
@@ -66,6 +75,10 @@ GLSL_FRAG_OBJS		=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.frag, 
 
 # Includes
 INCLUDES			=	-I libs \
+						-I libs/glad \
+						-I libs/GLFW \
+						-I libs/glm \
+						-I libs/imgui \
 						-I libs/stb \
 						-I srcs \
 						-I srcs/core \
@@ -93,10 +106,12 @@ GLFW				=	$(GLFW_PATH)/libglfw3.a
 
 # Objects
 OBJS				=	$(patsubst srcs/%.cpp, $(OBJ_PATH)/%.o, $(SRCS)) \
-						$(patsubst libs/%.c, $(OBJ_PATH)/%.o, $(LIBS_SRC))
+						$(patsubst libs/%.cpp, $(OBJ_PATH)/%.o, $(LIBS_CPP)) \
+						$(patsubst libs/%.c, $(OBJ_PATH)/%.o, $(LIBS_C))
 
 DEPS				=	$(patsubst srcs/%.cpp, $(OBJ_PATH)/%.d, $(SRCS)) \
-						$(patsubst libs/%.c, $(OBJ_PATH)/%.d, $(LIBS_SRC))
+						$(patsubst libs/%.cpp, $(OBJ_PATH)/%.d, $(LIBS_CPP)) \
+						$(patsubst libs/%.c, $(OBJ_PATH)/%.d, $(LIBS_C))
 
 # Custom Makefile Flags
 MAKEFLAGS			+=	--no-print-directory --silent
@@ -122,6 +137,11 @@ $(NAME): $(OBJS)
 	$(EXE_DONE)
 
 $(OBJ_PATH)/%.o: srcs/%.cpp
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@echo "[SRCS] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
+
+$(OBJ_PATH)/%.o: libs/%.cpp
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@echo "[SRCS] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
@@ -247,6 +267,39 @@ glad:
 		make --no-print-directory download_glad; \
 	fi
 
-.PHONY: all shader clean sclean fclean re stb download_stb glm download_glm glfw download_glfw glad download_glad
+download_imgui:
+	@cd libs; \
+	rm -rf imgui_downloaded 2>/dev/null; \
+	echo "\033[31;1;4mImGUI Not Found\033[0m"; \
+	echo "\033[31;1mDownloading it from github\033[0m"; \
+	git clone https://github.com/ocornut/imgui.git imgui_downloaded; \
+	mkdir imgui; \
+	mv imgui_downloaded/imgui.h imgui/; \
+	mv imgui_downloaded/imconfig.h imgui/; \
+	mv imgui_downloaded/imgui_internal.h imgui/; \
+	mv imgui_downloaded/imstb_rectpack.h imgui/; \
+	mv imgui_downloaded/imstb_textedit.h imgui/; \
+	mv imgui_downloaded/imstb_truetype.h imgui/; \
+	mv imgui_downloaded/imgui_demo.cpp imgui/; \
+	mv imgui_downloaded/imgui_draw.cpp imgui/; \
+	mv imgui_downloaded/imgui_tables.cpp imgui/; \
+	mv imgui_downloaded/imgui_widgets.cpp imgui/; \
+	mv imgui_downloaded/imgui.cpp imgui/; \
+	mv imgui_downloaded/backends/imgui_impl_glfw.cpp imgui/; \
+	mv imgui_downloaded/backends/imgui_impl_glfw.h imgui/; \
+	mv imgui_downloaded/backends/imgui_impl_vulkan.cpp imgui/; \
+	mv imgui_downloaded/backends/imgui_impl_vulkan.h imgui/; \
+	mv imgui_downloaded/backends/imgui_impl_opengl3.cpp imgui/; \
+	mv imgui_downloaded/backends/imgui_impl_opengl3.h imgui/; \
+	mv imgui_downloaded/backends/imgui_impl_opengl3_loader.h imgui/; \
+	rm -rf imgui_downloaded 2>/dev/null;
+
+imgui:
+	@mkdir -p libs
+	@if ! ls ./libs/imgui 2>/dev/null | grep -q "imgui.h" ; then \
+		make --no-print-directory download_imgui; \
+	fi
+
+.PHONY: all shader clean sclean fclean re stb download_stb glm download_glm glfw download_glfw glad download_glad imgui download_imgui
 
 -include $(DEPS)
