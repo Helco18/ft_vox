@@ -109,7 +109,6 @@ RESET				=	\033[0m
 
 # Custom messages
 EXE_DONE			=	@echo "[PROGRAM] $(PURPLE)$(NAME) compiled!$(RESET)"
-DEBUG_DONE			=	@echo "[PROGRAM] $(YELLOW)This is the DEBUG MODE version!$(RESET)"
 SHADERS_DONE		=	@echo "[SHADER] $(PURPLE)Shaders compiled!$(RESET)"
 SHADERS_CLEAN		=	@echo "[SHADER] $(LIGHT_GREEN)Shaders cleaned!$(RESET)"
 ALL_CLEAN			=	@echo "[SRCS] $(LIGHT_GREEN)Project's objects cleaned!$(RESET)"
@@ -139,19 +138,19 @@ run: all
 $(SPIRV_PATH)/%.spv: $(SHADER_PATH)/slang/%.slang
 	@mkdir -p $(SPIRV_PATH)
 	@slangc $< -target spirv -D __VULKAN__ -entry vertMain -entry fragMain -o $@
-	@echo "[SHADER] SPIRV: $(YELLOW)Compiled: $@ $(RESET)"
+	@echo "[SHADER-SPRV] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
 
 # VERT (OpenGL)
 $(GLSL_PATH)/%.vert: $(SHADER_PATH)/slang/%.slang
 	@mkdir -p $(GLSL_PATH)
 	@slangc $< -profile glsl_330 -target glsl -entry vertMain -o $@
-	@echo "[SHADER] GLSL_VERTEX: $(YELLOW)Compiled: $@ $(RESET)"
+	@echo "[SHADER-GLSL] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
 
 # FRAG (OpenGL)
 $(GLSL_PATH)/%.frag: $(SHADER_PATH)/slang/%.slang
 	@mkdir -p $(GLSL_PATH)
 	@slangc $< -profile glsl_330 -target glsl -entry fragMain -o $@
-	@echo "[SHADER] GLSL_FRAGMENT: $(YELLOW)Compiled: $@ $(RESET)"
+	@echo "[SHADER-GLSL] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
 
 shader: $(SPIRV_OBJS) $(GLSL_VERT_OBJS) $(GLSL_FRAG_OBJS)
 	$(SHADERS_DONE)
@@ -168,7 +167,6 @@ clean :
 	$(ALL_CLEAN)
 
 fclean :
-	@rm -f $(NAME)_debug
 	@rm -f $(NAME)
 	@rm -rf $(OBJ_PATH)
 	@rm -rf $(SPIRV_PATH)
@@ -178,10 +176,6 @@ fclean :
 re:
 	@$(MAKE) fclean
 	@$(MAKE) all
-
-debug : fclean
-	$(MAKE) NAME="$(NAME)_debug" CFLAGS="$(CFLAGS) -DDEBUG"
-	$(DEBUG_DONE)
 
 # Libraries
 download_glfw:
@@ -253,6 +247,6 @@ glad:
 		make --no-print-directory download_glad; \
 	fi
 
-.PHONY: all shader clean sclean fclean re debug stb download_stb glm download_glm glfw download_glfw glad download_glad
+.PHONY: all shader clean sclean fclean re stb download_stb glm download_glm glfw download_glfw glad download_glad
 
 -include $(DEPS)

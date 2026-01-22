@@ -2,7 +2,7 @@
 
 #include "WindowManager.hpp"
 
-#define SCROLL_SPEED 0.25f
+#define SCROLL_SPEED 25.0f
 
 class InputManager
 {
