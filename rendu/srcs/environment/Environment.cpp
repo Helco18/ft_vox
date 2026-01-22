@@ -8,7 +8,6 @@
 #include "Logger.hpp"
 #include "TextureAtlas.hpp"
 #include "PipelineManager.hpp"
-#include <iostream>
 
 Environment::~Environment()
 {
@@ -36,6 +35,7 @@ void Environment::init(EngineType engineType)
 	BlockData::init();
 
 	WorldManager::createWorld(WORLD_NAME);
+	WorldManager::loadWorld(WORLD_NAME);
 
 	Logger::log(ENVIRONMENT, INFO, "Environment started.");
 }
