@@ -21,13 +21,14 @@ OpenGLEngine::~OpenGLEngine()
 		for (UniformBufferStream & uniformInfo : assetInfo.uniformBufferStreams)
 			glDeleteBuffers(1, &uniformInfo.ubo);
 	}
-	glDeleteTextures(1, &_texture);
 	for (std::pair<std::string, GLuint> shaderPair : _shaderCache)
 		glDeleteProgram(shaderPair.second);
 	for (std::pair<PipelineID, PipelineLayout> pipelinePair : _pipelineMap)
 	{
 		for (std::pair<const unsigned int, UniformBufferStream> & uniformPair : pipelinePair.second.uniformBufferStreams)
 			glDeleteBuffers(1, &uniformPair.second.ubo);
+		for (std::pair<const unsigned int, TextureBuffer> & texturePair : pipelinePair.second.textureBuffers)
+			glDeleteTextures(1, &texturePair.second.tbo);
 	}
 }
 
@@ -35,8 +36,6 @@ void OpenGLEngine::load()
 {
 	Profiler p("OpenGLEngine::load");
 	glfwSwapInterval(0);
-
-	_createTexture();
 
 	if (g_debug)
 	{

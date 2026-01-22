@@ -23,6 +23,13 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 			glBufferData(GL_UNIFORM_BUFFER, descriptorInfo.size, nullptr, GL_DYNAMIC_DRAW);
 			pipelineLayout.uniformBufferStreams.try_emplace(descriptorInfo.binding, bufferStream);
 		}
+		else if (descriptorInfo.type == DescriptorType::COMBINED_IMAGE_SAMPLER)
+		{
+			TextureBuffer textureBuffer;
+			textureBuffer.name = descriptorInfo.name;
+			_createTexture(textureBuffer, descriptorInfo.textureInfo);
+			pipelineLayout.textureBuffers.try_emplace(descriptorInfo.binding, textureBuffer);
+		}
 	}
 
 	ShaderCache::iterator it = _shaderCache.find(pipelineInfo.shaderName);
@@ -75,10 +82,18 @@ void OpenGLEngine::_applyPipeline(PipelineID pipelineID)
 	if (shaderit != _shaderCache.end())
 		glUseProgram(shaderit->second);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, _texture);
-	GLuint textureIndex = glGetUniformLocation(shaderit->second, "texture_0");
-	if (textureIndex == GL_INVALID_INDEX)
-		throw OpenGLException("Couldn't find texture uniform.");
-	glUniform1i(textureIndex, 0);
+	int i = 0;
+	for (std::pair<const unsigned int, TextureBuffer> & texturePair : pipelineLayout.textureBuffers)
+	{
+		if (i >= 31)
+			throw OpenGLException("Texture slots overflow.");
+		TextureBuffer & textureBuffer = texturePair.second;
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textureBuffer.tbo);
+		GLuint textureIndex = glGetUniformLocation(shaderit->second, textureBuffer.name.c_str());
+		if (textureIndex == GL_INVALID_INDEX)
+			throw OpenGLException("Couldn't find texture uniform: " + textureBuffer.name);
+		glUniform1i(textureIndex, 0);
+		i++;
+	}
 }

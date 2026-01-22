@@ -1,6 +1,5 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
-#include "TextureAtlas.hpp"
 #include "utils.hpp"
 
 void VulkanEngine::_createTextureImage(TextureData & textureData, TextureInfo & textureInfo)

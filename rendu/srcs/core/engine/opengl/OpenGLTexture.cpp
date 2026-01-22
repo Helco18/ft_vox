@@ -1,13 +1,12 @@
 #include "OpenGLEngine.hpp"
 #include "OBJModel.hpp"
 #include "Logger.hpp"
-#include "TextureAtlas.hpp"
 #include <iostream>
 
-void OpenGLEngine::_createTexture()
+void OpenGLEngine::_createTexture(TextureBuffer & textureBuffer, TextureInfo & textureInfo)
 {
-	glGenTextures(1, &_texture);
-	glBindTexture(GL_TEXTURE_2D, _texture);
+	glGenTextures(1, &textureBuffer.tbo);
+	glBindTexture(GL_TEXTURE_2D, textureBuffer.tbo);
 
 	// Wrapping mode
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -18,11 +17,9 @@ void OpenGLEngine::_createTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB,
-		TextureAtlas::getWidth(),
-		TextureAtlas::getHeight(), 0,
+		textureInfo.width,
+		textureInfo.height, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE,
-		TextureAtlas::getData());
+		textureInfo.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
-
-	Logger::log(ENGINE_OPENGL, INFO, "Created Texture.");
 }

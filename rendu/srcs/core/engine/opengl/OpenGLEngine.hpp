@@ -20,10 +20,17 @@ struct GLValueConverter
 	}
 };
 
+struct TextureBuffer
+{
+	GLuint		tbo;
+	std::string	name;
+};
+
 struct PipelineLayout
 {
 	PipelineInfo											pipelineInfo;
 	std::unordered_map<unsigned int, UniformBufferStream>	uniformBufferStreams;
+	std::unordered_map<unsigned int, TextureBuffer>			textureBuffers;
 };
 
 struct AssetInfo
@@ -56,11 +63,9 @@ class OpenGLEngine : public AEngine
 		ShaderCache	_shaderCache;
 		AssetCache	_assetCache;
 
-		GLuint		_texture;
-
 		static void	_debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *message, const void *);
 		GLuint		_createShader(const std::string & vertexPath, const std::string & fragmentPath, PipelineInfo & pipelineInfo);
 		void		_handleResize();
-		void		_createTexture();
+		void		_createTexture(TextureBuffer & textureBuffer, TextureInfo & textureInfo);
 		void		_applyPipeline(PipelineID pipelineID);
 };
