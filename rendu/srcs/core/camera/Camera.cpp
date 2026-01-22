@@ -191,5 +191,5 @@ void Camera::renderViewMatrix(AEngine * engine, EngineType engineType)
 	if (onVulkan)
 		_cameraBuffer.proj[1][1] *= -1;
 	for (PipelineType pipelineType : _pipelines)
-		engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, &_cameraBuffer, sizeof(CameraBuffer));
+		engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, 0, &_cameraBuffer, sizeof(CameraBuffer));
 }

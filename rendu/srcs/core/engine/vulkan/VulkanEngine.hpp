@@ -88,14 +88,14 @@ struct UniformBufferData
 
 struct PipelineData
 {
-	PipelineInfo							pipelineInfo;
-	vk::raii::Pipeline 						pipeline = nullptr;
-	vk::raii::PipelineLayout 				layout = nullptr;
-	vk::raii::DescriptorPool				descriptorPool = nullptr;
-	vk::raii::DescriptorSetLayout			descriptorSetLayout = nullptr;
-	UniformBufferData						uniforms;
-	std::vector<vk::raii::DescriptorSet>	descriptorSets;
-	TextureData								textures;
+	PipelineInfo										pipelineInfo;
+	vk::raii::Pipeline 									pipeline = nullptr;
+	vk::raii::PipelineLayout 							layout = nullptr;
+	vk::raii::DescriptorPool							descriptorPool = nullptr;
+	vk::raii::DescriptorSetLayout						descriptorSetLayout = nullptr;
+	std::unordered_map<unsigned int, UniformBufferData>	uniforms;
+	std::vector<vk::raii::DescriptorSet>				descriptorSets;
+	TextureData											textures;
 };
 
 struct PendingAsset
@@ -110,9 +110,10 @@ struct PendingAsset
 
 struct PendingUniform
 {
-	PipelineID	pipelineID;
-	void *		data;
-	size_t		size;
+	PipelineID		pipelineID;
+	unsigned int	binding;
+	void *			data;
+	size_t			size;
 };
 
 struct AssetData
@@ -121,7 +122,6 @@ struct AssetData
 	PipelineID								pipelineID;
 	BufferData								vbo;
 	BufferData								ibo;
-	std::vector<UniformBufferData>			uniforms;
 	std::vector<vk::raii::DescriptorSet>	descriptorSets;
 };
 
@@ -136,7 +136,7 @@ class VulkanEngine : public AEngine
 		AssetID								uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		void								unloadAsset(AssetID assetID) override;
 		PipelineID							uploadPipeline(PipelineInfo & pipelineInfo) override;
-		void								updateUniformBuffer(PipelineID pipelineID, void * data, size_t size) override;
+		void								updateUniformBuffer(PipelineID pipelineID, unsigned int binding, void * data, size_t size) override;
 		void								drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void								endFrame() override;
 

@@ -79,9 +79,9 @@ void VulkanEngine::_createDescriptorSets(PipelineData & pipelineData)
 			if (descriptorInfo.type == UNIFORM_BUFFER)
 			{
 				vk::DescriptorBufferInfo uniformBufferInfo;
-				uniformBufferInfo.buffer = pipelineData.uniforms.bufferData[i].buffer;
+				uniformBufferInfo.buffer = pipelineData.uniforms[descriptorInfo.binding].bufferData[i].buffer;
 				uniformBufferInfo.offset = 0;
-				uniformBufferInfo.range = pipelineData.uniforms.size;
+				uniformBufferInfo.range = descriptorInfo.size;
 				writeSet.pBufferInfo = &uniformBufferInfo;
 				_device.updateDescriptorSets(writeSet, {});
 			}

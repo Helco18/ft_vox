@@ -9,15 +9,19 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	PipelineLayout pipelineLayout;
 	pipelineLayout.pipelineInfo = pipelineInfo;
-	pipelineLayout.uboSize = pipelineInfo.uniformSize;
 	for (DescriptorInfo & descriptorInfo : pipelineLayout.pipelineInfo.descriptors)
 	{
 		if (descriptorInfo.type == DescriptorType::UNIFORM_BUFFER)
 		{
-			glGenBuffers(1, &pipelineLayout.ubo);
-			glBindBuffer(GL_UNIFORM_BUFFER, pipelineLayout.ubo);
-			glBindBufferBase(GL_UNIFORM_BUFFER, descriptorInfo.binding, pipelineLayout.ubo);
+			UniformBufferStream bufferStream;
+			bufferStream.binding = descriptorInfo.binding;
+			bufferStream.size = descriptorInfo.size;
+			bufferStream.data = nullptr;
+			glGenBuffers(1, &bufferStream.ubo);
+			glBindBuffer(GL_UNIFORM_BUFFER, bufferStream.ubo);
+			glBindBufferBase(GL_UNIFORM_BUFFER, descriptorInfo.binding, bufferStream.ubo);
 			glBufferData(GL_UNIFORM_BUFFER, descriptorInfo.size, nullptr, GL_DYNAMIC_DRAW);
+			pipelineLayout.uniformBufferStreams.try_emplace(descriptorInfo.binding, bufferStream);
 		}
 	}
 

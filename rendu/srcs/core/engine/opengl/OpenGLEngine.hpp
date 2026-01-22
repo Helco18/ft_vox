@@ -22,9 +22,8 @@ struct GLValueConverter
 
 struct PipelineLayout
 {
-	PipelineInfo	pipelineInfo;
-	GLuint			ubo;
-	size_t			uboSize;
+	PipelineInfo											pipelineInfo;
+	std::unordered_map<unsigned int, UniformBufferStream>	uniformBufferStreams;
 };
 
 struct AssetInfo
@@ -44,7 +43,7 @@ class OpenGLEngine : public AEngine
 		AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		void		unloadAsset(AssetID assetID) override;
 		PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) override;
-		void		updateUniformBuffer(PipelineID pipelineID, void * data, size_t size) override;
+		void		updateUniformBuffer(PipelineID pipelineID, unsigned int binding, void * data, size_t size) override;
 		void		drawAsset(AssetID assetID, PipelineID pipelineID) override;
 		void		endFrame() override;
 

@@ -22,7 +22,7 @@ struct UniformBufferStream
 {
 	void *					data;
 	size_t					size;
-	int						binding;
+	unsigned int			binding;
 	unsigned int			ubo;
 };
 
@@ -56,7 +56,7 @@ class AEngine
 		virtual AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) = 0;
 		virtual void		unloadAsset(AssetID assetID) = 0;
 		virtual PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) = 0;
-		virtual void		updateUniformBuffer(PipelineID pipelineID, void * data, size_t size) = 0;
+		virtual void		updateUniformBuffer(PipelineID pipelineID, unsigned int binding, void * data, size_t size) = 0;
 		virtual void		drawAsset(AssetID assetID, PipelineID pipelineID) = 0;
 		virtual void		endFrame() = 0;
 
