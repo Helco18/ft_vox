@@ -6,21 +6,21 @@
 
 void VulkanEngine::_createDescriptorPool(PipelineData & pipelineData)
 {
-	vk::DescriptorPoolSize uniformSize;
-	uniformSize.type = vk::DescriptorType::eUniformBuffer;
-	uniformSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
-
-	vk::DescriptorPoolSize textureSize;
-	textureSize.type = vk::DescriptorType::eCombinedImageSampler;
-	textureSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
-
-	std::array descriptorsSize = { uniformSize, textureSize };
+	std::vector<vk::DescriptorPoolSize> descriptors;
+	for (DescriptorInfo & descriptorInfo : pipelineData.pipelineInfo.descriptors)
+	{
+		if (descriptorInfo.type == DescriptorType::PUSH_CONSTANT)
+			continue;
+		vk::DescriptorPoolSize descriptor;
+		descriptor.type = VKValueConverter::getDescriptorType(descriptorInfo.type);
+		descriptor.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+	}
 
 	vk::DescriptorPoolCreateInfo descriptorPoolInfo;
 	descriptorPoolInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
 	descriptorPoolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
-	descriptorPoolInfo.poolSizeCount = descriptorsSize.size();
-	descriptorPoolInfo.pPoolSizes = descriptorsSize.data();
+	descriptorPoolInfo.poolSizeCount = descriptors.size();
+	descriptorPoolInfo.pPoolSizes = descriptors.data();
 
 	pipelineData.descriptorPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
 
