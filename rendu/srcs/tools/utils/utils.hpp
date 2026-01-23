@@ -26,4 +26,3 @@ const std::string			toString(const T & value)
 const std::vector<char>		readFile(const std::string & filename);
 std::vector<std::string>	ft_split(const std::string & str, char delimiter);
 const std::string			getFileAsString(const char * name);
-void						generateImGui();

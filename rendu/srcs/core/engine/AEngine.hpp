@@ -69,10 +69,11 @@ class AEngine
 
 		void				setFramebufferResized(bool framebufferResized) { _isFramebufferResized = framebufferResized; }
 
-
 	protected:
 		EngineType			_engineType;
 		GLFWwindow *		_window;
 		bool				_isFramebufferResized;
 		bool				_isInitalized;
+
+		bool				_imGuiThisFrame = false;
 };

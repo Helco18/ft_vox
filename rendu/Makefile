@@ -49,8 +49,8 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
 						srcs/tools/logger/Logger.cpp \
+						srcs/tools/gui/Gui.cpp \
 						srcs/tools/profiler/Profiler.cpp \
-						srcs/tools/utils/imgui_utils.cpp \
 						srcs/tools/utils/stb_image.cpp \
 						srcs/tools/utils/utils.cpp \
 						srcs/voxel/WorldManager.cpp \
@@ -95,6 +95,7 @@ INCLUDES			=	-I libs \
 						-I srcs/environment \
 						-I srcs/tools \
 						-I srcs/tools/exceptions \
+						-I srcs/tools/gui \
 						-I srcs/tools/logger \
 						-I srcs/tools/profiler \
 						-I srcs/tools/utils \

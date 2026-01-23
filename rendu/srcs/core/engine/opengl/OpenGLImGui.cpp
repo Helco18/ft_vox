@@ -3,6 +3,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_glfw.h"
+#include "Gui.hpp"
 
 void OpenGLEngine::_initImGui()
 {
@@ -19,14 +20,18 @@ void OpenGLEngine::beginImGui()
 {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
-	generateImGui();
+	Gui::generateGui(_window);
+	_imGuiThisFrame = true;
 }
 
 void OpenGLEngine::_renderImGui()
 {
+	if (!_imGuiThisFrame)
+		return;
 	ImGui::Render();
 	ImGui::GetDrawData();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	_imGuiThisFrame = false;
 }
 
 void OpenGLEngine::_shutdownImGui()

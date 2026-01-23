@@ -73,7 +73,7 @@ struct DescriptorInfo
 	uint32_t		count;
 	ShaderStage		stage;
 	uint32_t		size;
-	TextureInfo		textureInfo;
+	TextureInfo		textureInfo; // Exists only if type has texture
 };
 
 struct UniformInfo

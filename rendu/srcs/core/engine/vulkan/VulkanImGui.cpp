@@ -1,5 +1,6 @@
 #include "VulkanEngine.hpp"
 #include "utils.hpp"
+#include "Gui.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_vulkan.h"
@@ -48,9 +49,9 @@ void VulkanEngine::_initImGui()
 	initInfo.Queue = *_queue;
 	initInfo.DescriptorPool = *_imGuiPool;
 	initInfo.MinImageCount = 2;
+	initInfo.ImageCount = _swapChainImages.size();
 	initInfo.PipelineInfoMain.PipelineRenderingCreateInfo = renderingInfo;
 	initInfo.UseDynamicRendering = true;
-	initInfo.ImageCount = _swapChainImages.size();
 	ImGui_ImplVulkan_Init(&initInfo);
 
 	ImGuiStyle & style = ImGui::GetStyle();
@@ -61,14 +62,18 @@ void VulkanEngine::beginImGui()
 {
 	ImGui_ImplVulkan_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
-	generateImGui();
+	Gui::generateGui(_window);
+	_imGuiThisFrame = true;
 }
 
 void VulkanEngine::_renderImGui()
 {
+	if (!_imGuiThisFrame)
+		return;
 	ImGui::Render();
 	ImGui::GetDrawData();
 	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), *_commandBuffers[_currentFrame]);
+	_imGuiThisFrame = false;
 }
 
 void VulkanEngine::_shutdownImGui()
