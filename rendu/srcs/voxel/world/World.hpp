@@ -37,6 +37,8 @@ class World
 		void					_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleChunks);
 		void					_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChunks);
 		void					_drawChunk(AEngine * engine, PipelineType pipelineType);
+		void					_computRenderDistace(Camera * camera);
+		bool					_isWithinRenderDistance(Chunk * chunk, Camera * camera);
 
 		std::string				_name;
 		ChunkMap				_chunkMap;
@@ -48,5 +50,9 @@ class World
 		std::condition_variable	_chunkCv;
 		std::atomic_bool		_isLoaded = false;
 		std::atomic_bool		_isProceduralRequested = false;
+
 		Camera *				_camera;
+		int						_renderDistanceX;
+		int						_renderDistanceY;
+		int						_renderDistanceZ;
 };

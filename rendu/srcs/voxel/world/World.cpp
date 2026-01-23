@@ -70,49 +70,44 @@ static int getRenderDistanceMin()
 	return CHUNK_LENGTH;
 }
 
-static bool isWithinRenderDistance(Chunk * chunk, Camera * camera)
+void World::_computRenderDistace(Camera * camera)
 {
 	int renderDistanceMin = getRenderDistanceMin();
+
 	int ratioW = CHUNK_WIDTH / renderDistanceMin;
 	int ratioH = CHUNK_HEIGHT / renderDistanceMin;
 	int ratioL = CHUNK_LENGTH / renderDistanceMin;
-	int renderDistance = (camera->getRenderDistance());
-	int renderDistanceX = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
-	int renderDistanceY = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
-	int renderDistanceZ = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
 
-	return !(chunk->getChunkX() > static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) + renderDistanceX
-		|| chunk->getChunkX() < static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) - renderDistanceX
-		|| chunk->getChunkY() > static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) + renderDistanceY
-		|| chunk->getChunkY() < static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) - renderDistanceY
-		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - renderDistanceZ
-		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - renderDistanceZ);
+	int renderDistance = (camera->getRenderDistance());
+	_renderDistanceX = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
+	_renderDistanceY = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
+	_renderDistanceZ = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
+}
+
+bool World::_isWithinRenderDistance(Chunk * chunk, Camera * camera)
+{
+	return !(chunk->getChunkX() > static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) + _renderDistanceX
+		|| chunk->getChunkX() < static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) - _renderDistanceX
+		|| chunk->getChunkY() > static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) + _renderDistanceY
+		|| chunk->getChunkY() < static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) - _renderDistanceY
+		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - _renderDistanceZ
+		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - _renderDistanceZ);
 }
 
 World::VisibleChunks World::_generateVisibleChunks(Camera * camera)
 {
 	VisibleChunks visibleChunks;
 	glm::vec3 cameraPosition = camera->getPosition();
-	int renderDistanceMin = getRenderDistanceMin();
 	cameraPosition.x /= CHUNK_WIDTH;
 	cameraPosition.y /= CHUNK_HEIGHT;
 	cameraPosition.z /= CHUNK_LENGTH;
 
-	int ratioW = CHUNK_WIDTH / renderDistanceMin;
-	int ratioH = CHUNK_HEIGHT / renderDistanceMin;
-	int ratioL = CHUNK_LENGTH / renderDistanceMin;
-
-	int renderDistance = (camera->getRenderDistance());
-	int renderDistanceX = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
-	int renderDistanceY = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
-	int renderDistanceZ = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
-
-	int renderDistanceNorth = renderDistanceX + cameraPosition.x;
-	int renderDistanceSouth = cameraPosition.x - renderDistanceX;
-	int renderDistanceEast = renderDistanceZ + cameraPosition.z;
-	int renderDistanceWest = cameraPosition.z - renderDistanceZ;
-	int renderDistanceUp = renderDistanceY + cameraPosition.y;
-	int renderDistanceDown = cameraPosition.y - renderDistanceY;
+	int renderDistanceNorth = _renderDistanceX + cameraPosition.x;
+	int renderDistanceSouth = cameraPosition.x - _renderDistanceX;
+	int renderDistanceEast = _renderDistanceZ + cameraPosition.z;
+	int renderDistanceWest = cameraPosition.z - _renderDistanceZ;
+	int renderDistanceUp = _renderDistanceY + cameraPosition.y;
+	int renderDistanceDown = cameraPosition.y - _renderDistanceY;
 
 	for (int x = renderDistanceSouth; x < renderDistanceNorth; ++x)
 	{
@@ -141,7 +136,7 @@ void World::_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleC
 {
 	for (Chunk * chunk : visibleChunks)
 	{
-		if (!chunk || !isWithinRenderDistance(chunk, camera))
+		if (!chunk || !_isWithinRenderDistance(chunk, camera))
 			continue;
 		if (chunk->getState() == NONE)
 		{
@@ -155,7 +150,7 @@ void World::_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChun
 {
 	for (Chunk * chunk : visibleChunks)
 	{
-		if (!chunk || !isWithinRenderDistance(chunk, camera))
+		if (!chunk || !_isWithinRenderDistance(chunk, camera))
 			continue;
 		if (chunk->getState() == BUILT)
 		{
@@ -186,7 +181,7 @@ void World::_generateChunks(Camera * camera)
 			{
 				if (_isProceduralRequested)
 					break;
-				if (!chunk || !isWithinRenderDistance(chunk, camera))
+				if (!chunk || !_isWithinRenderDistance(chunk, camera))
 					continue;
 				if (chunk->getState() < BUILT)
 				{
@@ -213,17 +208,27 @@ static glm::ivec3 posToChunkPos(glm::vec3 pos)
 
 void World::generateProcedurally(Camera * camera)
 {
-	static bool firstLoad = true;
+	static bool forceLoad = true;
 	static glm::ivec3 lastVisitedChunk(0, 0, 0);
 	glm::ivec3 currentChunk = posToChunkPos(camera->getPosition());
 
-	if (lastVisitedChunk == currentChunk && !firstLoad)
+	static int oldRenderDistance = 0;
+	int renderDistance = (camera->getRenderDistance());
+
+	if (oldRenderDistance != renderDistance)
+	{
+		_computRenderDistace(camera);
+		oldRenderDistance = renderDistance;
+		forceLoad = true;
+	}
+
+	if (lastVisitedChunk == currentChunk && !forceLoad)
 		return;
 	lastVisitedChunk = currentChunk;
 	_isProceduralRequested = true;
-	if (firstLoad)
+	if (forceLoad)
 	{
-		firstLoad = false;
+		forceLoad = false;
 		_isLoaded.store(true);
 		_chunkPool.submitTask([this, camera]() { _generateChunks(camera); });
 	}
