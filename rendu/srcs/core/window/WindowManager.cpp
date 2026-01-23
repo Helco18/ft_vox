@@ -12,7 +12,7 @@ WindowManager::WindowManager(EngineType engineType, Environment * environment):
 	_environment(environment), _engineType(engineType), _width(WIDTH), _height(HEIGHT),
 	_windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false)
 {
-	_camera = new Camera(glm::vec3(2.0f, 0.0f, 0.0f), _width, _height);
+	_camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), _width, _height);
 	_lastFpsUpdate = glfwGetTime();
 }
 

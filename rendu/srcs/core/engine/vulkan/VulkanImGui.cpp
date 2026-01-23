@@ -54,6 +54,14 @@ void VulkanEngine::_initImGui()
 	initInfo.UseDynamicRendering = true;
 	ImGui_ImplVulkan_Init(&initInfo);
 
+	ImGuiIO &io = ImGui::GetIO();
+	ImFontConfig config;
+	config.OversampleH = 3;
+	config.OversampleV = 3;
+	config.GlyphExtraAdvanceX = 0.8f;
+	io.Fonts->AddFontFromFileTTF("resources/assets/font/Minecraft.ttf", 14.0f, &config);
+	io.Fonts->Build();
+
 	ImGuiStyle & style = ImGui::GetStyle();
 	style.Colors[ImGuiCol_WindowBg] = ImVec4(0.5f, 0.0f, 0.9f, 0.002f);
 }

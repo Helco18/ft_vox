@@ -26,9 +26,9 @@ class Camera
 	public:
 		Camera(glm::vec3 position, int width, int height);
 
-		glm::vec3					getPosition() const { return _position; }
-		glm::quat					getOrientation() const { return _orientation; }
-		glm::vec3					getAltitude() const { return _altitude; }
+		const glm::vec3 &			getPosition() const { return _position; }
+		const glm::quat &			getOrientation() const { return _orientation; }
+		const glm::vec3	&			getAltitude() const { return _altitude; }
 		int							getWidth() const { return _width; }
 		int							getHeight() const { return _height; }
 		float						getYaw() const { return _yaw; }
@@ -55,7 +55,7 @@ class Camera
 		glm::vec3					computeForward() const;
 		glm::vec3					computeRight() const;
 		glm::vec3					computeUp() const;
-		glm::mat4					getView() const;
+		glm::mat4					computeView() const;
 		
 		void						addPipelineToRender(PipelineType pipelineType);
 		void						removePipelineToRender(PipelineType pipelineType);

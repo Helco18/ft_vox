@@ -203,20 +203,11 @@ void World::_generateChunks(Camera * camera)
 	}
 }
 
-static glm::ivec3 posToChunkPos(glm::vec3 pos)
-{
-	glm::vec3 chunkPos;
-	chunkPos.x = static_cast<int>(std::floor(static_cast<double>(pos.x) / CHUNK_WIDTH));
-	chunkPos.y = static_cast<int>(std::floor(static_cast<double>(pos.y) / CHUNK_HEIGHT));
-	chunkPos.z = static_cast<int>(std::floor(static_cast<double>(pos.z) / CHUNK_LENGTH));
-	return pos;
-}
-
 void World::generateProcedurally(Camera * camera)
 {
 	static bool firstLoad = true;
 	static glm::ivec3 lastVisitedChunk(0, 0, 0);
-	glm::ivec3 currentChunk = posToChunkPos(camera->getPosition());
+	glm::ivec3 currentChunk = Chunk::posToChunkPos(camera->getPosition());
 
 	static int oldRenderDistance = 0;
 	int renderDistance = (camera->getRenderDistance());

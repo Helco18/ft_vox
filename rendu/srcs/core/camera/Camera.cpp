@@ -118,7 +118,7 @@ glm::vec3 Camera::computeUp() const
 	return up;
 }
 
-glm::mat4 Camera::getView() const
+glm::mat4 Camera::computeView() const
 {
 	switch (static_cast<int>(_type))
 	{
@@ -184,7 +184,7 @@ void Camera::renderViewMatrix(AEngine * engine, EngineType engineType)
 	bool onVulkan = engineType == VULKAN;
 	float nearPlane = 0.01f * (onVulkan ? 1 : NEAR_PLANE_OFFSET);
 
-	_cameraBuffer.view = getView();
+	_cameraBuffer.view = computeView();
 	_cameraBuffer.proj = glm::perspective(glm::radians(_fov),
 		static_cast<float>(_width) / static_cast<float>(_height),
 		nearPlane, 1500.0f);

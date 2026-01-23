@@ -76,3 +76,12 @@ void Chunk::unload(AEngine * engine)
 	engine->unloadAsset(_asset.assetID);
 	setState(MESHED);
 }
+
+glm::ivec3 Chunk::posToChunkPos(glm::vec3 pos)
+{
+	glm::vec3 chunkPos;
+	chunkPos.x = static_cast<int>(std::floor(static_cast<double>(pos.x) / CHUNK_WIDTH));
+	chunkPos.y = static_cast<int>(std::floor(static_cast<double>(pos.y) / CHUNK_HEIGHT));
+	chunkPos.z = static_cast<int>(std::floor(static_cast<double>(pos.z) / CHUNK_LENGTH));
+	return chunkPos;
+}

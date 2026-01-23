@@ -66,6 +66,8 @@ class Chunk
 		void					drawAsset(AEngine * engine, PipelineType pipelineType);
 		void					unload(AEngine * engine);
 
+		static glm::ivec3		posToChunkPos(glm::vec3 pos);
+
 	private:
 		World *					_world;
 		glm::ivec3				_chunkLocation;
