@@ -156,16 +156,21 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 		_createDescriptorSets(pipelineData);
 	}
 
-	vk::PushConstantRange pcr;
-	pcr.offset = 0;
-	pcr.size = pipelineInfo.uniformSize;
-	pcr.stageFlags = vk::ShaderStageFlagBits::eAll;
-
 	vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
+	if (pipelineInfo.uniformSize > 0)
+	{
+		vk::PushConstantRange pcr;
+		pcr.offset = 0;
+		pcr.size = pipelineInfo.uniformSize;
+		pcr.stageFlags = vk::ShaderStageFlagBits::eAll;
+		pipelineLayoutInfo.pPushConstantRanges = &pcr;
+		pipelineLayoutInfo.pushConstantRangeCount = 1;
+	}
+	else
+		pipelineLayoutInfo.pushConstantRangeCount = 0;
+
 	pipelineLayoutInfo.setLayoutCount = 1;
 	pipelineLayoutInfo.pSetLayouts = &*pipelineData.descriptorSetLayout;
-	pipelineLayoutInfo.pushConstantRangeCount = 1;
-	pipelineLayoutInfo.pPushConstantRanges = &pcr;
 
 	pipelineData.layout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
 

@@ -29,6 +29,7 @@ void Environment::init(EngineType engineType)
 	_windowManager->load();
 
 	Camera * camera = _windowManager->getCamera();
+	_player.setCamera(camera);
 	camera->addPipelineToRender(PIPELINE_VOXEL);
 	camera->addPipelineToRender(PIPELINE_WIREFRAME);
 	camera->addPipelineToRender(PIPELINE_LINES);
@@ -47,9 +48,11 @@ void Environment::loop()
 	double deltaTime;
 	AEngine * engine;
 	World * world;
+	Camera * camera;
 
 	engine = _windowManager->getEngine();
 	world = WorldManager::getWorld(WORLD_NAME);
+	camera = _player.getCamera();
 	while (_running)
 	{
 		Profiler p("Environment::loop-while(_running)");
@@ -67,10 +70,10 @@ void Environment::loop()
 		}
 		if (world)
 		{
-			world->generateProcedurally(_windowManager->getCamera());
+			world->generateProcedurally(camera);
 			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
 		}
-		_windowManager->getCamera()->renderViewMatrix(engine, engine->getEngineType());
+		camera->renderViewMatrix(engine, engine->getEngineType());
 		engine->endFrame();
 		deltaTime = glfwGetTime() - frameStart;
 		_windowManager->setDeltaTime(deltaTime);

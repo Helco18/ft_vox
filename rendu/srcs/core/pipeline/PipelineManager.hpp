@@ -103,7 +103,7 @@ struct PipelineInfo
 	std::vector<Attribute>		attributes;
 	uint32_t					attributeSize = 0;
 	std::vector<DescriptorInfo>	descriptors; // For uniform buffers
-	size_t						uniformSize; // For small uniforms/push constants
+	size_t						uniformSize = 0; // For small uniforms/push constants
 };
 
 class PipelineManager

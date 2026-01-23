@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Player.hpp"
 #include "WindowManager.hpp"
 
 #define WORLD_NAME "bozoandzibocircus"
@@ -18,5 +19,6 @@ class Environment
 	private:
 		WindowManager *	_windowManager = nullptr;
 		EngineType		_engineType;
+		Player			_player;
 		bool			_running = true;
 };

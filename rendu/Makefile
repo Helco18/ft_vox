@@ -94,6 +94,8 @@ INCLUDES			=	-I libs \
 						-I srcs/core/thread \
 						-I srcs/core/window \
 						-I srcs/environment \
+						-I srcs/entity \
+						-I srcs/entity/player \
 						-I srcs/tools \
 						-I srcs/tools/exceptions \
 						-I srcs/tools/gui \
