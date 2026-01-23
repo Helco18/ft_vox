@@ -70,7 +70,7 @@ static int getRenderDistanceMin()
 	return CHUNK_LENGTH;
 }
 
-void World::_computRenderDistace(Camera * camera)
+void World::_computeRenderDistance(Camera * camera)
 {
 	int renderDistanceMin = getRenderDistanceMin();
 
@@ -208,7 +208,7 @@ static glm::ivec3 posToChunkPos(glm::vec3 pos)
 
 void World::generateProcedurally(Camera * camera)
 {
-	static bool forceLoad = true;
+	static bool firstLoad = true;
 	static glm::ivec3 lastVisitedChunk(0, 0, 0);
 	glm::ivec3 currentChunk = posToChunkPos(camera->getPosition());
 
@@ -217,18 +217,20 @@ void World::generateProcedurally(Camera * camera)
 
 	if (oldRenderDistance != renderDistance)
 	{
-		_computRenderDistace(camera);
+		_computeRenderDistance(camera);
 		oldRenderDistance = renderDistance;
-		forceLoad = true;
+		_isProceduralRequested = true;
+		_chunkCv.notify_all();
+		return;
 	}
 
-	if (lastVisitedChunk == currentChunk && !forceLoad)
+	if (lastVisitedChunk == currentChunk && !firstLoad)
 		return;
 	lastVisitedChunk = currentChunk;
 	_isProceduralRequested = true;
-	if (forceLoad)
+	if (firstLoad)
 	{
-		forceLoad = false;
+		firstLoad = false;
 		_isLoaded.store(true);
 		_chunkPool.submitTask([this, camera]() { _generateChunks(camera); });
 	}

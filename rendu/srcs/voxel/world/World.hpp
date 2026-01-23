@@ -36,8 +36,7 @@ class World
 		void					_generateChunks(Camera * camera);
 		void					_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleChunks);
 		void					_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChunks);
-		void					_drawChunk(AEngine * engine, PipelineType pipelineType);
-		void					_computRenderDistace(Camera * camera);
+		void					_computeRenderDistance(Camera * camera);
 		bool					_isWithinRenderDistance(Chunk * chunk, Camera * camera);
 
 		std::string				_name;
