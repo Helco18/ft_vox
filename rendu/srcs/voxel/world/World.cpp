@@ -14,7 +14,7 @@ World::~World()
 
 void World::load()
 {
-	_chunkPool.start(std::thread::hardware_concurrency() - 1); // max thread minus one for main
+	_chunkPool.start(ThreadPool::getAvailableThreads());
 }
 
 void World::reloadChunks(AEngine * engine)

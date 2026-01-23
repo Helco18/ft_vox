@@ -4,7 +4,7 @@
 #include <thread>
 
 uint16_t ThreadPool::_count = 0;
-uint16_t ThreadPool::_availableThreads = std::thread::hardware_concurrency();
+uint16_t ThreadPool::_availableThreads = std::thread::hardware_concurrency() - 1;
 
 void ThreadPool::start(uint16_t requestedThreads)
 {
@@ -17,7 +17,7 @@ void ThreadPool::start(uint16_t requestedThreads)
 	}
 	_id = _count;
 
-	if (requestedThreads >= _availableThreads)
+	if (requestedThreads > _availableThreads)
 	{
 		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(requestedThreads - _availableThreads + 1) +
 			". Adjusting to " + toString(_availableThreads - 1) + " threads.");
