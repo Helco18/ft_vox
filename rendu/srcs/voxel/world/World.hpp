@@ -23,6 +23,7 @@ class World
 		Chunk *					getChunkAt(const glm::vec3 & location);
 		Chunk *					getChunkAtChunkLocation(int x, int y, int z);
 		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location);
+		bool					isLoaded() const { return _isLoaded.load(); }
 
 		void					reloadChunks(AEngine * engine);
 

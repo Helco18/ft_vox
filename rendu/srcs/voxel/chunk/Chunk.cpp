@@ -16,6 +16,8 @@ void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
 
+	if (!_world->isLoaded())
+			return;
 	Profiler p("Chunk::build");
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
@@ -41,6 +43,8 @@ void Chunk::generateMesh()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
 
+	if (!_world->isLoaded())
+		return;
 	Profiler p("Chunk::generateMesh");
 	_generateGreedyMesh();
 	if (_asset.vertices.data && !_asset.indices.empty())

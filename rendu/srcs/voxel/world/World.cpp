@@ -141,6 +141,8 @@ void World::_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleC
 		if (chunk->getState() == NONE)
 		{
 			chunk->setState(BUILDING);
+			if (!_isLoaded.load())
+				return;
 			_chunkPool.submitTask([chunk]() {chunk->build();});
 		}
 	}
@@ -155,6 +157,8 @@ void World::_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChun
 		if (chunk->getState() == BUILT)
 		{
 			chunk->setState(MESHING);
+			if (!_isLoaded.load())
+				return;
 			_chunkPool.submitTask([chunk]() {chunk->generateMesh();});
 		}
 	}
@@ -179,6 +183,8 @@ void World::_generateChunks(Camera * camera)
 			allChunksBuilt = true;
 			for (Chunk * chunk : visibleChunks)
 			{
+				if (!_isLoaded.load())
+					return;
 				if (_isProceduralRequested)
 					break;
 				if (!chunk || !_isWithinRenderDistance(chunk, camera))
