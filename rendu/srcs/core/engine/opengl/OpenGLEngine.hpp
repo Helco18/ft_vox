@@ -6,7 +6,7 @@
 #include "GLFW/glfw3.h"
 #include <string>
 
-#define OPENGL_SHADER_PATH "srcs/core/shaders/glsl/"
+#define OPENGL_SHADER_PATH "resources/shaders/glsl/"
 
 struct GLValueConverter
 {

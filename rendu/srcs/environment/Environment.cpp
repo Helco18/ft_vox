@@ -21,8 +21,8 @@ void Environment::init(EngineType engineType)
 	if (!OBJModel::loadModels())
 		throw EnvironmentException("Failed to load models.");
 
-	TextureAtlas::pushTexture("assets/textures/stone.png");
-	TextureAtlas::pushTexture("assets/textures/blue_stone.png");
+	TextureAtlas::pushTexture("resources/assets/textures/stone.png");
+	TextureAtlas::pushTexture("resources/assets/textures/blue_stone.png");
 	TextureAtlas::createAtlas();
 
 	_windowManager = new WindowManager(engineType, this);

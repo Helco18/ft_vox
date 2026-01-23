@@ -188,7 +188,8 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 								  pos.y + _chunkLocation.y * CHUNK_HEIGHT,
 								  pos.z + _chunkLocation.z * CHUNK_LENGTH);
 
-		Texture * texture = TextureAtlas::getTexture(_blocks[pos.x][pos.y][pos.z] == 1 ? "assets/textures/blue_stone.png" : "assets/textures/stone.png");
+		Texture * texture = TextureAtlas::getTexture(_blocks[pos.x][pos.y][pos.z] == 1 ?
+			"resources/assets/textures/blue_stone.png" : "resources/assets/textures/stone.png");
 		tmp.uvMin = texture->uvMin;
 		tmp.uvMax = texture->uvMax;
 		tmp.uvRepeat = { static_cast<float>(countBlockWidth), static_cast<float>(countBlockHeight) };

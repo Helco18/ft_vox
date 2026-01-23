@@ -12,7 +12,7 @@
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
 #define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
 #define MAX_FRAMES_IN_FLIGHT 2
-#define VULKAN_SHADER_PATH "srcs/core/shaders/spir-v/"
+#define VULKAN_SHADER_PATH "resources/shaders/spir-v/"
 
 struct VKValueConverter
 {

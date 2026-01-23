@@ -7,7 +7,7 @@ LDFLAGS				=	-lvulkan -lGL -ldl
 NAME				=	ft_vox
 
 # Paths
-SHADER_PATH			=	srcs/core/shaders
+SHADER_PATH			=	resources/shaders
 OBJ_PATH			=	objs
 GLAD_PATH			=	libs/glad
 GLFW_PATH			=	libs/GLFW

@@ -27,8 +27,8 @@ void WindowManager::_setIcon(GLFWwindow * window)
 	stbi_set_flip_vertically_on_load(false);
 	try
 	{
-		images[0] = _decodeOneStep("assets/icon/icon.png");
-		images[1] = _decodeOneStep("assets/icon/icon_small.png");
+		images[0] = _decodeOneStep("resources/assets/icon/icon.png");
+		images[1] = _decodeOneStep("resources/assets/icon/icon_small.png");
 		if (images[0].height != images[0].width || images[1].height != images[1].width)
 			throw WindowException("Icone size mismatch");
 
