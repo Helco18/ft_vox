@@ -31,6 +31,7 @@ void Environment::init(EngineType engineType)
 	Camera * camera = _windowManager->getCamera();
 	camera->addPipelineToRender(PIPELINE_VOXEL);
 	camera->addPipelineToRender(PIPELINE_WIREFRAME);
+	camera->addPipelineToRender(PIPELINE_LINES);
 
 	BlockData::init();
 

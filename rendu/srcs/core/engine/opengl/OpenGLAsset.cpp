@@ -101,8 +101,12 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, uniformInfo.size, uniformInfo.data);
 	}
 
-	_applyPipeline(pipelineID);
-	glDrawElements(GL_TRIANGLES, asset->indices.size(), GL_UNSIGNED_INT, 0);
+	PipelineLayout & layout = _applyPipeline(pipelineID);
+	GLenum polygonMode = GLValueConverter::getDrawMode(layout.pipelineInfo.drawMode);
+	if (!asset->indices.empty())
+		glDrawElements(polygonMode, asset->indices.size(), GL_UNSIGNED_INT, 0);
+	else
+		glDrawArrays(polygonMode, 0, asset->vertices.vertexCount);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindVertexArray(0);
 }

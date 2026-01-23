@@ -30,7 +30,7 @@ struct ChunkData
 };
 
 [[vk::binding(0,0)]]
-ConstantBuffer<CameraMatrix> ubo;
+ConstantBuffer<CameraMatrix> cameraMatrix;
 
 [[vk::binding(1,0)]]
 Sampler2D texture;
@@ -47,7 +47,7 @@ VertexOutput vertMain(VertexInput input)
 {
 	VertexOutput output;
 	// x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
-	output.sv_position = mul(ubo.proj, mul(ubo.view, float4(input.inPosition, 1.0)));
+	output.sv_position = mul(cameraMatrix.proj, mul(cameraMatrix.view, float4(input.inPosition, 1.0)));
 	output.outNormal = input.inNormal;
 	output.outTexCoord = input.inTexCoord;
 

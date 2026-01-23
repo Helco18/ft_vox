@@ -120,8 +120,11 @@ void VulkanEngine::_uploadPendingAssets()
 			continue;
 		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
 			vk::BufferCopy(0, 0, asset->vertices.size));
-		commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
-			vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
+		if (!asset->indices.empty())
+		{
+			commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
+				vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
+		}
 	}
 	_endSingleTimeCommands(commandBuffer);
 	for (PendingAsset & pendingAsset : _pendingAssets)

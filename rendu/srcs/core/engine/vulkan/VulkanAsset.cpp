@@ -15,7 +15,8 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 		try
 		{
 			_createVertexBuffer(pendingAsset);
-			_createIndexBuffer(pendingAsset);
+			if (!asset.indices.empty())
+				_createIndexBuffer(pendingAsset);
 		} catch (const vk::OutOfDeviceMemoryError & e)
 		{
 			throw VulkanException(e.what());

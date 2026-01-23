@@ -147,10 +147,19 @@ void VulkanEngine::_recordCommandBuffer()
 			const AssetData & assetData = datait->second;
 			const BufferData & vertexData = assetData.vbo;
 			const BufferData & indexData = assetData.ibo;
-			commands.pushConstants(pipelineData.layout, vk::ShaderStageFlagBits::eAll, 0, pipelineData.pipelineInfo.uniformSize, asset->uniforms);
+			if (asset->uniforms != nullptr)
+			{
+				commands.pushConstants(pipelineData.layout, vk::ShaderStageFlagBits::eAll, 0, pipelineData.pipelineInfo.uniformSize,
+					asset->uniforms);
+			}
 			commands.bindVertexBuffers(0, *vertexData.buffer, {0});
-			commands.bindIndexBuffer( *indexData.buffer, 0, vk::IndexType::eUint32);
-			commands.drawIndexed(asset->indices.size(), 1, 0, 0, 0);
+			if (indexData.buffer != nullptr)
+			{
+				commands.bindIndexBuffer( *indexData.buffer, 0, vk::IndexType::eUint32);
+				commands.drawIndexed(asset->indices.size(), 1, 0, 0, 0);
+			}
+			else
+				commands.draw(asset->vertices.vertexCount, 1, 0, 0);
 		}
 	}
 	_renderImGui();

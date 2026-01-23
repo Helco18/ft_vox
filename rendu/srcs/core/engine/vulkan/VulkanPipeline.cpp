@@ -67,7 +67,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	// (void) vertexInputInfo; // coucou nous après le triangle // coucou !!! on a un triangle omg
 	
 	vk::PipelineInputAssemblyStateCreateInfo pipelineInputInfo;
-	pipelineInputInfo.topology = vk::PrimitiveTopology::eTriangleList;
+	pipelineInputInfo.topology = VKValueConverter::getDrawMode(pipelineInfo.drawMode);
 
 	vk::Extent2D extent;
 	extent.width = pipelineInfo.width == -1 ? _swapChainExtent.width : pipelineInfo.width;

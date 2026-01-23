@@ -14,9 +14,19 @@ struct GLValueConverter
 	{
 		switch (static_cast<int>(type))
 		{
-			case FLOAT3:
-			case FLOAT2: return GL_FLOAT;
-			case INT: return GL_INT;
+			case AttributeType::FLOAT3:
+			case AttributeType::FLOAT2: return GL_FLOAT;
+			case AttributeType::INT: return GL_INT;
+		}
+		return 0;
+	}
+
+	static constexpr GLenum getDrawMode(DrawMode polygonMode)
+	{
+		switch (static_cast<int>(polygonMode))
+		{
+			case DrawMode::TRIANGLES: return GL_TRIANGLES;
+			case DrawMode::LINES: return GL_LINES;
 		}
 		return 0;
 	}
@@ -47,35 +57,35 @@ class OpenGLEngine : public AEngine
 		OpenGLEngine(GLFWwindow * window);
 		~OpenGLEngine();
 
-		void		load() override;
-		void		beginFrame() override;
-		AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) override;
-		void		unloadAsset(AssetID assetID) override;
-		PipelineID	uploadPipeline(PipelineInfo & pipelineInfo) override;
-		void		updateUniformBuffer(PipelineID pipelineID, unsigned int binding, void * data, size_t size) override;
-		void		drawAsset(AssetID assetID, PipelineID pipelineID) override;
-		void		endFrame() override;
+		void				load() override;
+		void				beginFrame() override;
+		AssetID				uploadAsset(Asset & asset, PipelineID pipelineID) override;
+		void				unloadAsset(AssetID assetID) override;
+		PipelineID			uploadPipeline(PipelineInfo & pipelineInfo) override;
+		void				updateUniformBuffer(PipelineID pipelineID, unsigned int binding, void * data, size_t size) override;
+		void				drawAsset(AssetID assetID, PipelineID pipelineID) override;
+		void				endFrame() override;
 
-		void		beginImGui() override;
+		void				beginImGui() override;
 	
 	private:
 		typedef std::unordered_map<PipelineID, PipelineLayout>	PipelineMap;
 		typedef std::unordered_map<std::string, GLuint>			ShaderCache;
 		typedef std::unordered_map<AssetID, AssetInfo>			AssetCache;
 
-		PipelineMap	_pipelineMap;
-		ShaderCache	_shaderCache;
-		AssetCache	_assetCache;
+		PipelineMap			_pipelineMap;
+		ShaderCache			_shaderCache;
+		AssetCache			_assetCache;
 
-		static void	_debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *message, const void *);
-		GLuint		_createShader(const std::string & vertexPath, const std::string & fragmentPath, PipelineInfo & pipelineInfo);
-		void		_handleResize();
-		void		_createTexture(TextureBuffer & textureBuffer, TextureInfo & textureInfo);
-		void		_applyPipeline(PipelineID pipelineID);
+		static void			_debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei, const GLchar *message, const void *);
+		GLuint				_createShader(const std::string & vertexPath, const std::string & fragmentPath, PipelineInfo & pipelineInfo);
+		void				_handleResize();
+		void				_createTexture(TextureBuffer & textureBuffer, TextureInfo & textureInfo);
+		PipelineLayout &	_applyPipeline(PipelineID pipelineID);
 
 		// ImGui
-		void		_initImGui();
-		void		_renderImGui();
-		void		_shutdownImGui();
+		void				_initImGui();
+		void				_renderImGui();
+		void				_shutdownImGui();
 
 };

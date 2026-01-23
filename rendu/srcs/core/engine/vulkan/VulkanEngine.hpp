@@ -36,6 +36,16 @@ struct VKValueConverter
 		return vk::DescriptorType::eSampler;
 	}
 
+	static constexpr vk::PrimitiveTopology getDrawMode(DrawMode drawMode)
+	{
+		switch (static_cast<int>(drawMode))
+		{
+			case DrawMode::TRIANGLES: return vk::PrimitiveTopology::eTriangleList;
+			case DrawMode::LINES: return vk::PrimitiveTopology::eLineList;
+		}
+		return vk::PrimitiveTopology::eTriangleList;
+	}
+
 	static constexpr vk::ShaderStageFlagBits getShaderStage(ShaderStage stage)
 	{
 		switch (static_cast<int>(stage))

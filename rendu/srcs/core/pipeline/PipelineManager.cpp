@@ -9,7 +9,29 @@
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 
-void PipelineManager::init(AEngine * engine)
+static void uploadLines(AEngine * engine)
+{
+	PipelineInfo infoLines;
+	infoLines.shaderName = "lines";
+	infoLines.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	infoLines.attributeSize = sizeof(glm::vec3);
+	infoLines.drawMode = DrawMode::LINES;
+	infoLines.polygonMode = PolygonMode::LINE;
+	infoLines.cullMode = CullMode::OFF;
+
+	DescriptorInfo cameraMatrix;
+	cameraMatrix.name = "CameraMatrix";
+	cameraMatrix.binding = 0;
+	cameraMatrix.count = 1;
+	cameraMatrix.size = sizeof(CameraBuffer);
+	cameraMatrix.stage = ShaderStage::VERTEX;
+	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
+
+	infoLines.descriptors.push_back(cameraMatrix);
+	PipelineManager::uploadPipeline(engine, infoLines, PIPELINE_LINES);
+}
+
+static void uploadVoxel(AEngine * engine)
 {
 	PipelineInfo infoVoxel;
 	infoVoxel.shaderName = "voxel";
@@ -19,7 +41,7 @@ void PipelineManager::init(AEngine * engine)
 	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
 	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
 	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	
+
 	DescriptorInfo cameraMatrix;
 	cameraMatrix.name = "CameraMatrix";
 	cameraMatrix.binding = 0;
@@ -55,11 +77,17 @@ void PipelineManager::init(AEngine * engine)
 	infoVoxel.descriptors.push_back(chunkData);
 	for (Attribute attribute : infoVoxel.attributes)
 		infoVoxel.attributeSize += attribute.size;
-	_uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);
+	PipelineManager::uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);
 
 	PipelineInfo infoWireframe(infoVoxel);
 	infoWireframe.polygonMode = LINE;
-	_uploadPipeline(engine, infoWireframe, PIPELINE_WIREFRAME);
+	PipelineManager::uploadPipeline(engine, infoWireframe, PIPELINE_WIREFRAME);
+}
+
+void PipelineManager::init(AEngine * engine)
+{
+	uploadVoxel(engine);
+	uploadLines(engine);
 
 	// PipelineInfo infoBasic;
 	// infoBasic.shaderName = "basic";
@@ -72,7 +100,7 @@ void PipelineManager::init(AEngine * engine)
 	// _uploadPipeline(engine, infoBasic, PIPELINE_BASIC);
 }
 
-void PipelineManager::_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)
+void PipelineManager::uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)
 {
 	pipelineInfo.id = engine->uploadPipeline(pipelineInfo);
 	_pipelineMap.try_emplace(pipelineType, pipelineInfo);

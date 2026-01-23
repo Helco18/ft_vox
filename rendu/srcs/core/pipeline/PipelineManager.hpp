@@ -13,7 +13,8 @@ enum PipelineType
 {
 	PIPELINE_VOXEL,
 	PIPELINE_WIREFRAME,
-	PIPELINE_BASIC
+	PIPELINE_BASIC,
+	PIPELINE_LINES
 };
 
 enum AttributeType
@@ -27,6 +28,12 @@ enum PolygonMode
 {
 	FILL,
 	LINE
+};
+
+enum DrawMode
+{
+	TRIANGLES,
+	LINES
 };
 
 enum CullMode
@@ -86,6 +93,7 @@ struct PipelineInfo
 {
 	PipelineID					id;
 	std::string					shaderName;
+	DrawMode					drawMode = TRIANGLES;
 	PolygonMode					polygonMode = FILL;
 	CullMode					cullMode = BACK;
 	int							width = -1;
@@ -106,11 +114,11 @@ class PipelineManager
 
 		static void					init(AEngine * engine);
 		static const PipelineInfo &	getPipeline(PipelineType pipelineType);
+		static void					uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType);
 
 	private:
 		typedef std::unordered_map<PipelineType, PipelineInfo> PipelineMap;
 
-		static void					_uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType);
 		static PipelineMap			_pipelineMap;
 
 };

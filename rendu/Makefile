@@ -68,6 +68,7 @@ LIBS_CPP			=	libs/imgui/imgui_demo.cpp \
 						libs/imgui/imgui_widgets.cpp \
 						libs/imgui/imgui.cpp
 SHADERS_SRC			=	$(SHADER_PATH)/slang/basic.slang \
+						$(SHADER_PATH)/slang/lines.slang \
 						$(SHADER_PATH)/slang/voxel.slang
 SPIRV_OBJS			=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(SPIRV_PATH)/%.spv, $(SHADERS_SRC))
 GLSL_VERT_OBJS		=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.vert, $(SHADERS_SRC))

@@ -43,14 +43,11 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	return pipelineID;
 }
 
-void OpenGLEngine::_applyPipeline(PipelineID pipelineID)
+PipelineLayout & OpenGLEngine::_applyPipeline(PipelineID pipelineID)
 {
 	PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
 	if (pipelineit == _pipelineMap.end())
-	{
-		Logger::log(ENGINE_OPENGL, WARNING, "Requested unknown pipeline with ID: " + toString(pipelineID));
-		return;
-	}
+		throw OpenGLException("Requested unknown pipeline with ID: " + toString(pipelineID));
 
 	PipelineLayout & pipelineLayout = pipelineit->second;
 	PipelineInfo & pipelineInfo = pipelineLayout.pipelineInfo;
@@ -96,4 +93,5 @@ void OpenGLEngine::_applyPipeline(PipelineID pipelineID)
 		glUniform1i(textureIndex, 0);
 		i++;
 	}
+	return pipelineLayout;
 }
