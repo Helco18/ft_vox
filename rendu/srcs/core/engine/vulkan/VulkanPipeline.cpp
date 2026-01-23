@@ -157,9 +157,9 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	}
 
 	vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
+	vk::PushConstantRange pcr;
 	if (pipelineInfo.uniformSize > 0)
 	{
-		vk::PushConstantRange pcr;
 		pcr.offset = 0;
 		pcr.size = pipelineInfo.uniformSize;
 		pcr.stageFlags = vk::ShaderStageFlagBits::eAll;
