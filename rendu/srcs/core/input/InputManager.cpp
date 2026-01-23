@@ -114,10 +114,12 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 	if (key == GLFW_KEY_TAB)
 		windowManager->requestSwap();
 
-	if (key == GLFW_KEY_F11)
-		windowManager->toggleFullscreen();
+	if (key == GLFW_KEY_F3)
+		windowManager->getEngine()->toggleGui();
 	if (key == GLFW_KEY_F7)
 		windowManager->toggleWireframe();
+	if (key == GLFW_KEY_F11)
+		windowManager->toggleFullscreen();
 
 	if (key == GLFW_KEY_1)
 		camera->setCameraType(EULER);

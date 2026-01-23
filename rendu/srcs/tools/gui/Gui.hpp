@@ -9,4 +9,5 @@ class Gui
 		~Gui() = delete;
 
 		static void	generateGui(GLFWwindow * window);
+
 };

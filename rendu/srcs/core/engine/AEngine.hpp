@@ -66,8 +66,10 @@ class AEngine
 		GLFWwindow *		getWindow() const { return _window; }
 		bool				getFramebufferResized() const { return _isFramebufferResized; }
 		bool				isInitialized() const { return _isInitalized; }
+		bool				isGuiEnabled() const { return _imGuiEnabled; }
 
 		void				setFramebufferResized(bool framebufferResized) { _isFramebufferResized = framebufferResized; }
+		void				toggleGui() { _imGuiEnabled = !_imGuiEnabled; }
 
 	protected:
 		EngineType			_engineType;
@@ -75,5 +77,6 @@ class AEngine
 		bool				_isFramebufferResized;
 		bool				_isInitalized;
 
+		bool				_imGuiEnabled = false;
 		bool				_imGuiThisFrame = false;
 };

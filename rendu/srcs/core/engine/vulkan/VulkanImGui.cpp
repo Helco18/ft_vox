@@ -68,6 +68,8 @@ void VulkanEngine::_initImGui()
 
 void VulkanEngine::beginImGui()
 {
+	if (!_imGuiEnabled)
+		return;
 	ImGui_ImplVulkan_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	Gui::generateGui(_window);

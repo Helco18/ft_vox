@@ -25,6 +25,8 @@ void OpenGLEngine::_initImGui()
 
 void OpenGLEngine::beginImGui()
 {
+	if (!_imGuiEnabled)
+		return;
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	Gui::generateGui(_window);
