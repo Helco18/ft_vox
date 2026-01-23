@@ -23,6 +23,7 @@ class WindowManager
 		double			getDeltaTime() const { return _deltaTime; }
 		int				getWidth() const { return _width; }
 		int				getHeight() const { return _height; }
+		bool			isChunkBordersActive() const { return _chunkBordersActive; }
 		bool			isWireframe() const { return _isWireframeEnabled; }
 		bool			isSwapRequested() const { return _isSwapRequested; }
 
@@ -34,6 +35,7 @@ class WindowManager
 		void			requestSwap() { _isSwapRequested = true; }
 
 		void			toggleFullscreen();
+		void			toggleChunkBorders() { _chunkBordersActive = !_chunkBordersActive; }
 		void			toggleWireframe() { _isWireframeEnabled = !_isWireframeEnabled; }
 
 		void			destroy();
@@ -54,6 +56,7 @@ class WindowManager
 		int				_windowPosY;
 		bool			_isFullscreen;
 		bool			_isSwapRequested;
+		bool			_chunkBordersActive = false;
 		bool			_isWireframeEnabled = false;
 		bool			_isActive = false;
 

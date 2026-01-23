@@ -116,6 +116,8 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 
 	if (key == GLFW_KEY_F3)
 		windowManager->getEngine()->toggleGui();
+	if (key == GLFW_KEY_F6)
+		windowManager->toggleChunkBorders();
 	if (key == GLFW_KEY_F7)
 		windowManager->toggleWireframe();
 	if (key == GLFW_KEY_F11)

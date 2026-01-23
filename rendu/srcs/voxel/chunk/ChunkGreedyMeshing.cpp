@@ -323,6 +323,67 @@ void Chunk::_generateSliceMeshing(int axis, int sliceIndex)
 	}
 }
 
+void Chunk::_generateFrameMesh()
+{
+	if (!_asset.vertices.data)
+		return;
+	glm::vec3 v[24];
+
+	v[0] = _chunkLocation;
+	v[1] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
+
+	v[2] = _chunkLocation;
+	v[3] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
+
+	v[4] = _chunkLocation;
+	v[5] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+
+
+	v[6] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	v[7] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
+
+	v[8] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	v[9] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+
+	v[10] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	v[11] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+
+//=========================================
+
+	v[12] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
+	v[13] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+
+	v[14] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
+	v[15] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+
+
+	v[16] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
+	v[17] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
+
+	v[18] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
+	v[19] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+
+
+	v[20] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+	v[21] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+
+	v[22] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
+	v[23] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+
+	for (int i = 0; i < 24; ++i)
+	{
+		v[i].x *= CHUNK_WIDTH;
+		v[i].y *= CHUNK_HEIGHT;
+		v[i].z *= CHUNK_LENGTH;
+
+		vv.push_back(v[i]);
+	}
+	_assetFrame.vertices.data = vv.data();
+	_assetFrame.vertices.vertexCount = vv.size();
+	_assetFrame.vertices.size = vv.size() * sizeof(glm::vec3);
+	_assetFrame.vertices.stride = sizeof(glm::vec3);
+}
+
 void Chunk::_generateGreedyMesh()
 {
 	Profiler p("_generateGreedyMesh");
@@ -353,5 +414,6 @@ void Chunk::_generateGreedyMesh()
 		_chunkAsset.indices.clear();
 		_chunkAsset.indices.shrink_to_fit();
 	}
+	_generateFrameMesh();
 	_asset.vertices.stride = sizeof(Vertex);
 }

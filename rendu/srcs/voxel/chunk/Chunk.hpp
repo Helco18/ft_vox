@@ -74,6 +74,7 @@ class Chunk
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 		ChunkAsset				_chunkAsset;
 		Asset					_asset;
+		Asset					_assetFrame;
 		std::vector<Vertex>		_vertices;
 		std::atomic<ChunkState>	_state;
 		std::mutex				_workerMutex;
@@ -85,6 +86,7 @@ class Chunk
 		Chunk * 				_westChunk = nullptr;
 		Chunk * 				_topChunk = nullptr;
 		Chunk * 				_bottomChunk = nullptr;
+		std::vector<glm::vec3>	vv;
 
 		void					_generateGreedyMesh();
 		void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
@@ -93,4 +95,5 @@ class Chunk
 		void					_generateSliceMeshing(int axis, int sliceIndex);
 		uint8_t					_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
 		glm::ivec3				_sliceToWorld(int axis, int sliceIndex, int u, int v);
+		void					_generateFrameMesh();
 };

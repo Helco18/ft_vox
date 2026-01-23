@@ -59,14 +59,18 @@ void Chunk::uploadAsset(AEngine * engine)
  
 	Profiler p("Chunk::uploadAsset");
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
+	engine->uploadAsset(_assetFrame, PipelineManager::getPipeline(PIPELINE_LINES).id);
 	setState(UPLOADED);
 }
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()));
 	if (_chunkData.fadeValue < 1.0f)
-		_chunkData.fadeValue += 3.0f * reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()))->getDeltaTime();
+		_chunkData.fadeValue += 3.0f * windowManager->getDeltaTime();
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
+	if (windowManager->isChunkBordersActive())
+		engine->drawAsset(_assetFrame.assetID, PipelineManager::getPipeline(PIPELINE_LINES).id);
 }
 
 void Chunk::unload(AEngine * engine)
