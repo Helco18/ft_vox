@@ -82,7 +82,7 @@ void VulkanEngine::_renderImGui()
 		return;
 	ImGui::Render();
 	ImGui::GetDrawData();
-	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), *_commandBuffers[_currentFrame]);
+	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), *_frameCommandBuffers[_currentFrame]);
 	_imGuiThisFrame = false;
 }
 

@@ -101,6 +101,7 @@ struct PipelineData
 	PipelineInfo										pipelineInfo;
 	vk::raii::Pipeline 									pipeline = nullptr;
 	vk::raii::PipelineLayout 							layout = nullptr;
+	std::vector<vk::raii::CommandBuffer> 				commandBuffers;
 	vk::raii::DescriptorPool							descriptorPool = nullptr;
 	vk::raii::DescriptorSetLayout						descriptorSetLayout = nullptr;
 	std::vector<vk::raii::DescriptorSet>				descriptorSets;
@@ -186,7 +187,7 @@ class VulkanEngine : public AEngine
 	
 		// Commands & Descriptor
 		vk::raii::CommandPool				_commandPool = nullptr;
-		CommandBuffers						_commandBuffers;
+		CommandBuffers						_frameCommandBuffers;
 
 		// Sync primitives
 		Semaphores							_presentCompleteSemaphores;
@@ -238,7 +239,7 @@ class VulkanEngine : public AEngine
 		void								_createIndexBuffer(PendingAsset & pendingAsset);
 		void								_uploadPendingAssets();
 		void								_processPendingUniforms();
-		void								_createCommandBuffer();
+		CommandBuffers						_createCommandBuffer(vk::CommandBufferLevel level);
 		void								_recordCommandBuffer();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);
 		void								_transitionImageLayout(const vk::raii::Image & image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
@@ -271,4 +272,5 @@ class VulkanEngine : public AEngine
 		void								_renderImGui();
 		void								_shutdownImGui();
 		vk::raii::DescriptorPool			_imGuiPool = nullptr;
+		CommandBuffers						_imGuiCommandBuffers;
 };

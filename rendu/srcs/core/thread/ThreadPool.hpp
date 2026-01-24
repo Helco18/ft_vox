@@ -19,6 +19,8 @@ class ThreadPool
 		void					submitTask(Task task); // use Task task = [params]() { func(params); }; to send it.
 
 		static uint16_t			getAvailableThreads() { return _availableThreads; }
+		static void				giveBackThreads(uint16_t threadCount);
+		static void				takeFromThreads(uint16_t threadCount);
 		
 	private:
 		typedef std::vector<std::unique_ptr<ThreadWorker>> WorkerPool;

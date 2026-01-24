@@ -49,9 +49,7 @@ void VulkanEngine::load()
 	// - "transient" pour optimiser les commandes qui vont etre fréquemment reset
 	_createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
 
-	// On enregistre dans un *command buffer* toutes les commandes Vulkan nécessaires pour dessiner nos objets.
-	// Ce buffer sera soumis à une file de commandes à chaque frame.
-	_createCommandBuffer();
+	_frameCommandBuffers = _createCommandBuffer(vk::CommandBufferLevel::ePrimary);
 
 	// On crée les buffers pour stocker les données géométriques :
 	// - vertex buffer : contient les positions, couleurs, normales, etc.
@@ -99,11 +97,47 @@ void VulkanEngine::endFrame()
 		if (res != vk::Result::eSuccess)
 			throw VulkanException("Waiting for fences on draw call failed.");
 		_device.resetFences(*_inFlightFences[_currentFrame]);
-		_processPendingUniforms();
 
-		_commandBuffers[_currentFrame].reset();
+		_processPendingUniforms();
 		_uploadPendingAssets();
+
+		vk::CommandBufferBeginInfo commandBufferBeginInfo;
+		_frameCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);
+
+		TransitionImageViewLayoutInfo transitionImageViewInfo;
+		transitionImageViewInfo.imageIndex = _imageIndex;
+		// Un ImageLayout est l'état de l'image.
+		// Undefined : Vient d'être créée
+		// ColorAttachmentOptimal : Utilisée comme cible de rendu (render target)
+		// PresentSrcKHR : Prête à être affichée à l'écran
+		// TransferDstOptimal : Prête à recevoir un transfert de données (un upload de texture par exemple)
+		transitionImageViewInfo.oldLayout = vk::ImageLayout::eUndefined;
+		transitionImageViewInfo.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
+		// Il n'y a pas d'opération à attendre avant, l'image est undefined donc non-utilisée
+		transitionImageViewInfo.srcAccessMask = {};
+		// Après la barrière, on veut écrire dans cette image (on écrit les pixels du framebuffer)
+		transitionImageViewInfo.dstAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
+		transitionImageViewInfo.srcStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
+		// La barrière doit être validée avant que la pipeline atteigne la phase d'écriture du color attachment
+		transitionImageViewInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+
+		// Transitioner le layout de l'image d'undefined à colorattachment dans notre cas
+		_transitionImageViewLayout(transitionImageViewInfo);
+
 		_recordCommandBuffer();
+
+		TransitionImageViewLayoutInfo presentSrcInfo;
+		presentSrcInfo.imageIndex = _imageIndex;
+		presentSrcInfo.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
+		presentSrcInfo.newLayout = vk::ImageLayout::ePresentSrcKHR;
+		presentSrcInfo.srcAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
+		presentSrcInfo.dstAccessMask = {};
+		presentSrcInfo.srcStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+		presentSrcInfo.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
+
+		_transitionImageViewLayout(presentSrcInfo);
+		_renderImGui();
+		_frameCommandBuffers[_currentFrame].end();
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 
@@ -112,7 +146,7 @@ void VulkanEngine::endFrame()
 		submitInfo.pWaitSemaphores = &*_presentCompleteSemaphores[_presentSemaphoreIndex];
 		submitInfo.pWaitDstStageMask = &waitDstStageMask;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &*_commandBuffers[_currentFrame];
+		submitInfo.pCommandBuffers = &*_frameCommandBuffers[_currentFrame];
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_imageIndex];
 

@@ -8,7 +8,7 @@ uint16_t ThreadPool::_availableThreads = std::thread::hardware_concurrency() - 1
 
 void ThreadPool::start(uint16_t requestedThreads)
 {
-	if (_availableThreads == 0)
+	if (_availableThreads == 0 || _availableThreads - requestedThreads < 0)
 		throw ThreadException("Can't instantiate ThreadPool #" + toString(_count) + ": No threads are available.");
 	if (_isActive)
 	{
@@ -19,9 +19,9 @@ void ThreadPool::start(uint16_t requestedThreads)
 
 	if (requestedThreads > _availableThreads)
 	{
-		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(requestedThreads - _availableThreads + 1) +
-			". Adjusting to " + toString(_availableThreads - 1) + " threads.");
-		requestedThreads = _availableThreads - 1;
+		Logger::log(THREAD, WARNING, "Total threads exceed the host's thread count by " + toString(requestedThreads - _availableThreads) +
+			". Adjusting to " + toString(_availableThreads) + " threads.");
+		requestedThreads = _availableThreads;
 	}
 	_availableThreads -= requestedThreads;
 
@@ -57,4 +57,30 @@ void ThreadPool::stop()
 	}
 	for (std::unique_ptr<ThreadWorker> & worker : _workers)
 		worker->stop();
+}
+
+void ThreadPool::giveBackThreads(uint16_t threadCount)
+{
+	uint16_t totalThreads = std::thread::hardware_concurrency() - 1;
+	if (threadCount > totalThreads)
+	{
+		Logger::log(THREAD, WARNING, "Giving back threads exceed the host's thread count by " + toString(_availableThreads + threadCount - totalThreads) +
+			". Adjusting to " + toString(totalThreads) + " threads.");
+		_availableThreads = totalThreads;
+	}
+	else
+		_availableThreads += threadCount;
+}
+
+void ThreadPool::takeFromThreads(uint16_t threadCount)
+{
+	if (threadCount > _availableThreads)
+	{
+		if (threadCount - _availableThreads <= 0)
+			throw ThreadException("No threads available for take operation.");
+		Logger::log(THREAD, WARNING, "Taking threads exceed the host's thread count by " + toString(threadCount - _availableThreads) +
+			". Adjusting to " + toString(_availableThreads) + " threads.");
+		threadCount = _availableThreads;
+	}
+	_availableThreads -= threadCount;
 }

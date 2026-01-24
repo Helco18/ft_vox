@@ -107,9 +107,9 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	// Depth
 	vk::PipelineDepthStencilStateCreateInfo depthStencil;
-	depthStencil.depthTestEnable = pipelineInfo.depthTest;
+	depthStencil.depthTestEnable = vk::True;
 	depthStencil.depthWriteEnable = pipelineInfo.depthTest;
-	depthStencil.depthCompareOp = vk::CompareOp::eLess;
+	depthStencil.depthCompareOp = pipelineInfo.depthTest ? vk::CompareOp::eLess : vk::CompareOp::eLessOrEqual;
 	depthStencil.depthBoundsTestEnable = vk::False;
 	depthStencil.stencilTestEnable = vk::False;
 
@@ -173,6 +173,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	pipelineLayoutInfo.pSetLayouts = &*pipelineData.descriptorSetLayout;
 
 	pipelineData.layout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
+	pipelineData.commandBuffers = _createCommandBuffer(vk::CommandBufferLevel::eSecondary);
 
 	vk::PipelineRenderingCreateInfo pipelineRenderingInfo;
 	pipelineRenderingInfo.colorAttachmentCount = 1;
