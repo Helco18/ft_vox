@@ -37,6 +37,7 @@ static void uploadVoxel(AEngine * engine)
 	infoVoxel.shaderName = "voxel";
 	infoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
 	infoVoxel.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	infoVoxel.attributes.push_back({ sizeof(float), 1, FLOAT, false });
 	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
 	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
 	infoVoxel.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });

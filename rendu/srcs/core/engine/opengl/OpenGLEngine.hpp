@@ -14,6 +14,7 @@ struct GLValueConverter
 	{
 		switch (static_cast<int>(type))
 		{
+			case AttributeType::FLOAT: return GL_FLOAT;
 			case AttributeType::FLOAT3:
 			case AttributeType::FLOAT2: return GL_FLOAT;
 			case AttributeType::INT: return GL_INT;

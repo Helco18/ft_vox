@@ -17,7 +17,7 @@ enum BlockFace
 class BlockData
 {
 	public:
-		BlockData(const std::string & name, bool isVisible): _name(name), _isVisible(isVisible) {}
+		BlockData(const std::string & name, bool isVisible, bool isLiquid): _name(name), _isVisible(isVisible), _isLiquid(isLiquid) {}
 		~BlockData() {}
 
 		static void					init();
@@ -25,6 +25,7 @@ class BlockData
 
 		const std::string &			getName() const { return _name; }
 		bool						isVisible() const { return _isVisible; }
+		bool						isLiquoid() const { return _isLiquid; }
 
 	private:
 		typedef std::unordered_map<uint8_t, BlockData>	BlockDataRegistry;
@@ -33,4 +34,5 @@ class BlockData
 
 		std::string					_name;
 		bool						_isVisible;
+		bool						_isLiquid;
 };

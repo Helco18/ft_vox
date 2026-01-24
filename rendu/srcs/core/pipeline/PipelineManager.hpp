@@ -20,6 +20,7 @@ enum PipelineType
 
 enum AttributeType
 {
+	FLOAT,
 	FLOAT3,
 	FLOAT2,
 	INT

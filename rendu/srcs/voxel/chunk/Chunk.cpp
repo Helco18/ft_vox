@@ -29,7 +29,10 @@ void Chunk::build()
 						(std::cos(((_chunkLocation.z * CHUNK_LENGTH) + z) / 5.0) * 5.0))) ))
 				{
 					_blocks[x][y][z] = x % 2 + 1;
-					// _blocks[x][y][z] = 1;
+				}
+				else if (y + (_chunkLocation.y * CHUNK_HEIGHT) <= 0)
+				{
+					_blocks[x][y][z] = 3;
 				}
 				else
 					_blocks[x][y][z] = 0;

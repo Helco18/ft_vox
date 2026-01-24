@@ -13,6 +13,7 @@ struct Vertex
 {
 	glm::vec3	position;
 	glm::vec3	normal;
+	float		alpha;
 	glm::vec2	texCoord;
 	glm::vec2	uvMin;
 	glm::vec2	uvMax;

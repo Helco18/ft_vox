@@ -22,6 +22,7 @@ struct VKValueConverter
 		{
 			case FLOAT3: return vk::Format::eR32G32B32Sfloat;
 			case FLOAT2: return vk::Format::eR32G32Sfloat;
+			case FLOAT: return vk::Format::eR32Sfloat;
 		}
 		return vk::Format::eUndefined;
 	}
