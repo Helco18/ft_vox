@@ -84,10 +84,35 @@ static void uploadVoxel(AEngine * engine)
 	PipelineManager::uploadPipeline(engine, infoWireframe, PIPELINE_WIREFRAME);
 }
 
+static void uploadSkybox(AEngine * engine)
+{
+	PipelineInfo infoSkybox;
+	infoSkybox.shaderName = "skybox";
+	infoSkybox.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	infoSkybox.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	infoSkybox.cullMode = CullMode::OFF;
+	infoSkybox.blend = false;
+	infoSkybox.depthTest = false;
+
+	DescriptorInfo cameraMatrix;
+	cameraMatrix.name = "CameraMatrix";
+	cameraMatrix.binding = 0;
+	cameraMatrix.count = 1;
+	cameraMatrix.size = sizeof(CameraBuffer);
+	cameraMatrix.stage = ShaderStage::VERTEX;
+	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
+
+	infoSkybox.descriptors.push_back(cameraMatrix);
+	for (Attribute attribute : infoSkybox.attributes)
+		infoSkybox.attributeSize += attribute.size;
+	PipelineManager::uploadPipeline(engine, infoSkybox, PIPELINE_SKYBOX);
+}
+
 void PipelineManager::init(AEngine * engine)
 {
 	uploadVoxel(engine);
 	uploadLines(engine);
+	uploadSkybox(engine);
 
 	// PipelineInfo infoBasic;
 	// infoBasic.shaderName = "basic";

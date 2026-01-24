@@ -71,10 +71,10 @@ void OpenGLEngine::unloadAsset(AssetID assetID)
 			glDeleteBuffers(1, &asset->vbo);
 		if (asset->ibo)
 			glDeleteBuffers(1, &asset->ibo);
-		if (asset->assetID)
-			glDeleteVertexArrays(1, &asset->assetID);
 		for (UniformBufferStream & ubs : assetInfo.uniformBufferStreams)
 			glDeleteBuffers(1, &ubs.ubo);
+		if (asset->assetID)
+			glDeleteVertexArrays(1, &asset->assetID);
 	}
 }
 
@@ -92,6 +92,7 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (!asset->vertices.data)
 		return;
 
+	PipelineLayout & layout = _applyPipeline(pipelineID);
 	glBindVertexArray(assetID);
 
 	for (UniformBufferStream & uniformInfo : assetInfo.uniformBufferStreams)
@@ -101,7 +102,6 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, uniformInfo.size, uniformInfo.data);
 	}
 
-	PipelineLayout & layout = _applyPipeline(pipelineID);
 	GLenum polygonMode = GLValueConverter::getDrawMode(layout.pipelineInfo.drawMode);
 	if (!asset->indices.empty())
 		glDrawElements(polygonMode, asset->indices.size(), GL_UNSIGNED_INT, 0);

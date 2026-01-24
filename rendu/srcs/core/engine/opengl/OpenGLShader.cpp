@@ -60,6 +60,5 @@ GLuint OpenGLEngine::_createShader(const std::string & vertexPath, const std::st
 		}
 	}
 
-	Logger::log(ENGINE_OPENGL, INFO, "Created Shader ID: " + toString(shader) + ".");
 	return shader;
 }

@@ -31,7 +31,8 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 			pipelineLayout.textureBuffers.try_emplace(descriptorInfo.binding, textureBuffer);
 		}
 	}
-
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	ShaderCache::iterator it = _shaderCache.find(pipelineInfo.shaderName);
 	if (it == _shaderCache.end())
 	{
@@ -40,6 +41,7 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 		_shaderCache.try_emplace(pipelineInfo.shaderName, shader);
 	}
 	_pipelineMap.try_emplace(pipelineID, std::move(pipelineLayout));
+	Logger::log(ENGINE_OPENGL, INFO, "Created Pipeline ID: " + toString(pipelineID));
 	return pipelineID;
 }
 

@@ -1,6 +1,7 @@
 # Compilation
 CC					=	g++
 CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD
+# CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD -fsanitize=address
 LDFLAGS				=	-lvulkan -lGL -ldl
 
 # Names
@@ -48,6 +49,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
 						srcs/environment/Environment.cpp \
+						srcs/skybox/Skybox.cpp \
 						srcs/tools/logger/Logger.cpp \
 						srcs/tools/gui/Gui.cpp \
 						srcs/tools/profiler/Profiler.cpp \
@@ -69,6 +71,7 @@ LIBS_CPP			=	libs/imgui/imgui_demo.cpp \
 						libs/imgui/imgui.cpp
 SHADERS_SRC			=	$(SHADER_PATH)/slang/basic.slang \
 						$(SHADER_PATH)/slang/lines.slang \
+						$(SHADER_PATH)/slang/skybox.slang \
 						$(SHADER_PATH)/slang/voxel.slang
 SPIRV_OBJS			=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(SPIRV_PATH)/%.spv, $(SHADERS_SRC))
 GLSL_VERT_OBJS		=	$(patsubst $(SHADER_PATH)/slang/%.slang, $(GLSL_PATH)/%.vert, $(SHADERS_SRC))
@@ -93,6 +96,7 @@ INCLUDES			=	-I libs \
 						-I srcs/core/texture \
 						-I srcs/core/thread \
 						-I srcs/core/window \
+						-I srcs/skybox \
 						-I srcs/environment \
 						-I srcs/entity \
 						-I srcs/entity/player \

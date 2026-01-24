@@ -8,6 +8,7 @@
 #include "Logger.hpp"
 #include "TextureAtlas.hpp"
 #include "PipelineManager.hpp"
+#include "Skybox.hpp"
 
 Environment::~Environment()
 {
@@ -33,6 +34,7 @@ void Environment::init(EngineType engineType)
 	camera->addPipelineToRender(PIPELINE_VOXEL);
 	camera->addPipelineToRender(PIPELINE_WIREFRAME);
 	camera->addPipelineToRender(PIPELINE_LINES);
+	camera->addPipelineToRender(PIPELINE_SKYBOX);
 
 	BlockData::init();
 
@@ -53,6 +55,9 @@ void Environment::loop()
 	engine = _windowManager->getEngine();
 	world = WorldManager::getWorld(WORLD_NAME);
 	camera = _player.getCamera();
+	Skybox	sky;
+	sky.generateMesh();
+	sky.uploadAsset(engine);
 	while (_running)
 	{
 		Profiler p("Environment::loop-while(_running)");
@@ -68,6 +73,7 @@ void Environment::loop()
 				world->reloadChunks(engine);
 			continue;
 		}
+		sky.drawAsset(engine, PIPELINE_SKYBOX);
 		if (world)
 		{
 			world->generateProcedurally(camera);
