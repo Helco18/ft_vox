@@ -76,13 +76,41 @@ void VulkanEngine::beginImGui()
 	_imGuiThisFrame = true;
 }
 
-void VulkanEngine::_renderImGui()
+void VulkanEngine::_renderImGui(vk::CommandBuffer & commands)
 {
 	if (!_imGuiThisFrame)
 		return;
 	ImGui::Render();
 	ImGui::GetDrawData();
-	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), *_frameCommandBuffers[_currentFrame]);
+
+	vk::RenderingAttachmentInfo colorAttachmentInfo;
+	vk::ClearValue clearColor = vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f);
+	colorAttachmentInfo.imageView = _swapChainImageViews[_imageIndex];
+	colorAttachmentInfo.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
+	colorAttachmentInfo.loadOp = vk::AttachmentLoadOp::eLoad;
+	colorAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
+	colorAttachmentInfo.clearValue = clearColor;
+
+	vk::RenderingAttachmentInfo depthAttachmentInfo;
+	vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
+	depthAttachmentInfo.imageView = _depthImageView;
+	depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+	depthAttachmentInfo.loadOp = vk::AttachmentLoadOp::eLoad;
+	depthAttachmentInfo.storeOp = vk::AttachmentStoreOp::eDontCare;
+	depthAttachmentInfo.clearValue = clearDepth;
+
+	vk::RenderingInfo renderingInfo;
+	renderingInfo.renderArea.offset.x = 0;
+	renderingInfo.renderArea.offset.y = 0;
+	renderingInfo.renderArea.extent = _swapChainExtent;
+	renderingInfo.layerCount = 1;
+	renderingInfo.colorAttachmentCount = 1;
+	renderingInfo.pColorAttachments = &colorAttachmentInfo;
+	renderingInfo.pDepthAttachment = &depthAttachmentInfo;
+	vk::CommandBufferBeginInfo beginInfo;
+	vk::CommandBufferInheritanceInfo commandBufferInheritanceInfo;
+	beginInfo.pInheritanceInfo = &commandBufferInheritanceInfo;
+	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commands);
 	_imGuiThisFrame = false;
 }
 

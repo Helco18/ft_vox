@@ -136,7 +136,6 @@ void VulkanEngine::endFrame()
 		presentSrcInfo.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
 
 		_transitionImageViewLayout(presentSrcInfo);
-		_renderImGui();
 		_frameCommandBuffers[_currentFrame].end();
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
