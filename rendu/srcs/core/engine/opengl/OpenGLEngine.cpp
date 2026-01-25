@@ -45,8 +45,6 @@ void OpenGLEngine::load()
 		glDebugMessageCallback(_debugCallback, this);
 	}
 
-	glEnable(GL_FRAMEBUFFER_SRGB);
-
 	_initImGui();
 
 	_isInitalized = true;

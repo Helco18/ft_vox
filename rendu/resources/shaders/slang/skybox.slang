@@ -8,7 +8,7 @@ struct VertexOutput
 {
     float4 sv_position : SV_Position;
     float3 outNormal;
-    float dir;
+    float dirY;
 };
 
 struct CameraMatrix
@@ -31,15 +31,15 @@ VertexOutput vertMain(VertexInput input)
     viewNoT[3][3] = float(1.0f);
     output.sv_position = mul(cameraMatrix.proj, mul(viewNoT, float4(input.position, 1.0)));
     output.outNormal = input.normal;
-    output.dir = clamp((normalize(input.position).y + 1.0) * 0.5, 0.0, 1.0);
+    output.dirY = clamp((normalize(input.position).y + 1.0) * 0.5, 0.0, 1.0);
     return output;
 }
 
 [shader("fragment")]
-float4 fragMain(VertexOutput t) : SV_Target
+float4 fragMain(VertexOutput output) : SV_Target
 {
-    float3 horyzonColor = float3(1.0f, 1.0f, 1.0f);
+    float3 horizonColor = float3(1.0f, 1.0f, 1.0f);
     float3 zenithColor = float3(102.0f/255.0f, 154.0f/255.0f, 1.0f);
-    float4 color = float4(lerp(horyzonColor, zenithColor, t.dir), 1.0f);
+    float4 color = float4(lerp(horizonColor, zenithColor, output.dirY), 1.0f);
     return color;
 }

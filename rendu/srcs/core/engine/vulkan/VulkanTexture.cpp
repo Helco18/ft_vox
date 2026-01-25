@@ -23,7 +23,7 @@ void VulkanEngine::_createTextureImage(TextureData & textureData, TextureInfo & 
 	memcpy(data, pixels, size);
 	stagingBufferMemory.unmapMemory();
 
-	_createImage(width, height, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal,
+	_createImage(width, height, vk::Format::eR8G8B8A8Unorm, vk::ImageTiling::eOptimal,
 					vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
 					vk::MemoryPropertyFlagBits::eDeviceLocal, textureData.image, textureData.memory,
 					vk::SampleCountFlagBits::e1);
@@ -60,7 +60,7 @@ void VulkanEngine::_createTextureImageView(TextureData & textureData)
 	// On peut utiliser 3D pour des textures 3D (nuages, fumée, IRM...)
 	imageViewCreateInfo.viewType = vk::ImageViewType::e2D;
 	imageViewCreateInfo.image = textureData.image;
-	imageViewCreateInfo.format = vk::Format::eR8G8B8A8Srgb;
+	imageViewCreateInfo.format = vk::Format::eR8G8B8A8Unorm;
 	imageViewCreateInfo.subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 };
 	// Nos images vont être utilisées en tant que cible pour les couleurs, sans mipmap et avec un seul layer
 	imageViewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlags::BitsType::eColor;
@@ -84,8 +84,8 @@ void VulkanEngine::_createTextureSampler(TextureData & textureData)
 	samplerInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
 	samplerInfo.addressModeV = vk::SamplerAddressMode::eRepeat;
 	samplerInfo.addressModeW = vk::SamplerAddressMode::eRepeat;
-	samplerInfo.mipLodBias = 0;
-	samplerInfo.anisotropyEnable = 1;
+	samplerInfo.mipLodBias = 0.0f;
+	samplerInfo.anisotropyEnable = vk::True;
 	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
 	samplerInfo.compareEnable = vk::False;
 	samplerInfo.compareOp = vk::CompareOp::eAlways;

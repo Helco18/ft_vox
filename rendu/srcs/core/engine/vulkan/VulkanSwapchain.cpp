@@ -1,14 +1,19 @@
 #include "VulkanEngine.hpp"
 #include "Logger.hpp"
 #include <iostream>
-#include <valgrind/valgrind.h>
 #include "GLFW/glfw3.h"
+#ifdef __has_include
+	#if __has_include(<valgrind/valgrind.h>)
+		#include <valgrind/valgrind.h>
+		#define VALGRIND_AVAILABLE
+	#endif
+#endif
 
 vk::SurfaceFormatKHR VulkanEngine::_chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR> & formats)
 {
 	for (const vk::SurfaceFormatKHR & format : formats)
 	{
-		if (format.format == vk::Format::eB8G8R8A8Srgb && format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
+		if (format.format == vk::Format::eR8G8B8A8Unorm && format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
 			return format;
 		// TODO Sélectionner le meilleur format de couleur disponible si celui que l'on veut n'est pas disponible.
 	}
@@ -17,13 +22,14 @@ vk::SurfaceFormatKHR VulkanEngine::_chooseSwapSurfaceFormat(const std::vector<vk
 
 vk::PresentModeKHR VulkanEngine::_chooseSwapPresentMode(const std::vector<vk::PresentModeKHR> & presentModes)
 {
-	if (!RUNNING_ON_VALGRIND)
+	#ifdef VALGRIND_AVAILABLE
+	if (RUNNING_ON_VALGRIND)
+		return vk::PresentModeKHR::eFifo;
+	#endif
+	for (const vk::PresentModeKHR & presentMode : presentModes)
 	{
-		for (const vk::PresentModeKHR & presentMode : presentModes)
-		{
-			if (presentMode == vk::PresentModeKHR::eImmediate)
-				return presentMode;
-		}
+		if (presentMode == vk::PresentModeKHR::eImmediate)
+			return presentMode;
 	}
 	return vk::PresentModeKHR::eFifo;
 }
