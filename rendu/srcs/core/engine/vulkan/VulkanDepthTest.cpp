@@ -31,7 +31,6 @@ void VulkanEngine::_transitionDepthImage()
     allocInfo.level = vk::CommandBufferLevel::ePrimary;
     allocInfo.commandBufferCount = 1;
 
-    vk::raii::CommandBuffer cmd = std::move(_device.allocateCommandBuffers(allocInfo).front());
 
 	// Depth testing
 	vk::ImageMemoryBarrier2 depthBarrier;
@@ -54,18 +53,9 @@ void VulkanEngine::_transitionDepthImage()
 	depthDependencyInfo.imageMemoryBarrierCount = 1;
 	depthDependencyInfo.pImageMemoryBarriers = &depthBarrier;
 
-	vk::CommandBufferBeginInfo beginInfo;
-	beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
-	cmd.begin(beginInfo);
+	vk::raii::CommandBuffer cmd = _beginSingleTimeCommands();
 	cmd.pipelineBarrier2(depthDependencyInfo);
-	cmd.end();
-
-	vk::SubmitInfo submitInfo;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &*cmd;
-	
-	_queue.submit(submitInfo);
-	_queue.waitIdle();
+	_endSingleTimeCommands(cmd);
 }
 
 void VulkanEngine::_createDepthResources()

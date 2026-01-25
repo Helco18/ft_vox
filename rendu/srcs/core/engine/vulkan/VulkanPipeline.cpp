@@ -68,6 +68,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	
 	vk::PipelineInputAssemblyStateCreateInfo pipelineInputInfo;
 	pipelineInputInfo.topology = VKValueConverter::getDrawMode(pipelineInfo.drawMode);
+	pipelineInputInfo.primitiveRestartEnable = vk::False;
 
 	vk::Extent2D extent;
 	extent.width = pipelineInfo.width == -1 ? _swapChainExtent.width : pipelineInfo.width;
@@ -122,10 +123,11 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	// Color blending
 	vk::PipelineColorBlendAttachmentState colorBlendAttachment;
-	// On écrit sur les 4 composantes de couleur
-	colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
 	// Est-ce qu'on active le blending ou non
 	colorBlendAttachment.blendEnable = pipelineInfo.blend;
+	// On écrit sur les 4 composantes de couleur
+	colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
+		vk::ColorComponentFlagBits::eA;
 	// Comment la couleur source (nouvelle) et la couleur de destination (déjà présente) sont pondérées avant d’être additionnées.
 	colorBlendAttachment.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
 	colorBlendAttachment.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
@@ -181,22 +183,22 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	pipelineRenderingInfo.depthAttachmentFormat = _depthFormat;
 
 	// On lie toutes les infos de notre pipeline
-	vk::GraphicsPipelineCreateInfo graphicsPipelineFillInfo;
-	graphicsPipelineFillInfo.pNext = &pipelineRenderingInfo;
-	graphicsPipelineFillInfo.stageCount = shaderStages.size();
-	graphicsPipelineFillInfo.pStages = shaderStages.data();
-	graphicsPipelineFillInfo.pVertexInputState = &vertexInputInfo;
-	graphicsPipelineFillInfo.pInputAssemblyState = &pipelineInputInfo;
-	graphicsPipelineFillInfo.pViewportState = &viewportState;
-	graphicsPipelineFillInfo.pRasterizationState = &rasterizerFill;
-	graphicsPipelineFillInfo.pMultisampleState = &multisampling;
-	graphicsPipelineFillInfo.pDepthStencilState = &depthStencil;
-	graphicsPipelineFillInfo.pColorBlendState = &colorBlending;
-	graphicsPipelineFillInfo.pDynamicState = &dynamicStateInfo;
-	graphicsPipelineFillInfo.layout = pipelineData.layout;
-	graphicsPipelineFillInfo.renderPass = nullptr;
+	vk::GraphicsPipelineCreateInfo graphicsPipelineInfo;
+	graphicsPipelineInfo.pNext = &pipelineRenderingInfo;
+	graphicsPipelineInfo.stageCount = shaderStages.size();
+	graphicsPipelineInfo.pStages = shaderStages.data();
+	graphicsPipelineInfo.pVertexInputState = &vertexInputInfo;
+	graphicsPipelineInfo.pInputAssemblyState = &pipelineInputInfo;
+	graphicsPipelineInfo.pViewportState = &viewportState;
+	graphicsPipelineInfo.pRasterizationState = &rasterizerFill;
+	graphicsPipelineInfo.pMultisampleState = &multisampling;
+	graphicsPipelineInfo.pDepthStencilState = &depthStencil;
+	graphicsPipelineInfo.pColorBlendState = &colorBlending;
+	graphicsPipelineInfo.pDynamicState = &dynamicStateInfo;
+	graphicsPipelineInfo.layout = pipelineData.layout;
+	graphicsPipelineInfo.renderPass = nullptr;
 
-	pipelineData.pipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineFillInfo);
+	pipelineData.pipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineInfo);
 
 	_pipelineMap.try_emplace(pipelineID, std::move(pipelineData));
 	Logger::log(ENGINE_VULKAN, INFO, "Created Pipeline ID: " + toString(pipelineID));

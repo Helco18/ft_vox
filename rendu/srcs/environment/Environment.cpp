@@ -63,6 +63,7 @@ void Environment::loop()
 		Profiler p("Environment::loop-while(_running)");
 		frameStart = glfwGetTime();
 		engine->beginFrame();
+		sky.drawAsset(engine, PIPELINE_SKYBOX);
 		engine->beginImGui();
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
@@ -73,7 +74,6 @@ void Environment::loop()
 				world->reloadChunks(engine);
 			continue;
 		}
-		// sky.drawAsset(engine, PIPELINE_SKYBOX);
 		if (world)
 		{
 			world->generateProcedurally(camera);

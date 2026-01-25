@@ -30,6 +30,7 @@ VertexOutput vertMain(VertexInput input)
     viewNoT[2][3] = float(0.0f);
     viewNoT[3][3] = float(1.0f);
     output.sv_position = mul(cameraMatrix.proj, mul(viewNoT, float4(input.position, 1.0)));
+	output.sv_position.z = output.sv_position.w;
     output.outNormal = input.normal;
     output.dirY = clamp((normalize(input.position).y + 1.0) * 0.5, 0.0, 1.0);
     return output;
