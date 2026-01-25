@@ -5,7 +5,8 @@ struct VertexInput
 
 struct VertexOutput
 {
-	float4 sv_position : SV_Position;
+    float4 sv_position : SV_Position;
+    float3 outPosition;
 }
 
 struct CameraMatrix
@@ -22,12 +23,14 @@ VertexOutput vertMain(VertexInput input)
 {
 	VertexOutput output;
 
+    output.outPosition = input.position;
 	output.sv_position = mul(cameraMatrix.proj, mul(cameraMatrix.view, float4(input.position, 1.0)));
 	return output;
 }
 
 [shader("fragment")]
-float4 fragMain() : SV_Target
+float4 fragMain(VertexOutput xd) : SV_Target
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    return float4((abs(xd.outPosition.x) % 255) / 255, (abs(xd.outPosition.y) % 255) / 255, (abs(xd.outPosition.z) % 255) / 255, 1.0f);
+    // return float4(0.2f, 0.0f, 0.7f, 1.0f);
 }

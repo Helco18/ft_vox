@@ -180,7 +180,7 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face)
 {
 	ChunkAsset quad;
-	if (_blocks[pos.x][pos.y][pos.z] == 3)
+	if (_blocks[pos.x][pos.y][pos.z] == 3 && face == TOP)
 		quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.2f, face);
 	else
 		quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
@@ -406,26 +406,22 @@ void Chunk::_generateFrameMesh()
 
 void Chunk::_generateGreedyMesh()
 {
+	_chunkFinalAsset.indices.clear();
+	_chunkFinalAsset.indices.shrink_to_fit();
 	Profiler p("_generateGreedyMesh");
-	if (!_northChunk)
-		_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
-	if (!_southChunk)
-		_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
-	if (!_eastChunk)
-		_eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
-	if (!_westChunk)
-		_westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
-	if (!_topChunk)
-		_topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
-	if (!_bottomChunk)
-		_bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
+	_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
+	_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
+	_eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
+	_westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
+	_topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
+	_bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
 
 	for (int i = 0; i < 3; ++i)
 	{
 		for (int sliceIndex = 0; sliceIndex < (i == 0 ? CHUNK_WIDTH : (i == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)); ++sliceIndex)
 			_generateSliceMeshing(i, sliceIndex);
 	}
-	if (!_chunkOpaqueAsset.vertices.empty() && !_chunkOpaqueAsset.indices.empty())
+	if ((!_chunkOpaqueAsset.vertices.empty() && !_chunkOpaqueAsset.indices.empty()) || (!_chunkTransparencyAsset.vertices.empty() && !_chunkTransparencyAsset.indices.empty()))
 	{
 		for (size_t i = 0; i < _chunkTransparencyAsset.indices.size() ; ++i)
 		{

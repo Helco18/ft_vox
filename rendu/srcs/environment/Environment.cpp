@@ -71,7 +71,10 @@ void Environment::loop()
 		{
 			engine = _windowManager->getEngine();
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
+			{
 				world->reloadChunks(engine);
+				sky.uploadAsset(engine);
+			}
 			continue;
 		}
 		sky.drawAsset(engine, PIPELINE_SKYBOX);
