@@ -44,6 +44,7 @@ void OpenGLEngine::load()
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(_debugCallback, this);
 	}
+	glEnable(GL_MULTISAMPLE);
 
 	_initImGui();
 

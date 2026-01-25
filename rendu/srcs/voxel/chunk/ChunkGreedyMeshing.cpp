@@ -12,6 +12,10 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 	ChunkAsset asset;
 	asset.vertices.reserve(4);
 	asset.indices.reserve(6);
+	float epsilon = 0;
+	// float epsilon = 0.0001f;
+	width += epsilon;
+	height += epsilon;
 
 	Vertex v[4];
 
@@ -51,9 +55,9 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 	{
 		case NORTH:
 		{
-			v[0].position = { 1 - depth, 0,      width };
-			v[1].position = { 1 - depth, 0,      0 };
-			v[2].position = { 1 - depth, height, 0 };
+			v[0].position = { 1 - depth, -epsilon,      width };
+			v[1].position = { 1 - depth, -epsilon,      -epsilon };
+			v[2].position = { 1 - depth, height, -epsilon };
 			v[3].position = { 1 - depth, height, width };
 			v[0].normal = { 1, 0, 0 };
 			v[1].normal = { 1, 0, 0 };
@@ -63,10 +67,10 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 		}
 		case SOUTH:
 		{
-			v[0].position = { depth, 0,      0 };
-			v[1].position = { depth, 0,      width };
+			v[0].position = { depth, -epsilon,      -epsilon };
+			v[1].position = { depth, -epsilon,      width };
 			v[2].position = { depth, height, width };
-			v[3].position = { depth, height, 0 };
+			v[3].position = { depth, height, -epsilon };
 			v[3].texCoord = {0.0f, 1.0f};
 			v[0].normal = { -1, 0, 0 };
 			v[1].normal = { -1, 0, 0 };
@@ -76,9 +80,9 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 		}
 		case WEST:
 		{
-			v[0].position = { width, 0,      depth };
-			v[1].position = { 0,     0,      depth };
-			v[2].position = { 0,     height, depth };
+			v[0].position = { width, -epsilon,      depth };
+			v[1].position = { -epsilon,     -epsilon,      depth };
+			v[2].position = { -epsilon,     height, depth };
 			v[3].position = { width, height, depth };
 			v[0].normal = { 0, 0, -1 };
 			v[1].normal = { 0, 0, -1 };
@@ -88,10 +92,10 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 		}
 		case EAST:
 		{
-			v[0].position = { 0,      0,      1 - depth };
-			v[1].position = { width, 0,       1 - depth };
+			v[0].position = { -epsilon,      -epsilon,      1 - depth };
+			v[1].position = { width, -epsilon,       1 - depth };
 			v[2].position = { width, height, 1 - depth };
-			v[3].position = { 0,      height, 1 - depth };
+			v[3].position = { -epsilon,      height, 1 - depth };
 			v[0].normal = { 0, 0, 1 };
 			v[1].normal = { 0, 0, 1 };
 			v[2].normal = { 0, 0, 1 };
@@ -100,10 +104,10 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 		}
 		case BOTTOM:
 		{
-			v[0].position = { 0,      depth, 0 };
-			v[1].position = { width,  depth, 0 };
+			v[0].position = { -epsilon,      depth, -epsilon };
+			v[1].position = { width,  depth, -epsilon };
 			v[2].position = { width,  depth, height };
-			v[3].position = { 0,      depth, height };
+			v[3].position = { -epsilon,      depth, height };
 			v[0].normal = { 0, -1, 0 };
 			v[1].normal = { 0, -1, 0 };
 			v[2].normal = { 0, -1, 0 };
@@ -112,9 +116,9 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 		}
 		case TOP:
 		{
-			v[0].position = { width, 1 - depth, 0 };
-			v[1].position = { 0,     1 - depth, 0 };
-			v[2].position = { 0,     1 - depth, height };
+			v[0].position = { width, 1 - depth, -epsilon };
+			v[1].position = { -epsilon,     1 - depth, -epsilon };
+			v[2].position = { -epsilon,     1 - depth, height };
 			v[3].position = { width, 1 - depth, height };
 			v[0].normal = { 0, 1, 0 };
 			v[1].normal = { 0, 1, 0 };
