@@ -347,60 +347,60 @@ void Chunk::_generateFrameMesh()
 {
 	if (!_asset.vertices.data)
 		return;
-	glm::vec3 v[24];
+	glm::vec3 pos[24];
 
-	v[0] = _chunkLocation;
-	v[1] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[0] = _chunkLocation;
+	pos[1] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
 
-	v[2] = _chunkLocation;
-	v[3] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
+	pos[2] = _chunkLocation;
+	pos[3] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
 
-	v[4] = _chunkLocation;
-	v[5] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+	pos[4] = _chunkLocation;
+	pos[5] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
 
 
-	v[6] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
-	v[7] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
+	pos[6] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[7] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
 
-	v[8] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
-	v[9] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[8] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[9] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
 
-	v[10] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
-	v[11] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[10] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[11] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
 
 //=========================================
 
-	v[12] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
-	v[13] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[12] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[13] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
 
-	v[14] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
-	v[15] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
-
-
-	v[16] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
-	v[17] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
-
-	v[18] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
-	v[19] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+	pos[14] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[15] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
 
 
-	v[20] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
-	v[21] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[16] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
+	pos[17] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
 
-	v[22] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
-	v[23] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[18] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
+	pos[19] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+
+
+	pos[20] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+	pos[21] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+
+	pos[22] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
+	pos[23] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
 
 	for (int i = 0; i < 24; ++i)
 	{
-		v[i].x *= CHUNK_WIDTH;
-		v[i].y *= CHUNK_HEIGHT;
-		v[i].z *= CHUNK_LENGTH;
+		pos[i].x *= CHUNK_WIDTH;
+		pos[i].y *= CHUNK_HEIGHT;
+		pos[i].z *= CHUNK_LENGTH;
 
-		vv.push_back(v[i]);
+		_linesPos.push_back(pos[i]);
 	}
-	_assetFrame.vertices.data = vv.data();
-	_assetFrame.vertices.vertexCount = vv.size();
-	_assetFrame.vertices.size = vv.size() * sizeof(glm::vec3);
+	_assetFrame.vertices.data = _linesPos.data();
+	_assetFrame.vertices.vertexCount = _linesPos.size();
+	_assetFrame.vertices.size = _linesPos.size() * sizeof(glm::vec3);
 	_assetFrame.vertices.stride = sizeof(glm::vec3);
 }
 

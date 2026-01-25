@@ -56,7 +56,7 @@ class Chunk
 		int						getChunkZ() const { return _chunkLocation.z; }
 		ChunkState				getState() const { return _state.load(); }
 		Asset &					getAsset() { return _asset; }
-		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
+		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z].load(); }
 		float					getDisance(glm::vec3 pos) const;
 
 		void					setState(ChunkState state) { _state.store(state); }
@@ -72,13 +72,14 @@ class Chunk
 	private:
 		World *					_world;
 		glm::ivec3				_chunkLocation;
-		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
+		std::atomic<uint8_t>	_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 		ChunkAsset				_chunkOpaqueAsset;
 		ChunkAsset				_chunkTransparencyAsset;
 		ChunkAsset				_chunkFinalAsset;
 		Asset					_asset;
 		Asset					_assetFrame;
 		std::vector<Vertex>		_vertices;
+		std::vector<glm::vec3>	_linesPos;
 		std::atomic<ChunkState>	_state;
 		std::mutex				_workerMutex;
 		ChunkData				_chunkData { 0.0f };
@@ -89,7 +90,6 @@ class Chunk
 		Chunk * 				_westChunk = nullptr;
 		Chunk * 				_topChunk = nullptr;
 		Chunk * 				_bottomChunk = nullptr;
-		std::vector<glm::vec3>	vv;
 
 		void					_generateGreedyMesh();
 		void					_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
