@@ -26,6 +26,8 @@ class World
 		bool					isLoaded() const { return _isLoaded.load(); }
 
 		void					reloadChunks(AEngine * engine);
+		void					regenerate(AEngine * engine); // DEBUG
+		void					askRegenerate() { _regenAsked = true; } // DEBUG
 
 		void					generateProcedurally(Camera * camera);
 		void					render(AEngine * engine, PipelineType pipelineType);
@@ -55,4 +57,5 @@ class World
 		int						_renderDistanceX;
 		int						_renderDistanceY;
 		int						_renderDistanceZ;
+		std::atomic_bool		_regenAsked = false;
 };

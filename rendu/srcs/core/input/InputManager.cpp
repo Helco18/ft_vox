@@ -1,4 +1,6 @@
 #include "InputManager.hpp"
+#include "Environment.hpp"
+#include "WorldManager.hpp"
 #include <iostream>
 
 void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
@@ -129,4 +131,6 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		camera->setCameraType(SIX_DOF);
 	if (key == GLFW_KEY_3)
 		camera->setCameraType(FPS);
+	if (key == GLFW_KEY_V)
+		WorldManager::getWorld(WORLD_NAME)->askRegenerate();
 }

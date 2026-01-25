@@ -235,6 +235,8 @@ void World::generateProcedurally(Camera * camera)
 
 void World::render(AEngine * engine, PipelineType pipelineType)
 {
+	if (_regenAsked)
+		regenerate(engine);
 	std::lock_guard<std::mutex> lg(_mapMutex);
 	for (Chunk * chunk : _visibleChunks)
 	{
@@ -244,4 +246,17 @@ void World::render(AEngine * engine, PipelineType pipelineType)
 		else if (state == UPLOADED)
 			chunk->drawAsset(engine, pipelineType);
 	}
+}
+
+void World::regenerate(AEngine * engine)
+{
+	for (Chunk * chunk : _visibleChunks)
+	{
+		if (chunk->getState() != UPLOADED)
+			continue;
+		chunk->unload(engine);
+		chunk->generateMesh();
+		chunk->uploadAsset(engine);
+	}
+	_regenAsked = false;
 }
