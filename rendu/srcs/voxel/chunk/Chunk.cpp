@@ -42,6 +42,12 @@ void Chunk::build()
 	setState(BUILT);
 }
 
+
+float Chunk::getDisance(glm::vec3 pos) const
+{
+	return(glm::distance((glm::vec3)posToChunkPos(pos), (glm::vec3)_chunkLocation));
+}
+
 void Chunk::generateMesh()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);

@@ -74,6 +74,7 @@ void Environment::loop()
 				world->reloadChunks(engine);
 			continue;
 		}
+		sky.drawAsset(engine, PIPELINE_SKYBOX);
 		if (world)
 		{
 			world->generateProcedurally(camera);

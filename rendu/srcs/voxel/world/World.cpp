@@ -129,6 +129,8 @@ World::VisibleChunks World::_generateVisibleChunks(Camera * camera)
 			}
 		}
 	}
+
+	std::sort(visibleChunks.begin(), visibleChunks.end(), [camera](const Chunk * a, const Chunk * b) { return a->getDisance(camera->getPosition()) < b->getDisance(camera->getPosition());});
 	return visibleChunks;
 }
 
@@ -196,6 +198,7 @@ void World::_generateChunks(Camera * camera)
 		_generateProceduralMesh(camera, visibleChunks);
 		std::lock_guard<std::mutex> lg(_mapMutex);
 		_visibleChunks = visibleChunks;
+		std::sort(_visibleChunks.begin(), _visibleChunks.end(), [camera](const Chunk * a, const Chunk * b) { return a->getDisance(camera->getPosition()) > b->getDisance(camera->getPosition());});
 	}
 }
 

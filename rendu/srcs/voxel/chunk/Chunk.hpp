@@ -57,6 +57,7 @@ class Chunk
 		ChunkState				getState() const { return _state.load(); }
 		Asset &					getAsset() { return _asset; }
 		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
+		float					getDisance(glm::vec3 pos) const;
 
 		void					setState(ChunkState state) { _state.store(state); }
 
@@ -72,7 +73,9 @@ class Chunk
 		World *					_world;
 		glm::ivec3				_chunkLocation;
 		uint8_t					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
-		ChunkAsset				_chunkAsset;
+		ChunkAsset				_chunkOpaqueAsset;
+		ChunkAsset				_chunkTransparencyAsset;
+		ChunkAsset				_chunkFinalAsset;
 		Asset					_asset;
 		Asset					_assetFrame;
 		std::vector<Vertex>		_vertices;

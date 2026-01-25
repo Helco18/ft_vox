@@ -179,8 +179,13 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 
 void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face)
 {
-	ChunkAsset quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
-	uint32_t verticesAdded = _chunkAsset.vertices.size();
+	ChunkAsset quad;
+	if (_blocks[pos.x][pos.y][pos.z] == 3)
+		quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.2f, face);
+	else
+		quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
+	uint32_t verticesAddedO = _chunkOpaqueAsset.vertices.size();
+	uint32_t verticesAddedT = _chunkTransparencyAsset.vertices.size();
 	for (Vertex & vertex : quad.vertices)
 	{
 		Vertex tmp = vertex;
@@ -198,10 +203,21 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 		tmp.uvMax = texture->uvMax;
 		tmp.uvRepeat = { static_cast<float>(countBlockWidth), static_cast<float>(countBlockHeight) };
 
-		_chunkAsset.vertices.push_back(tmp);
+		if (_blocks[pos.x][pos.y][pos.z] == 3)
+			_chunkTransparencyAsset.vertices.push_back(tmp);
+		else
+			_chunkOpaqueAsset.vertices.push_back(tmp);
 	}
-	for (uint32_t indice : quad.indices)
-		_chunkAsset.indices.push_back(indice + verticesAdded);
+	if (_blocks[pos.x][pos.y][pos.z] == 3)
+	{
+		for (uint32_t indice : quad.indices)
+			_chunkTransparencyAsset.indices.push_back(indice + verticesAddedT);
+	}
+	else
+	{
+		for (uint32_t indice : quad.indices)
+			_chunkOpaqueAsset.indices.push_back(indice + verticesAddedO);
+	}
 }
 
 static glm::ivec3 getFaceDir(int axis, FaceDirection faceDir)
@@ -409,14 +425,28 @@ void Chunk::_generateGreedyMesh()
 		for (int sliceIndex = 0; sliceIndex < (i == 0 ? CHUNK_WIDTH : (i == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)); ++sliceIndex)
 			_generateSliceMeshing(i, sliceIndex);
 	}
-	if (!_chunkAsset.vertices.empty() && !_chunkAsset.indices.empty())
+	if (!_chunkOpaqueAsset.vertices.empty() && !_chunkOpaqueAsset.indices.empty())
 	{
-		_asset.vertices.data = _chunkAsset.vertices.data();
-		_asset.vertices.vertexCount = _chunkAsset.vertices.size();
-		_asset.indices = _chunkAsset.indices;
-		_asset.vertices.size = _chunkAsset.vertices.size() * sizeof(Vertex);
-		_chunkAsset.indices.clear();
-		_chunkAsset.indices.shrink_to_fit();
+		for (size_t i = 0; i < _chunkTransparencyAsset.indices.size() ; ++i)
+		{
+			_chunkTransparencyAsset.indices[i] += _chunkOpaqueAsset.vertices.size();
+		}
+
+		_chunkFinalAsset.indices.insert(_chunkFinalAsset.indices.end(), _chunkOpaqueAsset.indices.begin(), _chunkOpaqueAsset.indices.end());
+		_chunkFinalAsset.vertices.insert(_chunkFinalAsset.vertices.end(), _chunkOpaqueAsset.vertices.begin(), _chunkOpaqueAsset.vertices.end());
+		_chunkFinalAsset.indices.insert(_chunkFinalAsset.indices.end(), _chunkTransparencyAsset.indices.begin(), _chunkTransparencyAsset.indices.end());
+		_chunkFinalAsset.vertices.insert(_chunkFinalAsset.vertices.end(), _chunkTransparencyAsset.vertices.begin(), _chunkTransparencyAsset.vertices.end());
+		
+		_asset.vertices.data = _chunkFinalAsset.vertices.data();
+		_asset.vertices.vertexCount = _chunkFinalAsset.vertices.size();
+		_asset.indices = _chunkFinalAsset.indices;
+		_asset.vertices.size = _chunkFinalAsset.vertices.size() * sizeof(Vertex);
+		_chunkTransparencyAsset.indices.clear();
+		_chunkTransparencyAsset.indices.shrink_to_fit();
+		_chunkOpaqueAsset.indices.clear();
+		_chunkOpaqueAsset.indices.shrink_to_fit();
+		_chunkFinalAsset.indices.clear();
+		_chunkFinalAsset.indices.shrink_to_fit();
 	}
 	_generateFrameMesh();
 	_asset.vertices.stride = sizeof(Vertex);
