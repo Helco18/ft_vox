@@ -25,37 +25,31 @@ class World
 		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location);
 		bool					isLoaded() const { return _isLoaded.load(); }
 
-		void					reloadChunks(AEngine * engine);
-		void					regenerate(AEngine * engine); // DEBUG
-		void					askRegenerate() { _regenAsked = true; } // DEBUG
+		void					setRenderReady(bool ready) { _renderReady.store(ready); };
+		void					unloadChunks(AEngine * engine);
 
-		void					generateProcedurally(Camera * camera);
 		void					render(AEngine * engine, PipelineType pipelineType);
+		void					update(Camera * camera);
 	private:
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
-		typedef std::vector<Chunk *>					VisibleChunks;
+		typedef std::vector<Chunk *>					ChunkVec;
 
-		VisibleChunks			_generateVisibleChunks(Camera * camera);
-		void					_generateChunks(Camera * camera);
-		void					_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleChunks);
-		void					_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChunks);
-		void					_computeRenderDistance(Camera * camera);
-		bool					_isWithinRenderDistance(Chunk * chunk, Camera * camera);
+		void					_generateChunks();
+		void					_computeRenderDistance(const int renderDistance);
+		bool					_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
+		ChunkVec				_queryChunksInRange(ChunkState minState = NONE);
 
 		std::string				_name;
 		ChunkMap				_chunkMap;
-		VisibleChunks			_visibleChunks;
+		ChunkVec				_visibleChunks;
 		ThreadPool				_chunkPool;
-		std::mutex				_chunkMutex;
-		std::mutex				_visibleMutex;
 		std::mutex				_mapMutex;
-		std::condition_variable	_chunkCv;
+		glm::vec3				_renderPoint;
 		std::atomic_bool		_isLoaded = false;
 		std::atomic_bool		_isProceduralRequested = false;
-
-		Camera *				_camera;
+		std::atomic_bool		_renderReady = false;
+		std::condition_variable	_cv;
 		int						_renderDistanceX;
 		int						_renderDistanceY;
 		int						_renderDistanceZ;
-		std::atomic_bool		_regenAsked = false;
 };

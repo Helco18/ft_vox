@@ -56,7 +56,7 @@ class Camera
 		glm::vec3					computeRight() const;
 		glm::vec3					computeUp() const;
 		glm::mat4					computeView() const;
-		
+
 		void						addPipelineToRender(PipelineType pipelineType);
 		void						removePipelineToRender(PipelineType pipelineType);
 

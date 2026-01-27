@@ -43,7 +43,7 @@ void Chunk::build()
 }
 
 
-float Chunk::getDisance(glm::vec3 pos) const
+float Chunk::getDistance(glm::vec3 pos) const
 {
 	return(glm::distance((glm::vec3)posToChunkPos(pos), (glm::vec3)_chunkLocation));
 }
@@ -60,12 +60,11 @@ void Chunk::generateMesh()
 		setState(MESHED);
 	else
 		setState(MESHED_EMPTY);
+	_world->setRenderReady(true);
 }
 
 void Chunk::uploadAsset(AEngine * engine)
 {
-	std::lock_guard<std::mutex> lg(_workerMutex);
- 
 	Profiler p("Chunk::uploadAsset");
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
 	engine->uploadAsset(_assetFrame, PipelineManager::getPipeline(PIPELINE_LINES).id);
@@ -84,8 +83,6 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 
 void Chunk::unload(AEngine * engine)
 {
-	std::lock_guard<std::mutex> lg(_workerMutex);
-
 	engine->unloadAsset(_asset.assetID);
 	engine->unloadAsset(_assetFrame.assetID);
 	setState(MESHED);

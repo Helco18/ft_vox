@@ -6,7 +6,7 @@
 World::~World()
 {
 	_isLoaded.store(false);
-	_chunkCv.notify_all();
+	_cv.notify_one();
 	_chunkPool.stop();
 	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
 		delete chunks.second;
@@ -14,10 +14,12 @@ World::~World()
 
 void World::load()
 {
+	_isLoaded.store(true);
 	_chunkPool.start(ThreadPool::getAvailableThreads());
+	_chunkPool.submitTask([this]() { _generateChunks(); });
 }
 
-void World::reloadChunks(AEngine * engine)
+void World::unloadChunks(AEngine * engine)
 {
 	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
 	{
@@ -25,6 +27,7 @@ void World::reloadChunks(AEngine * engine)
 		if (chunk && chunk->getState() == UPLOADED)
 			chunk->unload(engine);
 	}
+
 }
 
 Chunk * World::getChunkAt(int x, int y, int z)
@@ -70,7 +73,7 @@ static int getRenderDistanceMin()
 	return CHUNK_LENGTH;
 }
 
-void World::_computeRenderDistance(Camera * camera)
+void World::_computeRenderDistance(const int renderDistance)
 {
 	int renderDistanceMin = getRenderDistanceMin();
 
@@ -78,26 +81,25 @@ void World::_computeRenderDistance(Camera * camera)
 	int ratioH = CHUNK_HEIGHT / renderDistanceMin;
 	int ratioL = CHUNK_LENGTH / renderDistanceMin;
 
-	int renderDistance = (camera->getRenderDistance());
 	_renderDistanceX = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
 	_renderDistanceY = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
 	_renderDistanceZ = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
 }
 
-bool World::_isWithinRenderDistance(Chunk * chunk, Camera * camera)
+bool World::_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos)
 {
-	return !(chunk->getChunkX() > static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) + _renderDistanceX
-		|| chunk->getChunkX() < static_cast<int>(std::floor(camera->getPosition().x / CHUNK_WIDTH)) - _renderDistanceX
-		|| chunk->getChunkY() > static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) + _renderDistanceY
-		|| chunk->getChunkY() < static_cast<int>(std::floor(camera->getPosition().y / CHUNK_HEIGHT)) - _renderDistanceY
-		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - _renderDistanceZ
-		|| chunk->getChunkZ() < static_cast<int>(std::floor(camera->getPosition().z / CHUNK_LENGTH)) - _renderDistanceZ);
+	return !(chunkPos.x > static_cast<int>(std::floor(camPos.x / CHUNK_WIDTH)) + _renderDistanceX
+		|| chunkPos.x < static_cast<int>(std::floor(camPos.x / CHUNK_WIDTH)) - _renderDistanceX
+		|| chunkPos.y > static_cast<int>(std::floor(camPos.y / CHUNK_HEIGHT)) + _renderDistanceY
+		|| chunkPos.y < static_cast<int>(std::floor(camPos.y / CHUNK_HEIGHT)) - _renderDistanceY
+		|| chunkPos.z > static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) + _renderDistanceZ
+		|| chunkPos.z < static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) - _renderDistanceZ);
 }
 
-World::VisibleChunks World::_generateVisibleChunks(Camera * camera)
+World::ChunkVec World::_queryChunksInRange(ChunkState minState)
 {
-	VisibleChunks visibleChunks;
-	glm::vec3 cameraPosition = camera->getPosition();
+	ChunkVec chunks;
+	glm::vec3 cameraPosition = _renderPoint;
 	cameraPosition.x /= CHUNK_WIDTH;
 	cameraPosition.y /= CHUNK_HEIGHT;
 	cameraPosition.z /= CHUNK_LENGTH;
@@ -120,124 +122,80 @@ World::VisibleChunks World::_generateVisibleChunks(Camera * camera)
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
 				{
-					visibleChunks.push_back(it->second);
+					Chunk * chunk = it->second;
+					if (chunk->getState() >= minState)
+						chunks.push_back(it->second);
 					continue;
 				}
 				Chunk * chunk = new Chunk(x, y, z, this);
 				_chunkMap.try_emplace(location, chunk);
-				visibleChunks.push_back(chunk);
+				if (chunk->getState() >= minState)
+					chunks.push_back(chunk);
 			}
 		}
 	}
 
-	std::sort(visibleChunks.begin(), visibleChunks.end(), [camera](const Chunk * a, const Chunk * b) { return a->getDisance(camera->getPosition()) < b->getDisance(camera->getPosition());});
-	return visibleChunks;
+	std::sort(chunks.begin(), chunks.end(), [this](const Chunk * a, const Chunk * b)
+		{ return a->getDistance(_renderPoint) < b->getDistance(_renderPoint);});
+	return chunks;
 }
 
-void World::_generateProceduralTerrain(Camera * camera, VisibleChunks & visibleChunks)
+void World::_generateChunks()
 {
-	for (Chunk * chunk : visibleChunks)
-	{
-		if (!chunk || !_isWithinRenderDistance(chunk, camera))
-			continue;
-		if (chunk->getState() == NONE)
-		{
-			chunk->setState(BUILDING);
-			_chunkPool.submitTask([chunk]() {chunk->build();});
-		}
-	}
-}
+	ChunkVec chunksToGenerate;
+	std::mutex cvMutex;
 
-void World::_generateProceduralMesh(Camera * camera, VisibleChunks & visibleChunks)
-{
-	for (Chunk * chunk : visibleChunks)
-	{
-		if (!chunk || !_isWithinRenderDistance(chunk, camera))
-			continue;
-		if (chunk->getState() == BUILT)
-		{
-			chunk->setState(MESHING);
-			_chunkPool.submitTask([chunk]() {chunk->generateMesh();});
-		}
-	}
-}
-
-void World::_generateChunks(Camera * camera)
-{
 	while (_isLoaded.load())
 	{
-		std::unique_lock<std::mutex> lock(_chunkMutex);
-		_chunkCv.wait(lock, [&] { return !_isLoaded.load() || _isProceduralRequested; });
+		std::unique_lock<std::mutex> lock(cvMutex);
+		_cv.wait(lock, [&] { return !_isLoaded.load() || _isProceduralRequested.load(); });
 		if (!_isLoaded.load())
 			return;
-		_isProceduralRequested = false;
-
-		VisibleChunks visibleChunks = _generateVisibleChunks(camera);
-		_generateProceduralTerrain(camera, visibleChunks);
-
-		bool allChunksBuilt = false;
-		do
+		_isProceduralRequested.store(false);
+		ChunkVec newChunks = _queryChunksInRange();
+		if (newChunks.empty())
+			continue;
+		for (Chunk * chunk : newChunks)
 		{
-			allChunksBuilt = true;
-			for (Chunk * chunk : visibleChunks)
+			if (_isProceduralRequested.load())
+				break;
+			if (chunk->getState() == NONE)
 			{
-				if (!_isLoaded.load())
-					return;
-				if (_isProceduralRequested)
-					break;
-				if (!chunk || !_isWithinRenderDistance(chunk, camera))
-					continue;
-				if (chunk->getState() < BUILT)
-				{
-					allChunksBuilt = false;
-					break;
-				}
+				chunk->setState(BUILDING);
+				chunk->build();
+				chunk->generateMesh();
 			}
-		} while (!allChunksBuilt && !_isProceduralRequested);
-
-		_generateProceduralMesh(camera, visibleChunks);
-		std::lock_guard<std::mutex> lg(_mapMutex);
-		_visibleChunks = visibleChunks;
-		std::sort(_visibleChunks.begin(), _visibleChunks.end(), [camera](const Chunk * a, const Chunk * b) { return a->getDisance(camera->getPosition()) > b->getDisance(camera->getPosition());});
+		}
 	}
 }
 
-void World::generateProcedurally(Camera * camera)
+void World::update(Camera * camera)
 {
-	static bool firstLoad = true;
 	static glm::ivec3 lastVisitedChunk(0, 0, 0);
-	glm::ivec3 currentChunk = Chunk::posToChunkPos(camera->getPosition());
-
 	static int oldRenderDistance = 0;
-	int renderDistance = (camera->getRenderDistance());
+	const glm::vec3 & camPos = camera->getPosition();
+	const glm::ivec3 currentChunk = Chunk::posToChunkPos(camPos);
+	const int renderDistance = camera->getRenderDistance();
 
+	if (lastVisitedChunk == currentChunk && oldRenderDistance == renderDistance)
+		return;
 	if (oldRenderDistance != renderDistance)
 	{
-		_computeRenderDistance(camera);
 		oldRenderDistance = renderDistance;
-		_isProceduralRequested = true;
-		_chunkCv.notify_all();
-		return;
+		_computeRenderDistance(renderDistance);
 	}
-
-	if (lastVisitedChunk == currentChunk && !firstLoad)
-		return;
-	lastVisitedChunk = currentChunk;
-	_isProceduralRequested = true;
-	if (firstLoad)
-	{
-		firstLoad = false;
-		_isLoaded.store(true);
-		_chunkPool.submitTask([this, camera]() { _generateChunks(camera); });
-	}
-	_chunkCv.notify_all();
+	if (lastVisitedChunk != currentChunk)
+		lastVisitedChunk = currentChunk;
+	_renderPoint = camPos;
+	_isProceduralRequested.store(true);
+	_visibleChunks = _queryChunksInRange();
+	std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
+			{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
+	_cv.notify_one();
 }
 
 void World::render(AEngine * engine, PipelineType pipelineType)
 {
-	if (_regenAsked)
-		regenerate(engine);
-	std::lock_guard<std::mutex> lg(_mapMutex);
 	for (Chunk * chunk : _visibleChunks)
 	{
 		ChunkState state = chunk->getState();
@@ -246,17 +204,4 @@ void World::render(AEngine * engine, PipelineType pipelineType)
 		else if (state == UPLOADED)
 			chunk->drawAsset(engine, pipelineType);
 	}
-}
-
-void World::regenerate(AEngine * engine)
-{
-	for (Chunk * chunk : _visibleChunks)
-	{
-		if (chunk->getState() != UPLOADED)
-			continue;
-		chunk->unload(engine);
-		chunk->generateMesh();
-		chunk->uploadAsset(engine);
-	}
-	_regenAsked = false;
 }

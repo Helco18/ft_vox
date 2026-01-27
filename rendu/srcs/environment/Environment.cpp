@@ -51,11 +51,11 @@ void Environment::loop()
 	AEngine * engine;
 	World * world;
 	Camera * camera;
+	Skybox sky;
 
 	engine = _windowManager->getEngine();
 	world = WorldManager::getWorld(WORLD_NAME);
 	camera = _player.getCamera();
-	Skybox	sky;
 	sky.generateMesh();
 	sky.uploadAsset(engine);
 	while (_running)
@@ -71,7 +71,7 @@ void Environment::loop()
 			engine = _windowManager->getEngine();
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
 			{
-				world->reloadChunks(engine);
+				world->unloadChunks(engine);
 				sky.uploadAsset(engine);
 			}
 			continue;
@@ -79,7 +79,7 @@ void Environment::loop()
 		sky.drawAsset(engine, PIPELINE_SKYBOX);
 		if (world)
 		{
-			world->generateProcedurally(camera);
+			world->update(camera);
 			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
 		}
 		camera->renderViewMatrix(engine, engine->getEngineType());

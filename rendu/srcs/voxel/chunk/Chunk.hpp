@@ -57,7 +57,7 @@ class Chunk
 		ChunkState				getState() const { return _state.load(); }
 		Asset &					getAsset() { return _asset; }
 		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z].load(); }
-		float					getDisance(glm::vec3 pos) const;
+		float					getDistance(glm::vec3 pos) const;
 
 		void					setState(ChunkState state) { _state.store(state); }
 
