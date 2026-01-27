@@ -44,6 +44,7 @@ class World
 		ChunkVec				_visibleChunks;
 		ThreadPool				_chunkPool;
 		std::mutex				_mapMutex;
+		std::mutex				_renderPointMutex;
 		glm::vec3				_renderPoint;
 		std::atomic_bool		_isLoaded = false;
 		std::atomic_bool		_isProceduralRequested = false;

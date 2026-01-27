@@ -135,6 +135,7 @@ World::ChunkVec World::_queryChunksInRange(ChunkState minState)
 		}
 	}
 
+	std::lock_guard<std::mutex> lg(_renderPointMutex);
 	std::sort(chunks.begin(), chunks.end(), [this](const Chunk * a, const Chunk * b)
 		{ return a->getDistance(_renderPoint) < b->getDistance(_renderPoint);});
 	return chunks;
@@ -162,8 +163,7 @@ void World::_generateChunks()
 			if (chunk->getState() == NONE)
 			{
 				chunk->setState(BUILDING);
-				chunk->build();
-				chunk->generateMesh();
+				_chunkPool.submitTask([chunk]() { chunk->build(); chunk->generateMesh(); });
 			}
 		}
 	}
@@ -186,11 +186,14 @@ void World::update(Camera * camera)
 	}
 	if (lastVisitedChunk != currentChunk)
 		lastVisitedChunk = currentChunk;
-	_renderPoint = camPos;
-	_isProceduralRequested.store(true);
+	{
+		std::lock_guard<std::mutex> lg(_renderPointMutex);
+		_renderPoint = camPos;
+	}
 	_visibleChunks = _queryChunksInRange();
 	std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
 			{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
+	_isProceduralRequested.store(true);
 	_cv.notify_one();
 }
 
