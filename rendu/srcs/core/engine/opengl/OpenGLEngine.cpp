@@ -30,6 +30,7 @@ OpenGLEngine::~OpenGLEngine()
 			glDeleteTextures(1, &texturePair.second.tbo);
 	}
 	_shutdownImGui();
+	_isInitalized.store(false);
 }
 
 void OpenGLEngine::load()

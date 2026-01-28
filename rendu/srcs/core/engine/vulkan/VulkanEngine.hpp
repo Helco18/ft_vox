@@ -111,16 +111,6 @@ struct PipelineData
 	std::unordered_map<unsigned int, TextureData>		textures;
 };
 
-struct PendingAsset
-{
-	Asset *				asset;
-	PipelineID			pipelineID;
-	BufferData			vertexData;
-	BufferData			stagingVertexData;
-	BufferData			indexData;
-	BufferData			stagingIndexData;
-};
-
 struct PendingUniform
 {
 	PipelineID		pipelineID;
@@ -135,7 +125,6 @@ struct AssetData
 	PipelineID								pipelineID;
 	BufferData								vbo;
 	BufferData								ibo;
-	std::vector<vk::raii::DescriptorSet>	descriptorSets;
 };
 
 class VulkanEngine : public AEngine
@@ -166,7 +155,6 @@ class VulkanEngine : public AEngine
 		typedef std::unordered_map<PipelineID, PipelineData>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
 		typedef std::unordered_map<AssetID, AssetData>										AssetDataCache;
-		typedef std::vector<PendingAsset *>													PendingAssets;
 
 		// Window, context, instance
 		vk::raii::Context					_context;
@@ -216,7 +204,6 @@ class VulkanEngine : public AEngine
 		// Maps
 		PipelineMap							_pipelineMap;
 		PipelineAssetMap					_pipelineAssetMap;
-		PendingAssets						_pendingAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
 		
 		// Threads
@@ -240,11 +227,8 @@ class VulkanEngine : public AEngine
 		void								_createGraphicsPipelines();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::CommandPoolCreateFlags flags);
-		void								_concateneVertexBuffer(Asset & asset);
-		void								_concateneIndexBuffer(Asset & asset);
-		void								_createVertexBuffer(PendingAsset * pendingAsset);
-		void								_createIndexBuffer(PendingAsset * pendingAsset);
-		void								_uploadPendingAssets();
+		void								_createVertexBuffer(AssetData & assetData);
+		void								_createIndexBuffer(AssetData & assetData);
 		void								_processPendingUniforms();
 		CommandBuffers						_createCommandBuffer(vk::CommandBufferLevel level);
 		void								_recordCommandBuffer();

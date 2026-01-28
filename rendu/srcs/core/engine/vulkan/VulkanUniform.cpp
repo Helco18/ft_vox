@@ -53,12 +53,6 @@ void VulkanEngine::_processPendingUniforms()
 {
 	for (PendingUniform & uniform : _pendingUniforms)
 	{
-		PipelineMap::iterator pipelineit = _pipelineMap.find(uniform.pipelineID);
-		if (pipelineit == _pipelineMap.end())
-		{
-			Logger::log(ENGINE_VULKAN, WARNING, "Tried to process uniform buffer to unknown Pipeline ID #" + toString(uniform.pipelineID));
-			continue;
-		}
 		PipelineData & pipelineData = _pipelineMap[uniform.pipelineID];
 		std::unordered_map<unsigned int, UniformBufferData>::iterator it = pipelineData.uniforms.find(uniform.binding);
 		if (it == pipelineData.uniforms.end())

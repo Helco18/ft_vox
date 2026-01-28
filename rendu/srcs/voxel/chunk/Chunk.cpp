@@ -74,7 +74,7 @@ void Chunk::uploadAsset(AEngine * engine)
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()));
-	if (_chunkData.fadeValue < 1.0f)
+	if (_chunkData.fadeValue < 1.0f && _asset.isUploaded)
 		_chunkData.fadeValue += 3.0f * windowManager->getDeltaTime();
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 	if (windowManager->isChunkBordersActive())

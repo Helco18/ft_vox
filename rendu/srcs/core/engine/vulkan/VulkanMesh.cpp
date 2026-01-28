@@ -57,19 +57,14 @@ void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage
 	buffer.bindMemory(*deviceMemory, 0);
 }
 
-void VulkanEngine::_createVertexBuffer(PendingAsset * pendingAsset)
+void VulkanEngine::_createVertexBuffer(AssetData & assetData)
 {
 	if (!_isInitalized.load())
 		return;
-	Asset * asset = pendingAsset->asset;
-	if (!asset->vertices.data)
-		return;
 
-	BufferData & vertexData = pendingAsset->vertexData;
-	BufferData & stagingVertexData = pendingAsset->stagingVertexData;
-	PipelineMap::iterator it = _pipelineMap.find(pendingAsset->pipelineID);
-	if (it == _pipelineMap.end())
-		return;
+	Asset * asset = assetData.asset;
+	BufferData & vertexData = assetData.vbo;
+	BufferData stagingVertexData;
 	vk::DeviceSize size = asset->vertices.size;
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc,
@@ -83,23 +78,21 @@ void VulkanEngine::_createVertexBuffer(PendingAsset * pendingAsset)
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					vertexData.buffer, vertexData.memory);
-	if (pendingAsset->asset->indices.empty())
-	{
-		std::lock_guard<std::mutex> lg(_pendingAssetMutex);
-		_pendingAssets.emplace_back(pendingAsset);
-	}
+
+	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
+	commandBuffer.copyBuffer(stagingVertexData.buffer, vertexData.buffer,
+		vk::BufferCopy(0, 0, asset->vertices.size));
+	_endSingleTimeCommands(commandBuffer);
 }
 
-void VulkanEngine::_createIndexBuffer(PendingAsset * pendingAsset)
+void VulkanEngine::_createIndexBuffer(AssetData & assetData)
 {
 	if (!_isInitalized.load())
 		return;
-	Asset * asset = pendingAsset->asset;
-	if (!asset->vertices.data)
-		return;
 
-	BufferData & indexData = pendingAsset->indexData;
-	BufferData & stagingIndexData = pendingAsset->stagingIndexData;
+	Asset * asset = assetData.asset;
+	BufferData & indexData = assetData.ibo;
+	BufferData stagingIndexData;
 	vk::DeviceSize size = sizeof(asset->indices[0]) * asset->indices.size();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
@@ -113,6 +106,9 @@ void VulkanEngine::_createIndexBuffer(PendingAsset * pendingAsset)
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					indexData.buffer, indexData.memory);
-	std::lock_guard<std::mutex> lg(_pendingAssetMutex);
-	_pendingAssets.emplace_back(pendingAsset);
+
+	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
+	commandBuffer.copyBuffer(stagingIndexData.buffer, indexData.buffer,
+		vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
+	_endSingleTimeCommands(commandBuffer);
 }

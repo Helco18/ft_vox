@@ -55,6 +55,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindVertexArray(0);
 
+	asset.isUploaded = true;
 	_assetCache.try_emplace(asset.assetID, assetInfo);
 
 	return asset.assetID;

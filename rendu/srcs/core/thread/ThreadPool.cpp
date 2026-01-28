@@ -26,12 +26,15 @@ void ThreadPool::start(uint16_t requestedThreads)
 	_availableThreads -= requestedThreads;
 
 	_isActive = true;
+	std::vector<std::unique_ptr<ThreadWorker>> workers;
 	for (int i = 0; i < requestedThreads; ++i)
 	{
 		std::unique_ptr<ThreadWorker> worker = std::make_unique<ThreadWorker>(_wakerCv, _queueMutex, _taskQueue, _isActive);
 		worker->start();
-		_workers.push_back(std::move(worker));
+		workers.push_back(std::move(worker));
 	}
+	_threadCount = requestedThreads;
+	_workers.try_emplace(_id, std::move(workers));
 	_count++;
 }
 
@@ -49,14 +52,19 @@ void ThreadPool::submitTask(Task task)
 
 void ThreadPool::stop()
 {
-	_availableThreads += _workers.size();
+	_availableThreads += _threadCount;
 	{
 		std::lock_guard<std::mutex> lock(_queueMutex);
 		_isActive = false;
 		_wakerCv.notify_all();
 	}
-	for (std::unique_ptr<ThreadWorker> & worker : _workers)
+	WorkerPoolMap::iterator it = _workers.find(_id);
+	if (it == _workers.end())
+		return;
+	std::vector<std::unique_ptr<ThreadWorker>> & workers = it->second;
+	for (std::unique_ptr<ThreadWorker> & worker : workers)
 		worker->stop();
+	_workers.erase(it);
 }
 
 void ThreadPool::giveBackThreads(uint16_t threadCount)

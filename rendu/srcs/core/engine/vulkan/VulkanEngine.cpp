@@ -8,7 +8,6 @@
 VulkanEngine::VulkanEngine(GLFWwindow * window) : AEngine(window)
 {
 	_engineType = VULKAN;
-	_threadPool.start(2);
 }
 
 VulkanEngine::~VulkanEngine()
@@ -16,7 +15,6 @@ VulkanEngine::~VulkanEngine()
 	_device.waitIdle();
 	_queue.waitIdle();
 	_isInitalized.store(false);
-	_threadPool.stop();
 	_shutdownImGui();
 }
 
@@ -105,7 +103,6 @@ void VulkanEngine::endFrame()
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
 		_processPendingUniforms();
-		_uploadPendingAssets();
 
 		vk::CommandBufferBeginInfo commandBufferBeginInfo;
 		_frameCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);

@@ -42,6 +42,7 @@ struct Asset
 	unsigned int						vbo;
 	unsigned int						ibo;
 	void *								uniforms = nullptr;
+	bool								isUploaded = false;
 };
 
 class AEngine

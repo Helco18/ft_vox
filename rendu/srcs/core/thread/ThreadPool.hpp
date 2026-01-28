@@ -23,7 +23,7 @@ class ThreadPool
 		static void				takeFromThreads(uint16_t threadCount);
 		
 	private:
-		typedef std::vector<std::unique_ptr<ThreadWorker>> WorkerPool;
+		typedef std::unordered_map<uint16_t, std::vector<std::unique_ptr<ThreadWorker>>> WorkerPoolMap;
 
 		static uint16_t			_count;
 		static uint16_t			_availableThreads;
@@ -31,6 +31,7 @@ class ThreadPool
 		std::queue<Task>		_taskQueue;
 		std::condition_variable _wakerCv;
 		std::mutex 				_queueMutex;
-		WorkerPool				_workers;
+		WorkerPoolMap			_workers;
+		uint16_t				_threadCount;
 		std::atomic_bool		_isActive = false;
 };
