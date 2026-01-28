@@ -1,7 +1,6 @@
 #include "OpenGLEngine.hpp"
 #include "Logger.hpp"
 #include "CustomExceptions.hpp"
-#include "OBJModel.hpp"
 #include "Profiler.hpp"
 #include "WindowManager.hpp"
 #include "utils.hpp"

@@ -1,12 +1,13 @@
 #pragma once
 
+#include "ThreadPool.hpp"
 #define VK_USE_PLATFORM_XCB_KHR
 #define GLFW_INCLUDE_VULKAN
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLFW_EXPOSE_NATIVE_X11
 #define GLFW_EXPOSE_NATIVE_GLX
 #include "AEngine.hpp"
-#include "OBJModel.hpp"
+#include <atomic>
 #include <vulkan/vulkan_raii.hpp>
 
 #define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
@@ -112,12 +113,12 @@ struct PipelineData
 
 struct PendingAsset
 {
-	Asset *			asset;
-	PipelineID		pipelineID;
-	BufferData		vertexData;
-	BufferData		stagingVertexData;
-	BufferData		indexData;
-	BufferData		stagingIndexData;
+	Asset *				asset;
+	PipelineID			pipelineID;
+	BufferData			vertexData;
+	BufferData			stagingVertexData;
+	BufferData			indexData;
+	BufferData			stagingIndexData;
 };
 
 struct PendingUniform
@@ -165,6 +166,7 @@ class VulkanEngine : public AEngine
 		typedef std::unordered_map<PipelineID, PipelineData>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
 		typedef std::unordered_map<AssetID, AssetData>										AssetDataCache;
+		typedef std::vector<PendingAsset *>													PendingAssets;
 
 		// Window, context, instance
 		vk::raii::Context					_context;
@@ -214,8 +216,12 @@ class VulkanEngine : public AEngine
 		// Maps
 		PipelineMap							_pipelineMap;
 		PipelineAssetMap					_pipelineAssetMap;
-		std::vector<PendingAsset>			_pendingAssets;
+		PendingAssets						_pendingAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
+		
+		// Threads
+		ThreadPool							_threadPool;
+		std::mutex							_pendingAssetMutex;
 
 		void								_createInstance();
 		void								_initDebugMessenger();
@@ -236,8 +242,8 @@ class VulkanEngine : public AEngine
 		void								_createCommandPool(vk::CommandPoolCreateFlags flags);
 		void								_concateneVertexBuffer(Asset & asset);
 		void								_concateneIndexBuffer(Asset & asset);
-		void								_createVertexBuffer(PendingAsset & pendingAsset);
-		void								_createIndexBuffer(PendingAsset & pendingAsset);
+		void								_createVertexBuffer(PendingAsset * pendingAsset);
+		void								_createIndexBuffer(PendingAsset * pendingAsset);
 		void								_uploadPendingAssets();
 		void								_processPendingUniforms();
 		CommandBuffers						_createCommandBuffer(vk::CommandBufferLevel level);

@@ -1,7 +1,7 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
-#include "OBJModel.hpp"
 #include "PipelineManager.hpp"
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
@@ -65,7 +65,7 @@ class AEngine
 		EngineType			getEngineType() const { return _engineType; }
 		GLFWwindow *		getWindow() const { return _window; }
 		bool				getFramebufferResized() const { return _isFramebufferResized; }
-		bool				isInitialized() const { return _isInitalized; }
+		bool				isInitialized() const { return _isInitalized.load(); }
 		bool				isGuiEnabled() const { return _imGuiEnabled; }
 
 		void				setFramebufferResized(bool framebufferResized) { _isFramebufferResized = framebufferResized; }
@@ -75,7 +75,7 @@ class AEngine
 		EngineType			_engineType;
 		GLFWwindow *		_window;
 		bool				_isFramebufferResized;
-		bool				_isInitalized;
+		std::atomic_bool	_isInitalized;
 
 		bool				_imGuiEnabled = false;
 		bool				_imGuiThisFrame = false;

@@ -1,5 +1,4 @@
 #include "OpenGLEngine.hpp"
-#include "OBJModel.hpp"
 #include "Logger.hpp"
 #include <iostream>
 

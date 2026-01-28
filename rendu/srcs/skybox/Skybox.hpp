@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AEngine.hpp"
+#include "glm/glm.hpp"
 
 struct SkyboxVertex
 {

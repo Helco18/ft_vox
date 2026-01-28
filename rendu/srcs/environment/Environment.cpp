@@ -1,6 +1,5 @@
 #include "Environment.hpp"
 #include "CustomExceptions.hpp"
-#include "OBJModel.hpp"
 #include "InputManager.hpp"
 #include "Profiler.hpp"
 #include "WorldManager.hpp"
