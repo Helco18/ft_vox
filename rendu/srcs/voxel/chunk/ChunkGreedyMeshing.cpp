@@ -265,7 +265,7 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
 	uint8_t neighbor = _getNeighborBlock(pos, dir);
 	BlockData blockData = BlockData::getBlockData(neighbor);
 
-	if (blockData.isVisible() && (!blockData.isLiquoid() || (blockData.isLiquoid() && (block == neighbor))))
+	if (blockData.isVisible() && (!blockData.isLiquid() || (blockData.isLiquid() && (block == neighbor))))
 		return;
 
 	int width = 1;
@@ -276,7 +276,7 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
 		uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
 		uint8_t nextNeighbor = _getNeighborBlock(nextPos, dir);
 		blockData = BlockData::getBlockData(nextNeighbor);
-		if (nextBlock != block || (blockData.isVisible() && !blockData.isLiquoid()) || processed[uNext][v][pIndex])
+		if (nextBlock != block || (blockData.isVisible() && !blockData.isLiquid()) || processed[uNext][v][pIndex])
 			break;
 		width++;
 		uNext++;
@@ -294,7 +294,7 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
 			uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
 			uint8_t nextNeighbor = _getNeighborBlock(nextPos, dir);
 			blockData = BlockData::getBlockData(nextNeighbor);
-			if (nextBlock != block || (blockData.isVisible() && !blockData.isLiquoid())  || processed[i][vNext][pIndex])
+			if (nextBlock != block || (blockData.isVisible() && !blockData.isLiquid())  || processed[i][vNext][pIndex])
 				break;
 			height++;
 			vNext++;

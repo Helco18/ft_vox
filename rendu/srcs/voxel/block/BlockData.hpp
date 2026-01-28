@@ -25,7 +25,7 @@ class BlockData
 
 		const std::string &			getName() const { return _name; }
 		bool						isVisible() const { return _isVisible; }
-		bool						isLiquoid() const { return _isLiquid; }
+		bool						isLiquid() const { return _isLiquid; }
 
 	private:
 		typedef std::unordered_map<uint8_t, BlockData>	BlockDataRegistry;
