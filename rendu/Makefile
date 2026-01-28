@@ -109,6 +109,7 @@ INCLUDES			=	-I libs \
 						-I srcs/voxel \
 						-I srcs/voxel/block \
 						-I srcs/voxel/chunk \
+						-I srcs/voxel/noise \
 						-I srcs/voxel/world
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 

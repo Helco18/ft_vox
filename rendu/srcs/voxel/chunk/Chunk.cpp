@@ -6,6 +6,7 @@
 #include "Logger.hpp"
 #include "TextureAtlas.hpp"
 #include <iostream>
+#include "SimplexNoise.hpp"
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE)
 {
@@ -15,6 +16,7 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
+	SimplexNoise<2> noise(42);
 
 	if (!_world->isLoaded())
 			return;
@@ -25,8 +27,7 @@ void Chunk::build()
 		{
 			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
-				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= (-1 + (std::sin(((_chunkLocation.x * CHUNK_WIDTH) + x) / 5.0) * 5.0 +
-						(std::cos(((_chunkLocation.z * CHUNK_LENGTH) + z) / 5.0) * 5.0))) ))
+				if (noise.queryState({static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH), static_cast<double>(y + _chunkLocation.y * CHUNK_HEIGHT), static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH)}))
 				{
 					_blocks[x][y][z] = x % 2 + 1;
 				}
