@@ -84,30 +84,13 @@ void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (_isFramebufferResized)
 		_handleResize();
 
-	AssetCache::iterator it = _assetCache.find(assetID);
-	if (it == _assetCache.end())
-		return;
-
-	AssetInfo & assetInfo = it->second;
-	Asset * asset = assetInfo.asset;
-	if (!asset->vertices.data)
-		return;
-
-	PipelineLayout & layout = _applyPipeline(pipelineID);
-	glBindVertexArray(assetID);
-
-	for (UniformBufferStream & uniformInfo : assetInfo.uniformBufferStreams)
+	AssetCache::iterator assetit = _assetCache.find(assetID);
+	if (assetit != _assetCache.end())
 	{
-		glBindBuffer(GL_UNIFORM_BUFFER, uniformInfo.ubo);
-		glBindBufferBase(GL_UNIFORM_BUFFER, uniformInfo.binding, uniformInfo.ubo);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, uniformInfo.size, uniformInfo.data);
+		AssetInfo & assetInfo = assetit->second;
+		Asset * asset = assetInfo.asset;
+		if (!asset->vertices.data)
+			return;
+		_pipelineAssetMap[pipelineID].push_back(asset);
 	}
-
-	GLenum polygonMode = GLValueConverter::getDrawMode(layout.pipelineInfo.drawMode);
-	if (!asset->indices.empty())
-		glDrawElements(polygonMode, asset->indices.size(), GL_UNSIGNED_INT, 0);
-	else
-		glDrawArrays(polygonMode, 0, asset->vertices.vertexCount);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindVertexArray(0);
 }

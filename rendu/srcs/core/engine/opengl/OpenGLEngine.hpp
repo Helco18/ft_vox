@@ -70,11 +70,13 @@ class OpenGLEngine : public AEngine
 		void				beginImGui() override;
 	
 	private:
-		typedef std::unordered_map<PipelineID, PipelineLayout>	PipelineMap;
-		typedef std::unordered_map<std::string, GLuint>			ShaderCache;
-		typedef std::unordered_map<AssetID, AssetInfo>			AssetCache;
+		typedef std::unordered_map<PipelineID, std::vector<Asset *>>	PipelineAssetMap;
+		typedef std::unordered_map<PipelineID, PipelineLayout>			PipelineMap;
+		typedef std::unordered_map<std::string, GLuint>					ShaderCache;
+		typedef std::unordered_map<AssetID, AssetInfo>					AssetCache;
 
 		PipelineMap			_pipelineMap;
+		PipelineAssetMap	_pipelineAssetMap;
 		ShaderCache			_shaderCache;
 		AssetCache			_assetCache;
 
@@ -82,7 +84,7 @@ class OpenGLEngine : public AEngine
 		GLuint				_createShader(const std::string & vertexPath, const std::string & fragmentPath, PipelineInfo & pipelineInfo);
 		void				_handleResize();
 		void				_createTexture(TextureBuffer & textureBuffer, TextureInfo & textureInfo);
-		PipelineLayout &	_applyPipeline(PipelineID pipelineID);
+		void				_applyPipeline(PipelineLayout & pipelineLayout);
 
 		// ImGui
 		void				_initImGui();

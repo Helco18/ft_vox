@@ -182,15 +182,28 @@ void Camera::removePipelineToRender(PipelineType pipelineType)
 
 void Camera::renderViewMatrix(AEngine * engine, EngineType engineType)
 {
+	static glm::vec3 oldPosition = _position;
+	static glm::vec3 oldAltitude = _altitude;
+	static glm::quat oldOrientation = _orientation;
+	static float oldFov = -1;
+	static EngineType oldEngineType = engineType;
 	bool onVulkan = engineType == VULKAN;
 	float nearPlane = 0.01f * (onVulkan ? 1 : NEAR_PLANE_OFFSET);
 
-	_cameraBuffer.view = computeView();
-	_cameraBuffer.proj = glm::perspective(glm::radians(_fov),
-		static_cast<float>(_width) / static_cast<float>(_height),
-		nearPlane, 1500.0f);
-	if (onVulkan)
-		_cameraBuffer.proj[1][1] *= -1;
+	if (oldPosition != _position || oldAltitude != _altitude || oldOrientation != _orientation || oldFov != _fov || oldEngineType != engineType)
+	{
+		oldPosition = _position;
+		oldAltitude = _altitude;
+		oldOrientation = _orientation;
+		oldFov = _fov;
+		oldEngineType = engineType;
+		_cameraBuffer.view = computeView();
+		_cameraBuffer.proj = glm::perspective(glm::radians(_fov),
+			static_cast<float>(_width) / static_cast<float>(_height),
+			nearPlane, 1500.0f);
+		if (onVulkan)
+			_cameraBuffer.proj[1][1] *= -1;
+	}
 	for (PipelineType pipelineType : _pipelines)
 		engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, 0, &_cameraBuffer, sizeof(CameraBuffer));
 }

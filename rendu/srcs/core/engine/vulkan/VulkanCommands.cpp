@@ -155,6 +155,47 @@ void VulkanEngine::_recordCommandBuffer()
 	}
 }
 
+void VulkanEngine::_retrieveCommandBuffers()
+{
+	_frameCommandBuffers[_currentFrame].reset();
+	vk::CommandBufferBeginInfo commandBufferBeginInfo;
+	_frameCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);
+
+	TransitionImageViewLayoutInfo transitionImageViewInfo;
+	transitionImageViewInfo.imageIndex = _imageIndex;
+	// Un ImageLayout est l'état de l'image.
+	// Undefined : Vient d'être créée
+	// ColorAttachmentOptimal : Utilisée comme cible de rendu (render target)
+	// PresentSrcKHR : Prête à être affichée à l'écran
+	// TransferDstOptimal : Prête à recevoir un transfert de données (un upload de texture par exemple)
+	transitionImageViewInfo.oldLayout = vk::ImageLayout::eUndefined;
+	transitionImageViewInfo.newLayout = vk::ImageLayout::eColorAttachmentOptimal;
+	// Il n'y a pas d'opération à attendre avant, l'image est undefined donc non-utilisée
+	transitionImageViewInfo.srcAccessMask = {};
+	// Après la barrière, on veut écrire dans cette image (on écrit les pixels du framebuffer)
+	transitionImageViewInfo.dstAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
+	transitionImageViewInfo.srcStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
+	// La barrière doit être validée avant que la pipeline atteigne la phase d'écriture du color attachment
+	transitionImageViewInfo.dstStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+
+	// Transitioner le layout de l'image d'undefined à colorattachment dans notre cas
+	_transitionImageViewLayout(transitionImageViewInfo);
+
+	_recordCommandBuffer();
+
+	TransitionImageViewLayoutInfo presentSrcInfo;
+	presentSrcInfo.imageIndex = _imageIndex;
+	presentSrcInfo.oldLayout = vk::ImageLayout::eColorAttachmentOptimal;
+	presentSrcInfo.newLayout = vk::ImageLayout::ePresentSrcKHR;
+	presentSrcInfo.srcAccessMask = vk::AccessFlagBits2::eColorAttachmentWrite;
+	presentSrcInfo.dstAccessMask = {};
+	presentSrcInfo.srcStageMask = vk::PipelineStageFlagBits2::eColorAttachmentOutput;
+	presentSrcInfo.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
+
+	_transitionImageViewLayout(presentSrcInfo);
+	_frameCommandBuffers[_currentFrame].end();
+}
+
 void VulkanEngine::_createSyncObjects()
 {
 	_presentCompleteSemaphores.clear();

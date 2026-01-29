@@ -56,10 +56,44 @@ void OpenGLEngine::beginFrame()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	_pipelineAssetMap.clear();
 }
 
 void OpenGLEngine::endFrame()
 {
+	for (std::pair<const PipelineID, std::vector<Asset *>> & pipelinePair : _pipelineAssetMap)
+	{
+		PipelineMap::iterator pipelineit = _pipelineMap.find(pipelinePair.first);
+		if (pipelineit == _pipelineMap.end())
+			throw OpenGLException("Requested unknown pipeline with ID: " + toString(pipelinePair.first));
+
+		PipelineLayout & pipelineLayout = pipelineit->second;
+		_applyPipeline(pipelineLayout);
+
+		for (Asset * asset : pipelinePair.second)
+		{
+			if (!asset->vertices.data)
+				return;
+
+			glBindVertexArray(asset->assetID);
+
+			AssetInfo & assetInfo = _assetCache[asset->assetID];
+			for (UniformBufferStream & uniformInfo : assetInfo.uniformBufferStreams)
+			{
+				glBindBuffer(GL_UNIFORM_BUFFER, uniformInfo.ubo);
+				glBindBufferBase(GL_UNIFORM_BUFFER, uniformInfo.binding, uniformInfo.ubo);
+				glBufferSubData(GL_UNIFORM_BUFFER, 0, uniformInfo.size, uniformInfo.data);
+			}
+
+			GLenum polygonMode = GLValueConverter::getDrawMode(pipelineLayout.pipelineInfo.drawMode);
+			if (!asset->indices.empty())
+				glDrawElements(polygonMode, asset->indices.size(), GL_UNSIGNED_INT, 0);
+			else
+				glDrawArrays(polygonMode, 0, asset->vertices.vertexCount);
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);
+			glBindVertexArray(0);
+		}
+	}
 	_renderImGui();
 	glfwSwapBuffers(_window);
 }

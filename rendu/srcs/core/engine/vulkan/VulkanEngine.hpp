@@ -232,6 +232,7 @@ class VulkanEngine : public AEngine
 		void								_processPendingUniforms();
 		CommandBuffers						_createCommandBuffer(vk::CommandBufferLevel level);
 		void								_recordCommandBuffer();
+		void								_retrieveCommandBuffers();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);
 		void								_transitionImageLayout(const vk::raii::Image & image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 		void								_transitionDepthImage();

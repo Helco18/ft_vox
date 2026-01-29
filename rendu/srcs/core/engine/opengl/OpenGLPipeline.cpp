@@ -45,13 +45,8 @@ PipelineID OpenGLEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	return pipelineID;
 }
 
-PipelineLayout & OpenGLEngine::_applyPipeline(PipelineID pipelineID)
+void OpenGLEngine::_applyPipeline(PipelineLayout & pipelineLayout)
 {
-	PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
-	if (pipelineit == _pipelineMap.end())
-		throw OpenGLException("Requested unknown pipeline with ID: " + toString(pipelineID));
-
-	PipelineLayout & pipelineLayout = pipelineit->second;
 	PipelineInfo & pipelineInfo = pipelineLayout.pipelineInfo;
 
 	// Polygon Mode
@@ -95,5 +90,4 @@ PipelineLayout & OpenGLEngine::_applyPipeline(PipelineID pipelineID)
 		glUniform1i(textureIndex, 0);
 		i++;
 	}
-	return pipelineLayout;
 }
