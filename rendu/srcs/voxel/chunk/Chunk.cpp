@@ -56,12 +56,12 @@ void Chunk::generateMesh()
 	if (!_world->isLoaded())
 		return;
 	Profiler p("Chunk::generateMesh");
+	_computeNeighborChunks();
 	_generateGreedyMesh();
 	if (_asset.vertices.data && !_asset.indices.empty())
 		setState(MESHED);
 	else
 		setState(MESHED_EMPTY);
-	_world->setRenderReady(true);
 }
 
 void Chunk::uploadAsset(AEngine * engine)
@@ -96,4 +96,14 @@ glm::ivec3 Chunk::posToChunkPos(glm::vec3 pos)
 	chunkPos.y = static_cast<int>(std::floor(static_cast<double>(pos.y) / CHUNK_HEIGHT));
 	chunkPos.z = static_cast<int>(std::floor(static_cast<double>(pos.z) / CHUNK_LENGTH));
 	return chunkPos;
+}
+
+void Chunk::_computeNeighborChunks()
+{
+	_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
+	_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
+	_eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
+	_westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
+	_topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
+	_bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
 }

@@ -410,15 +410,9 @@ void Chunk::_generateFrameMesh()
 
 void Chunk::_generateGreedyMesh()
 {
+	Profiler p("_generateGreedyMesh");
 	_chunkFinalAsset.indices.clear();
 	_chunkFinalAsset.indices.shrink_to_fit();
-	Profiler p("_generateGreedyMesh");
-	_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
-	_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
-	_eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);
-	_westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
-	_topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
-	_bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -428,9 +422,7 @@ void Chunk::_generateGreedyMesh()
 	if ((!_chunkOpaqueAsset.vertices.empty() && !_chunkOpaqueAsset.indices.empty()) || (!_chunkTransparencyAsset.vertices.empty() && !_chunkTransparencyAsset.indices.empty()))
 	{
 		for (size_t i = 0; i < _chunkTransparencyAsset.indices.size() ; ++i)
-		{
 			_chunkTransparencyAsset.indices[i] += _chunkOpaqueAsset.vertices.size();
-		}
 
 		_chunkFinalAsset.indices.insert(_chunkFinalAsset.indices.end(), _chunkOpaqueAsset.indices.begin(), _chunkOpaqueAsset.indices.end());
 		_chunkFinalAsset.vertices.insert(_chunkFinalAsset.vertices.end(), _chunkOpaqueAsset.vertices.begin(), _chunkOpaqueAsset.vertices.end());

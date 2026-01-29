@@ -117,7 +117,7 @@ World::ChunkVec World::_queryChunksInRange(ChunkState minState)
 		{
 			for (int z = renderDistanceWest; z < renderDistanceEast; ++z)
 			{
-				glm::vec3 location(x, y, z);
+				glm::ivec3 location(x, y, z);
 				std::lock_guard<std::mutex> lg(_mapMutex);
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
@@ -130,7 +130,7 @@ World::ChunkVec World::_queryChunksInRange(ChunkState minState)
 				Chunk * chunk = new Chunk(x, y, z, this);
 				_chunkMap.try_emplace(location, chunk);
 				if (chunk->getState() >= minState)
-					chunks.push_back(chunk);
+					chunks.push_back(_chunkMap[location]);
 			}
 		}
 	}
@@ -149,18 +149,21 @@ void World::_generateChunks()
 	while (_isLoaded.load())
 	{
 		std::unique_lock<std::mutex> lock(cvMutex);
-		_cv.wait(lock, [&] { return !_isLoaded.load() || _isProceduralRequested.load(); });
+		_cv.wait(lock, [&] { return !_isLoaded.load() || (_isProceduralRequested.load() && !_isLocked.load()); });
 		if (!_isLoaded.load())
 			return;
+		if (_isLocked.load())
+			continue;
 		_isProceduralRequested.store(false);
 		ChunkVec newChunks = _queryChunksInRange();
 		if (newChunks.empty())
 			continue;
 		for (Chunk * chunk : newChunks)
 		{
+			ChunkState state = chunk->getState();
 			if (_isProceduralRequested.load())
 				break;
-			if (chunk->getState() == NONE)
+			if (state == NONE)
 			{
 				chunk->setState(BUILDING);
 				_chunkPool.submitTask([chunk]() { chunk->build(); chunk->generateMesh(); });
@@ -185,8 +188,8 @@ void World::update(Camera * camera)
 		_computeRenderDistance(renderDistance);
 	}
 	if (lastVisitedChunk != currentChunk)
-		lastVisitedChunk = currentChunk;
 	{
+		lastVisitedChunk = currentChunk;
 		std::lock_guard<std::mutex> lg(_renderPointMutex);
 		_renderPoint = camPos;
 	}

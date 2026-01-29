@@ -24,8 +24,10 @@ class World
 		Chunk *					getChunkAtChunkLocation(int x, int y, int z);
 		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location);
 		bool					isLoaded() const { return _isLoaded.load(); }
+		bool					isLocked() const { return _isLocked.load(); }
 
-		void					setRenderReady(bool ready) { _renderReady.store(ready); };
+		void					lockGeneration(bool locked) { _isLocked.store(locked); }
+
 		void					unloadChunks(AEngine * engine);
 
 		void					render(AEngine * engine, PipelineType pipelineType);
@@ -48,8 +50,8 @@ class World
 		glm::vec3				_renderPoint;
 		std::atomic_bool		_isLoaded = false;
 		std::atomic_bool		_isProceduralRequested = false;
-		std::atomic_bool		_renderReady = false;
 		std::condition_variable	_cv;
+		std::atomic_bool		_isLocked = false;
 		int						_renderDistanceX;
 		int						_renderDistanceY;
 		int						_renderDistanceZ;

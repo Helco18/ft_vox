@@ -1,8 +1,10 @@
 #include "Gui.hpp"
+#include "Environment.hpp"
 #include "WindowManager.hpp"
 #include "imgui/imgui.h"
 #include "Chunk.hpp"
 #include "GLFW/glfw3.h"
+#include "WorldManager.hpp"
 
 void Gui::generateGui(GLFWwindow * window)
 {
@@ -32,6 +34,15 @@ void Gui::generateGui(GLFWwindow * window)
 	ImGui::SliderInt("Render distance", &currentRenderDistance, 2, 32, "%d chunks");
 	if (camera->getRenderDistance() != currentRenderDistance)
 		camera->setRenderDistance(currentRenderDistance);
+
+	static bool isLocked = WorldManager::getWorld(WORLD_NAME)->isLocked();
+	static bool newLockedValue = isLocked;
+	ImGui::Checkbox("Lock Generation", &isLocked);
+	if (isLocked != newLockedValue)
+	{
+		WorldManager::getWorld(WORLD_NAME)->lockGeneration(isLocked);
+		newLockedValue = isLocked;
+	}
 
 	ImGui::End();
 }

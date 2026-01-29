@@ -23,6 +23,7 @@ enum ChunkState
 	MESHING,
 	MESHED,
 	MESHED_EMPTY,
+	DIRTY,
 	UPLOADED
 };
 
@@ -99,4 +100,5 @@ class Chunk
 		uint8_t					_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
 		glm::ivec3				_sliceToWorld(int axis, int sliceIndex, int u, int v);
 		void					_generateFrameMesh();
+		void					_computeNeighborChunks();
 };
