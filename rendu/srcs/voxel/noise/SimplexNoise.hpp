@@ -14,11 +14,15 @@ class SimplexNoise
 
 		double		queryState(const std::vector<double> & pos) const;
 	private:
+		std::vector<double>	_gradient(int hash) const;
+		double	_dot(const std::vector<double> & a, const std::vector<double> & b) const;
+
 		uint32_t	_seed;
 
-		float		_f; // skew (nD to simplex)
-		float		_g; // unskew (simplex to nD)
+		float		_F; // skew (nD to simplex)
+		float		_G; // unskew (simplex to nD)
 
+		std::array<int, 512>	_perm;
 };
 
 #include "SimplexNoise.tpp"

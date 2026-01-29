@@ -16,7 +16,7 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	SimplexNoise<2> noise(42);
+	static SimplexNoise<2> noise(42);
 
 	if (!_world->isLoaded())
 			return;
@@ -27,16 +27,19 @@ void Chunk::build()
 		{
 			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
-				if (noise.queryState({static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH), static_cast<double>(y + _chunkLocation.y * CHUNK_HEIGHT), static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH)}))
-				{
-					_blocks[x][y][z] = x % 2 + 1;
-				}
-				else if (y + (_chunkLocation.y * CHUNK_HEIGHT) <= 0)
-				{
-					_blocks[x][y][z] = 3;
-				}
+				double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH) * 0.01;
+				double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH) * 0.01;
+				if (xd < 0)
+					xd *= -1;
+				if (zd < 0)
+					zd *= -1;
+				// Logger::log(VOXEL, DEBUG, "queryState for x:" + toString(xd) + " z:" + toString(zd));
+				double noiseValue = noise.queryState({xd, zd});
+				int height = static_cast<int>(std::floor(noiseValue * 10));
+				if ((y + _chunkLocation.y * CHUNK_HEIGHT) > height)
+					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) <= 0 ? 3 : 0;
 				else
-					_blocks[x][y][z] = 0;
+					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) % 2 ? 1 : 2;
 			}
 		}
 	}
