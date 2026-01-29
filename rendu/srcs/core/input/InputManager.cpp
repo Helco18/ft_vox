@@ -18,6 +18,7 @@ void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
 
 void InputManager::interceptMouse(WindowManager * windowManager)
 {
+	static double oldMouseX, oldMouseY = 0;
 	if (!windowManager->getEngine()->isInitialized())
 		return;
 
@@ -34,7 +35,12 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
-		camera->updateOrientation(mouseX, mouseY, 0);
+		if (oldMouseX != mouseX || oldMouseY != mouseY)
+		{
+			oldMouseX = mouseX;
+			oldMouseY = mouseY;
+			camera->updateOrientation(mouseX, mouseY, 0);
+		}
 
 		glfwSetCursorPos(window, (static_cast<float>(width) / 2), (static_cast<float>(height) / 2));
 	}
