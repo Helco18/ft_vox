@@ -53,15 +53,17 @@ void Chunk::build()
 				xd *= -1;
 			if (zd < 0)
 				zd *= -1;
-			Logger::log(VOXEL, DEBUG, "queryState for x:" + toString(xd) + " z:" + toString(zd));
 			double noiseValue = noise.queryState({xd, zd});
 			int height = static_cast<int>(std::floor(noiseValue * 30));
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
-				if ((y + _chunkLocation.y * CHUNK_HEIGHT) > height)
-					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) <= 0 ? 3 : 0;
+				int worldY = (y + _chunkLocation.y * CHUNK_HEIGHT);
+				if (worldY > height)
+					_blocks[x][y][z] = (worldY) <= 0 ? 3 : 0;
+				else if (worldY < 0)
+					_blocks[x][y][z] = 1;
 				else
-					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) % 2 ? 1 : 2;
+					_blocks[x][y][z] = 2;
 			}
 		}
 	}

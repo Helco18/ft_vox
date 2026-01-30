@@ -1,4 +1,5 @@
 #include "Chunk.hpp"
+#include "CustomExceptions.hpp"
 #include "World.hpp"
 #include "TextureAtlas.hpp"
 #include "Logger.hpp"
@@ -197,8 +198,24 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 								  pos.y + _chunkLocation.y * CHUNK_HEIGHT,
 								  pos.z + _chunkLocation.z * CHUNK_LENGTH);
 
-		Texture * texture = TextureAtlas::getTexture(_blocks[pos.x][pos.y][pos.z] == 1 ?
-			"resources/assets/textures/blue_stone.png" : "resources/assets/textures/stone.png");
+		// Texture * texture = TextureAtlas::getTexture(_blocks[pos.x][pos.y][pos.z] == 1 ?
+		// 	"resources/assets/textures/blue_stone.png" : "resources/assets/textures/stone.png");
+
+		std::string texPath;
+		if (_blocks[pos.x][pos.y][pos.z] == 3)
+			texPath = "resources/assets/textures/blue_stone.png";
+		else if (_blocks[pos.x][pos.y][pos.z] == 2)
+		{
+			if (face == BlockFace::TOP)
+				texPath = "resources/assets/textures/grass_block_top.png";
+			else if (face != BlockFace::BOTTOM)
+				texPath = "resources/assets/textures/dirt_tmp.png";
+		}
+		else
+			texPath = "resources/assets/textures/dirt.png";
+		Texture * texture = TextureAtlas::getTexture(texPath);
+		if (!texture)
+			return;
 		if (_blocks[pos.x][pos.y][pos.z] == 3)
 			tmp.alpha = 0.5f;
 		else

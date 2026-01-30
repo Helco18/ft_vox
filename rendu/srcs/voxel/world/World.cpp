@@ -15,7 +15,7 @@ World::~World()
 void World::load()
 {
 	_isLoaded.store(true);
-	_chunkPool.start(ThreadPool::getAvailableThreads());
+	_chunkPool.start(ThreadPool::getAvailableThreads() - 2); // Minus 2 for Vulkan threads
 	_chunkPool.submitTask([this]() { _generateChunks(); });
 }
 

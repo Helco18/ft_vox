@@ -92,7 +92,6 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 		}
 	}
 
-	Logger::log(VOXEL, DEBUG, "noise value :" + toString(value));
 	return value;
 }
 

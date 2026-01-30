@@ -57,6 +57,7 @@ void TextureAtlas::pushTexture(const std::string & texturePath)
 
 	Texture * texture = new Texture;
 
+	stbi_set_flip_vertically_on_load(true);
 	texture->data = stbi_load(texturePath.c_str(), &texture->width, &texture->height, &texture->colorChannels, STBI_rgb_alpha);
 	if (!texture->data)
 	{

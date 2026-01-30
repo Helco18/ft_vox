@@ -8,6 +8,7 @@
 VulkanEngine::VulkanEngine(GLFWwindow * window) : AEngine(window)
 {
 	_engineType = VULKAN;
+	// _threadPool.start(2);
 }
 
 VulkanEngine::~VulkanEngine()
@@ -15,6 +16,7 @@ VulkanEngine::~VulkanEngine()
 	_device.waitIdle();
 	_queue.waitIdle();
 	_isInitalized.store(false);
+	// _threadPool.stop();
 	_shutdownImGui();
 }
 

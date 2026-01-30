@@ -17,12 +17,12 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 			_createVertexBuffer(assetData);
 			if (!asset.indices.empty())
 				_createIndexBuffer(assetData);
+			asset.isUploaded = true;
 		} catch (const vk::OutOfDeviceMemoryError & e)
 		{
 			Logger::log(ENGINE_VULKAN, FATAL, e.what());
 		}
 	}
-	asset.isUploaded = true;
 	return assetID;
 }
 
@@ -46,46 +46,3 @@ void VulkanEngine::unloadAsset(AssetID assetID)
 		return;
 	_assetDataCache.erase(datait);
 }
-
-// void VulkanEngine::_uploadPendingAssets()
-// {
-// 	if (_pendingAssets.empty() || !_isInitalized.load())
-// 		return;
-
-// 	std::vector<PendingAsset> nextPendingAssets;
-// 	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
-// 	std::lock_guard<std::mutex> lg(_pendingAssetMutex);
-// 	for (std::pair<const AssetID, PendingAsset> & assetPair : _pendingAssets)
-// 	{
-// 		PendingAsset & pendingAsset = assetPair.second;
-// 		Asset * asset = pendingAsset.asset;
-// 		PipelineMap::iterator it = _pipelineMap.find(pendingAsset.pipelineID);
-// 		if (it == _pipelineMap.end())
-// 			continue;
-// 		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
-// 			vk::BufferCopy(0, 0, asset->vertices.size));
-// 		if (!asset->indices.empty())
-// 		{
-// 			commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
-// 				vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
-// 		}
-// 		pendingAsset.isReady = true;
-// 	}
-// 	for (std::pair<const AssetID, PendingAsset> & assetPair : _pendingAssets)
-// 	{
-// 		PendingAsset & pendingAsset = assetPair.second;
-// 		if (!pendingAsset.isReady)
-// 			continue;
-// 		Asset * asset = pendingAsset.asset;
-// 		AssetData assetData;
-// 		assetData.asset = asset;
-// 		assetData.vbo = std::move(pendingAsset.vertexData);
-// 		assetData.ibo = std::move(pendingAsset.indexData);
-// 		assetData.pipelineID = pendingAsset.pipelineID;
-// 		_assetDataCache.try_emplace(asset->assetID, std::move(assetData));
-// 	}
-// 	_endSingleTimeCommands(commandBuffer);
-// 	std::for_each(_pendingAssets.begin(), _pendingAssets.end(), [](std::pair<const AssetID, PendingAsset> & assetPair)
-// 		{ assetPair.second.asset->isUploaded = true; } );
-// 	_pendingAssets.clear();
-// }
