@@ -38,25 +38,30 @@ static bool testNeighbors(std::vector<Chunk *> chunks)
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
+	static SimplexNoise<2> noise(42);
 
 	if (!_world->isLoaded())
 			return;
 	Profiler p("Chunk::build");
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
-		for (int y = 0; y < CHUNK_HEIGHT; ++y)
+		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			for (int z = 0; z < CHUNK_LENGTH; ++z)
+			double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH) * 0.01;
+			double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH) * 0.01;
+			if (xd < 0)
+				xd *= -1;
+			if (zd < 0)
+				zd *= -1;
+			Logger::log(VOXEL, DEBUG, "queryState for x:" + toString(xd) + " z:" + toString(zd));
+			double noiseValue = noise.queryState({xd, zd});
+			int height = static_cast<int>(std::floor(noiseValue * 30));
+			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
-				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= (-1 + (std::sin(((_chunkLocation.x * CHUNK_WIDTH) + x) / 5.0) * 5.0 +
-						(std::cos(((_chunkLocation.z * CHUNK_LENGTH) + z) / 5.0) * 5.0))) ))
-				{
-					_blocks[x][y][z] = x % 2 + 1;
-				}
-				else if (y + (_chunkLocation.y * CHUNK_HEIGHT) <= 0)
-					_blocks[x][y][z] = 3;
+				if ((y + _chunkLocation.y * CHUNK_HEIGHT) > height)
+					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) <= 0 ? 3 : 0;
 				else
-					_blocks[x][y][z] = 0;
+					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) % 2 ? 1 : 2;
 			}
 		}
 	}

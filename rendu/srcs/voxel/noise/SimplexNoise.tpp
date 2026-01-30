@@ -12,7 +12,7 @@ SimplexNoise<N>::SimplexNoise(uint32_t seed): _seed(seed)
 	_G = (1.0 - 1.0 / std::sqrt(n + 1.0)) / n;
 
 
-	std::array<int, 512> p;
+	std::array<int, 256> p;
 	std::iota(p.begin(), p.end(), 0);
 
 	std::mt19937 rng(seed);
@@ -70,57 +70,46 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 
 		for (uint8_t d = 0; d < N; ++d)
 		{
-			double offset = rank[d] >= N - corner ? 0 : 1;
-			x[d] = x0[d] - offset + static_cast<double>(corner) * _G;
+			int offset = rank[d] >= N - corner ? 1 : 0;
+			x[d] = x0[d] - static_cast<double>(offset) + static_cast<double>(corner) * _G;
 
 			// la magie !!! :
-			hash = _perm[(hash + static_cast<int>(i[d] + offset)) & 255];
+			hash = _perm[(hash + static_cast<int>(i[d]) + offset) & 255];
 		}
 
 		// attenuation de la distance :
-		// double t = 0.5 * N;
-		double t = 0.5;
+		double t = 0.5 * N;
+		// double t = 0.5;
 		for (double v : x)
 			t -= v * v; 
 
 		// aplication de la deformation sur les valeu non null
 		// Logger::log(VOXEL, DEBUG, "t val :" + toString(t));
-		// if (t > 0.0)
-		// {
+		if (t > 0.0)
+		{
 			t *= t;
 			value += t * t * _dot(_gradient(hash), x);
-		// }
+		}
 	}
 
-	// Logger::log(VOXEL, DEBUG, "noise value :" + toString(value));
+	Logger::log(VOXEL, DEBUG, "noise value :" + toString(value));
 	return value;
-
-
-
-
-	// if ((pos[1] <= (-1 + (std::sin(pos[0] / 5.0) * 5.0 +
-	// 		(std::cos((pos[2]) / 5.0) * 5.0))) ))
-	// 	return 1;
-	// return 0;
 }
 
 template <uint8_t N>
 std::vector<double>	SimplexNoise<N>::_gradient(int hash) const
 {
-	std::mt19937 rng(hash);
-	std::normal_distribution<double> dist(0.0, 1.0);
-
 	std::vector<double> g(N);
 	double len = 0.0;
 	for (uint8_t d = 0; d < N; ++d)
 	{
-		g[d] = dist(rng);
+		g[d] = static_cast<double>(hash) / 127.5 - 1.0;
 		len += g[d] * g[d];
 	}
 
-	len = std::sqrt(len);
-	for (double& v : g)
-		v /= len;
+	len = 1.0 / std::sqrt(len);
+	for (double & v : g)
+		v *= len;
 
 	return g;
 }

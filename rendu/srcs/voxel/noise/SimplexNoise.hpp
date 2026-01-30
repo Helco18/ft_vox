@@ -19,8 +19,8 @@ class SimplexNoise
 
 		uint32_t	_seed;
 
-		float		_F; // skew (nD to simplex)
-		float		_G; // unskew (simplex to nD)
+		double		_F; // skew (nD to simplex)
+		double		_G; // unskew (simplex to nD)
 
 		std::array<int, 512>	_perm;
 };
