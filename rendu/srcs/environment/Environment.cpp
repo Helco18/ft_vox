@@ -82,7 +82,7 @@ void Environment::loop()
 			world->update(camera);
 			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
 		}
-		camera->renderViewMatrix(engine, engine->getEngineType());
+		camera->renderViewMatrix(engine);
 		sky.drawAsset(engine, PIPELINE_SKYBOX);
 		engine->endFrame();
 		deltaTime = glfwGetTime() - frameStart;
