@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AEngine.hpp"
-#include "PipelineManager.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 

@@ -1,7 +1,6 @@
 #include "BlockData.hpp"
 #include "CustomExceptions.hpp"
 #include "utils.hpp"
-#include <iostream>
 
 BlockData::BlockDataRegistry BlockData::_registry;
 

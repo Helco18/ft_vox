@@ -1,6 +1,5 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
-#include "utils.hpp"
 
 void VulkanEngine::_createTextureImage(TextureData & textureData, TextureInfo & textureInfo)
 {
@@ -81,9 +80,9 @@ void VulkanEngine::_createTextureSampler(TextureData & textureData)
 	samplerInfo.minFilter = vk::Filter::eLinear;
 	samplerInfo.magFilter = vk::Filter::eLinear;
 	samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
-	samplerInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
-	samplerInfo.addressModeV = vk::SamplerAddressMode::eRepeat;
-	samplerInfo.addressModeW = vk::SamplerAddressMode::eRepeat;
+	samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;
+	samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;
+	samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;
 	samplerInfo.mipLodBias = 0.0f;
 	samplerInfo.anisotropyEnable = vk::True;
 	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;

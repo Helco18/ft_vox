@@ -1,7 +1,5 @@
 #include "WorldManager.hpp"
-#include "utils.hpp"
 #include "Logger.hpp"
-#include <iostream>
 
 WorldManager::WorldMap WorldManager::_worldMap;
 

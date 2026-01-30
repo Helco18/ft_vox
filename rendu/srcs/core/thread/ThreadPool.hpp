@@ -1,10 +1,6 @@
 #pragma once
 
 #include "ThreadWorker.hpp"
-#include <condition_variable>
-#include <cstdint>
-#include <functional>
-#include <queue>
 
 typedef std::function<void()>	Task;
 

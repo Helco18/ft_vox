@@ -1,9 +1,6 @@
 #include "OpenGLEngine.hpp"
 #include "Logger.hpp"
 #include "utils.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include <iostream>
-#include <algorithm>
 
 void OpenGLEngine::updateUniformBuffer(PipelineID pipelineID, unsigned int binding, void * data, size_t size)
 {

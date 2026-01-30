@@ -1,19 +1,18 @@
 #pragma once
 
-#include "ThreadPool.hpp"
+#define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
+#define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
+#define MAX_FRAMES_IN_FLIGHT 2
+#define VULKAN_SHADER_PATH "resources/shaders/spir-v/"
+
 #define VK_USE_PLATFORM_XCB_KHR
 #define GLFW_INCLUDE_VULKAN
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #define GLFW_EXPOSE_NATIVE_X11
 #define GLFW_EXPOSE_NATIVE_GLX
 #include "AEngine.hpp"
-#include <atomic>
+#include "ThreadPool.hpp"
 #include <vulkan/vulkan_raii.hpp>
-
-#define VULKAN_CALLBACK VKAPI_ATTR vk::Bool32 VKAPI_CALL
-#define DEBUG_LEVEL vk::DebugUtilsMessageSeverityFlagBitsEXT::eError
-#define MAX_FRAMES_IN_FLIGHT 2
-#define VULKAN_SHADER_PATH "resources/shaders/spir-v/"
 
 struct VKValueConverter
 {

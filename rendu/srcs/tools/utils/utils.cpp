@@ -1,7 +1,5 @@
 #include "utils.hpp"
 #include "CustomExceptions.hpp"
-#include "Logger.hpp"
-#include <iostream>
 #include <fstream>
 
 std::vector<std::string> ft_split(const std::string & str, char delimiter)

@@ -1,23 +1,9 @@
 #include "Skybox.hpp"
-#include "WindowManager.hpp"
 #include "glm/glm.hpp"
-#include "Logger.hpp"
-#include <vector>
+#include "glm/gtc/constants.hpp"
 
-Skybox::Skybox()
+void Skybox::generateMesh()
 {
-}
-
-Skybox::~Skybox()
-{
-}
-
-
-void	Skybox::generateMesh()
-{
-	// std::vector<Vertex> vertices;
-	// std::vector<uint32_t> indices;
-
 	for (float latitude = 0.0f; latitude <= 16.0f; ++latitude)
 	{
 		float v = latitude / 16.0f;
@@ -65,17 +51,17 @@ void	Skybox::generateMesh()
 	_asset.vertices.size = _vertices.size() * sizeof(SkyboxVertex);
 }
 
-void	Skybox::uploadAsset(AEngine * engine)
+void Skybox::uploadAsset(AEngine * engine)
 {
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_SKYBOX).id);
 }
 
-void	Skybox::drawAsset(AEngine * engine, PipelineType pipelineType)
+void Skybox::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 }
 
-void	Skybox::unload(AEngine * engine)
+void Skybox::unload(AEngine * engine)
 {
 	engine->unloadAsset(_asset.assetID);
 }

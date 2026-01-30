@@ -1,5 +1,4 @@
 #include "VulkanEngine.hpp"
-#include "utils.hpp"
 #include "Gui.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"

@@ -1,8 +1,6 @@
 #include "VulkanEngine.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "Logger.hpp"
 #include "utils.hpp"
-#include <iostream>
 
 void VulkanEngine::_createUniformBuffers(PipelineData & pipelineData)
 {

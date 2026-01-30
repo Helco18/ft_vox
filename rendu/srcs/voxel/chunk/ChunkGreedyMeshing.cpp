@@ -1,12 +1,8 @@
 #include "Chunk.hpp"
-#include "CustomExceptions.hpp"
-#include "World.hpp"
 #include "TextureAtlas.hpp"
 #include "Logger.hpp"
 #include "Profiler.hpp"
-#include "utils.hpp"
-#include <iostream>
-#include <cstring>
+#include "BlockData.hpp"
 
 ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int face)
 {

@@ -1,7 +1,6 @@
 #include "InputManager.hpp"
 #include "Environment.hpp"
 #include "WorldManager.hpp"
-#include <iostream>
 
 void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
 {

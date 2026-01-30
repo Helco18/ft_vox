@@ -1,6 +1,5 @@
 #include "VulkanEngine.hpp"
 #include "Logger.hpp"
-#include <iostream>
 #include "GLFW/glfw3.h"
 #ifdef __has_include
 	#if __has_include(<valgrind/valgrind.h>)

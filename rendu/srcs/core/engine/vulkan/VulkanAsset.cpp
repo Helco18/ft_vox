@@ -1,7 +1,5 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
-#include "utils.hpp"
-#include <cstdlib>
 
 AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {

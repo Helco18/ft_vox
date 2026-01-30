@@ -2,8 +2,6 @@
 #include "CustomExceptions.hpp"
 #include "Logger.hpp"
 #include "Profiler.hpp"
-#include "utils.hpp"
-#include <iostream>
 
 VulkanEngine::VulkanEngine(GLFWwindow * window) : AEngine(window)
 {

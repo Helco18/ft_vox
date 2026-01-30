@@ -3,11 +3,9 @@
 #include "InputManager.hpp"
 #include "Profiler.hpp"
 #include "WorldManager.hpp"
-#include "BlockData.hpp"
-#include "Logger.hpp"
 #include "TextureAtlas.hpp"
-#include "PipelineManager.hpp"
 #include "Skybox.hpp"
+#include "BlockData.hpp"
 
 Environment::~Environment()
 {

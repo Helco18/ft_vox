@@ -1,7 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <memory>
 #include "PipelineManager.hpp"
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"

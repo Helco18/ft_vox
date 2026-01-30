@@ -4,14 +4,9 @@
 #define CHUNK_HEIGHT 64
 #define CHUNK_LENGTH 16
 
-#include <atomic>
-#include <cstdint>
-#include <vector>
 #include <mutex>
-#include <fstream>
 #include "OBJModel.hpp"
 #include "AEngine.hpp"
-#include "BlockData.hpp"
 
 class World;
 

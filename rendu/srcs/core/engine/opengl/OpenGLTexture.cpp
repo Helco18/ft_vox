@@ -1,6 +1,5 @@
 #include "OpenGLEngine.hpp"
 #include "Logger.hpp"
-#include <iostream>
 
 void OpenGLEngine::_createTexture(TextureBuffer & textureBuffer, TextureInfo & textureInfo)
 {
@@ -8,8 +7,8 @@ void OpenGLEngine::_createTexture(TextureBuffer & textureBuffer, TextureInfo & t
 	glBindTexture(GL_TEXTURE_2D, textureBuffer.tbo);
 
 	// Wrapping mode
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// Filtering mode
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

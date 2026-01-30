@@ -2,7 +2,6 @@
 #include "utils.hpp"
 #include "Logger.hpp"
 #include "CustomExceptions.hpp"
-#include <iostream>
 
 static GLuint compileShader(GLenum type, const std::string & filepath)
 {

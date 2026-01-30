@@ -3,10 +3,6 @@
 #include "colors.hpp"
 #include <iomanip>
 #include <iostream>
-#include <ctime>
-#include <chrono>
-#include <optional>
-#include <sstream>
 
 std::mutex Logger::_printLock;
 

@@ -1,6 +1,5 @@
 #include "CustomExceptions.hpp"
 #include "VulkanEngine.hpp"
-#include "utils.hpp"
 
 vk::VertexInputBindingDescription VulkanEngine::_getBindingDescription(PipelineInfo & pipelineInfo) const
 {

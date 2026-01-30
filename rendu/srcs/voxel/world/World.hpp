@@ -9,6 +9,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/hash.hpp"
 
+#define RENDER_DISTANCE_BORDER 1
+
 class World
 {
 	public:

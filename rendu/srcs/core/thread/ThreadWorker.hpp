@@ -4,7 +4,6 @@
 #include <condition_variable>
 #include <functional>
 #include <thread>
-#include <chrono>
 #include <queue>
 
 #define USLEEP(x) std::this_thread::sleep_for(std::chrono::microseconds(x))

@@ -12,13 +12,14 @@ struct SkyboxVertex
 class Skybox
 {
 	public:
-		Skybox();
-		~Skybox();
+		Skybox() {};
+		~Skybox() {};
 
 		void						generateMesh();
 		void						uploadAsset(AEngine * engine);
 		void						drawAsset(AEngine * engine, PipelineType pipelineType);
 		void						unload(AEngine * engine);
+
 	private:
 		Asset						_asset;
 		std::vector<SkyboxVertex>	_vertices;

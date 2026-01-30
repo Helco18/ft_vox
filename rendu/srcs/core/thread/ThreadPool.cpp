@@ -1,7 +1,6 @@
 #include "ThreadPool.hpp"
 #include "CustomExceptions.hpp"
 #include "utils.hpp"
-#include <thread>
 
 uint16_t ThreadPool::_count = 0;
 uint16_t ThreadPool::_availableThreads = std::thread::hardware_concurrency() - 1;

@@ -1,7 +1,6 @@
 #include "VulkanEngine.hpp"
-#include "utils.hpp"
 #include "Logger.hpp"
-#include <iostream>
+#include "utils.hpp"
 
 vk::raii::ShaderModule VulkanEngine::_createShaderModule(const std::vector<char> & shaderSrc) const
 {

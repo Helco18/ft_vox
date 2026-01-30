@@ -4,7 +4,6 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 #include "utils.hpp"
-#include <cstring>
 
 TextureAtlas::TextureMap TextureAtlas::_textureMap;
 TextureAtlas::AtlasData TextureAtlas::_atlasData;

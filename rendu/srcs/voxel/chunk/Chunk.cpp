@@ -1,11 +1,8 @@
 #include "Chunk.hpp"
 #include "Profiler.hpp"
 #include "WindowManager.hpp"
-#include "utils.hpp"
 #include "World.hpp"
 #include "Logger.hpp"
-#include "TextureAtlas.hpp"
-#include <iostream>
 #include "SimplexNoise.hpp"
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE)

@@ -1,6 +1,5 @@
 #include "ThreadPool.hpp"
 #include "Logger.hpp"
-#include "utils.hpp"
 
 uint16_t ThreadWorker::_count = 0;
 

@@ -74,6 +74,7 @@ static int getRenderDistanceMin()
 
 void World::_computeRenderDistance(const int renderDistance)
 {
+	int borderedRenderDistance = renderDistance + RENDER_DISTANCE_BORDER;
 	int renderDistanceMin = getRenderDistanceMin();
 
 	int ratioW = CHUNK_WIDTH / renderDistanceMin;
@@ -81,9 +82,9 @@ void World::_computeRenderDistance(const int renderDistance)
 	int ratioL = CHUNK_LENGTH / renderDistanceMin;
 
 	// Added +1 for 'borders' that only get meshed after their neighbor gets built
-	_renderDistance.x = ((renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW)) + 1;
-	_renderDistance.y = ((renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH) + 1;
-	_renderDistance.z = ((renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL)) + 1;
+	_renderDistance.x = (borderedRenderDistance / ratioW) == 0 ? 1 : (borderedRenderDistance / ratioW);
+	_renderDistance.y = (borderedRenderDistance / ratioH) == 0 ? 1 : borderedRenderDistance / ratioH;
+	_renderDistance.z = (borderedRenderDistance / ratioL) == 0 ? 1 : (borderedRenderDistance / ratioL);
 }
 
 bool World::_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos)
@@ -161,7 +162,7 @@ void World::_generateChunks()
 			for (Chunk * chunk : newChunks)
 			{
 				ChunkState state = chunk->getState();
-				if (_isProceduralRequested.load())
+				if (_isProceduralRequested.load() || !_isLoaded.load())
 					break;
 				if (state == NONE)
 				{
@@ -175,8 +176,10 @@ void World::_generateChunks()
 					_chunkPool.submitTask([chunk]() { chunk->generateMesh(); });
 					chunksReady = false;
 				}
+				else if (state == BUILDING || state == MESHING)
+					chunksReady = false;
 			}
-		} while (!chunksReady && !_isProceduralRequested.load());
+		} while (!chunksReady && !_isProceduralRequested.load() && _isLoaded.load());
 	}
 }
 

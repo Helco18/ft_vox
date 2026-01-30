@@ -1,11 +1,9 @@
 #include "PipelineManager.hpp"
 #include "Chunk.hpp"
 #include "CustomExceptions.hpp"
-#include "AEngine.hpp"
 #include "utils.hpp"
 #include "Camera.hpp"
 #include "TextureAtlas.hpp"
-#include <vector>
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 

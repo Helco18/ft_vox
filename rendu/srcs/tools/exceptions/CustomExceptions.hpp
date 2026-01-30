@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Logger.hpp"
-#include <exception>
-#include <string>
 
 class CustomException: public std::exception
 {

@@ -3,7 +3,6 @@
 #include "CustomExceptions.hpp"
 #include "stb/stb_image.h"
 #include "Logger.hpp"
-#include <iostream>
 
 GLFWimage WindowManager::_decodeOneStep(const char * filename)
 {

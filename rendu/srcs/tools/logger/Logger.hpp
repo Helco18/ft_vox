@@ -1,8 +1,6 @@
 #pragma once
 
-#include <optional>
 #include <string>
-#include <iostream>
 #include <mutex>
 
 enum LogSeverity
@@ -30,8 +28,6 @@ enum LogSource
 	THREAD,
 	PROFILER
 };
-
-typedef std::optional<std::ostream> OptionalOutputFile;
 
 class Logger
 {

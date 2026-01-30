@@ -1,9 +1,6 @@
-#include "InputManager.hpp"
 #include "Environment.hpp"
 #include "CustomExceptions.hpp"
 #include "Profiler.hpp"
-#include "VulkanEngine.hpp"
-#include <iostream>
 
 static void parseArgs(int ac, char ** av, EngineType * engineType)
 {

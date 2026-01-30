@@ -1,8 +1,6 @@
 #include "CustomExceptions.hpp"
 #include "VulkanEngine.hpp"
 #include "Logger.hpp"
-#include "utils.hpp"
-#include <iostream>
 
 void VulkanEngine::_createDescriptorPool(PipelineData & pipelineData)
 {

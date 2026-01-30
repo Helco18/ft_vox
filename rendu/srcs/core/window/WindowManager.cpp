@@ -4,9 +4,7 @@
 #include "CustomExceptions.hpp"
 #include "InputManager.hpp"
 #include "Logger.hpp"
-#include "PipelineManager.hpp"
 #include <iomanip>
-#include <iostream>
 
 WindowManager::WindowManager(EngineType engineType, Environment * environment):
 	_environment(environment), _engineType(engineType), _width(WIDTH), _height(HEIGHT),

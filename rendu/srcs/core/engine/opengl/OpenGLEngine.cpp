@@ -3,8 +3,6 @@
 #include "CustomExceptions.hpp"
 #include "Profiler.hpp"
 #include "WindowManager.hpp"
-#include "utils.hpp"
-#include <iostream>
 
 OpenGLEngine::OpenGLEngine(GLFWwindow * window) : AEngine(window) { _engineType = OPENGL; }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "AEngine.hpp"
 #include "Camera.hpp"
 #include "utils.hpp"
 #include "GLFW/glfw3.h"

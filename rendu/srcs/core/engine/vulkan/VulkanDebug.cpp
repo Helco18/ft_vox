@@ -1,6 +1,5 @@
 #include "VulkanEngine.hpp"
 #include "Logger.hpp"
-#include <iostream>
 
 static VULKAN_CALLBACK debugCallback(
 	vk::DebugUtilsMessageSeverityFlagBitsEXT severity,
