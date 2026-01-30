@@ -4,6 +4,23 @@
 #include <numeric>
 #include <random>
 
+#include "stb/stb_image_write.h"
+#define NOISIFY(x) static_cast<uint8_t>(std::round(255 * (((x + 1.0) / 2.0))))
+
+template <uint8_t N>
+void SimplexNoise<N>::printNoise()
+{
+	SimplexNoise<N> noise(42);
+
+	std::vector<uint8_t> data;
+
+	for (double x = 0; x < 1024; ++x)
+		for (double y = 0; y < 1024; ++y)
+			data.push_back(NOISIFY(noise.queryState({x * 0.01, y * 0.01})));
+	
+	stbi_write_png("noise.png", 1024, 1024, 1, data.data(), 1024);
+}
+
 template <uint8_t N>
 SimplexNoise<N>::SimplexNoise(uint32_t seed): _seed(seed)
 {
