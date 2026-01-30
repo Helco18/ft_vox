@@ -80,9 +80,10 @@ void World::_computeRenderDistance(const int renderDistance)
 	int ratioH = CHUNK_HEIGHT / renderDistanceMin;
 	int ratioL = CHUNK_LENGTH / renderDistanceMin;
 
-	_renderDistance.x = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
-	_renderDistance.y = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
-	_renderDistance.z = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
+	// Added +1 for 'borders' that only get meshed after their neighbor gets built
+	_renderDistance.x = ((renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW)) + 1;
+	_renderDistance.y = ((renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH) + 1;
+	_renderDistance.z = ((renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL)) + 1;
 }
 
 bool World::_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos)
@@ -150,12 +151,10 @@ void World::_generateChunks()
 			return;
 		if (_isLocked.load())
 			continue;
-		Logger::log(VOXEL, INFO, "Requested");
 		_isProceduralRequested.store(false);
 		ChunkVec newChunks = _queryChunksInRange();
 		if (newChunks.empty())
 			continue;
-		Logger::log(VOXEL, INFO, "Found");
 		bool chunksReady;
 		do {
 			chunksReady = true;
@@ -178,7 +177,6 @@ void World::_generateChunks()
 				}
 			}
 		} while (!chunksReady && !_isProceduralRequested.load());
-		Logger::log(VOXEL, INFO, "Done");
 	}
 }
 
@@ -201,8 +199,8 @@ void World::update(Camera * camera)
 	{
 		lastVisitedChunk = currentChunk;
 		std::lock_guard<std::mutex> lg(_renderPointMutex);
-		_renderPoint = camPos;
 	}
+	_renderPoint = camPos;
 	_visibleChunks = _queryChunksInRange();
 	std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
 			{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});

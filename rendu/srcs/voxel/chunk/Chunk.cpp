@@ -38,7 +38,6 @@ static bool testNeighbors(std::vector<Chunk *> chunks)
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	// static SimplexNoise<2> noise(42);
 
 	if (!_world->isLoaded())
 			return;
@@ -54,6 +53,8 @@ void Chunk::build()
 				{
 					_blocks[x][y][z] = x % 2 + 1;
 				}
+				else if (y + (_chunkLocation.y * CHUNK_HEIGHT) <= 0)
+					_blocks[x][y][z] = 3;
 				else
 					_blocks[x][y][z] = 0;
 			}
@@ -63,7 +64,6 @@ void Chunk::build()
 	setDirty(true);
 	dirtyCheck({_northChunk, _southChunk, _westChunk, _eastChunk, _topChunk, _bottomChunk});
 }
-
 
 float Chunk::getDistance(glm::vec3 pos) const
 {
