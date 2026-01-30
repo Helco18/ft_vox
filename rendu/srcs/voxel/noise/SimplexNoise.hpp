@@ -13,7 +13,7 @@ class SimplexNoise
 		~SimplexNoise() {};
 
 		double		queryState(const std::vector<double> & pos) const;
-		static void	printNoise(); // DEBUG
+		static void	printNoise(uint32_t seed); // DEBUG
 	private:
 		std::vector<double>	_gradient(int hash) const;
 		double	_dot(const std::vector<double> & a, const std::vector<double> & b) const;
