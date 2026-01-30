@@ -42,7 +42,8 @@ void ThreadPool::submitTask(Task task)
 {
 	if (!_isActive)
 	{
-		Logger::log(THREAD, WARNING, "Attempted to submit a task to ThreadPool #" + toString(_id) + " before starting it.");
+		if (!_isStopped)
+			Logger::log(THREAD, WARNING, "Attempted to submit a task to ThreadPool #" + toString(_id) + " before starting it.");
 		return;
 	}
 	std::lock_guard<std::mutex> lock(_queueMutex);
@@ -52,6 +53,7 @@ void ThreadPool::submitTask(Task task)
 
 void ThreadPool::stop()
 {
+	_isStopped = true;
 	_availableThreads += _threadCount;
 	{
 		std::lock_guard<std::mutex> lock(_queueMutex);

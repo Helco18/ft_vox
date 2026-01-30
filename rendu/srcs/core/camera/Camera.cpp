@@ -180,7 +180,7 @@ void Camera::removePipelineToRender(PipelineType pipelineType)
 		_pipelines.erase(pipelineit);
 }
 
-void Camera::renderViewMatrix(AEngine * engine)
+void Camera::renderViewMatrix(AEngine * engine, bool resized)
 {
 	static glm::vec3 oldPosition = _position;
 	static glm::vec3 oldAltitude = _altitude;
@@ -191,7 +191,7 @@ void Camera::renderViewMatrix(AEngine * engine)
 	bool onVulkan = engineType == VULKAN;
 	float nearPlane = 0.01f * (onVulkan ? 1 : NEAR_PLANE_OFFSET);
 
-	if (oldPosition != _position || oldAltitude != _altitude || oldOrientation != _orientation || oldFov != _fov || oldEngineType != engineType)
+	if (resized || oldPosition != _position || oldAltitude != _altitude || oldOrientation != _orientation || oldFov != _fov || oldEngineType != engineType)
 	{
 		oldPosition = _position;
 		oldAltitude = _altitude;

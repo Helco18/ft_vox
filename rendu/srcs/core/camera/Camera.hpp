@@ -60,7 +60,7 @@ class Camera
 		void						addPipelineToRender(PipelineType pipelineType);
 		void						removePipelineToRender(PipelineType pipelineType);
 
-		void						renderViewMatrix(AEngine * engine);
+		void						renderViewMatrix(AEngine * engine, bool resized = false);
 		void						updateOrientation(double mouseX, double mouseY, float roll);
 
 		glm::vec3					getEulerAngles() const;

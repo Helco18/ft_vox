@@ -34,4 +34,5 @@ class ThreadPool
 		WorkerPoolMap			_workers;
 		uint16_t				_threadCount;
 		std::atomic_bool		_isActive = false;
+		bool					_isStopped = false;
 };
