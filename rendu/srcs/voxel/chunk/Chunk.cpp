@@ -13,10 +13,32 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 	_asset.uniforms = &_chunkData;
 }
 
+static void dirtyCheck(std::vector<Chunk *> chunks)
+{
+	for (Chunk * chunk : chunks)
+	{
+		if (!chunk)
+			continue;
+		ChunkState state = chunk->getState();
+		if (chunk && state >= BUILT)
+			chunk->setDirty(true);
+	}
+}
+
+static bool testNeighbors(std::vector<Chunk *> chunks)
+{
+	for (Chunk * chunk : chunks)
+	{
+		if (!chunk || chunk->getState() < BUILT)
+			return false;
+	}
+	return true;
+}
+
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	static SimplexNoise<2> noise(42);
+	// static SimplexNoise<2> noise(42);
 
 	if (!_world->isLoaded())
 			return;
@@ -27,23 +49,19 @@ void Chunk::build()
 		{
 			for (int z = 0; z < CHUNK_LENGTH; ++z)
 			{
-				double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH) * 0.01;
-				double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH) * 0.01;
-				if (xd < 0)
-					xd *= -1;
-				if (zd < 0)
-					zd *= -1;
-				// Logger::log(VOXEL, DEBUG, "queryState for x:" + toString(xd) + " z:" + toString(zd));
-				double noiseValue = noise.queryState({xd, zd});
-				int height = static_cast<int>(std::floor(noiseValue * 10));
-				if ((y + _chunkLocation.y * CHUNK_HEIGHT) > height)
-					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) <= 0 ? 3 : 0;
+				if (((y + (_chunkLocation.y * CHUNK_HEIGHT)) <= (-1 + (std::sin(((_chunkLocation.x * CHUNK_WIDTH) + x) / 5.0) * 5.0 +
+						(std::cos(((_chunkLocation.z * CHUNK_LENGTH) + z) / 5.0) * 5.0))) ))
+				{
+					_blocks[x][y][z] = x % 2 + 1;
+				}
 				else
-					_blocks[x][y][z] = (y + _chunkLocation.y * CHUNK_HEIGHT) % 2 ? 1 : 2;
+					_blocks[x][y][z] = 0;
 			}
 		}
 	}
 	setState(BUILT);
+	setDirty(true);
+	dirtyCheck({_northChunk, _southChunk, _westChunk, _eastChunk, _topChunk, _bottomChunk});
 }
 
 
@@ -60,6 +78,11 @@ void Chunk::generateMesh()
 		return;
 	Profiler p("Chunk::generateMesh");
 	_computeNeighborChunks();
+	if (!_isDirty.load() || !testNeighbors({_northChunk, _southChunk, _westChunk, _eastChunk, _topChunk, _bottomChunk}))
+	{
+		setState(BUILT);
+		return;
+	}
 	_generateGreedyMesh();
 	if (_asset.vertices.data && !_asset.indices.empty())
 		setState(MESHED);
@@ -69,6 +92,9 @@ void Chunk::generateMesh()
 
 void Chunk::uploadAsset(AEngine * engine)
 {
+	if (_workerMutex.try_lock())
+		return;
+
 	Profiler p("Chunk::uploadAsset");
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
 	engine->uploadAsset(_assetFrame, PipelineManager::getPipeline(PIPELINE_LINES).id);
@@ -77,6 +103,9 @@ void Chunk::uploadAsset(AEngine * engine)
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
+	if (_workerMutex.try_lock())
+		return;
+
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()));
 	if (_chunkData.fadeValue < 1.0f && _asset.isUploaded)
 		_chunkData.fadeValue += 3.0f * windowManager->getDeltaTime();
@@ -87,9 +116,12 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 
 void Chunk::unload(AEngine * engine)
 {
+	if (_workerMutex.try_lock())
+		return;
 	engine->unloadAsset(_asset.assetID);
 	engine->unloadAsset(_assetFrame.assetID);
 	setState(MESHED);
+	setDirty(false);
 }
 
 glm::ivec3 Chunk::posToChunkPos(glm::vec3 pos)

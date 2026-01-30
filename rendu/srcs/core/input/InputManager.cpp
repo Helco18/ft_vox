@@ -137,4 +137,9 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		camera->setCameraType(SIX_DOF);
 	if (key == GLFW_KEY_3)
 		camera->setCameraType(FPS);
+
+	/* DEBUG-ONLY */
+	// Trigger generation
+	if (key == GLFW_KEY_V)
+		WorldManager::getWorld(WORLD_NAME)->requestProcedural();
 }

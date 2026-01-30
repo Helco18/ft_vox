@@ -23,7 +23,6 @@ enum ChunkState
 	MESHING,
 	MESHED,
 	MESHED_EMPTY,
-	DIRTY,
 	UPLOADED
 };
 
@@ -59,8 +58,10 @@ class Chunk
 		Asset &					getAsset() { return _asset; }
 		uint8_t					getBlock(int x, int y, int z) { return _blocks[x][y][z].load(); }
 		float					getDistance(glm::vec3 pos) const;
+		bool					isDirty() const { return _isDirty.load(); }
 
 		void					setState(ChunkState state) { _state.store(state); }
+		void					setDirty(bool dirty) { _isDirty.store(dirty); }
 
 		void					build();
 		void					generateMesh();
@@ -84,6 +85,7 @@ class Chunk
 		std::atomic<ChunkState>	_state;
 		std::mutex				_workerMutex;
 		ChunkData				_chunkData { 0.0f };
+		std::atomic_bool		_isDirty = false;
 
 		Chunk * 				_northChunk = nullptr;
 		Chunk * 				_southChunk = nullptr;

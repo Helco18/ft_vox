@@ -32,6 +32,8 @@ class World
 
 		void					render(AEngine * engine, PipelineType pipelineType);
 		void					update(Camera * camera);
+
+		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 	private:
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 		typedef std::vector<Chunk *>					ChunkVec;
@@ -39,7 +41,7 @@ class World
 		void					_generateChunks();
 		void					_computeRenderDistance(const int renderDistance);
 		bool					_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
-		ChunkVec				_queryChunksInRange(ChunkState minState = NONE);
+		ChunkVec				_queryChunksInRange();
 
 		std::string				_name;
 		ChunkMap				_chunkMap;
@@ -52,7 +54,5 @@ class World
 		std::atomic_bool		_isProceduralRequested = false;
 		std::condition_variable	_cv;
 		std::atomic_bool		_isLocked = false;
-		int						_renderDistanceX;
-		int						_renderDistanceY;
-		int						_renderDistanceZ;
+		glm::ivec3				_renderDistance = glm::ivec3(0.0);
 };

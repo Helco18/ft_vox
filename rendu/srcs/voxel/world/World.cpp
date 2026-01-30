@@ -15,7 +15,7 @@ World::~World()
 void World::load()
 {
 	_isLoaded.store(true);
-	_chunkPool.start(ThreadPool::getAvailableThreads() - 2); // Minus 2 for Vulkan
+	_chunkPool.start(ThreadPool::getAvailableThreads());
 	_chunkPool.submitTask([this]() { _generateChunks(); });
 }
 
@@ -27,7 +27,6 @@ void World::unloadChunks(AEngine * engine)
 		if (chunk && chunk->getState() == UPLOADED)
 			chunk->unload(engine);
 	}
-
 }
 
 Chunk * World::getChunkAt(int x, int y, int z)
@@ -81,22 +80,22 @@ void World::_computeRenderDistance(const int renderDistance)
 	int ratioH = CHUNK_HEIGHT / renderDistanceMin;
 	int ratioL = CHUNK_LENGTH / renderDistanceMin;
 
-	_renderDistanceX = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
-	_renderDistanceY = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
-	_renderDistanceZ = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
+	_renderDistance.x = (renderDistance / ratioW) == 0 ? 1 : (renderDistance / ratioW);
+	_renderDistance.y = (renderDistance / ratioH) == 0 ? 1 : renderDistance / ratioH;
+	_renderDistance.z = (renderDistance / ratioL) == 0 ? 1 : (renderDistance / ratioL);
 }
 
 bool World::_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos)
 {
-	return !(chunkPos.x > static_cast<int>(std::floor(camPos.x / CHUNK_WIDTH)) + _renderDistanceX
-		|| chunkPos.x < static_cast<int>(std::floor(camPos.x / CHUNK_WIDTH)) - _renderDistanceX
-		|| chunkPos.y > static_cast<int>(std::floor(camPos.y / CHUNK_HEIGHT)) + _renderDistanceY
-		|| chunkPos.y < static_cast<int>(std::floor(camPos.y / CHUNK_HEIGHT)) - _renderDistanceY
-		|| chunkPos.z > static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) + _renderDistanceZ
-		|| chunkPos.z < static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) - _renderDistanceZ);
+	return !(chunkPos.x > static_cast<int>(std::floor(camPos.x / CHUNK_WIDTH)) + _renderDistance.x
+		|| chunkPos.x < static_cast<int>(std::floor(camPos.x / CHUNK_WIDTH)) - _renderDistance.x
+		|| chunkPos.y > static_cast<int>(std::floor(camPos.y / CHUNK_HEIGHT)) + _renderDistance.y
+		|| chunkPos.y < static_cast<int>(std::floor(camPos.y / CHUNK_HEIGHT)) - _renderDistance.y
+		|| chunkPos.z > static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) + _renderDistance.z
+		|| chunkPos.z < static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) - _renderDistance.z);
 }
 
-World::ChunkVec World::_queryChunksInRange(ChunkState minState)
+World::ChunkVec World::_queryChunksInRange()
 {
 	ChunkVec chunks;
 	glm::vec3 cameraPosition = _renderPoint;
@@ -104,12 +103,12 @@ World::ChunkVec World::_queryChunksInRange(ChunkState minState)
 	cameraPosition.y /= CHUNK_HEIGHT;
 	cameraPosition.z /= CHUNK_LENGTH;
 
-	int renderDistanceNorth = _renderDistanceX + cameraPosition.x;
-	int renderDistanceSouth = cameraPosition.x - _renderDistanceX;
-	int renderDistanceEast = _renderDistanceZ + cameraPosition.z;
-	int renderDistanceWest = cameraPosition.z - _renderDistanceZ;
-	int renderDistanceUp = _renderDistanceY + cameraPosition.y;
-	int renderDistanceDown = cameraPosition.y - _renderDistanceY;
+	int renderDistanceNorth = _renderDistance.x + cameraPosition.x;
+	int renderDistanceSouth = cameraPosition.x - _renderDistance.x;
+	int renderDistanceEast = _renderDistance.z + cameraPosition.z;
+	int renderDistanceWest = cameraPosition.z - _renderDistance.z;
+	int renderDistanceUp = _renderDistance.y + cameraPosition.y;
+	int renderDistanceDown = cameraPosition.y - _renderDistance.y;
 
 	for (int x = renderDistanceSouth; x < renderDistanceNorth; ++x)
 	{
@@ -122,15 +121,12 @@ World::ChunkVec World::_queryChunksInRange(ChunkState minState)
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
 				{
-					Chunk * chunk = it->second;
-					if (chunk->getState() >= minState)
-						chunks.push_back(it->second);
+					chunks.push_back(it->second);
 					continue;
 				}
 				Chunk * chunk = new Chunk(x, y, z, this);
 				_chunkMap.try_emplace(location, chunk);
-				if (chunk->getState() >= minState)
-					chunks.push_back(_chunkMap[location]);
+				chunks.push_back(_chunkMap[location]);
 			}
 		}
 	}
@@ -154,21 +150,35 @@ void World::_generateChunks()
 			return;
 		if (_isLocked.load())
 			continue;
+		Logger::log(VOXEL, INFO, "Requested");
 		_isProceduralRequested.store(false);
 		ChunkVec newChunks = _queryChunksInRange();
 		if (newChunks.empty())
 			continue;
-		for (Chunk * chunk : newChunks)
-		{
-			ChunkState state = chunk->getState();
-			if (_isProceduralRequested.load())
-				break;
-			if (state == NONE)
+		Logger::log(VOXEL, INFO, "Found");
+		bool chunksReady;
+		do {
+			chunksReady = true;
+			for (Chunk * chunk : newChunks)
 			{
-				chunk->setState(BUILDING);
-				_chunkPool.submitTask([chunk]() { chunk->build(); chunk->generateMesh(); });
+				ChunkState state = chunk->getState();
+				if (_isProceduralRequested.load())
+					break;
+				if (state == NONE)
+				{
+					chunk->setState(BUILDING);
+					_chunkPool.submitTask([chunk]() { chunk->build(); });
+					chunksReady = false;
+				}
+				else if (state == BUILT)
+				{
+					chunk->setState(MESHING);
+					_chunkPool.submitTask([chunk]() { chunk->generateMesh(); });
+					chunksReady = false;
+				}
 			}
-		}
+		} while (!chunksReady && !_isProceduralRequested.load());
+		Logger::log(VOXEL, INFO, "Done");
 	}
 }
 
