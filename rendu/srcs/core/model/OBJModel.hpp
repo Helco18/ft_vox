@@ -9,15 +9,11 @@ enum ModelType
 	TEST
 };
 
-struct Vertex
+struct OBJVertex
 {
 	glm::vec3	position;
 	glm::vec3	normal;
-	float		alpha;
 	glm::vec2	texCoord;
-	glm::vec2	uvMin;
-	glm::vec2	uvMax;
-	glm::vec2	uvRepeat;
 };
 
 struct Material
@@ -53,7 +49,7 @@ class OBJModel
 
 		bool												load();
 
-		const std::vector<Vertex> &							getVertices() const { return _vertices; }
+		const std::vector<OBJVertex> &						getVertices() const { return _vertices; }
 		const std::vector<uint32_t> &						getIndices() const { return _indices; }
 		const std::unordered_map<std::string, Mesh> &		getMeshes() const { return _meshes; }
 		const std::unordered_map<std::string, Material> &	getMaterials() const { return _materials; }
@@ -68,7 +64,7 @@ class OBJModel
 
 		std::string											_filepath;
 		ModelType											_type;
-		std::vector<Vertex>									_vertices;
+		std::vector<OBJVertex>								_vertices;
 		std::vector<uint32_t>								_indices;
 
 		std::unordered_map<std::string, uint32_t>			_uniqueVertexMap;
@@ -76,7 +72,7 @@ class OBJModel
 		std::vector<glm::vec3>								_temp_positions;
 		std::vector<glm::vec3>								_temp_normals;
 		std::vector<glm::vec2>								_temp_texcoords;
-		std::unordered_map<Vertex *, int>					_positionIndexMap;
+		std::unordered_map<OBJVertex *, int>				_positionIndexMap;
 
 		std::unordered_map<std::string, Material>			_materials;
 		std::string											_currentMaterialName;

@@ -7,6 +7,15 @@
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 
+static uint32_t calculateAttributeSize(const std::vector<Attribute> & attributes)
+{
+	uint32_t size = 0;
+
+	for (Attribute attribute : attributes)
+		size += attribute.size;
+	return size;
+}
+
 static void uploadLines(AEngine * engine)
 {
 	PipelineInfo infoLines;
@@ -74,8 +83,7 @@ static void uploadVoxel(AEngine * engine)
 	infoVoxel.descriptors.push_back(cameraMatrix);
 	infoVoxel.descriptors.push_back(textureAtlas);
 	infoVoxel.descriptors.push_back(chunkData);
-	for (Attribute attribute : infoVoxel.attributes)
-		infoVoxel.attributeSize += attribute.size;
+	infoVoxel.attributeSize = calculateAttributeSize(infoVoxel.attributes);
 	PipelineManager::uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);
 
 	PipelineInfo infoWireframe(infoVoxel);
@@ -102,8 +110,7 @@ static void uploadSkybox(AEngine * engine)
 	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
 
 	infoSkybox.descriptors.push_back(cameraMatrix);
-	for (Attribute attribute : infoSkybox.attributes)
-		infoSkybox.attributeSize += attribute.size;
+	infoSkybox.attributeSize = calculateAttributeSize(infoSkybox.attributes);
 	PipelineManager::uploadPipeline(engine, infoSkybox, PIPELINE_SKYBOX);
 }
 

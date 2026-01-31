@@ -14,7 +14,7 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 	width += epsilon;
 	height += epsilon;
 
-	Vertex v[4];
+	ChunkVertex v[4];
 
 	v[0].texCoord = {0.0f, 0.0f};
 	v[1].texCoord = {1.0f, 0.0f};
@@ -187,9 +187,9 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 		quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
 	uint32_t verticesAddedO = _chunkOpaqueAsset.vertices.size();
 	uint32_t verticesAddedT = _chunkTransparencyAsset.vertices.size();
-	for (Vertex & vertex : quad.vertices)
+	for (ChunkVertex & vertex : quad.vertices)
 	{
-		Vertex tmp = vertex;
+		ChunkVertex tmp = vertex;
 		tmp.position += glm::vec3(pos.x + _chunkLocation.x * CHUNK_WIDTH,
 								  pos.y + _chunkLocation.y * CHUNK_HEIGHT,
 								  pos.z + _chunkLocation.z * CHUNK_LENGTH);
@@ -445,7 +445,7 @@ void Chunk::_generateGreedyMesh()
 		_asset.vertices.data = _chunkFinalAsset.vertices.data();
 		_asset.vertices.vertexCount = _chunkFinalAsset.vertices.size();
 		_asset.indices = _chunkFinalAsset.indices;
-		_asset.vertices.size = _chunkFinalAsset.vertices.size() * sizeof(Vertex);
+		_asset.vertices.size = _chunkFinalAsset.vertices.size() * sizeof(ChunkVertex);
 		_chunkTransparencyAsset.indices.clear();
 		_chunkTransparencyAsset.indices.shrink_to_fit();
 		_chunkOpaqueAsset.indices.clear();
@@ -454,5 +454,5 @@ void Chunk::_generateGreedyMesh()
 		_chunkFinalAsset.indices.shrink_to_fit();
 	}
 	_generateFrameMesh();
-	_asset.vertices.stride = sizeof(Vertex);
+	_asset.vertices.stride = sizeof(ChunkVertex);
 }

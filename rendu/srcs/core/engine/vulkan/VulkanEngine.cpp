@@ -76,11 +76,14 @@ void VulkanEngine::load()
 void VulkanEngine::beginFrame()
 {
 	_drawableAssets.clear();
-	_drawableAssets.resize(_pipelineCache.size());
+	if (_drawableAssets.size() != _pipelineCache.size())
+		_drawableAssets.resize(_pipelineCache.size());
 }
 
 void VulkanEngine::endFrame()
 {
+	if (_drawableAssets.empty())
+		return;
 	// Semaphore = on ordonne les tâches
 	// Fence = on attend que le GPU finisse la tâche
 	try

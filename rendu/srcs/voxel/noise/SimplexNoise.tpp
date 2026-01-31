@@ -30,9 +30,6 @@ SimplexNoise<N>::SimplexNoise(uint32_t seed): _seed(seed)
 	_F = (std::sqrt(n + 1.0) - 1.0) / n;
 	_G = (1.0 - 1.0 / std::sqrt(n + 1.0)) / n;
 
-	Logger::log(VOXEL, INFO, "_F : " + toString(_F));
-	Logger::log(VOXEL, INFO, "_G : " + toString(_G));
-
 	std::array<uint8_t, 256> p;
 	std::iota(p.begin(), p.end(), 0);
 
@@ -75,7 +72,7 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 	// determination des somet
 	std::vector<int> rank(N);
 	std::iota(rank.begin(), rank.end(), 0);
-	std::sort(rank.begin(), rank.end(), [&x0](int a, int b){ return (x0[a] > x0[b]);	});
+	std::sort(rank.begin(), rank.end(), [&x0](int a, int b){ return (x0[a] > x0[b]); });
 
 	// contribution des somet
 	for (uint8_t corner = 0; corner <= N; ++corner)
@@ -83,7 +80,7 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 		// selection de l'offset pour les angle (corner)
 		std::vector<double> offset(N, 0.0);
 		for (uint8_t d = 0; d < corner; ++d)
-			offset[rank[d]] = 1.00;
+			offset[rank[d]] = 1.0;
 
 		//calcule des angle :
 		std::vector<double> x(N);

@@ -203,14 +203,13 @@ class VulkanEngine : public AEngine
 		vk::Format							_depthFormat;
 		vk::ImageAspectFlags				_depthFlags;
 
-		// Maps
+		// Caches
 		PipelineCache						_pipelineCache;
 		DrawableAssets						_drawableAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
 		
 		// Threads
 		ThreadPool							_threadPool;
-		std::mutex							_pendingAssetMutex;
 
 		void								_createInstance();
 		void								_initDebugMessenger();

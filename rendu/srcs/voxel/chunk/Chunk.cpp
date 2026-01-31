@@ -56,12 +56,12 @@ void Chunk::build()
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
 				int worldY = (y + _chunkLocation.y * CHUNK_HEIGHT);
-				if (worldY > height)
-					_blocks[x][y][z] = (worldY) <= 0 ? 3 : 0;
-				else if (worldY < 0)
-					_blocks[x][y][z] = 1;
-				else
+				if (worldY == height && worldY >= 0)
 					_blocks[x][y][z] = 2;
+				else if (worldY > height)
+					_blocks[x][y][z] = (worldY) <= 0 ? 3 : 0;
+				else
+					_blocks[x][y][z] = 1;
 			}
 		}
 	}

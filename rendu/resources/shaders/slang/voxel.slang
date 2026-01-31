@@ -2,7 +2,7 @@ struct VertexInput
 {
 	float3 inPosition;
     float3 inNormal;
-    float inalpha;
+    float inAlpha;
 	float2 inTexCoord;
 	float2 inUvMin;
 	float2 inUvMax;
@@ -13,7 +13,7 @@ struct VertexOutput
 {
     float4 sv_position : SV_Position;
     float3 outNormal;
-    float outalpha;
+    float outAlpha;
 	float2 outTexCoord;
 	float2 outUvMin;
 	float2 outUvMax;
@@ -56,7 +56,7 @@ VertexOutput vertMain(VertexInput input)
 	output.outUvMin = input.inUvMin;
     output.outUvMax = input.inUvMax;
     output.outUvRepeat = input.inUvRepeat;
-    output.outalpha = input.inalpha;
+    output.outAlpha = input.inAlpha;
 	return output;
 }
 
@@ -64,7 +64,7 @@ VertexOutput vertMain(VertexInput input)
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
 	float3 lightDir = normalize(float3(0.5, 1.0, 0.5));
-	float diffuse = max(dot(inVert.outNormal, lightDir), 0.25);
+	float diffuse = max(dot(inVert.outNormal, lightDir), 0.2);
 
 	float3 ambientColor = float3(0.2, 0.2, 0.2);
 	diffuse = diffuse + ambientColor.r;
@@ -72,7 +72,7 @@ float4 fragMain(VertexOutput inVert) : SV_Target
 	float2 tileSize = inVert.outUvMax - inVert.outUvMin;
 	// frac(x) retourne la partie décimale de x (equivalent a x - floor(x))
 	float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
-	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue * inVert.outalpha);
+	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue * inVert.outAlpha);
 	// float4 vertColor = texture.Sample(finalUV);
 
 	vertColor.rgb *= diffuse;

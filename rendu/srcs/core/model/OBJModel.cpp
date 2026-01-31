@@ -159,7 +159,7 @@ uint32_t OBJModel::_parseVertexIndex(const std::string & token)
 	if (it != _uniqueVertexMap.end())
 		return it->second;
 
-	Vertex v{};
+	OBJVertex v{};
 	std::istringstream ss(token);
 	std::string indexStr;
 	int idx[3] = {0, 0, 0};
