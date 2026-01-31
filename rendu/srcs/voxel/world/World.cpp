@@ -83,7 +83,7 @@ void World::_computeRenderDistance(const int renderDistance)
 
 	// Added +1 for 'borders' that only get meshed after their neighbor gets built
 	_renderDistance.x = (borderedRenderDistance / ratioW) == 0 ? 1 : (borderedRenderDistance / ratioW);
-	_renderDistance.y = (borderedRenderDistance / ratioH) == 0 ? 1 : borderedRenderDistance / ratioH;
+	_renderDistance.y = (borderedRenderDistance / ratioH) == 0 ? 1 : (borderedRenderDistance / ratioH);
 	_renderDistance.z = (borderedRenderDistance / ratioL) == 0 ? 1 : (borderedRenderDistance / ratioL);
 }
 
@@ -173,11 +173,8 @@ void World::_generateChunks()
 				else if (state == BUILT && chunk->isReadyForMesh())
 				{
 					chunk->setState(MESHING);
-					if (chunk->neighborsExist())
-					{
-						_chunkPool.submitTask([chunk]() { chunk->generateMesh(); });
-						chunksReady = false;
-					}
+					_chunkPool.submitTask([chunk]() { chunk->generateMesh(); });
+					chunksReady = false;
 				}
 				else if (state == BUILDING || state == MESHING)
 					chunksReady = false;

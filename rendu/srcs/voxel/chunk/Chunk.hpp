@@ -66,7 +66,6 @@ class Chunk
 
 		static glm::ivec3		posToChunkPos(glm::vec3 pos);
 		bool					isReadyForMesh();
-		bool					neighborsExist();
 
 	private:
 		World *					_world;

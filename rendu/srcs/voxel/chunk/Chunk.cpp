@@ -33,13 +33,6 @@ bool Chunk::isReadyForMesh()
 	return true;
 }
 
-bool Chunk::neighborsExist()
-{
-	if (!_northChunk || !_southChunk || !_westChunk || !_eastChunk || !_topChunk || !_bottomChunk)
-		return false;
-	return true;
-}
-
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
