@@ -4,6 +4,7 @@
 #include "World.hpp"
 #include "Logger.hpp"
 #include "SimplexNoise.hpp"
+#include "BlockData.hpp"
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE)
 {
@@ -57,11 +58,11 @@ void Chunk::build()
 			{
 				int worldY = (y + _chunkLocation.y * CHUNK_HEIGHT);
 				if (worldY == height && worldY >= 0)
-					_blocks[x][y][z] = 2;
+					_blocks[x][y][z] = BlockType::GRASS;
 				else if (worldY > height)
-					_blocks[x][y][z] = (worldY) <= 0 ? 3 : 0;
+					_blocks[x][y][z] = (worldY) <= 0 ? BlockType::WATER : BlockType::AIR;
 				else
-					_blocks[x][y][z] = 1;
+					_blocks[x][y][z] = BlockType::DIRT;
 			}
 		}
 	}
