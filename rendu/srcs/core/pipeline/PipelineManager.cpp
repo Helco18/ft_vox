@@ -109,9 +109,9 @@ static void uploadSkybox(AEngine * engine)
 
 void PipelineManager::init(AEngine * engine)
 {
+	uploadSkybox(engine);
 	uploadVoxel(engine);
 	uploadLines(engine);
-	uploadSkybox(engine);
 
 	// PipelineInfo infoBasic;
 	// infoBasic.shaderName = "basic";

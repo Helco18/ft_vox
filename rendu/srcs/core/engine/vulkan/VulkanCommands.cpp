@@ -64,12 +64,9 @@ void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info
 
 void VulkanEngine::_recordCommandBuffer()
 {
-	int i;
-
-	i = 0;
-	for (const std::pair<const PipelineID, std::vector<Asset *>> & pipelineAsset : _pipelineAssetMap)
+	for (size_t i = 0; i < _drawableAssets.size(); ++i)
 	{
-		PipelineID pipelineID = pipelineAsset.first;
+		PipelineID pipelineID = i;
 		PipelineData & pipelineData = _pipelineCache[pipelineID];
 		if (pipelineData.pipeline == nullptr)
 		{
@@ -123,7 +120,7 @@ void VulkanEngine::_recordCommandBuffer()
 		commands.bindPipeline(vk::PipelineBindPoint::eGraphics, pipelineData.pipeline);
 		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineData.layout, 0,
 				*pipelineData.descriptorSets[_currentFrame], nullptr);
-		const std::vector<Asset *> & drawableAssets = pipelineAsset.second;
+		const std::vector<Asset *> & drawableAssets = _drawableAssets[i];
 		for (const Asset * asset : drawableAssets)
 		{
 			const AssetData & assetData = _assetDataCache[asset->assetID];
@@ -148,7 +145,6 @@ void VulkanEngine::_recordCommandBuffer()
 		commands.endRendering();
 		commands.end();
 		_frameCommandBuffers[_currentFrame].executeCommands(commands);
-		i++;
 	}
 }
 

@@ -75,7 +75,8 @@ void VulkanEngine::load()
 
 void VulkanEngine::beginFrame()
 {
-	_pipelineAssetMap.clear();
+	_drawableAssets.clear();
+	_drawableAssets.resize(_pipelineCache.size());
 }
 
 void VulkanEngine::endFrame()

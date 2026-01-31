@@ -151,8 +151,11 @@ class VulkanEngine : public AEngine
 		typedef std::vector<vk::raii::Fence>												Fences;
 		typedef std::vector<vk::VertexInputAttributeDescription>							VertexAttributeDescriptionVector;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
-		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
+		// Query with PipelineID
+		typedef std::vector<std::vector<Asset *>>											DrawableAssets;
+		// Query with PipelineID
 		typedef std::vector<PipelineData>													PipelineCache;
+		// Query with AssetID
 		typedef std::vector<AssetData>														AssetDataCache;
 
 		// Window, context, instance
@@ -202,7 +205,7 @@ class VulkanEngine : public AEngine
 
 		// Maps
 		PipelineCache						_pipelineCache;
-		PipelineAssetMap					_pipelineAssetMap;
+		DrawableAssets						_drawableAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
 		
 		// Threads

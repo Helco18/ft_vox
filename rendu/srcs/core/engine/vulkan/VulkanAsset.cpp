@@ -33,7 +33,7 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	Asset * asset = assetData.asset;
 	if (!asset->vertices.data)
 		return;
-	_pipelineAssetMap[pipelineID].push_back(asset);
+	_drawableAssets[pipelineID].push_back(asset);
 }
 
 void VulkanEngine::unloadAsset(AssetID assetID)
