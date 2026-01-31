@@ -18,7 +18,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	std::vector<char> shaderSrc;
 	std::shared_ptr<vk::raii::ShaderModule> shaderModule = nullptr;
 
-	pipelineID = _pipelineMap.size();
+	pipelineID = _pipelineCache.size();
 	const ShaderCache::iterator & shaderit = _shaderCache.find(pipelineInfo.shaderName);
 	if (shaderit != _shaderCache.end())
 		shaderModule = shaderit->second;
@@ -199,7 +199,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	pipelineData.pipeline = vk::raii::Pipeline(_device, nullptr, graphicsPipelineInfo);
 
-	_pipelineMap.try_emplace(pipelineID, std::move(pipelineData));
+	_pipelineCache.emplace_back(std::move(pipelineData));
 	Logger::log(ENGINE_VULKAN, INFO, "Created Pipeline ID: " + toString(pipelineID));
 	return pipelineID;
 }

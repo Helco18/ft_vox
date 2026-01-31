@@ -51,7 +51,7 @@ void VulkanEngine::_processPendingUniforms()
 {
 	for (PendingUniform & uniform : _pendingUniforms)
 	{
-		PipelineData & pipelineData = _pipelineMap[uniform.pipelineID];
+		PipelineData & pipelineData = _pipelineCache[uniform.pipelineID];
 		std::unordered_map<unsigned int, UniformBufferData>::iterator it = pipelineData.uniforms.find(uniform.binding);
 		if (it == pipelineData.uniforms.end())
 		{

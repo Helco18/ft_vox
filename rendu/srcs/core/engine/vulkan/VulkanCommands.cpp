@@ -70,10 +70,12 @@ void VulkanEngine::_recordCommandBuffer()
 	for (const std::pair<const PipelineID, std::vector<Asset *>> & pipelineAsset : _pipelineAssetMap)
 	{
 		PipelineID pipelineID = pipelineAsset.first;
-		PipelineMap::iterator pipelineit = _pipelineMap.find(pipelineID);
-		if (pipelineit == _pipelineMap.end())
+		PipelineData & pipelineData = _pipelineCache[pipelineID];
+		if (pipelineData.pipeline == nullptr)
+		{
+			Logger::log(ENGINE_VULKAN, WARNING, "Tried recording command buffer on unknown pipeline");
 			continue;
-		PipelineData & pipelineData = pipelineit->second;
+		}
 		vk::CommandBufferBeginInfo commandBufferBeginInfo;
 		vk::CommandBufferInheritanceInfo commandBufferInheritanceInfo;
 		commandBufferBeginInfo.pInheritanceInfo = &commandBufferInheritanceInfo;

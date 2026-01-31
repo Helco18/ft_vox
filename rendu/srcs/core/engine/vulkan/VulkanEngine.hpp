@@ -150,9 +150,9 @@ class VulkanEngine : public AEngine
 		typedef std::vector<vk::raii::Semaphore>											Semaphores;
 		typedef std::vector<vk::raii::Fence>												Fences;
 		typedef std::vector<vk::VertexInputAttributeDescription>							VertexAttributeDescriptionVector;
-		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
-		typedef std::unordered_map<PipelineID, PipelineData>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
+		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
+		typedef std::vector<PipelineData>													PipelineCache;
 		typedef std::vector<AssetData>														AssetDataCache;
 
 		// Window, context, instance
@@ -201,7 +201,7 @@ class VulkanEngine : public AEngine
 		vk::ImageAspectFlags				_depthFlags;
 
 		// Maps
-		PipelineMap							_pipelineMap;
+		PipelineCache						_pipelineCache;
 		PipelineAssetMap					_pipelineAssetMap;
 		std::vector<PendingUniform>			_pendingUniforms;
 		
