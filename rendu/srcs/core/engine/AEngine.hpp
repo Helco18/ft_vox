@@ -35,7 +35,7 @@ struct VertexStream
 
 struct Asset
 {
-	AssetID								assetID;
+	AssetID								assetID = 0;
 	VertexStream						vertices;
 	std::vector<uint32_t>				indices;
 	unsigned int						vbo;

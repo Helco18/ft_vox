@@ -124,10 +124,7 @@ void VulkanEngine::_recordCommandBuffer()
 		const std::vector<Asset *> & drawableAssets = pipelineAsset.second;
 		for (const Asset * asset : drawableAssets)
 		{
-			AssetDataCache::iterator datait = _assetDataCache.find(asset->assetID);
-			if (datait == _assetDataCache.end())
-				continue;
-			const AssetData & assetData = datait->second;
+			const AssetData & assetData = _assetDataCache[asset->assetID];
 			const BufferData & vertexData = assetData.vbo;
 			const BufferData & indexData = assetData.ibo;
 			if (asset->uniforms != nullptr)

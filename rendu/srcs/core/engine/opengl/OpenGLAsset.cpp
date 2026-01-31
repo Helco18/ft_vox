@@ -68,6 +68,7 @@ void OpenGLEngine::unloadAsset(AssetID assetID)
 	{
 		AssetInfo & assetInfo = it->second;
 		Asset * asset = assetInfo.asset;
+		asset->isUploaded = false;
 		if (asset->vbo)
 			glDeleteBuffers(1, &asset->vbo);
 		if (asset->ibo)

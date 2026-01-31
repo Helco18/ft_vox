@@ -5,7 +5,7 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
 	AssetID assetID = _nextAssetID++;
 	asset.assetID = assetID;
-	AssetData & assetData = _assetDataCache[assetID];
+	AssetData assetData;
 	assetData.pipelineID = pipelineID;
 	assetData.asset = &asset;
 	if (asset.vertices.data)
@@ -21,26 +21,27 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 			Logger::log(ENGINE_VULKAN, FATAL, e.what());
 		}
 	}
+	_assetDataCache.emplace_back(std::move(assetData));
 	return assetID;
 }
 
 void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 {
-	AssetDataCache::iterator assetit = _assetDataCache.find(assetID);
-	if (assetit != _assetDataCache.end())
-	{
-		AssetData & assetData = assetit->second;
-		Asset * asset = assetData.asset;
-		if (!asset->vertices.data)
-			return;
-		_pipelineAssetMap[pipelineID].push_back(asset);
-	}
+	AssetData & assetData = _assetDataCache[assetID];
+	if (assetData.asset == nullptr)
+		return;
+	Asset * asset = assetData.asset;
+	if (!asset->vertices.data)
+		return;
+	_pipelineAssetMap[pipelineID].push_back(asset);
 }
 
 void VulkanEngine::unloadAsset(AssetID assetID)
 {
-	AssetDataCache::iterator datait = _assetDataCache.find(assetID);
-	if (datait == _assetDataCache.end())
+	AssetData & assetData = _assetDataCache[assetID];
+	if (assetData.asset == nullptr)
 		return;
-	_assetDataCache.erase(datait);
+	else if (!assetData.asset->isUploaded)
+		return;
+	_assetDataCache.erase(_assetDataCache.begin() + assetID);
 }

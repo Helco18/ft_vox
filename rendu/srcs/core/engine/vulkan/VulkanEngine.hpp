@@ -120,7 +120,7 @@ struct PendingUniform
 
 struct AssetData
 {
-	Asset *									asset;
+	Asset *									asset = nullptr;
 	PipelineID								pipelineID;
 	BufferData								vbo;
 	BufferData								ibo;
@@ -153,7 +153,7 @@ class VulkanEngine : public AEngine
 		typedef std::unordered_map<PipelineID, std::vector<Asset *>>						PipelineAssetMap;
 		typedef std::unordered_map<PipelineID, PipelineData>								PipelineMap;
 		typedef std::unordered_map<std::string, std::shared_ptr<vk::raii::ShaderModule>>	ShaderCache;
-		typedef std::unordered_map<AssetID, AssetData>										AssetDataCache;
+		typedef std::vector<AssetData>														AssetDataCache;
 
 		// Window, context, instance
 		vk::raii::Context					_context;
