@@ -65,6 +65,8 @@ class Chunk
 		void					unload(AEngine * engine);
 
 		static glm::ivec3		posToChunkPos(glm::vec3 pos);
+		bool					isReadyForMesh();
+		bool					neighborsExist();
 
 	private:
 		World *					_world;
@@ -97,5 +99,5 @@ class Chunk
 		uint8_t					_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
 		glm::ivec3				_sliceToWorld(int axis, int sliceIndex, int u, int v);
 		void					_generateFrameMesh();
-		void					_computeNeighborChunks();
+		std::vector<Chunk *>	_computeNeighborChunks();
 };

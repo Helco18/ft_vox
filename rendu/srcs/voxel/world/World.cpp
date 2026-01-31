@@ -170,11 +170,14 @@ void World::_generateChunks()
 					_chunkPool.submitTask([chunk]() { chunk->build(); });
 					chunksReady = false;
 				}
-				else if (state == BUILT)
+				else if (state == BUILT && chunk->isReadyForMesh())
 				{
 					chunk->setState(MESHING);
-					_chunkPool.submitTask([chunk]() { chunk->generateMesh(); });
-					chunksReady = false;
+					if (chunk->neighborsExist())
+					{
+						_chunkPool.submitTask([chunk]() { chunk->generateMesh(); });
+						chunksReady = false;
+					}
 				}
 				else if (state == BUILDING || state == MESHING)
 					chunksReady = false;

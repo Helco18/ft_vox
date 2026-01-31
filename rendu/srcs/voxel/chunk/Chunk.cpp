@@ -22,13 +22,21 @@ static void dirtyCheck(std::vector<Chunk *> chunks)
 	}
 }
 
-static bool testNeighbors(std::vector<Chunk *> chunks)
+bool Chunk::isReadyForMesh()
 {
+	std::vector<Chunk *> chunks = _computeNeighborChunks();
 	for (Chunk * chunk : chunks)
 	{
 		if (!chunk || chunk->getState() < BUILT)
 			return false;
 	}
+	return true;
+}
+
+bool Chunk::neighborsExist()
+{
+	if (!_northChunk || !_southChunk || !_westChunk || !_eastChunk || !_topChunk || !_bottomChunk)
+		return false;
 	return true;
 }
 
@@ -81,12 +89,6 @@ void Chunk::generateMesh()
 	if (!_world->isLoaded())
 		return;
 	Profiler p("Chunk::generateMesh");
-	_computeNeighborChunks();
-	if (!_isDirty.load() || !testNeighbors({_northChunk, _southChunk, _westChunk, _eastChunk, _topChunk, _bottomChunk}))
-	{
-		setState(BUILT);
-		return;
-	}
 	_generateGreedyMesh();
 	if (_asset.vertices.data && !_asset.indices.empty())
 		setState(MESHED);
@@ -127,7 +129,7 @@ void Chunk::unload(AEngine * engine)
 	engine->unloadAsset(_asset.assetID);
 	engine->unloadAsset(_assetFrame.assetID);
 	setState(MESHED);
-	setDirty(false);
+	setDirty(true);
 }
 
 glm::ivec3 Chunk::posToChunkPos(glm::vec3 pos)
@@ -139,7 +141,7 @@ glm::ivec3 Chunk::posToChunkPos(glm::vec3 pos)
 	return chunkPos;
 }
 
-void Chunk::_computeNeighborChunks()
+std::vector<Chunk *> Chunk::_computeNeighborChunks()
 {
 	_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
 	_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
@@ -147,4 +149,5 @@ void Chunk::_computeNeighborChunks()
 	_westChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z - 1);
 	_topChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z);
 	_bottomChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y - 1, _chunkLocation.z);
+	return {_northChunk, _southChunk, _eastChunk, _westChunk, _topChunk, _bottomChunk};
 }
