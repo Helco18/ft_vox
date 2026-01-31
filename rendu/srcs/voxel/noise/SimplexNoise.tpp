@@ -67,54 +67,42 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 		i[d] = std::floor(pos[d] + s);
 		isum += i[d];
 	}
-	// Logger::log(VOXEL, INFO, "i:x : " + toString(i[0]));
-	// Logger::log(VOXEL, INFO, "i:y : " + toString(i[1]));
 
 	// UNSKEW :
 	for (uint8_t d = 0; d < N; ++d)
 		x0[d] = pos[d] - i[d] + isum * _G;
 
 	// determination des somet
-
-	std::vector<int> rank(N, 0);
-	for (uint8_t a = 0; a < N; ++a)
-	{
-		for (uint8_t b = 0; b < N; ++b)
-		{
-			if (x0[a] > x0[b])
-				rank[a]++;
-		}
-	}
+	std::vector<int> rank(N);
+	std::iota(rank.begin(), rank.end(), 0);
+	std::sort(rank.begin(), rank.end(), [&x0](int a, int b){ return (x0[a] > x0[b]);	});
 
 	// contribution des somet
 	for (uint8_t corner = 0; corner <= N; ++corner)
 	{
+		// selection de l'offset pour les angle (corner)
+		std::vector<double> offset(N, 0.0);
+		for (uint8_t d = 0; d < corner; ++d)
+			offset[rank[d]] = 1.00;
+
+		//calcule des angle :
 		std::vector<double> x(N);
-		int hash = 0;
-
-		std::vector<double> offset(N);
-		
 		for (uint8_t d = 0; d < N; ++d)
-		{
-			offset[d] = rank[d] >= N - corner ? 1.0 : 0.0;
 			x[d] = x0[d] - offset[d] + static_cast<double>(corner) * _G;
-		}
 
-		// la magie !!! :
+		// selection du hash en fonction de la posiion de l'angle
+		int hash = 0;
 		int h = 0;
 		for (uint8_t d = 0; d < N; ++d)
 			h = _perm[(h + static_cast<int>(std::floor(i[d] + offset[d]))) & 255];
 		hash = _perm[h];
-		// hash = h;
 
 		// attenuation de la distance :
 		double t = 0.5;
-		// double t = 0.5;
 		for (double v : x)
 			t -= v * v; 
 
 		// aplication de la deformation sur les valeu non null
-		// Logger::log(VOXEL, DEBUG, "t val :" + toString(t));
 		if (t > 0.0)
 		{
 			t *= t;
