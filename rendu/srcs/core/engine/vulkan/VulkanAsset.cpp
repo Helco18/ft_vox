@@ -38,6 +38,8 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 
 void VulkanEngine::unloadAsset(AssetID assetID)
 {
+	if (assetID >= _assetDataCache.size())
+		return;
 	AssetData & assetData = _assetDataCache[assetID];
 	if (assetData.asset == nullptr)
 		return;

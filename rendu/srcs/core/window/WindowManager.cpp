@@ -79,12 +79,6 @@ bool WindowManager::drawFrame()
 
 	glfwPollEvents();
 
-	if (_isSwapRequested)
-	{
-		swap();
-		return false;
-	}
-
 	frames++;
 	currentTime = glfwGetTime();
 	if (currentTime - _lastFpsUpdate >= 1.0)

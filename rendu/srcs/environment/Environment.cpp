@@ -66,7 +66,10 @@ void Environment::loop()
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
 		if (!_windowManager->drawFrame())
+			continue;
+		else if (_windowManager->isSwapRequested())
 		{
+			_windowManager->swap();
 			engine = _windowManager->getEngine();
 			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
 			{
