@@ -9,7 +9,7 @@ class SimplexNoise
 	static_assert(N >= 1, "SimplexNoise: must be >= 1");
 
 	public:
-		explicit	SimplexNoise(uint32_t seed = 0);
+		SimplexNoise(uint32_t seed = 0);
 		~SimplexNoise() {};
 
 		double		queryState(const std::vector<double> & pos) const;

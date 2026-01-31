@@ -26,17 +26,20 @@ template <uint8_t N>
 SimplexNoise<N>::SimplexNoise(uint32_t seed): _seed(seed)
 {
 	const double n = static_cast<double>(N);
+
 	_F = (std::sqrt(n + 1.0) - 1.0) / n;
 	_G = (1.0 - 1.0 / std::sqrt(n + 1.0)) / n;
 
+	Logger::log(VOXEL, INFO, "_F : " + toString(_F));
+	Logger::log(VOXEL, INFO, "_G : " + toString(_G));
 
-	std::array<int, 256> p;
+	std::array<uint8_t, 256> p;
 	std::iota(p.begin(), p.end(), 0);
 
 	std::mt19937 rng(seed);
 	std::shuffle(p.begin(), p.end(), rng);
 
-	for (size_t i = 0; i < 512; ++i)
+	for (uint16_t i = 0; i < 512; ++i)
 		_perm[i] = p[i & 255];
 }
 
@@ -61,16 +64,19 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 	double isum = 0.0;
 	for (uint8_t d = 0; d < N; ++d)
 	{
-		i[d] = floor(pos[d] + s);
+		i[d] = std::floor(pos[d] + s);
 		isum += i[d];
 	}
+	// Logger::log(VOXEL, INFO, "i:x : " + toString(i[0]));
+	// Logger::log(VOXEL, INFO, "i:y : " + toString(i[1]));
 
 	// UNSKEW :
 	for (uint8_t d = 0; d < N; ++d)
 		x0[d] = pos[d] - i[d] + isum * _G;
 
 	// determination des somet
-	std::vector<double> rank(N, 0.0);
+
+	std::vector<int> rank(N, 0);
 	for (uint8_t a = 0; a < N; ++a)
 	{
 		for (uint8_t b = 0; b < N; ++b)
@@ -86,17 +92,23 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 		std::vector<double> x(N);
 		int hash = 0;
 
+		std::vector<double> offset(N);
+		
 		for (uint8_t d = 0; d < N; ++d)
 		{
-			int offset = rank[d] >= N - corner ? 1 : 0;
-			x[d] = x0[d] - static_cast<double>(offset) + static_cast<double>(corner) * _G;
-
-			// la magie !!! :
-			hash = _perm[(hash + static_cast<int>(i[d]) + offset) & 255];
+			offset[d] = rank[d] >= N - corner ? 1.0 : 0.0;
+			x[d] = x0[d] - offset[d] + static_cast<double>(corner) * _G;
 		}
 
+		// la magie !!! :
+		int h = 0;
+		for (uint8_t d = 0; d < N; ++d)
+			h = _perm[(h + static_cast<int>(std::floor(i[d] + offset[d]))) & 255];
+		hash = _perm[h];
+		// hash = h;
+
 		// attenuation de la distance :
-		double t = 0.5 * N;
+		double t = 0.5;
 		// double t = 0.5;
 		for (double v : x)
 			t -= v * v; 
@@ -110,25 +122,35 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 		}
 	}
 
-	return value;
+	return 70.6 * value;
 }
 
 template <uint8_t N>
 std::vector<double>	SimplexNoise<N>::_gradient(int hash) const
 {
-	std::vector<double> g(N);
-	double len = 0.0;
-	for (uint8_t d = 0; d < N; ++d)
-	{
-		g[d] = static_cast<double>(hash) / 127.5 - 1.0;
-		len += g[d] * g[d];
-	}
+	static const double grad2[8][2] = {
+		{1.0,1.0}, {-1.0,1.0}, {1.0,-1.0}, {-1.0,-1.0},
+		{1.0,0.0}, {-1.0,0.0}, {0.0,1.0}, {0.0,-1.0}
+	};
 
-	len = 1.0 / std::sqrt(len);
-	for (double & v : g)
-		v *= len;
+	// std::vector<double> g(N);
+	// double len = 0.0;
+	// for (uint8_t d = 0; d < N; ++d)
+	// {
+    //     g[d] = static_cast<double>(hash) / 127.5 - 1.0;
+	// 	len += g[d] * g[d];
+	// }
 
-	return g;
+	// len = 1.0 / std::sqrt(len);
+	// for (double & v : g)
+	// 	v *= len;
+
+	std::vector<double> g(2);
+    int h = hash & 7;
+    g[0] = grad2[h][0];
+    g[1] = grad2[h][1];
+
+    return g;
 }
 
 template <uint8_t N>
