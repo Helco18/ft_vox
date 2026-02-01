@@ -124,7 +124,7 @@ glm::mat4 Camera::computeView() const
 	{
 		case EULER :
 		{
-			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), computeUp());
 			return(view);
 		}
 		case SIX_DOF :
@@ -135,7 +135,7 @@ glm::mat4 Camera::computeView() const
 		}
 		case FPS :
 		{
-			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), glm::vec3(0.0f, 1.0f, 0.0f));
+			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), computeUp());
 			return(view);
 		}
 		default: return (glm::mat4());

@@ -119,7 +119,6 @@ World::ChunkVec World::_queryChunksInRange()
 			for (int z = renderDistanceWest; z < renderDistanceEast; ++z)
 			{
 				glm::ivec3 location(x, y, z);
-				std::lock_guard<std::mutex> lg(_mapMutex);
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
 				{
@@ -127,7 +126,10 @@ World::ChunkVec World::_queryChunksInRange()
 					continue;
 				}
 				Chunk * chunk = new Chunk(x, y, z, this);
-				_chunkMap.try_emplace(location, chunk);
+				{
+					std::lock_guard<std::mutex> lg(_mapMutex);
+					_chunkMap.try_emplace(location, chunk);
+				}
 				chunks.push_back(_chunkMap[location]);
 			}
 		}
@@ -199,11 +201,11 @@ void World::update(Camera * camera)
 		_computeRenderDistance(renderDistance);
 	}
 	if (lastVisitedChunk != currentChunk)
-	{
 		lastVisitedChunk = currentChunk;
+	{
 		std::lock_guard<std::mutex> lg(_renderPointMutex);
+		_renderPoint = camPos;
 	}
-	_renderPoint = camPos;
 	_visibleChunks = _queryChunksInRange();
 	std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
 			{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
