@@ -36,6 +36,7 @@ class Camera
 		float						getSensitivity() const { return _sensitivity; }
 		float						getSpeed() const { return _speed; }
 		int							getRenderDistance() const { return _renderDistance; }
+		bool						isIgnoringYMovement() const { return _ignoreY; }
 
 		void						setPosition(const glm::vec3 & position) { _position = position; }
 		void						setOrientation(glm::vec3 orientation) { _orientation = orientation; }
@@ -46,12 +47,13 @@ class Camera
 		void						setSpeed(float speed) { _speed = speed; }
 		void						setRenderDistance(int renderDistance) { _renderDistance = renderDistance; }
 		void						setCameraType(CameraType type);
+		void						setIgnoreYMovement(bool ignoreY) { _ignoreY = ignoreY; }
 
 		void						changeYaw(float yaw) { _yaw += yaw; }
 		void						changePitch(float pitch) { _pitch += pitch; }
 		void						changeSpeed(float speed) { _speed += speed; }
 
-		glm::vec3					computeForward() const;
+		glm::vec3					computeForward(bool ignoreY) const;
 		glm::vec3					computeRight() const;
 		glm::vec3					computeUp() const;
 		glm::mat4					computeView() const;
@@ -78,4 +80,5 @@ class Camera
 		std::vector<PipelineType>	_pipelines;
 		CameraType					_type = EULER;
 		CameraBuffer				_cameraBuffer;
+		bool						_ignoreY = false;
 };

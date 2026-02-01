@@ -46,7 +46,6 @@ void Environment::init(EngineType engineType)
 void Environment::loop()
 {
 	double frameStart;
-	double deltaTime;
 	AEngine * engine;
 	World * world;
 	Camera * camera;
@@ -59,8 +58,8 @@ void Environment::loop()
 	sky.uploadAsset(engine);
 	while (_running)
 	{
-		Profiler p("Environment::loop-while(_running)");
 		frameStart = glfwGetTime();
+		Profiler p("Environment::loop-while(_running)");
 		engine->beginFrame();
 		engine->beginImGui();
 		InputManager::interceptMouse(_windowManager);
@@ -86,8 +85,7 @@ void Environment::loop()
 		camera->renderViewMatrix(engine);
 		sky.drawAsset(engine, PIPELINE_SKYBOX);
 		engine->endFrame();
-		deltaTime = glfwGetTime() - frameStart;
-		_windowManager->setDeltaTime(deltaTime);
+		_windowManager->setDeltaTime(glfwGetTime() - frameStart);
 	}
 	_windowManager->destroy();
 }

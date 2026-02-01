@@ -30,19 +30,18 @@ void Gui::generateGui(GLFWwindow * window)
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Chunk Pos: %.3f / %.3f / %.3f",
 		chunkPos.x, chunkPos.y, chunkPos.z);
 
-	int currentRenderDistance = camera->getRenderDistance();
-	ImGui::SliderInt("Render distance", &currentRenderDistance, 2, 32, "%d chunks");
-	if (camera->getRenderDistance() != currentRenderDistance)
+	static int currentRenderDistance = camera->getRenderDistance();
+	if (ImGui::SliderInt("Render distance", &currentRenderDistance, 2, 32, "%d chunks"))
 		camera->setRenderDistance(currentRenderDistance);
 
 	static bool isLocked = WorldManager::getWorld(WORLD_NAME)->isLocked();
-	static bool newLockedValue = isLocked;
-	ImGui::Checkbox("Lock Generation", &isLocked);
-	if (isLocked != newLockedValue)
-	{
+	if (ImGui::Checkbox("Lock Generation", &isLocked))
 		WorldManager::getWorld(WORLD_NAME)->lockGeneration(isLocked);
-		newLockedValue = isLocked;
-	}
+
+	ImGui::SameLine();
+	static bool isIgnoringYMovement = camera->isIgnoringYMovement();
+	if (ImGui::Checkbox("Ignore Y Movement", &isIgnoringYMovement))
+		camera->setIgnoreYMovement(isIgnoringYMovement);
 
 	ImGui::End();
 }

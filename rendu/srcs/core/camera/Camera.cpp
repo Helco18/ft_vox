@@ -92,10 +92,13 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 	_orientation = glm::normalize(_orientation);
 }
 
-glm::vec3 Camera::computeForward() const
+glm::vec3 Camera::computeForward(bool ignoreY) const
 {
 	glm::vec3 forward;
-	forward = glm::normalize(_orientation * glm::vec3(0.0f, 0.0f, -1.0f));
+	forward = _orientation * glm::vec3(0.0f, 0.0f, -1.0f);
+	if (ignoreY)
+		forward.y = 0.0f;
+	forward = glm::normalize(forward);
 
 	return forward;
 }
@@ -124,7 +127,7 @@ glm::mat4 Camera::computeView() const
 	{
 		case EULER :
 		{
-			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), computeUp());
+			glm::mat4 view = glm::lookAt(_position, _position + computeForward(false), computeUp());
 			return(view);
 		}
 		case SIX_DOF :
@@ -135,7 +138,7 @@ glm::mat4 Camera::computeView() const
 		}
 		case FPS :
 		{
-			glm::mat4 view = glm::lookAt(_position, _position + computeForward(), computeUp());
+			glm::mat4 view = glm::lookAt(_position, _position + computeForward(false), computeUp());
 			return(view);
 		}
 		default: return (glm::mat4());
