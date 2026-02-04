@@ -9,19 +9,26 @@ class SimplexNoise
 	static_assert(N >= 1, "SimplexNoise: must be >= 1");
 
 	public:
-		SimplexNoise(uint32_t seed = 0);
+		SimplexNoise(uint32_t seed = 0, float noiseScale = 0.01f, float offset = 0.0f);
 		~SimplexNoise() {};
 
 		double		queryState(const std::vector<double> & pos) const;
 		static void	printNoise(uint32_t seed); // DEBUG
 	private:
 		std::vector<double>	_gradient(int hash) const;
-		double	_dot(const std::vector<double> & a, const std::vector<double> & b) const;
+		double				_dot(const std::vector<double> & a, const std::vector<double> & b) const;
+		double				_noise(const std::vector<double> & pos) const;
 
-		uint32_t	_seed;
+		float		_noiseScale;
+		float		_offset;
 
 		double		_F; // skew (nD to simplex)
 		double		_G; // unskew (simplex to nD)
+
+		// Fractal Brownian Motion
+		int			_octave = 3;
+		float		_persistance = 0.5;
+		float		_lacunarity = 2.0;
 
 		std::array<int, 512>	_perm;
 };

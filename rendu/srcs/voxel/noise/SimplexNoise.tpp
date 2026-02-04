@@ -11,19 +11,19 @@
 template <uint8_t N>
 void SimplexNoise<N>::printNoise(uint32_t seed)
 {
-	SimplexNoise<N> noise(seed);
+	SimplexNoise<N> noise(seed, 0.01f);
 
 	std::vector<uint8_t> data;
 
 	for (double x = 0; x < 1024; ++x)
 		for (double y = 0; y < 1024; ++y)
-			data.push_back(NOISIFY(noise.queryState({x * 0.01, y * 0.01})));
+			data.push_back(NOISIFY(noise.queryState({x, y})));
 	
 	stbi_write_png("noise.png", 1024, 1024, 1, data.data(), 1024);
 }
 
 template <uint8_t N>
-SimplexNoise<N>::SimplexNoise(uint32_t seed): _seed(seed)
+SimplexNoise<N>::SimplexNoise(uint32_t seed, float noiseScale, float offset): _noiseScale(noiseScale), _offset(offset)
 {
 	const double n = static_cast<double>(N);
 
@@ -43,6 +43,33 @@ SimplexNoise<N>::SimplexNoise(uint32_t seed): _seed(seed)
 template <uint8_t N>
 double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 {
+	std::vector<double> scalePos(N);
+	for (uint8_t d = 0; d < N; ++d)
+	{
+		scalePos[d] = pos[d] * _noiseScale + _offset;
+		if (scalePos[d] <= 0)
+			scalePos[d] *= -1;
+	}
+	double value = 0.0;
+
+	double frecancy = 1.0;
+	double amplitude = 1.0;
+
+	for (int octave = 0; octave < _octave; ++octave)
+	{
+		for (uint8_t d = 0; d < N; ++d)
+			scalePos[d] *= frecancy;
+		value += _noise(scalePos) * amplitude;
+		amplitude *= _persistance;
+		frecancy *= _lacunarity;
+	}
+	return value;
+}
+
+template <uint8_t N>
+double SimplexNoise<N>::_noise(const std::vector<double> & pos) const
+{
+
 	double value = 0.0;
 	// first corner : x0
 	// finde the firs corner of the simplex

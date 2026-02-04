@@ -37,7 +37,7 @@ bool Chunk::isReadyForMesh()
 void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	static SimplexNoise<2> noise(42);
+	static SimplexNoise<2> noise(42, 0.005f, 100000.0f);
 
 	if (!_world->isLoaded())
 			return;
@@ -46,12 +46,8 @@ void Chunk::build()
 	{
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH) * 0.01;
-			double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH) * 0.01;
-			if (xd < 0)
-				xd *= -1;
-			if (zd < 0)
-				zd *= -1;
+			double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH);
+			double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH);
 			double noiseValue = noise.queryState({xd, zd});
 			int height = static_cast<int>(std::floor(noiseValue * 30));
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
