@@ -13,6 +13,7 @@ class SimplexNoise
 		~SimplexNoise() {};
 
 		double		queryState(const std::vector<double> & pos) const;
+		void		setFBM(int octave, float persistance, float lacunarity) { _octave =	octave; _persistance = persistance; _lacunarity = lacunarity; }
 		static void	printNoise(uint32_t seed); // DEBUG
 	private:
 		std::vector<double>	_gradient(int hash) const;
@@ -26,9 +27,9 @@ class SimplexNoise
 		double		_G; // unskew (simplex to nD)
 
 		// Fractal Brownian Motion
-		int			_octave = 3;
-		float		_persistance = 0.5;
-		float		_lacunarity = 2.0;
+		int			_octave = 1;
+		float		_persistance = 1.0;
+		float		_lacunarity = 1.0;
 
 		std::array<int, 512>	_perm;
 };

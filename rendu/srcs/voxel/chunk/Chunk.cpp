@@ -38,15 +38,16 @@ void Chunk::build()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
 	static SimplexNoise<2> noise(42, 0.005f, 100000.0f);
+	noise.setFBM(3, 0.5, 2.0);
 
 	if (!_world->isLoaded())
 			return;
 	Profiler p("Chunk::build");
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
+		double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH);
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH);
 			double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH);
 			double noiseValue = noise.queryState({xd, zd});
 			int height = static_cast<int>(std::floor(noiseValue * 30));

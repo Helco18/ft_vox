@@ -11,7 +11,7 @@
 template <uint8_t N>
 void SimplexNoise<N>::printNoise(uint32_t seed)
 {
-	SimplexNoise<N> noise(seed, 0.01f);
+	SimplexNoise<N> noise(seed, 0.005f, 100000.0);
 
 	std::vector<uint8_t> data;
 
