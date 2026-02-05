@@ -17,8 +17,7 @@ class Entity
 		void				setWorld(World * world) { _world = world; }
 
 	private:
-		glm::vec3	_position;
-		Camera *	_camera;
-		World *		_world;
-
+		glm::vec3			_position;
+		Camera *			_camera;
+		World *				_world;
 };

@@ -4,9 +4,7 @@
 #include <numeric>
 #include <random>
 #include <algorithm>
-
 #include "stb/stb_image_write.h"
-#define NOISIFY(x) static_cast<uint8_t>(std::round(255 * (((x + 1.0) / 2.0))))
 
 template <uint8_t N>
 void SimplexNoise<N>::printNoise(uint32_t seed)
@@ -17,7 +15,7 @@ void SimplexNoise<N>::printNoise(uint32_t seed)
 
 	for (double x = 0; x < 1024; ++x)
 		for (double y = 0; y < 1024; ++y)
-			data.push_back(NOISIFY(noise.queryState({x, y})));
+			data.push_back(static_cast<uint8_t>(std::round(255 * (((noise.queryState({x, y}) + 1.0) / 2.0)))));
 	
 	stbi_write_png("noise.png", 1024, 1024, 1, data.data(), 1024);
 }
@@ -52,16 +50,16 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 	}
 	double value = 0.0;
 
-	double frecancy = 1.0;
+	double frequency = 1.0;
 	double amplitude = 1.0;
 
 	for (int octave = 0; octave < _octave; ++octave)
 	{
 		for (uint8_t d = 0; d < N; ++d)
-			scalePos[d] *= frecancy;
+			scalePos[d] *= frequency;
 		value += _noise(scalePos) * amplitude;
 		amplitude *= _persistance;
-		frecancy *= _lacunarity;
+		frequency *= _lacunarity;
 	}
 	return value;
 }
@@ -69,11 +67,10 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 template <uint8_t N>
 double SimplexNoise<N>::_noise(const std::vector<double> & pos) const
 {
-
 	double value = 0.0;
-	// first corner : x0
-	// finde the firs corner of the simplex
 
+	// first corner : x0
+	// find the first corner of the simplex
 	std::vector<double> x0(N);
 
 	// simplex cord
@@ -96,37 +93,37 @@ double SimplexNoise<N>::_noise(const std::vector<double> & pos) const
 	for (uint8_t d = 0; d < N; ++d)
 		x0[d] = pos[d] - i[d] + isum * _G;
 
-	// determination des somet
+	// détermination des sommets
 	std::vector<int> rank(N);
 	std::iota(rank.begin(), rank.end(), 0);
 	std::sort(rank.begin(), rank.end(), [&x0](int a, int b){ return (x0[a] > x0[b]); });
 
-	// contribution des somet
+	// contribution des sommets
 	for (uint8_t corner = 0; corner <= N; ++corner)
 	{
-		// selection de l'offset pour les angle (corner)
+		// sélection de l'offset pour les angles (corner)
 		std::vector<double> offset(N, 0.0);
 		for (uint8_t d = 0; d < corner; ++d)
 			offset[rank[d]] = 1.0;
 
-		//calcule des angle :
+		// calcul des angles :
 		std::vector<double> x(N);
 		for (uint8_t d = 0; d < N; ++d)
 			x[d] = x0[d] - offset[d] + static_cast<double>(corner) * _G;
 
-		// selection du hash en fonction de la posiion de l'angle
+		// sélection du hash en fonction de la position de l'angle
 		int hash = 0;
 		int h = 0;
 		for (uint8_t d = 0; d < N; ++d)
 			h = _perm[(h + static_cast<int>(std::floor(i[d] + offset[d]))) & 255];
 		hash = _perm[h];
 
-		// attenuation de la distance :
+		// atténuation de la distance :
 		double t = 0.5;
 		for (double v : x)
 			t -= v * v; 
 
-		// aplication de la deformation sur les valeu non null
+		// application de la déformation sur les valeurs non null
 		if (t > 0.0)
 		{
 			t *= t;
