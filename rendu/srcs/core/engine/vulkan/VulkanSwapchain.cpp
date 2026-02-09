@@ -128,9 +128,8 @@ void VulkanEngine::_createImageViews()
 	// On peut utiliser 3D pour des textures 3D (nuages, fumée, IRM...)
 	imageViewCreateInfo.viewType = vk::ImageViewType::e2D;
 	imageViewCreateInfo.format = _swapChainSurfaceFormat.format;
-	imageViewCreateInfo.subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 };
 	// Nos images vont être utilisées en tant que cible pour les couleurs, sans mipmap et avec un seul layer
-	imageViewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlags::BitsType::eColor;
+	imageViewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
 	imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
 	imageViewCreateInfo.subresourceRange.levelCount = 1;
 	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
@@ -170,5 +169,6 @@ void VulkanEngine::_recreateSwapchain()
 
 	_createSwapChain();
 	_createImageViews();
+	_createMultisamplingImage();
 	_createDepthResources();
 }

@@ -67,7 +67,7 @@ void VulkanEngine::_createDepthResources()
 
 	_createImage(_swapChainExtent.width, _swapChainExtent.height, _depthFormat, vk::ImageTiling::eOptimal, 
 				vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal, 
-				_depthImage, _depthImageMemory, vk::SampleCountFlagBits::e1);
+				_depthImage, _depthImageMemory, vk::SampleCountFlagBits::e4);
 
 	vk::ImageViewCreateInfo viewInfo;
 	viewInfo.image = _depthImage;

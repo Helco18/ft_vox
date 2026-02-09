@@ -82,7 +82,8 @@ void VulkanEngine::_recordCommandBuffer()
 		vk::ClearValue clearColor = vk::ClearColorValue(0.0f, 0.0f, 0.0f, 1.0f);
 
 		vk::RenderingAttachmentInfo colorAttachmentInfo;
-		colorAttachmentInfo.imageView = _swapChainImageViews[_imageIndex];
+		colorAttachmentInfo.imageView = _msaaImageView;
+		// colorAttachmentInfo.imageView = _swapChainImageViews[_imageIndex];
 		// On précise son layout actuel (comme celui au-dessus)
 		colorAttachmentInfo.imageLayout = vk::ImageLayout::eColorAttachmentOptimal;
 		// Que faire de ce qu'il y a actuellement sur l'image avant de dessiner ?
@@ -95,6 +96,9 @@ void VulkanEngine::_recordCommandBuffer()
 		// DontCare : On ne garde pas le résultat
 		colorAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
 		colorAttachmentInfo.clearValue = clearColor;
+		colorAttachmentInfo.resolveMode = vk::ResolveModeFlagBits::eAverage;
+		colorAttachmentInfo.resolveImageView = _swapChainImageViews[_imageIndex];
+		colorAttachmentInfo.resolveImageLayout = vk::ImageLayout::eColorAttachmentOptimal;
 
 		vk::RenderingAttachmentInfo depthAttachmentInfo;
 		vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);

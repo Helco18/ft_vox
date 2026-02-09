@@ -36,6 +36,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanImage.cpp \
 						srcs/core/engine/vulkan/VulkanInstance.cpp \
 						srcs/core/engine/vulkan/VulkanMesh.cpp \
+						srcs/core/engine/vulkan/VulkanMultisampling.cpp \
 						srcs/core/engine/vulkan/VulkanPipeline.cpp \
 						srcs/core/engine/vulkan/VulkanSwapchain.cpp \
 						srcs/core/engine/vulkan/VulkanTexture.cpp \

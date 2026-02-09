@@ -55,6 +55,7 @@ void VulkanEngine::load()
 
 	_frameCommandBuffers = _createCommandBuffer(vk::CommandBufferLevel::ePrimary);
 
+	_createMultisamplingImage();
 	// On crée les buffers pour stocker les données géométriques :
 	// - vertex buffer : contient les positions, couleurs, normales, etc.
 	// - index buffer : décrit l’ordre dans lequel les sommets sont connectés.

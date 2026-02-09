@@ -115,9 +115,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 
 	// Antialiasing
 	vk::PipelineMultisampleStateCreateInfo multisampling;
-	// multisampling.rasterizationSamples = vk::SampleCountFlagBits::e2; // Degré de MSAA (Multisample Antialiasing)
-	// multisampling.sampleShadingEnable = vk::True;
-	multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1; // Degré de MSAA (Multisample Antialiasing)
+	multisampling.rasterizationSamples = vk::SampleCountFlagBits::e4; // Degré de MSAA (Multisample Antialiasing)
 	multisampling.sampleShadingEnable = vk::False;
 
 	// Color blending

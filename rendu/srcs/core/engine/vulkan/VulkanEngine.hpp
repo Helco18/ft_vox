@@ -177,6 +177,11 @@ class VulkanEngine : public AEngine
 		vk::Format							_swapChainImageFormat;
 		std::vector<vk::Image>				_swapChainImages;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
+
+		// MSAA
+		vk::raii::Image						_msaaImage = nullptr;
+		vk::raii::DeviceMemory				_msaaImageMemory = nullptr;
+		vk::raii::ImageView					_msaaImageView = nullptr;
 	
 		// Commands & Descriptor
 		vk::raii::CommandPool				_commandPool = nullptr;
@@ -225,6 +230,7 @@ class VulkanEngine : public AEngine
 		vk::Extent2D						_chooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities);
 		void								_createSwapChain();
 		void								_createImageViews();
+		void								_createMultisamplingImage();
 		void								_createGraphicsPipelines();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::CommandPoolCreateFlags flags);
