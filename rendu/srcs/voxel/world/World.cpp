@@ -119,6 +119,7 @@ World::ChunkVec World::_queryChunksInRange()
 			for (int z = renderDistanceWest; z < renderDistanceEast; ++z)
 			{
 				glm::ivec3 location(x, y, z);
+				std::lock_guard<std::mutex> lg(_mapMutex);
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
 				{
@@ -126,10 +127,7 @@ World::ChunkVec World::_queryChunksInRange()
 					continue;
 				}
 				Chunk * chunk = new Chunk(x, y, z, this);
-				{
-					std::lock_guard<std::mutex> lg(_mapMutex);
 					_chunkMap.try_emplace(location, chunk);
-				}
 				chunks.push_back(_chunkMap[location]);
 			}
 		}
@@ -146,6 +144,7 @@ void World::_generateChunks()
 	ChunkVec chunksToGenerate;
 	std::mutex cvMutex;
 
+	// Tip for tomorrow: maybe add a cv to wait for chunks to be built/meshed, then when they're all done, wake the loop and reset counter
 	while (_isLoaded.load())
 	{
 		std::unique_lock<std::mutex> lock(cvMutex);
@@ -181,6 +180,8 @@ void World::_generateChunks()
 				else if (state == BUILDING || state == MESHING)
 					chunksReady = false;
 			}
+			if (!chunksReady)
+				std::this_thread::yield();
 		} while (!chunksReady && !_isProceduralRequested.load() && _isLoaded.load());
 	}
 }
