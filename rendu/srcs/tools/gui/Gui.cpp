@@ -34,6 +34,10 @@ void Gui::generateGui(GLFWwindow * window)
 	if (ImGui::SliderInt("Render distance", &currentRenderDistance, 2, 32, "%d chunks"))
 		camera->setRenderDistance(currentRenderDistance);
 
+	static float fov = camera->getFOV();
+	if (ImGui::SliderFloat("FOV", &fov, 1.0f, 120.0f, "%.0f", ImGuiSliderFlags_AlwaysClamp))
+		camera->setFOV(fov);
+
 	static bool isLocked = WorldManager::getWorld(WORLD_NAME)->isLocked();
 	if (ImGui::Checkbox("Lock Generation", &isLocked))
 		WorldManager::getWorld(WORLD_NAME)->lockGeneration(isLocked);

@@ -42,6 +42,7 @@ class Camera
 		void						setOrientation(glm::vec3 orientation) { _orientation = orientation; }
 		void						setYaw(float yaw) { _yaw = yaw; }
 		void						setPitch(float pitch) { _pitch = pitch; }
+		void						setFOV(float fov) { _fov = fov; }
 		void						setWidth(int width) { _width = width; }
 		void						setHeight(int height) { _height = height; }
 		void						setSpeed(float speed) { _speed = speed; }
