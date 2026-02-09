@@ -13,7 +13,7 @@ int TextureAtlas::_colorChannels = TARGET_COLOR_CHANNELS;
 
 void TextureAtlas::createAtlas()
 {
-	int offsetX = 0.0f;
+	int offsetX = 0;
 
 	if (_width == 0 || _height == 0 || _textureMap.empty())
 	{
@@ -31,14 +31,16 @@ void TextureAtlas::createAtlas()
 
 		for (int y = 0; y < texture->height; ++y)
 		{
-			for (int x = 0; x < texture->width; ++x)
-			{
-				int atlasIndex = ((y * _width) + (x + offsetX)) * _colorChannels;
-				int texIndex = (y * texture->width + x) * _colorChannels;
-				memcpy(&_atlasData[atlasIndex], &texture->data[texIndex], _colorChannels);
-			}
+			int atlasIndex = ((y * _width) + offsetX) * _colorChannels;
+			int texIndex = y * texture->width * _colorChannels;
+			memcpy(&_atlasData[atlasIndex], &texture->data[texIndex], texture->width * _colorChannels);
 		}
 		offsetX += texture->width;
+	}
+	for (int i = 0; i < _width * _height * 4; ++i)
+	{
+		if (!_atlasData[i])
+			_atlasData[i] = 255;
 	}
 	if (g_debug)
 		stbi_write_png("atlas_debug.png", _width, _height, _colorChannels, _atlasData.data(), _width * _colorChannels);
@@ -64,10 +66,10 @@ void TextureAtlas::pushTexture(const std::string & texturePath)
 		delete texture;
 		return;
 	}
-	_textureMap.emplace(texturePath, texture);
 	if (_height < texture->height)
 		_height = texture->height;
 	_width += texture->width;
+	_textureMap.emplace(texturePath, texture);
 	Logger::log(TEXTURE, DEBUG, "Loaded texture at: " + texturePath);
 }
 

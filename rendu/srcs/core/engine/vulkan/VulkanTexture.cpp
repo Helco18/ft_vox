@@ -60,7 +60,6 @@ void VulkanEngine::_createTextureImageView(TextureData & textureData)
 	imageViewCreateInfo.viewType = vk::ImageViewType::e2D;
 	imageViewCreateInfo.image = textureData.image;
 	imageViewCreateInfo.format = vk::Format::eR8G8B8A8Unorm;
-	imageViewCreateInfo.subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 };
 	// Nos images vont être utilisées en tant que cible pour les couleurs, sans mipmap et avec un seul layer
 	imageViewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlags::BitsType::eColor;
 	imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
@@ -73,8 +72,6 @@ void VulkanEngine::_createTextureImageView(TextureData & textureData)
 
 void VulkanEngine::_createTextureSampler(TextureData & textureData)
 {
-	vk::PhysicalDeviceProperties properties = _physicalDevice.getProperties();
-
 	vk::SamplerCreateInfo samplerInfo;
 	samplerInfo.flags = {};
 	samplerInfo.minFilter = vk::Filter::eLinear;
@@ -84,8 +81,6 @@ void VulkanEngine::_createTextureSampler(TextureData & textureData)
 	samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;
 	samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;
 	samplerInfo.mipLodBias = 0.0f;
-	samplerInfo.anisotropyEnable = vk::True;
-	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
 	samplerInfo.compareEnable = vk::False;
 	samplerInfo.compareOp = vk::CompareOp::eAlways;
 	samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
