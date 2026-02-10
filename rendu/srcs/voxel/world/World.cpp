@@ -133,9 +133,9 @@ World::ChunkVec World::_queryChunksInRange()
 		}
 	}
 
-	std::lock_guard<std::mutex> lg(_renderPointMutex);
-	std::sort(chunks.begin(), chunks.end(), [this](const Chunk * a, const Chunk * b)
-		{ return a->getDistance(_renderPoint) < b->getDistance(_renderPoint);});
+	cameraPosition = _renderPoint;
+	std::sort(chunks.begin(), chunks.end(), [cameraPosition](const Chunk * a, const Chunk * b)
+		{ return a->getDistance(cameraPosition) < b->getDistance(cameraPosition);});
 	return chunks;
 }
 
@@ -155,6 +155,14 @@ void World::_generateChunks()
 			continue;
 		_isProceduralRequested.store(false);
 		ChunkVec newChunks = _queryChunksInRange();
+		{
+			std::lock_guard<std::mutex> lg(_visibleChunksMutex);
+			_nextVisibleChunks = newChunks;
+			glm::vec3 tmpRenderPoint = _renderPoint;
+			std::sort(_nextVisibleChunks.begin(), _nextVisibleChunks.end(), [tmpRenderPoint](const Chunk * a, const Chunk * b)
+				{ return a->getDistance(tmpRenderPoint) > b->getDistance(tmpRenderPoint);});
+			_readyToSwap.store(true);
+		}
 		if (newChunks.empty())
 			continue;
 		bool chunksReady;
@@ -203,19 +211,20 @@ void World::update(Camera * camera)
 	}
 	if (lastVisitedChunk != currentChunk)
 		lastVisitedChunk = currentChunk;
-	{
-		std::lock_guard<std::mutex> lg(_renderPointMutex);
-		_renderPoint = camPos;
-	}
-	_visibleChunks = _queryChunksInRange();
-	std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
-			{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
+	_renderPoint = camPos;
 	_isProceduralRequested.store(true);
 	_cv.notify_one();
 }
 
 void World::render(AEngine * engine, PipelineType pipelineType)
 {
+	if (_readyToSwap)
+	{
+		std::lock_guard<std::mutex> lg(_visibleChunksMutex);
+		std::swap(_visibleChunks, _nextVisibleChunks);
+		_nextVisibleChunks.clear();
+		_readyToSwap.store(false);
+	}
 	for (Chunk * chunk : _visibleChunks)
 	{
 		ChunkState state = chunk->getState();

@@ -48,9 +48,11 @@ class World
 		std::string				_name;
 		ChunkMap				_chunkMap;
 		ChunkVec				_visibleChunks;
+		ChunkVec				_nextVisibleChunks;
+		std::atomic_bool		_readyToSwap;
 		ThreadPool				_chunkPool;
 		std::mutex				_mapMutex;
-		std::mutex				_renderPointMutex;
+		std::mutex				_visibleChunksMutex;
 		glm::vec3				_renderPoint;
 		std::atomic_bool		_isLoaded = false;
 		std::atomic_bool		_isProceduralRequested = false;
