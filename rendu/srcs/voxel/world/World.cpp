@@ -1,6 +1,5 @@
 #include "World.hpp"
 #include "Logger.hpp"
-#include "Profiler.hpp"
 #include <algorithm>
 
 World::~World()
@@ -35,7 +34,6 @@ Chunk * World::getChunkAt(int x, int y, int z)
 	int chunkY;
 	int chunkZ;
 
-	Profiler p("getChunkAt");
 	chunkX = static_cast<int>(std::floor(static_cast<double>(x) / CHUNK_WIDTH));
 	chunkY = static_cast<int>(std::floor(static_cast<double>(y) / CHUNK_HEIGHT));
 	chunkZ = static_cast<int>(std::floor(static_cast<double>(z) / CHUNK_LENGTH));
@@ -145,13 +143,14 @@ void World::_generateChunks()
 	std::mutex cvMutex;
 
 	// Tip for tomorrow: maybe add a cv to wait for chunks to be built/meshed, then when they're all done, wake the loop and reset counter
-	while (_isLoaded.load())
+	while (true)
 	{
 		std::unique_lock<std::mutex> lock(cvMutex);
-		_cv.wait(lock, [&] { return !_isLoaded.load() || (_isProceduralRequested.load() && !_isLocked.load()); });
-		if (!_isLoaded.load())
+		_cv.wait(lock, [&] { return !_isLoaded.load(std::memory_order_relaxed)
+			|| (_isProceduralRequested.load(std::memory_order_relaxed) && !_isLocked.load(std::memory_order_relaxed)); });
+		if (!_isLoaded.load(std::memory_order_relaxed))
 			return;
-		if (_isLocked.load())
+		if (_isLocked.load(std::memory_order_relaxed))
 			continue;
 		_isProceduralRequested.store(false);
 		ChunkVec newChunks = _queryChunksInRange();
@@ -171,7 +170,7 @@ void World::_generateChunks()
 			for (Chunk * chunk : newChunks)
 			{
 				ChunkState state = chunk->getState();
-				if (_isProceduralRequested.load() || !_isLoaded.load())
+				if (_isProceduralRequested.load(std::memory_order_relaxed) || !_isLoaded.load(std::memory_order_relaxed))
 					break;
 				if (state == NONE)
 				{
@@ -190,7 +189,7 @@ void World::_generateChunks()
 			}
 			if (!chunksReady)
 				std::this_thread::yield();
-		} while (!chunksReady && !_isProceduralRequested.load() && _isLoaded.load());
+		} while (!chunksReady && !_isProceduralRequested.load(std::memory_order_relaxed) && _isLoaded.load(std::memory_order_relaxed));
 	}
 }
 
@@ -221,7 +220,7 @@ void World::render(AEngine * engine, PipelineType pipelineType)
 	if (_readyToSwap)
 	{
 		std::lock_guard<std::mutex> lg(_visibleChunksMutex);
-		std::swap(_visibleChunks, _nextVisibleChunks);
+		_visibleChunks = _nextVisibleChunks;
 		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
 	}

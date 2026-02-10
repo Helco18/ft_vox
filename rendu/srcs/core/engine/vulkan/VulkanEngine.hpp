@@ -118,6 +118,16 @@ struct PendingUniform
 	size_t			size;
 };
 
+struct PendingAsset
+{
+	Asset *		asset;
+	PipelineID	pipelineID;
+	BufferData	vertexData;
+	BufferData	stagingVertexData;
+	BufferData	indexData;
+	BufferData	stagingIndexData;
+};
+
 struct AssetData
 {
 	Asset *									asset = nullptr;
@@ -212,6 +222,7 @@ class VulkanEngine : public AEngine
 		PipelineCache						_pipelineCache;
 		DrawableAssets						_drawableAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
+		std::vector<PendingAsset>			_pendingAssets;
 		
 		// Threads
 		ThreadPool							_threadPool;
@@ -234,8 +245,9 @@ class VulkanEngine : public AEngine
 		void								_createGraphicsPipelines();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
 		void								_createCommandPool(vk::CommandPoolCreateFlags flags);
-		void								_createVertexBuffer(AssetData & assetData);
-		void								_createIndexBuffer(AssetData & assetData);
+		void								_createVertexBuffer(PendingAsset & pendingAsset);
+		void								_createIndexBuffer(PendingAsset & pendingAsset);
+		void								_processPendingAssets();
 		void								_processPendingUniforms();
 		CommandBuffers						_createCommandBuffer(vk::CommandBufferLevel level);
 		void								_recordCommandBuffer();

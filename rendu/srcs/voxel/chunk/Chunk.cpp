@@ -1,5 +1,4 @@
 #include "Chunk.hpp"
-#include "Profiler.hpp"
 #include "WindowManager.hpp"
 #include "World.hpp"
 #include "Logger.hpp"
@@ -42,7 +41,6 @@ void Chunk::build()
 
 	if (!_world->isLoaded())
 			return;
-	Profiler p("Chunk::build");
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
 		double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH);
@@ -79,7 +77,6 @@ void Chunk::generateMesh()
 
 	if (!_world->isLoaded())
 		return;
-	Profiler p("Chunk::generateMesh");
 	_generateGreedyMesh();
 	if (_asset.vertices.data && !_asset.indices.empty())
 		setState(MESHED);
@@ -92,7 +89,6 @@ void Chunk::uploadAsset(AEngine * engine)
 	if (_workerMutex.try_lock())
 		return;
 
-	Profiler p("Chunk::uploadAsset");
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
 	engine->uploadAsset(_assetFrame, PipelineManager::getPipeline(PIPELINE_LINES).id);
 	setState(UPLOADED);

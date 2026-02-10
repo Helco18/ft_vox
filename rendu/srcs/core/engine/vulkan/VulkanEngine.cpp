@@ -1,7 +1,6 @@
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
 #include "Logger.hpp"
-#include "Profiler.hpp"
 
 VulkanEngine::VulkanEngine(GLFWwindow * window) : AEngine(window)
 {
@@ -20,8 +19,6 @@ VulkanEngine::~VulkanEngine()
 
 void VulkanEngine::load()
 {
-	Profiler p("VulkanEngine::load");
-
 	// On initialise une instance Vulkan, qui représente notre application au niveau de l'API Vulkan.
 	// C'est le point d'entrée principal entre l'application et le driver Vulkan (on y précise nom, version, extensions, etc.)
 	_createInstance();
@@ -107,6 +104,7 @@ void VulkanEngine::endFrame()
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
 		_processPendingUniforms();
+		_processPendingAssets();
 		_retrieveCommandBuffers();
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;

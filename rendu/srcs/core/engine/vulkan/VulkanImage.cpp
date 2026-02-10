@@ -68,3 +68,32 @@ void VulkanEngine::_createImage(uint32_t width, uint32_t height, vk::Format form
 	imageMemory = vk::raii::DeviceMemory( _device, allocInfo );
 	image.bindMemory(imageMemory, 0);
 }
+
+void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info)
+{
+	// Une barrière est comme un mutex, elle attend que l'image soit disponible puis change de layout
+	vk::ImageMemoryBarrier2 barrier;
+	barrier.oldLayout = info.oldLayout;
+	barrier.newLayout = info.newLayout;
+	barrier.srcAccessMask = info.srcAccessMask;
+	barrier.dstAccessMask = info.dstAccessMask;
+	barrier.srcStageMask = info.srcStageMask;
+	barrier.dstStageMask = info.dstStageMask;
+	barrier.image = _swapChainImages[info.imageIndex];
+	// On change ici si on veut changer la queue family de l'image. Dans la plupart des cas, on ignore pour ne pas changer.
+	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+	barrier.subresourceRange.baseMipLevel = 0;
+	barrier.subresourceRange.levelCount = 1;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = 1;
+
+	// Une Dependency info regroupe plusieurs types de barrière, ici on en a qu'une donc on la lui donne
+	vk::DependencyInfo dependencyInfo;
+	dependencyInfo.dependencyFlags = {};
+	dependencyInfo.imageMemoryBarrierCount = 1;
+	dependencyInfo.pImageMemoryBarriers = &barrier;
+
+	_frameCommandBuffers[_currentFrame].pipelineBarrier2(dependencyInfo);
+}

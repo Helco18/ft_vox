@@ -70,7 +70,7 @@ class Camera
 		glm::vec3					_position;
 		glm::quat					_orientation;
 		glm::vec3					_altitude;
-		uint16_t					_renderDistance = 8;
+		uint16_t					_renderDistance = 1;
 		int							_width;
 		int							_height;
 		float						_yaw;

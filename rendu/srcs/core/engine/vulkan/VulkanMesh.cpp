@@ -56,14 +56,14 @@ void VulkanEngine::_createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage
 	buffer.bindMemory(*deviceMemory, 0);
 }
 
-void VulkanEngine::_createVertexBuffer(AssetData & assetData)
+void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 {
 	if (!_isInitalized.load())
 		return;
 
-	Asset * asset = assetData.asset;
-	BufferData & vertexData = assetData.vbo;
-	BufferData stagingVertexData;
+	Asset * asset = pendingAsset.asset;
+	BufferData & vertexData = pendingAsset.vertexData;
+	BufferData & stagingVertexData = pendingAsset.stagingVertexData;
 	vk::DeviceSize size = asset->vertices.size;
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc,
@@ -77,21 +77,16 @@ void VulkanEngine::_createVertexBuffer(AssetData & assetData)
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					vertexData.buffer, vertexData.memory);
-
-	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
-	commandBuffer.copyBuffer(stagingVertexData.buffer, vertexData.buffer,
-		vk::BufferCopy(0, 0, asset->vertices.size));
-	_endSingleTimeCommands(commandBuffer);
 }
 
-void VulkanEngine::_createIndexBuffer(AssetData & assetData)
+void VulkanEngine::_createIndexBuffer(PendingAsset & pendingAsset)
 {
 	if (!_isInitalized.load())
 		return;
 
-	Asset * asset = assetData.asset;
-	BufferData & indexData = assetData.ibo;
-	BufferData stagingIndexData;
+	Asset * asset = pendingAsset.asset;
+	BufferData & indexData = pendingAsset.indexData;
+	BufferData & stagingIndexData = pendingAsset.stagingIndexData;
 	vk::DeviceSize size = sizeof(asset->indices[0]) * asset->indices.size();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
@@ -105,9 +100,4 @@ void VulkanEngine::_createIndexBuffer(AssetData & assetData)
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
 					indexData.buffer, indexData.memory);
-
-	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
-	commandBuffer.copyBuffer(stagingIndexData.buffer, indexData.buffer,
-		vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
-	_endSingleTimeCommands(commandBuffer);
 }

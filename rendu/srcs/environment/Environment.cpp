@@ -1,7 +1,6 @@
 #include "Environment.hpp"
 #include "CustomExceptions.hpp"
 #include "InputManager.hpp"
-#include "Profiler.hpp"
 #include "WorldManager.hpp"
 #include "TextureAtlas.hpp"
 #include "Skybox.hpp"
@@ -59,7 +58,6 @@ void Environment::loop()
 	while (_running)
 	{
 		frameStart = glfwGetTime();
-		Profiler p("Environment::loop-while(_running)");
 		engine->beginFrame();
 		engine->beginImGui();
 		InputManager::interceptMouse(_windowManager);

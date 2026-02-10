@@ -1,7 +1,6 @@
 #include "OpenGLEngine.hpp"
 #include "Logger.hpp"
 #include "CustomExceptions.hpp"
-#include "Profiler.hpp"
 #include "WindowManager.hpp"
 
 OpenGLEngine::OpenGLEngine(GLFWwindow * window) : AEngine(window) { _engineType = OPENGL; }
@@ -33,7 +32,6 @@ OpenGLEngine::~OpenGLEngine()
 
 void OpenGLEngine::load()
 {
-	Profiler p("OpenGLEngine::load");
 	glfwSwapInterval(0);
 
 	if (g_debug)

@@ -1,9 +1,11 @@
 #include "OpenGLEngine.hpp"
 #include "CustomExceptions.hpp"
+#include "Profiler.hpp"
 #include "utils.hpp"
 
 AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
+	Profiler p("OpenGLAsset::uploadAsset");
 	PipelineMap::iterator it = _pipelineMap.find(pipelineID);
 	if (it == _pipelineMap.end())
 	{
