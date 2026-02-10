@@ -10,6 +10,7 @@
 #include "glm/gtx/hash.hpp"
 
 #define RENDER_DISTANCE_BORDER 1
+#define MAX_UPLOAD_PER_FRAME 128
 
 class World
 {

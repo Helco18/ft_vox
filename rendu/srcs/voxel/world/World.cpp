@@ -157,9 +157,8 @@ void World::_generateChunks()
 		{
 			std::lock_guard<std::mutex> lg(_visibleChunksMutex);
 			_nextVisibleChunks = newChunks;
-			glm::vec3 tmpRenderPoint = _renderPoint;
-			std::sort(_nextVisibleChunks.begin(), _nextVisibleChunks.end(), [tmpRenderPoint](const Chunk * a, const Chunk * b)
-				{ return a->getDistance(tmpRenderPoint) > b->getDistance(tmpRenderPoint);});
+			std::sort(_nextVisibleChunks.begin(), _nextVisibleChunks.end(), [this](const Chunk * a, const Chunk * b)
+				{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
 			_readyToSwap.store(true);
 		}
 		if (newChunks.empty())
@@ -224,11 +223,15 @@ void World::render(AEngine * engine, PipelineType pipelineType)
 		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
 	}
+	int i = 0;
 	for (Chunk * chunk : _visibleChunks)
 	{
 		ChunkState state = chunk->getState();
-		if (state == MESHED)
+		if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
+		{
 			chunk->uploadAsset(engine);
+			i++;
+		}
 		else if (state == UPLOADED)
 			chunk->drawAsset(engine, pipelineType);
 	}
