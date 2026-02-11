@@ -11,19 +11,19 @@
 
 #define RENDER_DISTANCE_BORDER 1
 #define MAX_UPLOAD_PER_FRAME 128
-#define CHUNK_DELETION_DISTANCE 1
+#define CHUNK_DELETION_DISTANCE 8
 
-struct plane
+struct Plane
 {
 	float	plane[4];
 };
 
-enum frostumDir
+enum FrustumDir
 {
-	left,
-	right,
-	bottom,
-	top
+	FRUSTUM_LEFT,
+	FRUSTUM_RIGHT,
+	FRUSTUM_BOTTOM,
+	FRUSTUM_TOP
 };
 
 class World
@@ -63,7 +63,7 @@ class World
 		bool					_chunkIsFrustum(Chunk * chunk);
 		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
 
-		plane					_planes[4];
+		Plane					_planes[4];
 		std::string				_name;
 		ChunkMap				_chunkMap;
 		ChunkVec				_visibleChunks;

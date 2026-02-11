@@ -1,6 +1,7 @@
 #include "Environment.hpp"
 #include "CustomExceptions.hpp"
 #include "Profiler.hpp"
+#include <algorithm>
 
 static ProgramParams parseArgs(int ac, char ** av)
 {

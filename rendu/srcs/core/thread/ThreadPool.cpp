@@ -50,6 +50,14 @@ void ThreadPool::submitTask(Task task)
 	_wakerCv.notify_one();
 }
 
+void ThreadPool::clearTasks()
+{
+	std::lock_guard<std::mutex> lock(_queueMutex);
+	Logger::log(THREAD, WARNING, "Clearing");
+	while (!_taskQueue.empty())
+		_taskQueue.pop();
+}
+
 void ThreadPool::stop()
 {
 	_isStopped = true;

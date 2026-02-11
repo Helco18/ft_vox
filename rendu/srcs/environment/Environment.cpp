@@ -69,13 +69,12 @@ void Environment::loop()
 			continue;
 		else if (_windowManager->isSwapRequested())
 		{
+			if (world)
+				world->unloadChunks(engine);
+			sky.unload(engine);
 			_windowManager->swap();
 			engine = _windowManager->getEngine();
-			if (!glfwWindowShouldClose(_windowManager->getWindow()) && world)
-			{
-				world->unloadChunks(engine);
-				sky.uploadAsset(engine);
-			}
+			sky.uploadAsset(engine);
 			continue;
 		}
 		if (world)

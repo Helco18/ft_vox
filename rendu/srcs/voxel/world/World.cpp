@@ -146,24 +146,24 @@ void World::_generateChunks()
 	// Tip for tomorrow: maybe add a cv to wait for chunks to be built/meshed, then when they're all done, wake the loop and reset counter
 	while (true)
 	{
+		Logger::log(VOXEL, DEBUG, "Waiting");
 		std::unique_lock<std::mutex> lock(cvMutex);
 		_cv.wait(lock, [&] { return !_isLoaded.load(std::memory_order_relaxed)
 			|| (_isProceduralRequested.load(std::memory_order_relaxed) && !_isLocked.load(std::memory_order_relaxed)); });
+		Logger::log(VOXEL, DEBUG, "Awake");
 		if (!_isLoaded.load(std::memory_order_relaxed))
 			return;
 		if (_isLocked.load(std::memory_order_relaxed))
 			continue;
 		_isProceduralRequested.store(false);
 		ChunkVec newChunks = _queryChunksInRange();
+		if (newChunks.empty())
+			continue;
 		{
 			std::lock_guard<std::mutex> lg(_visibleChunksMutex);
 			_nextVisibleChunks = newChunks;
-			std::sort(_nextVisibleChunks.begin(), _nextVisibleChunks.end(), [this](const Chunk * a, const Chunk * b)
-				{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
 			_readyToSwap.store(true);
 		}
-		if (newChunks.empty())
-			continue;
 		bool chunksReady;
 		bool isProceduralRequested = false;
 		bool isLoaded = true;
@@ -230,7 +230,7 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 			{
 				iterators.push_back(chunkPos);
 				delete chunk;
-				chunk = nullptr;
+				_chunkMap[chunkPos] = nullptr;
 			}
 		}
 	}
@@ -238,7 +238,7 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 		_chunkMap.erase(pos);
 }
 
-void World::update(AEngine * , Camera * camera)
+void World::update(AEngine * engine, Camera * camera)
 {
 	static glm::ivec3 lastVisitedChunk(0, 0, 0);
 	static int oldRenderDistance = 0;
@@ -256,7 +256,7 @@ void World::update(AEngine * , Camera * camera)
 	if (lastVisitedChunk != currentChunk)
 	{
 		lastVisitedChunk = currentChunk;
-		// _checkForChunkDeletion(engine, camera);
+		_checkForChunkDeletion(engine, camera);
 	}
 	_renderPoint = camPos;
 	_isProceduralRequested.store(true);
@@ -266,21 +266,21 @@ void World::update(AEngine * , Camera * camera)
 void World::_extractPlanesFromProjmat(Camera * camera)
 {
 	glm::mat4 projmat = camera->getView();
-	for (int f = 0; f <= top; ++f)
+	for (int f = 0; f <= FrustumDir::FRUSTUM_TOP; ++f)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			if (f == right)
+			if (f == FrustumDir::FRUSTUM_RIGHT)
 				_planes[f].plane[i] = projmat[i][3] + projmat[i][0];
-			else if (f == left)
+			else if (f == FrustumDir::FRUSTUM_LEFT)
 				_planes[f].plane[i] = projmat[i][3] - projmat[i][0];
-			else if (f == top)
+			else if (f == FrustumDir::FRUSTUM_TOP)
 				_planes[f].plane[i] = projmat[i][3] + projmat[i][1];
-			else if (f == bottom)
+			else if (f == FrustumDir::FRUSTUM_BOTTOM)
 				_planes[f].plane[i] = projmat[i][3] - projmat[i][1];
 		}
 		glm::vec3 normal(_planes[f].plane[0], _planes[f].plane[1], _planes[f].plane[2]);
-		float len = length(normal);
+		float len = glm::length(normal);
 		_planes[f].plane[0] /= len;
 		_planes[f].plane[1] /= len;
 		_planes[f].plane[2] /= len;
@@ -288,7 +288,7 @@ void World::_extractPlanesFromProjmat(Camera * camera)
 	}
 }
 
-float getSignedDistanceToPlane(glm::vec3 pos, plane p)
+static float getSignedDistanceToPlane(const glm::vec3 & pos, const Plane & p)
 {
 	glm::vec3 normal(p.plane[0], p.plane[1], p.plane[2]);
 	return(glm::dot(normal, pos) + (p.plane[3]));
@@ -302,7 +302,7 @@ bool World::_chunkIsFrustum(Chunk * chunk)
 	glm::vec3 c = (min + max) * 0.5f;
 	glm::vec3 e = (max - min) - 0.5f;
 
-	for (int f = 0; f <= top; ++f)
+	for (int f = 0; f <= FrustumDir::FRUSTUM_TOP; ++f)
 	{
 		const glm::vec3 normal(_planes[f].plane[0], _planes[f].plane[1], _planes[f].plane[2]);
 		float r = e[0] * glm::abs(normal[0]) + e[1] * glm::abs(normal[1]) + e[2] * glm::abs(normal[2]);
@@ -320,10 +320,12 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 	{
 		std::lock_guard<std::mutex> lg(_visibleChunksMutex);
 		_visibleChunks = _nextVisibleChunks;
+		std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
+				{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
 		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
 	}
-	// _extractPlanesFromProjmat(camera);
+	_extractPlanesFromProjmat(camera);
 	int i = 0;
 	for (Chunk * chunk : _visibleChunks)
 	{
@@ -332,15 +334,10 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		ChunkState state = chunk->getState();
 		if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
 		{
-			if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
-			{
-				chunk->uploadAsset(engine);
-				i++;
-			}
-			else if (state == UPLOADED && _chunkIsFrustum(chunk))
-				chunk->drawAsset(engine, pipelineType);
+			chunk->uploadAsset(engine);
+			i++;
 		}
-		else if (state == UPLOADED)
+		else if (state == UPLOADED && _chunkIsFrustum(chunk))
 			chunk->drawAsset(engine, pipelineType);
 	}
 }

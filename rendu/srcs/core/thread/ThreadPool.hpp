@@ -13,6 +13,7 @@ class ThreadPool
 		void					start(uint16_t requestedThreads);
 		void					stop();
 		void					submitTask(Task task); // use Task task = [params]() { func(params); }; to send it.
+		void					clearTasks();
 
 		static uint16_t			getAvailableThreads() { return _availableThreads; }
 		static void				giveBackThreads(uint16_t threadCount);

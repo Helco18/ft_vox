@@ -15,20 +15,20 @@ void ThreadWorker::_loop()
 	while (true)
 	{
 		Task task;
-			Logger::log(THREAD, INFO, "Philosopher is sleeping");
+			Logger::log(THREAD, DEBUG, "Philosopher is sleeping");
 		{
 			std::unique_lock<std::mutex> lock(_queueMutex);
 			_wakerCv.wait(lock, [&] { return !_isActive.load() || !_taskQueue.empty(); });
 
-			Logger::log(THREAD, INFO, "Philosopher is thinking");
+			Logger::log(THREAD, DEBUG, "Philosopher is thinking");
 			if (!_isActive.load())
 			{
-				Logger::log(THREAD, INFO, "Philosopher died");
+				Logger::log(THREAD, DEBUG, "Philosopher died");
 				_queueMutex.unlock();
 				return;
 			}
 
-			Logger::log(THREAD, INFO, "Philosopher is eating");
+			Logger::log(THREAD, DEBUG, "Philosopher is eating");
 			task = std::move(_taskQueue.front());
 			_taskQueue.pop();
 		}
@@ -41,8 +41,8 @@ void ThreadWorker::stop()
 {
 	if (_thread.joinable())
 	{
-		Logger::log(THREAD, INFO, "Joining worker");
+		Logger::log(THREAD, DEBUG, "Joining worker");
 		_thread.join();
-		Logger::log(THREAD, INFO, "Worker joined");
+		Logger::log(THREAD, DEBUG, "Worker joined");
 	}
 }
