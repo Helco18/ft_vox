@@ -214,7 +214,58 @@ void World::update(Camera * camera)
 	_cv.notify_one();
 }
 
-void World::render(AEngine * engine, PipelineType pipelineType)
+#include "utils.hpp"
+
+void World::_extractPlanesFromProjmat(Camera * camera)
+{
+	glm::mat4 projmat = camera->getBuffer().proj * camera->getBuffer().view;
+	for (int f = 0; f <= top; ++f)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			if (f <= right)
+			{
+				_planes[f].plane[i] = projmat[i][3] - projmat[i][0];
+			}
+			else
+			{
+				_planes[f].plane[i] = projmat[i][3] + projmat[i][1];
+			}
+		}
+		glm::vec3 normal(_planes[f].plane[0], _planes[f].plane[1], _planes[f].plane[2]);
+		float len = length(normal);
+		_planes[f].plane[0] /= len;
+		_planes[f].plane[1] /= len;
+		_planes[f].plane[2] /= len;
+		_planes[f].plane[3] /= len;
+		Logger::log(VOXEL, DEBUG, "distanc :" + toString(_planes[f].plane[3]));
+	}
+}
+
+float getSignedDistanceToPlane(glm::vec3 pos, plane p)
+{
+	glm::vec3 normal(p.plane[0], p.plane[1], p.plane[2]);
+	return(glm::dot(normal, pos) + (p.plane[3]));
+}
+
+bool World::_chunkIsFrutum(Chunk * chunk)
+{
+	// (void)chunk;
+	glm::vec3 pos = chunk->getChunkLocation();
+	pos.x *= CHUNK_WIDTH;
+	pos.y *= CHUNK_HEIGHT;
+	pos.z *= CHUNK_LENGTH;
+	if (getSignedDistanceToPlane(pos, _planes[right]) > 0 &&
+		getSignedDistanceToPlane(pos, _planes[left]) > 0 &&
+		getSignedDistanceToPlane(pos, _planes[bottom]) > 0 &&
+		getSignedDistanceToPlane(pos, _planes[top]) > 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 {
 	if (_readyToSwap)
 	{
@@ -223,16 +274,27 @@ void World::render(AEngine * engine, PipelineType pipelineType)
 		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
 	}
+	_extractPlanesFromProjmat(camera);
 	int i = 0;
 	for (Chunk * chunk : _visibleChunks)
 	{
 		ChunkState state = chunk->getState();
-		if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
+		if(state >= MESHED)
 		{
-			chunk->uploadAsset(engine);
-			i++;
+			if(_chunkIsFrutum(chunk))
+			{
+				if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
+				{
+					chunk->uploadAsset(engine);
+					i++;
+				}
+				else if (state == UPLOADED)
+					chunk->drawAsset(engine, pipelineType);
+			}
+			else
+			{
+				// Logger::log(VOXEL, DEBUG, "chunk is not in plans");
+			}
 		}
-		else if (state == UPLOADED)
-			chunk->drawAsset(engine, pipelineType);
 	}
 }

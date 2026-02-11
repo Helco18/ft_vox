@@ -36,6 +36,7 @@ class Camera
 		float						getSensitivity() const { return _sensitivity; }
 		float						getSpeed() const { return _speed; }
 		int							getRenderDistance() const { return _renderDistance; }
+		const CameraBuffer &		getBuffer() const { return _cameraBuffer; }
 		bool						isIgnoringYMovement() const { return _ignoreY; }
 
 		void						setPosition(const glm::vec3 & position) { _position = position; }

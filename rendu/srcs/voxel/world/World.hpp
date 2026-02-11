@@ -12,6 +12,19 @@
 #define RENDER_DISTANCE_BORDER 1
 #define MAX_UPLOAD_PER_FRAME 128
 
+struct plane
+{
+	float	plane[4];
+};
+
+enum frostumDir
+{
+	left,
+	right,
+	bottom,
+	top
+};
+
 class World
 {
 	public:
@@ -33,7 +46,7 @@ class World
 
 		void					unloadChunks(AEngine * engine);
 
-		void					render(AEngine * engine, PipelineType pipelineType);
+		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
 		void					update(Camera * camera);
 
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
@@ -45,7 +58,10 @@ class World
 		void					_computeRenderDistance(const int renderDistance);
 		bool					_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
 		ChunkVec				_queryChunksInRange();
+		void					_extractPlanesFromProjmat(Camera * camera);
+		bool					_chunkIsFrutum(Chunk * chunk);
 
+		plane					_planes[4];
 		std::string				_name;
 		ChunkMap				_chunkMap;
 		ChunkVec				_visibleChunks;

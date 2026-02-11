@@ -81,7 +81,7 @@ void Environment::loop()
 		if (world)
 		{
 			world->update(camera);
-			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL);
+			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL, camera);
 		}
 		camera->renderViewMatrix(engine);
 		sky.drawAsset(engine, PIPELINE_SKYBOX);
