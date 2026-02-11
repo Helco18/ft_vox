@@ -38,6 +38,7 @@ class Camera
 		uint8_t						getRenderDistance() const { return _renderDistance; }
 		const CameraBuffer &		getBuffer() const { return _cameraBuffer; }
 		bool						isIgnoringYMovement() const { return _ignoreY; }
+		glm::mat4 					getView() const { return _view; }
 
 		void						setPosition(const glm::vec3 & position) { _position = position; }
 		void						setOrientation(glm::vec3 orientation) { _orientation = orientation; }
@@ -82,5 +83,7 @@ class Camera
 		std::vector<PipelineType>	_pipelines;
 		CameraType					_type = EULER;
 		CameraBuffer				_cameraBuffer;
-		bool						_ignoreY = true;
+		bool						_ignoreY = false;
+
+		glm::mat4					_view;
 };

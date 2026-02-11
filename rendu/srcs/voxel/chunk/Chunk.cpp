@@ -7,6 +7,9 @@
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE)
 {
+	_min = _chunkLocation;
+	_min *= glm::vec3(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_LENGTH);
+	_max = _min + glm::vec3(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_LENGTH);
 	_asset.uniforms = &_chunkData;
 }
 

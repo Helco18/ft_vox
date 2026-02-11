@@ -1,8 +1,8 @@
 #pragma once
 
-#define CHUNK_WIDTH 16
-#define CHUNK_HEIGHT 16
-#define CHUNK_LENGTH 16
+#define CHUNK_WIDTH 32
+#define CHUNK_HEIGHT 32
+#define CHUNK_LENGTH 32
 
 #include <mutex>
 #include "OBJModel.hpp"
@@ -64,6 +64,8 @@ class Chunk
 		Asset &						getAsset() { return _asset; }
 		uint8_t						getBlock(int x, int y, int z) { return _blocks[x][y][z].load(); }
 		float						getDistance(glm::vec3 pos) const;
+		const glm::vec3 &			getMin() const { return _min; };
+		const glm::vec3 &			getMax() const { return _max; };
 		bool						isDirty() const { return _isDirty.load(); }
 
 		void						setState(ChunkState state) { _state.store(state); }
@@ -100,6 +102,9 @@ class Chunk
 		Chunk * 					_westChunk = nullptr;
 		Chunk * 					_topChunk = nullptr;
 		Chunk * 					_bottomChunk = nullptr;
+
+		glm::vec3					_min;
+		glm::vec3					_max;
 
 		void						_generateGreedyMesh();
 		void						_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);

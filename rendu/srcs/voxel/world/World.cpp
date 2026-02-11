@@ -265,18 +265,18 @@ void World::update(AEngine * , Camera * camera)
 
 void World::_extractPlanesFromProjmat(Camera * camera)
 {
-	glm::mat4 projmat = camera->getBuffer().proj * camera->getBuffer().view;
+	glm::mat4 projmat = camera->getView();
 	for (int f = 0; f <= top; ++f)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
 			if (f == right)
 				_planes[f].plane[i] = projmat[i][3] + projmat[i][0];
-			if (f == left)
+			else if (f == left)
 				_planes[f].plane[i] = projmat[i][3] - projmat[i][0];
-			if (f == top)
+			else if (f == top)
 				_planes[f].plane[i] = projmat[i][3] + projmat[i][1];
-			if (f == bottom)
+			else if (f == bottom)
 				_planes[f].plane[i] = projmat[i][3] - projmat[i][1];
 		}
 		glm::vec3 normal(_planes[f].plane[0], _planes[f].plane[1], _planes[f].plane[2]);
@@ -296,18 +296,21 @@ float getSignedDistanceToPlane(glm::vec3 pos, plane p)
 
 bool World::_chunkIsFrustum(Chunk * chunk)
 {
-	glm::vec3 pos = chunk->getChunkLocation();
-	pos.x = pos.x * CHUNK_WIDTH + static_cast<float>(CHUNK_WIDTH) / 2;
-	pos.y = pos.y * CHUNK_HEIGHT + static_cast<float>(CHUNK_HEIGHT) / 2;
-	pos.z = pos.z * CHUNK_LENGTH + static_cast<float>(CHUNK_LENGTH) / 2;
-	if (getSignedDistanceToPlane(pos, _planes[right]) > 0 &&
-		getSignedDistanceToPlane(pos, _planes[left]) > 0 &&
-		getSignedDistanceToPlane(pos, _planes[bottom]) > 0 &&
-		getSignedDistanceToPlane(pos, _planes[top]) > 0)
+	glm::vec3 min = chunk->getMin();
+	glm::vec3 max = chunk->getMax();
+
+	glm::vec3 c = (min + max) * 0.5f;
+	glm::vec3 e = (max - min) - 0.5f;
+
+	for (int f = 0; f <= top; ++f)
 	{
-		return true;
+		const glm::vec3 normal(_planes[f].plane[0], _planes[f].plane[1], _planes[f].plane[2]);
+		float r = e[0] * glm::abs(normal[0]) + e[1] * glm::abs(normal[1]) + e[2] * glm::abs(normal[2]);
+		float s = getSignedDistanceToPlane(c, _planes[f]);
+		if (s + r < 0)
+			return false;
 	}
-	return false;
+	return true;
 }
 
 void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
@@ -329,8 +332,13 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		ChunkState state = chunk->getState();
 		if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
 		{
-			chunk->uploadAsset(engine);
-			i++;
+			if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
+			{
+				chunk->uploadAsset(engine);
+				i++;
+			}
+			else if (state == UPLOADED && _chunkIsFrustum(chunk))
+				chunk->drawAsset(engine, pipelineType);
 		}
 		else if (state == UPLOADED)
 			chunk->drawAsset(engine, pipelineType);
