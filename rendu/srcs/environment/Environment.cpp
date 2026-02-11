@@ -13,7 +13,7 @@ Environment::~Environment()
 	delete _windowManager;
 }
 
-void Environment::init(EngineType engineType)
+void Environment::init(ProgramParams & programParams)
 {
 	if (!OBJModel::loadModels())
 		throw EnvironmentException("Failed to load models.");
@@ -24,7 +24,7 @@ void Environment::init(EngineType engineType)
 	TextureAtlas::pushTexture("resources/assets/textures/blue_stone.png");
 	TextureAtlas::createAtlas();
 
-	_windowManager = new WindowManager(engineType, this);
+	_windowManager = new WindowManager(programParams.engineType, this);
 	_windowManager->load();
 
 	Camera * camera = _windowManager->getCamera();
@@ -33,6 +33,9 @@ void Environment::init(EngineType engineType)
 	camera->addPipelineToRender(PIPELINE_WIREFRAME);
 	camera->addPipelineToRender(PIPELINE_LINES);
 	camera->addPipelineToRender(PIPELINE_SKYBOX);
+	camera->setFOV(programParams.fov);
+	camera->setRenderDistance(programParams.renderDistance);
+	camera->setIgnoreYMovement(programParams.ignoreY);
 
 	BlockData::init();
 
