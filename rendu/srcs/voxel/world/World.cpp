@@ -223,14 +223,14 @@ void World::_extractPlanesFromProjmat(Camera * camera)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			if (f <= right)
-			{
+			if (f == right)
+				_planes[f].plane[i] = projmat[i][3] + projmat[i][0];
+			if (f == left)
 				_planes[f].plane[i] = projmat[i][3] - projmat[i][0];
-			}
-			else
-			{
+			if (f == top)
 				_planes[f].plane[i] = projmat[i][3] + projmat[i][1];
-			}
+			if (f == bottom)
+				_planes[f].plane[i] = projmat[i][3] - projmat[i][1];
 		}
 		glm::vec3 normal(_planes[f].plane[0], _planes[f].plane[1], _planes[f].plane[2]);
 		float len = length(normal);
@@ -250,11 +250,10 @@ float getSignedDistanceToPlane(glm::vec3 pos, plane p)
 
 bool World::_chunkIsFrutum(Chunk * chunk)
 {
-	// (void)chunk;
 	glm::vec3 pos = chunk->getChunkLocation();
-	pos.x *= CHUNK_WIDTH;
-	pos.y *= CHUNK_HEIGHT;
-	pos.z *= CHUNK_LENGTH;
+	pos.x = pos.x * CHUNK_WIDTH + CHUNK_WIDTH / 2;
+	pos.y = pos.y * CHUNK_HEIGHT + CHUNK_HEIGHT / 2;
+	pos.z = pos.z * CHUNK_LENGTH + CHUNK_LENGTH / 2;
 	if (getSignedDistanceToPlane(pos, _planes[right]) > 0 &&
 		getSignedDistanceToPlane(pos, _planes[left]) > 0 &&
 		getSignedDistanceToPlane(pos, _planes[bottom]) > 0 &&
@@ -290,10 +289,6 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 				}
 				else if (state == UPLOADED)
 					chunk->drawAsset(engine, pipelineType);
-			}
-			else
-			{
-				// Logger::log(VOXEL, DEBUG, "chunk is not in plans");
 			}
 		}
 	}
