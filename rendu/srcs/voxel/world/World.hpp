@@ -11,6 +11,7 @@
 
 #define RENDER_DISTANCE_BORDER 1
 #define MAX_UPLOAD_PER_FRAME 128
+#define CHUNK_DELETION_DISTANCE 1
 
 struct plane
 {
@@ -47,7 +48,7 @@ class World
 		void					unloadChunks(AEngine * engine);
 
 		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
-		void					update(Camera * camera);
+		void					update(AEngine * engine, Camera * camera);
 
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 	private:
@@ -59,7 +60,8 @@ class World
 		bool					_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
 		ChunkVec				_queryChunksInRange();
 		void					_extractPlanesFromProjmat(Camera * camera);
-		bool					_chunkIsFrutum(Chunk * chunk);
+		bool					_chunkIsFrustum(Chunk * chunk);
+		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
 
 		plane					_planes[4];
 		std::string				_name;

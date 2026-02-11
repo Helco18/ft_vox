@@ -9,7 +9,7 @@ void ThreadPool::start(uint16_t requestedThreads)
 {
 	if (_availableThreads == 0 || _availableThreads - requestedThreads < 0)
 		throw ThreadException("Can't instantiate ThreadPool #" + toString(_count) + ": No threads are available.");
-	if (_isActive)
+	if (_isActive.load())
 	{
 		Logger::log(THREAD, WARNING, "Attempted to start ThreadPool #" + toString(_id) + " that's already active.");
 		return;
@@ -24,7 +24,7 @@ void ThreadPool::start(uint16_t requestedThreads)
 	}
 	_availableThreads -= requestedThreads;
 
-	_isActive = true;
+	_isActive.store(true);
 	std::vector<std::unique_ptr<ThreadWorker>> workers;
 	for (int i = 0; i < requestedThreads; ++i)
 	{
@@ -39,7 +39,7 @@ void ThreadPool::start(uint16_t requestedThreads)
 
 void ThreadPool::submitTask(Task task)
 {
-	if (!_isActive)
+	if (!_isActive.load())
 	{
 		if (!_isStopped)
 			Logger::log(THREAD, WARNING, "Attempted to submit a task to ThreadPool #" + toString(_id) + " before starting it.");
@@ -54,11 +54,8 @@ void ThreadPool::stop()
 {
 	_isStopped = true;
 	_availableThreads += _threadCount;
-	{
-		std::lock_guard<std::mutex> lock(_queueMutex);
-		_isActive = false;
-		_wakerCv.notify_all();
-	}
+	_isActive.store(false);
+	_wakerCv.notify_all();
 	WorkerPoolMap::iterator it = _workers.find(_id);
 	if (it == _workers.end())
 		return;

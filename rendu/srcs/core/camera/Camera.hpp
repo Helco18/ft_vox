@@ -35,7 +35,7 @@ class Camera
 		float						getFOV() const { return _fov; }
 		float						getSensitivity() const { return _sensitivity; }
 		float						getSpeed() const { return _speed; }
-		int							getRenderDistance() const { return _renderDistance; }
+		uint8_t						getRenderDistance() const { return _renderDistance; }
 		const CameraBuffer &		getBuffer() const { return _cameraBuffer; }
 		bool						isIgnoringYMovement() const { return _ignoreY; }
 
@@ -71,7 +71,7 @@ class Camera
 		glm::vec3					_position;
 		glm::quat					_orientation;
 		glm::vec3					_altitude;
-		uint16_t					_renderDistance = 8;
+		uint8_t						_renderDistance = 2;
 		int							_width;
 		int							_height;
 		float						_yaw;
@@ -82,5 +82,5 @@ class Camera
 		std::vector<PipelineType>	_pipelines;
 		CameraType					_type = EULER;
 		CameraBuffer				_cameraBuffer;
-		bool						_ignoreY = false;
+		bool						_ignoreY = true;
 };

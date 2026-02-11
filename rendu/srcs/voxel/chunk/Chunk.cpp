@@ -86,17 +86,18 @@ void Chunk::generateMesh()
 
 void Chunk::uploadAsset(AEngine * engine)
 {
-	if (_workerMutex.try_lock())
+	if (!_workerMutex.try_lock())
 		return;
 
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
 	engine->uploadAsset(_assetFrame, PipelineManager::getPipeline(PIPELINE_LINES).id);
 	setState(UPLOADED);
+	_workerMutex.unlock();
 }
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
-	if (_workerMutex.try_lock())
+	if (!_workerMutex.try_lock())
 		return;
 
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()));
@@ -107,16 +108,20 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 	if (windowManager->isChunkBordersActive())
 		engine->drawAsset(_assetFrame.assetID, PipelineManager::getPipeline(PIPELINE_LINES).id);
+	_workerMutex.unlock();
 }
 
-void Chunk::unload(AEngine * engine)
+bool Chunk::unload(AEngine * engine)
 {
-	if (_workerMutex.try_lock())
-		return;
+	if (!_workerMutex.try_lock())
+		return false;
+
 	engine->unloadAsset(_asset.assetID);
 	engine->unloadAsset(_assetFrame.assetID);
 	setState(MESHED);
 	setDirty(true);
+	_workerMutex.unlock();
+	return true;
 }
 
 glm::ivec3 Chunk::posToChunkPos(glm::vec3 pos)

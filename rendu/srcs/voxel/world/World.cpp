@@ -1,5 +1,6 @@
 #include "World.hpp"
 #include "Logger.hpp"
+#include "utils.hpp"
 #include <algorithm>
 
 World::~World()
@@ -164,12 +165,18 @@ void World::_generateChunks()
 		if (newChunks.empty())
 			continue;
 		bool chunksReady;
+		bool isProceduralRequested = false;
+		bool isLoaded = true;
 		do {
 			chunksReady = true;
 			for (Chunk * chunk : newChunks)
 			{
+				if (!chunk)
+					continue;
 				ChunkState state = chunk->getState();
-				if (_isProceduralRequested.load(std::memory_order_relaxed) || !_isLoaded.load(std::memory_order_relaxed))
+				isProceduralRequested = _isProceduralRequested.load(std::memory_order_relaxed);
+				isLoaded = _isLoaded.load(std::memory_order_relaxed);
+				if (isProceduralRequested || !isLoaded)
 					break;
 				if (state == NONE)
 				{
@@ -186,13 +193,52 @@ void World::_generateChunks()
 				else if (state == BUILDING || state == MESHING)
 					chunksReady = false;
 			}
-			if (!chunksReady)
+			if (!chunksReady && !isProceduralRequested && isLoaded)
 				std::this_thread::yield();
-		} while (!chunksReady && !_isProceduralRequested.load(std::memory_order_relaxed) && _isLoaded.load(std::memory_order_relaxed));
+		} while (!chunksReady && !isProceduralRequested && isLoaded);
 	}
 }
 
-void World::update(Camera * camera)
+void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
+{
+	const glm::vec3 & camPos = camera->getPosition();
+	const uint8_t renderDistance = camera->getRenderDistance() + CHUNK_DELETION_DISTANCE;
+	int renderDistanceNorth = camPos.x + renderDistance * CHUNK_WIDTH;
+	int renderDistanceSouth = camPos.x - renderDistance * CHUNK_WIDTH;
+	int renderDistanceEast = camPos.y + renderDistance * CHUNK_HEIGHT;
+	int renderDistanceWest = camPos.y - renderDistance * CHUNK_HEIGHT;
+	int renderDistanceUp = camPos.z + renderDistance * CHUNK_LENGTH;
+	int renderDistanceDown = camPos.z - renderDistance * CHUNK_LENGTH;
+
+	std::vector<glm::ivec3> iterators;
+	std::lock_guard<std::mutex> lg(_mapMutex);
+	for (const std::pair<const glm::ivec3, Chunk *> & chunkPair : _chunkMap)
+	{
+		Chunk * chunk = chunkPair.second;
+		if (!chunk)
+			continue;
+		const glm::ivec3 & chunkPos = chunkPair.first;
+		if (chunkPos.x * CHUNK_WIDTH > renderDistanceNorth || chunkPos.x * CHUNK_WIDTH < renderDistanceSouth
+			|| chunkPos.y * CHUNK_HEIGHT > renderDistanceEast || chunkPos.y * CHUNK_HEIGHT < renderDistanceWest
+			|| chunkPos.z * CHUNK_LENGTH > renderDistanceUp || chunkPos.z * CHUNK_LENGTH < renderDistanceDown)
+		{
+			if (chunk->getState() != UPLOADED)
+				continue;
+			Logger::log(VOXEL, WARNING, "Deleted chunk at: " + toString(chunkPos.x * CHUNK_WIDTH) + ", " + toString(chunkPos.y * CHUNK_HEIGHT)
+				+ ", " + toString(chunkPos.z * CHUNK_LENGTH));
+			if (chunk->unload(engine))
+			{
+				iterators.push_back(chunkPos);
+				delete chunk;
+				chunk = nullptr;
+			}
+		}
+	}
+	for (const glm::ivec3 & pos : iterators)
+		_chunkMap.erase(pos);
+}
+
+void World::update(AEngine * , Camera * camera)
 {
 	static glm::ivec3 lastVisitedChunk(0, 0, 0);
 	static int oldRenderDistance = 0;
@@ -208,13 +254,14 @@ void World::update(Camera * camera)
 		_computeRenderDistance(renderDistance);
 	}
 	if (lastVisitedChunk != currentChunk)
+	{
 		lastVisitedChunk = currentChunk;
+		// _checkForChunkDeletion(engine, camera);
+	}
 	_renderPoint = camPos;
 	_isProceduralRequested.store(true);
 	_cv.notify_one();
 }
-
-#include "utils.hpp"
 
 void World::_extractPlanesFromProjmat(Camera * camera)
 {
@@ -238,7 +285,6 @@ void World::_extractPlanesFromProjmat(Camera * camera)
 		_planes[f].plane[1] /= len;
 		_planes[f].plane[2] /= len;
 		_planes[f].plane[3] /= len;
-		Logger::log(VOXEL, DEBUG, "distanc :" + toString(_planes[f].plane[3]));
 	}
 }
 
@@ -248,12 +294,12 @@ float getSignedDistanceToPlane(glm::vec3 pos, plane p)
 	return(glm::dot(normal, pos) + (p.plane[3]));
 }
 
-bool World::_chunkIsFrutum(Chunk * chunk)
+bool World::_chunkIsFrustum(Chunk * chunk)
 {
 	glm::vec3 pos = chunk->getChunkLocation();
-	pos.x = pos.x * CHUNK_WIDTH + CHUNK_WIDTH / 2;
-	pos.y = pos.y * CHUNK_HEIGHT + CHUNK_HEIGHT / 2;
-	pos.z = pos.z * CHUNK_LENGTH + CHUNK_LENGTH / 2;
+	pos.x = pos.x * CHUNK_WIDTH + static_cast<float>(CHUNK_WIDTH) / 2;
+	pos.y = pos.y * CHUNK_HEIGHT + static_cast<float>(CHUNK_HEIGHT) / 2;
+	pos.z = pos.z * CHUNK_LENGTH + static_cast<float>(CHUNK_LENGTH) / 2;
 	if (getSignedDistanceToPlane(pos, _planes[right]) > 0 &&
 		getSignedDistanceToPlane(pos, _planes[left]) > 0 &&
 		getSignedDistanceToPlane(pos, _planes[bottom]) > 0 &&
@@ -266,6 +312,7 @@ bool World::_chunkIsFrutum(Chunk * chunk)
 
 void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 {
+	(void) camera;
 	if (_readyToSwap)
 	{
 		std::lock_guard<std::mutex> lg(_visibleChunksMutex);
@@ -273,23 +320,19 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
 	}
-	_extractPlanesFromProjmat(camera);
+	// _extractPlanesFromProjmat(camera);
 	int i = 0;
 	for (Chunk * chunk : _visibleChunks)
 	{
+		if (!chunk)
+			continue;
 		ChunkState state = chunk->getState();
-		if(state >= MESHED)
+		if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
 		{
-			if(_chunkIsFrutum(chunk))
-			{
-				if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
-				{
-					chunk->uploadAsset(engine);
-					i++;
-				}
-				else if (state == UPLOADED)
-					chunk->drawAsset(engine, pipelineType);
-			}
+			chunk->uploadAsset(engine);
+			i++;
 		}
+		else if (state == UPLOADED)
+			chunk->drawAsset(engine, pipelineType);
 	}
 }

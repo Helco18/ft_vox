@@ -65,21 +65,20 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 void OpenGLEngine::unloadAsset(AssetID assetID)
 {
-	AssetCache::iterator it = _assetCache.find(assetID);
-	if (it != _assetCache.end())
-	{
-		AssetInfo & assetInfo = it->second;
-		Asset * asset = assetInfo.asset;
-		asset->isUploaded = false;
-		if (asset->vbo)
-			glDeleteBuffers(1, &asset->vbo);
-		if (asset->ibo)
-			glDeleteBuffers(1, &asset->ibo);
-		for (UniformBufferStream & ubs : assetInfo.uniformBufferStreams)
-			glDeleteBuffers(1, &ubs.ubo);
-		if (asset->assetID)
-			glDeleteVertexArrays(1, &asset->assetID);
-	}
+	AssetInfo & assetInfo = _assetCache[assetID];
+	Asset * asset = assetInfo.asset;
+	if (!asset)
+		return;
+	asset->isUploaded = false;
+	if (asset->vbo)
+		glDeleteBuffers(1, &asset->vbo);
+	if (asset->ibo)
+		glDeleteBuffers(1, &asset->ibo);
+	for (UniformBufferStream & ubs : assetInfo.uniformBufferStreams)
+		glDeleteBuffers(1, &ubs.ubo);
+	if (asset->assetID)
+		glDeleteVertexArrays(1, &asset->assetID);
+	_assetCache.erase(assetID);
 }
 
 void OpenGLEngine::drawAsset(AssetID assetID, PipelineID pipelineID)

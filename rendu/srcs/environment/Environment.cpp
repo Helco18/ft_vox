@@ -80,7 +80,7 @@ void Environment::loop()
 		}
 		if (world)
 		{
-			world->update(camera);
+			world->update(engine, camera);
 			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL, camera);
 		}
 		camera->renderViewMatrix(engine);

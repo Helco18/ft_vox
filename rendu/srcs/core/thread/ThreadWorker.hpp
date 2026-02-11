@@ -29,5 +29,5 @@ class ThreadWorker
 		std::condition_variable &	_wakerCv;
 		std::mutex &				_queueMutex;
 		std::queue<Task> &			_taskQueue;
-		std::atomic<bool> &			_isActive;
+		std::atomic_bool &			_isActive;
 };

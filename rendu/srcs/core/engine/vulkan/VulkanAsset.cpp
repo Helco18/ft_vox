@@ -31,10 +31,8 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	if (assetID >= _assetDataCache.size())
 		return;
 	AssetData & assetData = _assetDataCache[assetID];
-	if (assetData.asset == nullptr)
-		return;
 	Asset * asset = assetData.asset;
-	if (!asset->vertices.data || !asset->isUploaded)
+	if (!asset || !asset->isUploaded || !asset->vertices.data)
 		return;
 	_drawableAssets[pipelineID].push_back(asset);
 }
@@ -44,11 +42,11 @@ void VulkanEngine::unloadAsset(AssetID assetID)
 	if (assetID >= _assetDataCache.size())
 		return;
 	AssetData & assetData = _assetDataCache[assetID];
-	if (assetData.asset == nullptr)
+	Asset * asset = assetData.asset;
+	if (!asset || !asset->isUploaded)
 		return;
-	else if (!assetData.asset->isUploaded)
-		return;
-	_assetDataCache.erase(_assetDataCache.begin() + assetID);
+	asset->isUploaded = false;
+	_assetDataCache.erase(assetID);
 }
 
 void VulkanEngine::_processPendingAssets()
@@ -76,7 +74,7 @@ void VulkanEngine::_processPendingAssets()
 		assetData.vbo = std::move(pendingAsset.vertexData);
 		assetData.ibo = std::move(pendingAsset.indexData);
 		asset->isUploaded = true;
-		_assetDataCache.emplace_back(std::move(assetData));
+		_assetDataCache.try_emplace(asset->assetID, std::move(assetData));
 	}
 	_pendingAssets.clear();
 }

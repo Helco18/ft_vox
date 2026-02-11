@@ -166,7 +166,7 @@ class VulkanEngine : public AEngine
 		// Query with PipelineID
 		typedef std::vector<PipelineData>													PipelineCache;
 		// Query with AssetID
-		typedef std::vector<AssetData>														AssetDataCache;
+		typedef std::unordered_map<AssetID, AssetData>										AssetDataCache;
 
 		// Window, context, instance
 		vk::raii::Context					_context;

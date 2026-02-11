@@ -22,15 +22,14 @@ static ProgramParams parseArgs(int ac, char ** av)
 					if (strSize > 2 || value > 64 || value == 0 || !std::all_of(str.begin(), str.end(), [](const char c) { return std::isdigit(c); }))
 						throw GeneralException("Render distance of '" + str + "' is invalid. It must only contain numbers and be between 1 and 64.");
 					params.renderDistance = value;
-					paramMode = 0;
 				} break;
 				case 'f': {
 					if (strSize > 3 || value > 180 || value == 0 || !std::all_of(str.begin(), str.end(), [](const char c) { return std::isdigit(c); }))
 						throw GeneralException("FOV of '" + str + "' is invalid. It must only contain numbers and be between 1 and 180.");
 					params.fov = value;
-					paramMode = 0;
 				} break;
 			}
+			paramMode = 0;
 		}
 		else if (str[0] == '-' && strSize > 1)
 		{
