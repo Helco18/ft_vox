@@ -1,33 +1,28 @@
 #include "VulkanEngine.hpp"
 #include "Gui.hpp"
+#include "Logger.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_vulkan.h"
+#include "utils.hpp"
 
 void VulkanEngine::_initImGui()
 {
 	std::vector<vk::DescriptorPoolSize> poolSizes =
 	{
-		{ vk::DescriptorType::eSampler, 1000 },
-		{ vk::DescriptorType::eCombinedImageSampler, 1000 },
-		{ vk::DescriptorType::eSampledImage, 1000 },
-		{ vk::DescriptorType::eStorageImage, 1000 },
-		{ vk::DescriptorType::eUniformTexelBuffer, 1000 },
-		{ vk::DescriptorType::eStorageTexelBuffer, 1000 },
-		{ vk::DescriptorType::eUniformBuffer, 1000 },
-		{ vk::DescriptorType::eStorageBuffer, 1000 },
-		{ vk::DescriptorType::eUniformBufferDynamic, 1000 },
-		{ vk::DescriptorType::eStorageBufferDynamic, 1000 },
-		{ vk::DescriptorType::eInputAttachment, 1000 }
+		{ vk::DescriptorType::eSampler, 100 },
+		{ vk::DescriptorType::eCombinedImageSampler, 100 },
+		{ vk::DescriptorType::eUniformBuffer, 100 },
 	};
 
 	vk::DescriptorPoolCreateInfo descriptorPoolInfo;
 	descriptorPoolInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
-	descriptorPoolInfo.maxSets = 11000 * MAX_FRAMES_IN_FLIGHT;
+	descriptorPoolInfo.maxSets = 300 * MAX_FRAMES_IN_FLIGHT;
 	descriptorPoolInfo.poolSizeCount = poolSizes.size();
 	descriptorPoolInfo.pPoolSizes = poolSizes.data();
 
 	_imGuiPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
+	_imGuiCommandBuffers = _createCommandBuffer(vk::CommandBufferLevel::eSecondary);
 
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -75,7 +70,7 @@ void VulkanEngine::beginImGui()
 	_imGuiThisFrame = true;
 }
 
-void VulkanEngine::_renderImGui(vk::CommandBuffer & commands)
+void VulkanEngine::_renderImGui()
 {
 	if (!_imGuiThisFrame)
 		return;
@@ -90,14 +85,6 @@ void VulkanEngine::_renderImGui(vk::CommandBuffer & commands)
 	colorAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
 	colorAttachmentInfo.clearValue = clearColor;
 
-	vk::RenderingAttachmentInfo depthAttachmentInfo;
-	vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
-	depthAttachmentInfo.imageView = _depthImageView;
-	depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-	depthAttachmentInfo.loadOp = vk::AttachmentLoadOp::eLoad;
-	depthAttachmentInfo.storeOp = vk::AttachmentStoreOp::eDontCare;
-	depthAttachmentInfo.clearValue = clearDepth;
-
 	vk::RenderingInfo renderingInfo;
 	renderingInfo.renderArea.offset.x = 0;
 	renderingInfo.renderArea.offset.y = 0;
@@ -105,11 +92,17 @@ void VulkanEngine::_renderImGui(vk::CommandBuffer & commands)
 	renderingInfo.layerCount = 1;
 	renderingInfo.colorAttachmentCount = 1;
 	renderingInfo.pColorAttachments = &colorAttachmentInfo;
-	renderingInfo.pDepthAttachment = &depthAttachmentInfo;
-	vk::CommandBufferBeginInfo beginInfo;
+	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	vk::CommandBufferInheritanceInfo commandBufferInheritanceInfo;
-	beginInfo.pInheritanceInfo = &commandBufferInheritanceInfo;
+	commandBufferBeginInfo.pInheritanceInfo = &commandBufferInheritanceInfo;
+
+	vk::CommandBuffer commands = _imGuiCommandBuffers[_currentFrame];
+	commands.begin(commandBufferBeginInfo);
+	commands.beginRendering(renderingInfo);
 	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commands);
+	commands.endRendering();
+	commands.end();
+	_frameCommandBuffers[_currentFrame].executeCommands(commands);
 	_imGuiThisFrame = false;
 }
 

@@ -280,7 +280,8 @@ class VulkanEngine : public AEngine
 
 		// ImGui
 		void								_initImGui();
-		void								_renderImGui(vk::CommandBuffer & commands);
+		void								_renderImGui();
 		void								_shutdownImGui();
 		vk::raii::DescriptorPool			_imGuiPool = nullptr;
+		CommandBuffers						_imGuiCommandBuffers;
 };

@@ -114,12 +114,11 @@ void VulkanEngine::_recordCommandBuffer()
 			else
 				commands.draw(asset->vertices.vertexCount, 1, 0, 0);
 		}
-		if (pipelineID == 3) // hardcoded for ImGui but won't last in the project
-			_renderImGui(commands);
 		commands.endRendering();
 		commands.end();
 		_frameCommandBuffers[_currentFrame].executeCommands(commands);
 	}
+	_renderImGui();
 }
 
 void VulkanEngine::_retrieveCommandBuffers()
