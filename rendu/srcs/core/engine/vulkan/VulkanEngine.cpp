@@ -10,10 +10,10 @@ VulkanEngine::VulkanEngine(GLFWwindow * window) : AEngine(window)
 
 VulkanEngine::~VulkanEngine()
 {
-	_device.waitIdle();
 	_isInitalized.store(false);
-	// _threadPool.stop();
+	_device.waitIdle();
 	_shutdownImGui();
+	// _threadPool.stop();
 }
 
 void VulkanEngine::load()
