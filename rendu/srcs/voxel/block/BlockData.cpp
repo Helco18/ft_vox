@@ -23,7 +23,7 @@ BlockData & BlockData::getBlockData(uint8_t type)
 	BlockDataRegistry::iterator it = _dataRegistry.find(type);
 	if (it != _dataRegistry.end())
 		return it->second;
-	throw VoxelException("Invalid BlockData #" + toString(type) + " requested.");
+	throw VoxelException("Invalid BlockData #" + toString(static_cast<int>(type)) + " requested.");
 }
 
 const std::string & BlockData::getTexturePath(int blockFace)

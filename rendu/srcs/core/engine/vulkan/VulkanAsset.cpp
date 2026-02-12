@@ -29,7 +29,7 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 {
-	if (assetID >= _assetDataCache.size())
+	if (_assetDataCache.empty())
 		return;
 	AssetData & assetData = _assetDataCache[assetID];
 	Asset * asset = assetData.asset;
@@ -40,7 +40,7 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 
 void VulkanEngine::unloadAsset(AssetID assetID)
 {
-	if (assetID >= _assetDataCache.size())
+	if (_assetDataCache.empty())
 		return;
 	AssetData & assetData = _assetDataCache[assetID];
 	Asset * asset = assetData.asset;
