@@ -34,7 +34,7 @@ void OpenGLEngine::load()
 {
 	glfwSwapInterval(0);
 
-	if (g_debug)
+	if (g_debug != DebugLevel::NONE)
 	{
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

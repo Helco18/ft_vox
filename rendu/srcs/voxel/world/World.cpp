@@ -179,7 +179,7 @@ void World::_generateChunks()
 				isLoaded = _isLoaded.load(std::memory_order_relaxed);
 				if (isProceduralRequested || !isLoaded)
 					break;
-				if (state == NONE)
+				if (state == IDLE)
 				{
 					chunk->setState(BUILDING);
 					_chunkPool.submitTask([chunk]() { chunk->build(); });

@@ -35,7 +35,7 @@ static VULKAN_CALLBACK debugCallback(
 
 void VulkanEngine::_initDebugMessenger()
 {
-	if (!g_debug)
+	if (g_debug == DebugLevel::NONE)
 		return;
 
 	vk::DebugUtilsMessageSeverityFlagsEXT severityFlags(vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose

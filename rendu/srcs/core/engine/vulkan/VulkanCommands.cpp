@@ -12,8 +12,7 @@ void VulkanEngine::_createCommandPool(vk::CommandPoolCreateFlags flags)
 
 	_commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
 
-	if (g_debug)
-		Logger::log(ENGINE_VULKAN, INFO, "Created Command Pool.");
+	Logger::log(ENGINE_VULKAN, INFO, "Created Command Pool.");
 }
 
 VulkanEngine::CommandBuffers VulkanEngine::_createCommandBuffer(vk::CommandBufferLevel level)

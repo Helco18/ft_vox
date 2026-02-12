@@ -5,7 +5,14 @@
 
 #define ENGINE_NAME(x) x == VULKAN ? "Vulkan" : "OpenGL"
 
-inline bool g_debug = false;
+enum DebugLevel
+{
+	NONE,
+	DEBUG_MESSAGES, // All debug messages and engine errors
+	VALIDATION // Only engine errors
+};
+
+inline DebugLevel g_debug = NONE;
 
 enum EngineType
 {

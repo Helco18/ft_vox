@@ -70,7 +70,7 @@ static const std::string getLogSourcePrefix(LogSource source)
 
 void Logger::log(LogSource source, LogSeverity severity, const std::string & message, std::ostream * output)
 {
-	if (severity == DEBUG && !g_debug)
+	if (severity == DEBUG && g_debug != DebugLevel::DEBUG_MESSAGES)
 		return;
 	std::lock_guard<std::mutex> lg(_printLock);
 	std::ostream & outputStream = severity >= ERROR ? std::cerr : output == nullptr ? std::cout : *output;

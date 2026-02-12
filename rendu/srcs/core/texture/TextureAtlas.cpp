@@ -42,7 +42,7 @@ void TextureAtlas::createAtlas()
 		if (!_atlasData[i])
 			_atlasData[i] = 255;
 	}
-	if (g_debug)
+	if (g_debug == DebugLevel::DEBUG_MESSAGES)
 		stbi_write_png("atlas_debug.png", _width, _height, _colorChannels, _atlasData.data(), _width * _colorChannels);
 	Logger::log(TEXTURE, INFO, "Texture Atlas created.");
 }

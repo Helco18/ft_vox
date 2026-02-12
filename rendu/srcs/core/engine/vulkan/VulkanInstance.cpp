@@ -35,7 +35,7 @@ void VulkanEngine::_createInstance()
 	createInfo.ppEnabledLayerNames = requiredLayers.data();
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
 	createInfo.ppEnabledExtensionNames = requiredExtensions.data();
-	createInfo.pNext = g_debug ? &features : nullptr;
+	createInfo.pNext = g_debug != DebugLevel::NONE ? &features : nullptr;
 
 	// On créé ensuite notre instance Vulkan (On passe par RAII pour qu'elle soit détruite automatiquement)
 	_instance = vk::raii::Instance(_context, createInfo);
@@ -47,7 +47,7 @@ VulkanEngine::RequiredLayers VulkanEngine::_getRequiredLayers() const
 {
 	RequiredLayers requiredLayers;
 
-	if (g_debug)
+	if (g_debug != DebugLevel::NONE)
 	{
 		const std::vector<const char *> validationLayers =
 		{
@@ -88,7 +88,7 @@ VulkanEngine::RequiredExtensions VulkanEngine::_getRequiredExtensions() const
 	// On récupère le nombre et le nom des extensions dont GLFW a besoin.
 	const char ** glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 	requiredExtensions = { glfwExtensions, glfwExtensions + extensionCount };
-	if (g_debug)
+	if (g_debug != DebugLevel::NONE)
 		requiredExtensions.push_back(vk::EXTDebugUtilsExtensionName);
 
 	// On récupère les extensions dont dispose notre contexte Vulkan

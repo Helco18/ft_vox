@@ -5,7 +5,7 @@
 #include "SimplexNoise.hpp"
 #include "BlockData.hpp"
 
-Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(NONE)
+Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(IDLE)
 {
 	_min = _chunkLocation;
 	_min *= glm::vec3(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_LENGTH);

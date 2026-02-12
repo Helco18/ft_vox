@@ -12,7 +12,7 @@ class World;
 
 enum ChunkState
 {
-	NONE,
+	IDLE,
 	BUILDING,
 	BUILT,
 	MESHING,

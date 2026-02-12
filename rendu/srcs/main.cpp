@@ -37,7 +37,9 @@ static ProgramParams parseArgs(int ac, char ** av)
 			for (int i = 1; str[i]; ++i)
 			{
 				if (str[i] == 'd')
-					g_debug = true;
+					g_debug = DebugLevel::DEBUG_MESSAGES;
+				else if (str[i] == 'v')
+					g_debug = DebugLevel::VALIDATION;
 				else if (str[i] == 'p')
 					Profiler::enable();
 				else if (str[i] == 'r')
