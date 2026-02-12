@@ -61,9 +61,11 @@ class World
 		void					_computeRenderDistance(const int renderDistance);
 		bool					_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
 		ChunkVec				_queryChunksInRange();
+		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
+
 		void					_extractPlanesFromProjmat(Camera * camera);
 		bool					_chunkIsFrustum(Chunk * chunk);
-		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
+
 
 		Plane					_planes[4];
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);

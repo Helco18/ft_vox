@@ -60,7 +60,9 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/block/BlockData.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
-						srcs/voxel/world/World.cpp
+						srcs/voxel/world/World.cpp \
+						srcs/voxel/world/WorldFrustum.cpp \
+						srcs/voxel/world/WorldUtils.cpp
 LIBS_C				=	libs/glad/gl.c
 LIBS_CPP			=	libs/imgui/imgui_demo.cpp \
 						libs/imgui/imgui_draw.cpp \

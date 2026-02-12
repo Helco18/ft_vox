@@ -49,8 +49,16 @@ void Chunk::build()
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
 			double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH);
-			double noiseValue = _world->getNoise().queryState({xd, zd});
-			int height = static_cast<int>(std::floor(noiseValue * 30));
+			int height;
+			if (_chunkLocation.y < -2)
+				height = 0;
+			else if (_chunkLocation.y > 2)
+				height = 0;
+			else
+			{
+				double noiseValue = _world->getNoise().queryState({xd, zd});
+				height = static_cast<int>(std::floor(noiseValue * 30));
+			}
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
 				int worldY = (y + _chunkLocation.y * CHUNK_HEIGHT);
