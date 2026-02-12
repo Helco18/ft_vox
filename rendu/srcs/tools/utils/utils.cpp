@@ -49,3 +49,8 @@ const std::string getFileAsString(const char * name)
 		throw GeneralException("File " + filename + " is empty.");
 	return (content);
 }
+
+std::ostream & operator<<(std::ostream & os, const glm::ivec3 & ivec3)
+{
+	return os << ivec3.x << ", " << ivec3.y << ", " << ivec3.z;
+}

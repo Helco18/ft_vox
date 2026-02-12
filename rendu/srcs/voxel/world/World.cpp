@@ -12,41 +12,6 @@ World::~World()
 		delete chunks.second;
 }
 
-// geter
-
-Chunk * World::getChunkAt(int x, int y, int z)
-{
-	int chunkX;
-	int chunkY;
-	int chunkZ;
-
-	chunkX = static_cast<int>(std::floor(static_cast<double>(x) / CHUNK_WIDTH));
-	chunkY = static_cast<int>(std::floor(static_cast<double>(y) / CHUNK_HEIGHT));
-	chunkZ = static_cast<int>(std::floor(static_cast<double>(z) / CHUNK_LENGTH));
-	return getChunkAtChunkLocation(chunkX, chunkY, chunkZ);
-}
-
-Chunk * World::getChunkAtChunkLocation(int x, int y, int z)
-{
-	std::lock_guard<std::mutex> lg(_mapMutex);
-	ChunkMap::const_iterator it = _chunkMap.find(glm::ivec3(x, y, z));
-	if (it != _chunkMap.end())
-		return it->second;
-	return nullptr;
-}
-
-inline Chunk * World::getChunkAt(const glm::vec3 & location)
-{
-	return getChunkAt(location.x, location.y, location.z);
-}
-
-inline Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location)
-{
-	return getChunkAtChunkLocation(location.x, location.y, location.z);
-}
-
-// function public
-
 void World::load()
 {
 	_noise.setFBM(3, 0.5, 2.0);
@@ -96,6 +61,8 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 	{
 		std::lock_guard<std::mutex> lg(_visibleChunksMutex);
 		_visibleChunks = _nextVisibleChunks;
+		ChunkVec::iterator it = std::remove_if(_visibleChunks.begin(), _visibleChunks.end(), [](const Chunk * a) { return !a; });
+		_visibleChunks.erase(it, _visibleChunks.end());
 		std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
 				{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
 		_nextVisibleChunks.clear();

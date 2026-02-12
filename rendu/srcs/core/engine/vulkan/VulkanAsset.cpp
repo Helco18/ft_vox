@@ -1,6 +1,7 @@
 #include "Profiler.hpp"
 #include "VulkanEngine.hpp"
 #include "CustomExceptions.hpp"
+#include "utils.hpp"
 
 AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 {
@@ -86,4 +87,5 @@ void VulkanEngine::_processPendingUnloads()
 		return;
 	for (AssetID assetID : _pendingUnloads)
 		_assetDataCache.erase(assetID);
+	_pendingUnloads.clear();
 }

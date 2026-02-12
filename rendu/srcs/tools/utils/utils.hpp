@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <cstring>
+#include "glm/glm.hpp"
 
 #define WIDTH	800
 #define HEIGHT	600
@@ -26,3 +27,4 @@ const std::string			toString(const T & value)
 const std::vector<char>		readFile(const std::string & filename);
 std::vector<std::string>	ft_split(const std::string & str, char delimiter);
 const std::string			getFileAsString(const char * name);
+std::ostream &				operator<<(std::ostream & os, const glm::ivec3 & ivec3);
