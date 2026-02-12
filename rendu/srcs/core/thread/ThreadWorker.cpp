@@ -24,7 +24,6 @@ void ThreadWorker::_loop()
 			if (!_isActive.load())
 			{
 				Logger::log(THREAD, DEBUG, "Philosopher died");
-				_queueMutex.unlock();
 				return;
 			}
 
