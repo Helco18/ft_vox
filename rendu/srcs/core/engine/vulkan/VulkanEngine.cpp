@@ -102,6 +102,7 @@ void VulkanEngine::endFrame()
 			throw VulkanException("Waiting for fences on draw call failed.");
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
+		_processPendingUnloads();
 		_processPendingUniforms();
 		_processPendingAssets();
 		_retrieveCommandBuffers();

@@ -223,6 +223,7 @@ class VulkanEngine : public AEngine
 		DrawableAssets						_drawableAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
 		std::vector<PendingAsset>			_pendingAssets;
+		std::vector<AssetID>				_pendingUnloads;
 		
 		// Threads
 		ThreadPool							_threadPool;
@@ -249,6 +250,7 @@ class VulkanEngine : public AEngine
 		void								_createIndexBuffer(PendingAsset & pendingAsset);
 		void								_processPendingAssets();
 		void								_processPendingUniforms();
+		void								_processPendingUnloads();
 		CommandBuffers						_createCommandBuffer(vk::CommandBufferLevel level);
 		void								_recordCommandBuffer();
 		void								_retrieveCommandBuffers();

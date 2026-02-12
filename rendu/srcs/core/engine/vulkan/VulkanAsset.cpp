@@ -46,7 +46,7 @@ void VulkanEngine::unloadAsset(AssetID assetID)
 	if (!asset || !asset->isUploaded)
 		return;
 	asset->isUploaded = false;
-	_assetDataCache.erase(assetID);
+	_pendingUnloads.push_back(assetID);
 }
 
 void VulkanEngine::_processPendingAssets()
@@ -77,4 +77,12 @@ void VulkanEngine::_processPendingAssets()
 		_assetDataCache.try_emplace(asset->assetID, std::move(assetData));
 	}
 	_pendingAssets.clear();
+}
+
+void VulkanEngine::_processPendingUnloads()
+{
+	if (_pendingUnloads.empty())
+		return;
+	for (AssetID assetID : _pendingUnloads)
+		_assetDataCache.erase(assetID);
 }
