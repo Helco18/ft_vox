@@ -1,6 +1,7 @@
 #include "utils.hpp"
 #include "CustomExceptions.hpp"
 #include <fstream>
+#include <ostream>
 
 std::vector<std::string> ft_split(const std::string & str, char delimiter)
 {
@@ -48,9 +49,4 @@ const std::string getFileAsString(const char * name)
 	if (content.empty())
 		throw GeneralException("File " + filename + " is empty.");
 	return (content);
-}
-
-std::ostream & operator<<(std::ostream & os, const glm::ivec3 & ivec3)
-{
-	return os << ivec3.x << ", " << ivec3.y << ", " << ivec3.z;
 }

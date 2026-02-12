@@ -21,6 +21,8 @@ World::ChunkVec World::_queryChunksInRange()
 		{
 			for (int z = renderDistanceWest; z < renderDistanceEast; ++z)
 			{
+				if (!_isLoaded.load(std::memory_order_relaxed))
+					return {};
 				glm::ivec3 location(x, y, z);
 				std::lock_guard<std::mutex> lg(_mapMutex);
 				ChunkMap::iterator it = _chunkMap.find(location);
@@ -50,11 +52,9 @@ void World::_generateChunks()
 	// Tip for tomorrow: maybe add a cv to wait for chunks to be built/meshed, then when they're all done, wake the loop and reset counter
 	while (true)
 	{
-		Logger::log(VOXEL, DEBUG, "Waiting");
 		std::unique_lock<std::mutex> lock(cvMutex);
 		_cv.wait(lock, [&] { return !_isLoaded.load(std::memory_order_relaxed)
 			|| (_isProceduralRequested.load(std::memory_order_relaxed) && !_isLocked.load(std::memory_order_relaxed)); });
-		Logger::log(VOXEL, DEBUG, "Awake");
 		if (!_isLoaded.load(std::memory_order_relaxed))
 			return;
 		if (_isLocked.load(std::memory_order_relaxed))
@@ -70,18 +70,31 @@ void World::_generateChunks()
 		}
 		bool chunksReady;
 		bool isProceduralRequested = false;
-		bool isLoaded = true;
 		do {
 			chunksReady = true;
 			for (Chunk * chunk : newChunks)
 			{
-				if (!chunk)
+				if (!_isLoaded.load(std::memory_order_relaxed))
+					return;
+				if (!chunk || chunk->isTakenByWorker())
 					continue;
 				ChunkState state = chunk->getState();
 				isProceduralRequested = _isProceduralRequested.load(std::memory_order_relaxed);
-				isLoaded = _isLoaded.load(std::memory_order_relaxed);
-				if (isProceduralRequested || !isLoaded)
+				if (isProceduralRequested)
+				{
+					_chunkPool.clearTasks();
+					for (Chunk * chunk : newChunks)
+					{
+						if (!chunk || chunk->isTakenByWorker())
+							continue;
+						ChunkState state = chunk->getState();
+						if (state == BUILDING)
+							chunk->setState(IDLE);
+						else if (state == MESHING)
+							chunk->setState(BUILT);
+					}
 					break;
+				}
 				if (state == IDLE)
 				{
 					chunk->setState(BUILDING);
@@ -97,9 +110,9 @@ void World::_generateChunks()
 				else if (state == BUILDING || state == MESHING)
 					chunksReady = false;
 			}
-			if (!chunksReady && !isProceduralRequested && isLoaded)
+			if (!chunksReady && !isProceduralRequested)
 				std::this_thread::yield();
-		} while (!chunksReady && !isProceduralRequested && isLoaded);
+		} while (!chunksReady && !isProceduralRequested);
 	}
 }
 
@@ -114,7 +127,7 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 	int renderDistanceUp = camPos.z + renderDistance * CHUNK_LENGTH;
 	int renderDistanceDown = camPos.z - renderDistance * CHUNK_LENGTH;
 
-	std::vector<glm::ivec3> iterators;
+	std::vector<glm::ivec3> chunksToDelete;
 	std::lock_guard<std::mutex> lg(_mapMutex);
 	for (const std::pair<const glm::ivec3, Chunk *> & chunkPair : _chunkMap)
 	{
@@ -126,17 +139,16 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 			|| chunkPos.y * CHUNK_HEIGHT > renderDistanceEast || chunkPos.y * CHUNK_HEIGHT < renderDistanceWest
 			|| chunkPos.z * CHUNK_LENGTH > renderDistanceUp || chunkPos.z * CHUNK_LENGTH < renderDistanceDown)
 		{
-			if (chunk->getState() != UPLOADED)
+			if (chunk->getState() != UPLOADED || chunk->isTakenByWorker())
 				continue;
-			Logger::log(VOXEL, WARNING, "Deleted chunk at: " + toString(chunkPos * CHUNK_WIDTH));
 			if (chunk->unload(engine))
 			{
-				iterators.push_back(chunkPos);
+				chunksToDelete.push_back(chunkPos);
 				delete chunk;
 				_chunkMap[chunkPos] = nullptr;
 			}
 		}
 	}
-	for (const glm::ivec3 & pos : iterators)
+	for (const glm::ivec3 & pos : chunksToDelete)
 		_chunkMap.erase(pos);
 }

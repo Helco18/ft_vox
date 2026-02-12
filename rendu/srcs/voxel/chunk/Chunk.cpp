@@ -28,6 +28,7 @@ static void dirtyCheck(std::vector<Chunk *> chunks)
 
 bool Chunk::isReadyForMesh()
 {
+	std::lock_guard<std::mutex> lg(_workerMutex);
 	std::vector<Chunk *> chunks = _computeNeighborChunks();
 	for (Chunk * chunk : chunks)
 	{
@@ -39,6 +40,7 @@ bool Chunk::isReadyForMesh()
 
 void Chunk::build()
 {
+	_isTakenByWorker.store(true);
 	std::lock_guard<std::mutex> lg(_workerMutex);
 
 	if (!_world->isLoaded())
@@ -74,6 +76,7 @@ void Chunk::build()
 	setState(BUILT);
 	setDirty(true);
 	dirtyCheck({_northChunk, _southChunk, _westChunk, _eastChunk, _topChunk, _bottomChunk});
+	_isTakenByWorker.store(false);
 }
 
 float Chunk::getDistance(glm::vec3 pos) const
@@ -83,6 +86,7 @@ float Chunk::getDistance(glm::vec3 pos) const
 
 void Chunk::generateMesh()
 {
+	_isTakenByWorker.store(true);
 	std::lock_guard<std::mutex> lg(_workerMutex);
 
 	if (!_world->isLoaded())
@@ -92,6 +96,7 @@ void Chunk::generateMesh()
 		setState(MESHED);
 	else
 		setState(MESHED_EMPTY);
+	_isTakenByWorker.store(false);
 }
 
 void Chunk::uploadAsset(AEngine * engine)

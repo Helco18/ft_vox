@@ -67,6 +67,7 @@ class Chunk
 		const glm::vec3 &			getMin() const { return _min; };
 		const glm::vec3 &			getMax() const { return _max; };
 		bool						isDirty() const { return _isDirty.load(); }
+		bool						isTakenByWorker() const { return _isTakenByWorker.load(); }
 
 		void						setState(ChunkState state) { _state.store(state); }
 		void						setDirty(bool dirty) { _isDirty.store(dirty); }
@@ -95,6 +96,7 @@ class Chunk
 		std::mutex					_workerMutex;
 		ChunkData					_chunkData { 0.0f };
 		std::atomic_bool			_isDirty = false;
+		std::atomic_bool			_isTakenByWorker = false;
 
 		Chunk * 					_northChunk = nullptr;
 		Chunk * 					_southChunk = nullptr;

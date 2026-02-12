@@ -53,14 +53,13 @@ void ThreadPool::submitTask(Task task)
 void ThreadPool::clearTasks()
 {
 	std::lock_guard<std::mutex> lock(_queueMutex);
-	Logger::log(THREAD, WARNING, "Clearing");
-	while (!_taskQueue.empty())
-		_taskQueue.pop();
+	_taskQueue = std::queue<Task>();
 }
 
 void ThreadPool::stop()
 {
 	_isStopped = true;
+	clearTasks();
 	_availableThreads += _threadCount;
 	_isActive.store(false);
 	_wakerCv.notify_all();
