@@ -70,6 +70,7 @@ void VulkanEngine::_processPendingAssets()
 	{
 		Asset * asset = pendingAsset.asset;
 		AssetData assetData;
+		assetData.pipelineID = pendingAsset.pipelineID;
 		assetData.asset = asset;
 		assetData.vbo = std::move(pendingAsset.vertexData);
 		assetData.ibo = std::move(pendingAsset.indexData);
