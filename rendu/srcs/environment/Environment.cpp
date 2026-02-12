@@ -61,10 +61,6 @@ void Environment::loop()
 	while (_running)
 	{
 		frameStart = glfwGetTime();
-		engine->beginFrame();
-		engine->beginImGui();
-		InputManager::interceptMouse(_windowManager);
-		InputManager::interceptMovements(_windowManager);
 		if (!_windowManager->drawFrame())
 			continue;
 		else if (_windowManager->isSwapRequested())
@@ -77,6 +73,10 @@ void Environment::loop()
 			sky.uploadAsset(engine);
 			continue;
 		}
+		engine->beginFrame();
+		engine->beginImGui();
+		InputManager::interceptMouse(_windowManager);
+		InputManager::interceptMovements(_windowManager);
 		if (world)
 		{
 			world->update(engine, camera);

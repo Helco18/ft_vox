@@ -5,6 +5,7 @@
 #include "Camera.hpp"
 #include "PipelineManager.hpp"
 #include "Chunk.hpp"
+#include "SimplexNoise.hpp"
 #include "ThreadPool.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/hash.hpp"
@@ -40,6 +41,7 @@ class World
 		Chunk *					getChunkAt(const glm::vec3 & location);
 		Chunk *					getChunkAtChunkLocation(int x, int y, int z);
 		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location);
+		const SimplexNoise<2> &	getNoise() const { return _noise; }
 		bool					isLoaded() const { return _isLoaded.load(); }
 		bool					isLocked() const { return _isLocked.load(); }
 
@@ -64,6 +66,7 @@ class World
 		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
 
 		Plane					_planes[4];
+		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
 		std::string				_name;
 		ChunkMap				_chunkMap;
 		ChunkVec				_visibleChunks;
