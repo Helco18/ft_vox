@@ -74,9 +74,9 @@ void VulkanEngine::_createTextureSampler(TextureData & textureData)
 {
 	vk::SamplerCreateInfo samplerInfo;
 	samplerInfo.flags = {};
-	samplerInfo.minFilter = vk::Filter::eNearest;
-	samplerInfo.magFilter = vk::Filter::eNearest;
-	samplerInfo.mipmapMode = vk::SamplerMipmapMode::eNearest;
+	samplerInfo.minFilter = vk::Filter::eLinear;
+	samplerInfo.magFilter = vk::Filter::eLinear;
+	samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
 	samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;
 	samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;
 	samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;

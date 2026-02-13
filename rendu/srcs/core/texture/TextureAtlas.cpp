@@ -20,14 +20,16 @@ void TextureAtlas::createAtlas()
 		Logger::log(TEXTURE, FATAL, "Texture Map is empty.");
 		return;
 	}
-	_atlasData.resize(_width * _height * _colorChannels, 0);
+	_atlasData.resize(_width * _height * _colorChannels, 255);
+	const float normWidth = 1.0f / static_cast<float>(_width);
+	const float normHeight = 1.0f / static_cast<float>(_height);
 	for (const std::pair<const std::string, std::unique_ptr<Texture>> & textures : _textureMap)
 	{
 		const std::unique_ptr<Texture> & texture = textures.second;
-		texture->uvMin.x = static_cast<float>(offsetX) / _width;
-		texture->uvMin.y = 0.0f;
-		texture->uvMax.x = texture->uvMin.x + static_cast<float>(texture->width) / _width;
-		texture->uvMax.y = texture->uvMin.y + static_cast<float>(texture->height) / _height;
+		texture->uvMin.x = (offsetX + 0.5f) * normWidth;
+		texture->uvMin.y = 0.5f * normHeight;
+		texture->uvMax.x = (texture->width + offsetX - 0.5f) * normWidth;
+		texture->uvMax.y = (texture->height - 0.5f) * normHeight;
 
 		for (int y = 0; y < texture->height; ++y)
 		{
@@ -36,11 +38,6 @@ void TextureAtlas::createAtlas()
 			memcpy(&_atlasData[atlasIndex], &texture->data[texIndex], texture->width * _colorChannels);
 		}
 		offsetX += texture->width;
-	}
-	for (int i = 0; i < _width * _height * 4; ++i)
-	{
-		if (!_atlasData[i])
-			_atlasData[i] = 255;
 	}
 	if (g_debug == DebugLevel::DEBUG_MESSAGES)
 		stbi_write_png("atlas_debug.png", _width, _height, _colorChannels, _atlasData.data(), _width * _colorChannels);
