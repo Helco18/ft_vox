@@ -52,6 +52,7 @@ void World::update(AEngine * engine, Camera * camera)
 	}
 	_renderPoint = camPos;
 	_isProceduralRequested.store(true);
+	_needsSort = true;
 	_cv.notify_one();
 }
 
@@ -63,10 +64,15 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		_visibleChunks = _nextVisibleChunks;
 		ChunkVec::iterator it = std::remove_if(_visibleChunks.begin(), _visibleChunks.end(), [](const Chunk * a) { return !a; });
 		_visibleChunks.erase(it, _visibleChunks.end());
-		std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
-				{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
 		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
+		_needsSort = true;
+	}
+	if (_needsSort)
+	{
+		std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
+			{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
+		_needsSort = false;
 	}
 	const Plane * planes = camera->getPlanes();
 	int i = 0;

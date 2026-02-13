@@ -65,4 +65,5 @@ class World
 		std::atomic_bool		_isLocked = false;
 		std::condition_variable	_cv;
 		glm::ivec3				_renderDistance = glm::ivec3(0.0);
+		bool					_needsSort = false;
 };

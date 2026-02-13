@@ -47,10 +47,10 @@ void Chunk::build()
 			return;
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
-		double xd = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH);
+		double worldX = static_cast<double>(x + _chunkLocation.x * CHUNK_WIDTH);
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			double zd = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH);
+			double worldZ = static_cast<double>(z + _chunkLocation.z * CHUNK_LENGTH);
 			int height;
 			if (_chunkLocation.y < -2)
 				height = 0;
@@ -58,18 +58,25 @@ void Chunk::build()
 				height = 0;
 			else
 			{
-				double noiseValue = _world->getNoise().queryState({xd, zd});
+				double noiseValue = _world->getNoise().queryState({worldX, worldZ});
 				height = static_cast<int>(std::floor(noiseValue * 30));
 			}
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
 				int worldY = (y + _chunkLocation.y * CHUNK_HEIGHT);
 				if (worldY == height && worldY >= 0)
-					_blocks[x][y][z] = BlockType::GRASS;
+					_blocks[x][y][z] = worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
 				else if (worldY > height)
 					_blocks[x][y][z] = (worldY) <= 0 ? BlockType::WATER : BlockType::AIR;
 				else
-					_blocks[x][y][z] = BlockType::DIRT;
+				{
+					if (worldY >= -3 && worldY <= -1)
+						_blocks[x][y][z] = BlockType::SAND;
+					else if (worldY <= height - 2 - (height % 2))
+						_blocks[x][y][z] = BlockType::STONE;
+					else
+						_blocks[x][y][z] = BlockType::DIRT;
+				}
 			}
 		}
 	}

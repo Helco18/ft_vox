@@ -20,7 +20,9 @@ enum BlockType
 	AIR,
 	DIRT,
 	GRASS,
-	WATER
+	WATER,
+	SAND,
+	STONE
 };
 
 class BlockData
