@@ -12,20 +12,7 @@
 
 #define RENDER_DISTANCE_BORDER 1
 #define MAX_UPLOAD_PER_FRAME 128
-#define CHUNK_DELETION_DISTANCE 2
-
-struct Plane
-{
-	float	plane[4];
-};
-
-enum FrustumDir
-{
-	FRUSTUM_LEFT,
-	FRUSTUM_RIGHT,
-	FRUSTUM_BOTTOM,
-	FRUSTUM_TOP
-};
+#define CHUNK_DELETION_DISTANCE 8
 
 class World
 {
@@ -46,13 +33,12 @@ class World
 		bool					isLocked() const { return _isLocked.load(); }
 
 		void					lockGeneration(bool locked) { _isLocked.store(locked); }
-
 		void					unloadChunks(AEngine * engine);
-
 		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
 		void					update(AEngine * engine, Camera * camera);
 
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
+
 	private:
 		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
 		typedef std::vector<Chunk *>					ChunkVec;
@@ -62,12 +48,8 @@ class World
 		bool					_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
 		ChunkVec				_queryChunksInRange();
 		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
+		bool					_chunkIsFrustum(const Plane * planes, Chunk * chunk);
 
-		void					_extractPlanesFromProjmat(Camera * camera);
-		bool					_chunkIsFrustum(Chunk * chunk);
-
-
-		Plane					_planes[4];
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
 		std::string				_name;
 		ChunkMap				_chunkMap;

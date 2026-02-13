@@ -66,3 +66,28 @@ bool World::_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 
 		|| chunkPos.z > static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) + _renderDistance.z
 		|| chunkPos.z < static_cast<int>(std::floor(camPos.z / CHUNK_LENGTH)) - _renderDistance.z);
 }
+
+static float getSignedDistanceToPlane(const glm::vec3 & pos, const Plane & p)
+{
+	glm::vec3 normal(p.plane[0], p.plane[1], p.plane[2]);
+	return(glm::dot(normal, pos) + (p.plane[3]));
+}
+
+bool World::_chunkIsFrustum(const Plane * planes, Chunk * chunk)
+{
+	glm::vec3 min = chunk->getMin();
+	glm::vec3 max = chunk->getMax();
+
+	glm::vec3 c = (min + max) * 0.5f;
+	glm::vec3 e = (max - min) - 0.5f;
+
+	for (int f = 0; f <= FrustumDir::FRUSTUM_TOP; ++f)
+	{
+		const glm::vec3 normal(planes[f].plane[0], planes[f].plane[1], planes[f].plane[2]);
+		float r = e[0] * glm::abs(normal[0]) + e[1] * glm::abs(normal[1]) + e[2] * glm::abs(normal[2]);
+		float s = getSignedDistanceToPlane(c, planes[f]);
+		if (s + r < 0)
+			return false;
+	}
+	return true;
+}

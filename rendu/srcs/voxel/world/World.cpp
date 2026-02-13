@@ -68,7 +68,7 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
 	}
-	_extractPlanesFromProjmat(camera);
+	const Plane * planes = camera->getPlanes();
 	int i = 0;
 	for (Chunk * chunk : _visibleChunks)
 	{
@@ -80,7 +80,7 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 			chunk->uploadAsset(engine);
 			i++;
 		}
-		else if (state == UPLOADED && _chunkIsFrustum(chunk))
+		else if (state == UPLOADED && _chunkIsFrustum(planes, chunk))
 			chunk->drawAsset(engine, pipelineType);
 	}
 }

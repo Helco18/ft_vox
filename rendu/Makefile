@@ -18,6 +18,7 @@ GLSL_PATH			=	$(SHADER_PATH)/glsl
 # Sources
 SRCS				=	srcs/main.cpp \
 						srcs/core/camera/Camera.cpp \
+						srcs/core/camera/CameraFrustum.cpp \
 						srcs/core/engine/opengl/OpenGLAsset.cpp \
 						srcs/core/engine/opengl/OpenGLDebug.cpp \
 						srcs/core/engine/opengl/OpenGLEngine.cpp \
@@ -62,7 +63,6 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp \
-						srcs/voxel/world/WorldFrustum.cpp \
 						srcs/voxel/world/WorldGeneration.cpp \
 						srcs/voxel/world/WorldUtils.cpp
 LIBS_C				=	libs/glad/gl.c

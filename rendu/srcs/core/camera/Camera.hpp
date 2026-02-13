@@ -14,6 +14,19 @@ enum CameraType
 	FPS
 };
 
+enum FrustumDir
+{
+	FRUSTUM_LEFT,
+	FRUSTUM_RIGHT,
+	FRUSTUM_BOTTOM,
+	FRUSTUM_TOP
+};
+
+struct Plane
+{
+	float	plane[4];
+};
+
 struct CameraBuffer
 {
 	glm::mat4 view;
@@ -39,6 +52,7 @@ class Camera
 		const CameraBuffer &		getBuffer() const { return _cameraBuffer; }
 		bool						isIgnoringYMovement() const { return _ignoreY; }
 		glm::mat4 					getView() const { return _view; }
+		const Plane * 				getPlanes() const { return _planes; }
 
 		void						setPosition(const glm::vec3 & position) { _position = position; }
 		void						setOrientation(glm::vec3 orientation) { _orientation = orientation; }
@@ -69,6 +83,8 @@ class Camera
 
 		glm::vec3					getEulerAngles() const;
 	private:
+		void						_extractPlanes();
+
 		glm::vec3					_position;
 		glm::quat					_orientation;
 		glm::vec3					_altitude;
@@ -84,6 +100,7 @@ class Camera
 		CameraType					_type = EULER;
 		CameraBuffer				_cameraBuffer;
 		bool						_ignoreY = false;
-
 		glm::mat4					_view;
+		Plane						_planes[4];
+
 };
