@@ -40,7 +40,7 @@ class World
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 
 	private:
-		typedef std::unordered_map<glm::ivec3, Chunk *> ChunkMap;
+		typedef std::unordered_map<glm::ivec3, std::unique_ptr<Chunk>> ChunkMap;
 		typedef std::vector<Chunk *>					ChunkVec;
 
 		void					_generateChunks();

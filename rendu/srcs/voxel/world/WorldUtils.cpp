@@ -17,7 +17,7 @@ Chunk * World::getChunkAtChunkLocation(int x, int y, int z)
 	std::lock_guard<std::mutex> lg(_mapMutex);
 	ChunkMap::const_iterator it = _chunkMap.find(glm::ivec3(x, y, z));
 	if (it != _chunkMap.end())
-		return it->second;
+		return it->second.get();
 	return nullptr;
 }
 
@@ -69,17 +69,17 @@ bool World::_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 
 
 static float getSignedDistanceToPlane(const glm::vec3 & pos, const Plane & p)
 {
-	glm::vec3 normal(p.plane[0], p.plane[1], p.plane[2]);
+	const glm::vec3 normal(p.plane[0], p.plane[1], p.plane[2]);
 	return(glm::dot(normal, pos) + (p.plane[3]));
 }
 
 bool World::_chunkIsFrustum(const Plane * planes, Chunk * chunk)
 {
-	glm::vec3 min = chunk->getMin();
-	glm::vec3 max = chunk->getMax();
+	const glm::vec3 & min = chunk->getMin();
+	const glm::vec3 & max = chunk->getMax();
 
-	glm::vec3 c = (min + max) * 0.5f;
-	glm::vec3 e = (max - min) - 0.5f;
+	const glm::vec3 c = (min + max) * 0.5f;
+	const glm::vec3 e = (max - min) - 0.5f;
 
 	for (int f = 0; f <= FrustumDir::FRUSTUM_TOP; ++f)
 	{

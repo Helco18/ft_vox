@@ -1,3 +1,4 @@
+#include "Profiler.hpp"
 #include "World.hpp"
 
 World::ChunkVec World::_queryChunksInRange()
@@ -28,12 +29,12 @@ World::ChunkVec World::_queryChunksInRange()
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
 				{
-					chunks.push_back(it->second);
+					chunks.push_back(it->second.get());
 					continue;
 				}
-				Chunk * chunk = new Chunk(x, y, z, this);
-					_chunkMap.try_emplace(location, chunk);
-				chunks.push_back(_chunkMap[location]);
+				std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(x, y, z, this);
+				_chunkMap.try_emplace(location, std::move(chunk));
+				chunks.push_back(_chunkMap[location].get());
 			}
 		}
 	}
@@ -49,7 +50,6 @@ void World::_generateChunks()
 	ChunkVec chunksToGenerate;
 	std::mutex cvMutex;
 
-	// Tip for tomorrow: maybe add a cv to wait for chunks to be built/meshed, then when they're all done, wake the loop and reset counter
 	while (true)
 	{
 		std::unique_lock<std::mutex> lock(cvMutex);
@@ -129,9 +129,9 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 
 	std::vector<glm::ivec3> chunksToDelete;
 	std::lock_guard<std::mutex> lg(_mapMutex);
-	for (const std::pair<const glm::ivec3, Chunk *> & chunkPair : _chunkMap)
+	for (const std::pair<const glm::ivec3, std::unique_ptr<Chunk>> & chunkPair : _chunkMap)
 	{
-		Chunk * chunk = chunkPair.second;
+		const std::unique_ptr<Chunk> & chunk = chunkPair.second;
 		if (!chunk)
 			continue;
 		const glm::ivec3 & chunkPos = chunkPair.first;
@@ -144,7 +144,6 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 			if (chunk->unload(engine))
 			{
 				chunksToDelete.push_back(chunkPos);
-				delete chunk;
 				_chunkMap[chunkPos] = nullptr;
 			}
 		}

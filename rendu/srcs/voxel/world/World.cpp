@@ -8,8 +8,6 @@ World::~World()
 	_isLoaded.store(false);
 	_cv.notify_one();
 	_chunkPool.stop();
-	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
-		delete chunks.second;
 }
 
 void World::load()
@@ -22,9 +20,9 @@ void World::load()
 
 void World::unloadChunks(AEngine * engine)
 {
-	for (std::pair<glm::ivec3, Chunk *> chunks : _chunkMap)
+	for (const std::pair<const glm::ivec3, std::unique_ptr<Chunk>> & chunks : _chunkMap)
 	{
-		Chunk * chunk = chunks.second;
+		const std::unique_ptr<Chunk> & chunk = chunks.second;
 		if (chunk && chunk->getState() == UPLOADED)
 			chunk->unload(engine);
 	}
