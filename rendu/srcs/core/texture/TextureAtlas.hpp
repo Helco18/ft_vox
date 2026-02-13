@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include "glm/glm.hpp"
 
 #define TARGET_COLOR_CHANNELS 4
@@ -34,8 +35,8 @@ class TextureAtlas
 		static void				destroy();
 
 	private:
-		typedef std::unordered_map<std::string, Texture *>	TextureMap;
-		typedef std::vector<unsigned char>					AtlasData;
+		typedef std::unordered_map<std::string, std::unique_ptr<Texture>>	TextureMap;
+		typedef std::vector<unsigned char>									AtlasData;
 
 		static TextureMap		_textureMap;
 		static AtlasData		_atlasData;

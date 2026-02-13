@@ -21,9 +21,9 @@ void TextureAtlas::createAtlas()
 		return;
 	}
 	_atlasData.resize(_width * _height * _colorChannels, 0);
-	for (std::pair<const std::string, Texture *> & textures : _textureMap)
+	for (const std::pair<const std::string, std::unique_ptr<Texture>> & textures : _textureMap)
 	{
-		Texture * texture = textures.second;
+		const std::unique_ptr<Texture> & texture = textures.second;
 		texture->uvMin.x = static_cast<float>(offsetX) / _width;
 		texture->uvMin.y = 0.0f;
 		texture->uvMax.x = texture->uvMin.x + static_cast<float>(texture->width) / _width;
@@ -56,20 +56,19 @@ void TextureAtlas::pushTexture(const std::string & texturePath)
 		return;
 	}
 
-	Texture * texture = new Texture;
+	std::unique_ptr<Texture> texture = std::make_unique<Texture>();
 
 	stbi_set_flip_vertically_on_load(true);
 	texture->data = stbi_load(texturePath.c_str(), &texture->width, &texture->height, &texture->colorChannels, STBI_rgb_alpha);
 	if (!texture->data)
 	{
 		Logger::log(TEXTURE, ERROR, "Couldn't open texture file at: " + texturePath);
-		delete texture;
 		return;
 	}
 	if (_height < texture->height)
 		_height = texture->height;
 	_width += texture->width;
-	_textureMap.emplace(texturePath, texture);
+	_textureMap.emplace(texturePath, std::move(texture));
 	Logger::log(TEXTURE, DEBUG, "Loaded texture at: " + texturePath);
 }
 
@@ -81,14 +80,14 @@ Texture * TextureAtlas::getTexture(const std::string & texturePath)
 		Logger::log(TEXTURE, ERROR, "Couldn't find texture at: " + texturePath);
 		return nullptr;
 	}
-	return it->second;
+	return it->second.get();
 }
 
 void TextureAtlas::destroy()
 {
-	for (std::pair<const std::string, Texture *> & textures : _textureMap)
+	for (const std::pair<const std::string, std::unique_ptr<Texture>> & textures : _textureMap)
 	{
-		stbi_image_free(textures.second->data);
-		delete textures.second;
+		if (textures.second)
+			stbi_image_free(textures.second->data);
 	}
 }
