@@ -18,7 +18,7 @@ World::ChunkVec World::_queryChunksInRange()
 
 	for (int x = renderDistanceSouth; x < renderDistanceNorth; ++x)
 	{
-		for (int y = renderDistanceDown; y < renderDistanceUp; ++y)
+		for (int y = renderDistanceUp; y > renderDistanceDown; --y)
 		{
 			for (int z = renderDistanceWest; z < renderDistanceEast; ++z)
 			{

@@ -7,12 +7,25 @@
 #include "Chunk.hpp"
 #include "SimplexNoise.hpp"
 #include "ThreadPool.hpp"
+#include "BlockData.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/hash.hpp"
 
 #define RENDER_DISTANCE_BORDER 1
 #define MAX_UPLOAD_PER_FRAME 128
 #define CHUNK_DELETION_DISTANCE 8
+
+struct PosFace
+{
+	BlockFace face;
+	glm::vec3 pos;
+};
+
+struct reyStat
+{
+	glm::vec3 rey;
+	glm::vec3 o;
+};
 
 class World
 {
@@ -49,6 +62,12 @@ class World
 		ChunkVec				_queryChunksInRange();
 		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
 		bool					_chunkIsFrustum(const Plane * planes, Chunk * chunk);
+
+		double					_ray(int dof, const glm::vec3 & pos, reyStat & stat);
+		double					_xLines(double ra,  const glm::vec3 & pos);
+		double					_yLines(double ra,  const glm::vec3 & pos);
+		double					_zLines(double ra,  const glm::vec3 & pos);
+ 		PosFace					_rayCast(const glm::vec3 & pos, const glm::vec3 & dir);
 
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
 		std::string				_name;
