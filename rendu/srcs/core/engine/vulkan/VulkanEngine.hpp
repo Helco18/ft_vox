@@ -192,7 +192,7 @@ class VulkanEngine : public AEngine
 		vk::raii::Image						_msaaImage = nullptr;
 		vk::raii::DeviceMemory				_msaaImageMemory = nullptr;
 		vk::raii::ImageView					_msaaImageView = nullptr;
-	
+
 		// Commands & Descriptor
 		vk::raii::CommandPool				_commandPool = nullptr;
 		CommandBuffers						_frameCommandBuffers;
@@ -201,7 +201,6 @@ class VulkanEngine : public AEngine
 		Semaphores							_presentCompleteSemaphores;
 		Semaphores							_renderFinishedSemaphores;
 		Fences								_inFlightFences;
-		uint32_t							_presentSemaphoreIndex = 0;
 		uint32_t							_currentFrame = 0;
 		uint32_t							_imageIndex = 0;
 
@@ -224,7 +223,7 @@ class VulkanEngine : public AEngine
 		std::vector<PendingUniform>			_pendingUniforms;
 		std::vector<PendingAsset>			_pendingAssets;
 		std::vector<AssetID>				_pendingUnloads;
-		
+
 		// Threads
 		ThreadPool							_threadPool;
 

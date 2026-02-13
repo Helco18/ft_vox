@@ -85,7 +85,11 @@ void VulkanEngine::endFrame()
 	// Fence = on attend que le GPU finisse la tâche
 	try
 	{
-		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(UINT64_MAX, *_presentCompleteSemaphores[_presentSemaphoreIndex], nullptr);
+		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
+		if (res != vk::Result::eSuccess)
+			throw VulkanException("Waiting for fences on draw call failed.");
+
+		std::pair<vk::Result, uint32_t> result = _swapChain.acquireNextImage(UINT64_MAX, *_presentCompleteSemaphores[_currentFrame], nullptr);
 		_imageIndex = result.second;
 		if (result.first != vk::Result::eSuccess && result.first != vk::Result::eSuboptimalKHR)
 		{
@@ -96,10 +100,7 @@ void VulkanEngine::endFrame()
 			}
 			throw VulkanException("Couldn't acquire next image.");
 		}
-		
-		vk::Result res = _device.waitForFences(*_inFlightFences[_currentFrame], vk::True, UINT64_MAX);
-		if (res != vk::Result::eSuccess)
-			throw VulkanException("Waiting for fences on draw call failed.");
+
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
 		_processPendingUnloads();
@@ -111,7 +112,7 @@ void VulkanEngine::endFrame()
 
 		vk::SubmitInfo submitInfo;
 		submitInfo.waitSemaphoreCount = 1;
-		submitInfo.pWaitSemaphores = &*_presentCompleteSemaphores[_presentSemaphoreIndex];
+		submitInfo.pWaitSemaphores = &*_presentCompleteSemaphores[_currentFrame];
 		submitInfo.pWaitDstStageMask = &waitDstStageMask;
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &*_frameCommandBuffers[_currentFrame];
@@ -139,7 +140,6 @@ void VulkanEngine::endFrame()
 				throw VulkanException("Couldn't present next image.");
 		}
 
-		_presentSemaphoreIndex = (_presentSemaphoreIndex + 1) % _presentCompleteSemaphores.size();
 		_currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	} catch (const vk::OutOfDateKHRError & e)
 	{

@@ -38,6 +38,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanMesh.cpp \
 						srcs/core/engine/vulkan/VulkanMultisampling.cpp \
 						srcs/core/engine/vulkan/VulkanPipeline.cpp \
+						srcs/core/engine/vulkan/VulkanSyncObjects.cpp \
 						srcs/core/engine/vulkan/VulkanSwapchain.cpp \
 						srcs/core/engine/vulkan/VulkanTexture.cpp \
 						srcs/core/engine/vulkan/VulkanUniform.cpp \
