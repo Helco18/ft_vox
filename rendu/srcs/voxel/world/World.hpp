@@ -74,6 +74,7 @@ class World
 		ChunkMap				_chunkMap;
 		ChunkVec				_visibleChunks;
 		ChunkVec				_nextVisibleChunks;
+		ChunkVec				_uploadedChunks;
 		std::atomic_bool		_readyToSwap = false;
 		ThreadPool				_chunkPool;
 		std::mutex				_mapMutex;
@@ -84,5 +85,4 @@ class World
 		std::atomic_bool		_isLocked = false;
 		std::condition_variable	_cv;
 		glm::ivec3				_renderDistance = glm::ivec3(0.0);
-		bool					_needsSort = false;
 };

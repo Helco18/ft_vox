@@ -63,7 +63,7 @@ VertexOutput vertMain(VertexInput input)
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
-	float3 lightDir = normalize(float3(0.5, 1.0, 0.5));
+	float3 lightDir = normalize(float3(-0.5, 1.0, -0.5));
 	float diffuse = max(dot(inVert.outNormal, lightDir), 0.2);
 
 	float3 ambientColor = float3(0.2, 0.2, 0.2);

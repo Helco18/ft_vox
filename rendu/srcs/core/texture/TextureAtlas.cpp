@@ -26,8 +26,8 @@ void TextureAtlas::createAtlas()
 	for (const std::pair<const std::string, std::unique_ptr<Texture>> & textures : _textureMap)
 	{
 		const std::unique_ptr<Texture> & texture = textures.second;
-		texture->uvMin.x = (offsetX + 0.5f) * normWidth;
-		texture->uvMin.y = 0.5f * normHeight;
+		texture->uvMin.x = (offsetX + 0.6f) * normWidth;
+		texture->uvMin.y = 0.6f * normHeight;
 		texture->uvMax.x = (texture->width + offsetX - 0.5f) * normWidth;
 		texture->uvMax.y = (texture->height - 0.5f) * normHeight;
 

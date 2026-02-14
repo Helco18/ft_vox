@@ -46,11 +46,11 @@ void World::update(AEngine * engine, Camera * camera)
 	if (lastVisitedChunk != currentChunk)
 	{
 		lastVisitedChunk = currentChunk;
-		_checkForChunkDeletion(engine, camera);
+		if (!_isLocked.load())
+			_checkForChunkDeletion(engine, camera);
 	}
 	_renderPoint = camPos;
 	_isProceduralRequested.store(true);
-	_needsSort = true;
 	_cv.notify_one();
 }
 
@@ -58,33 +58,36 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 {
 	if (_readyToSwap)
 	{
-		std::lock_guard<std::mutex> lg(_visibleChunksMutex);
-		_visibleChunks = _nextVisibleChunks;
+		{
+			std::lock_guard<std::mutex> lg(_visibleChunksMutex);
+			_visibleChunks = _nextVisibleChunks;
+			_nextVisibleChunks.clear();
+		}
 		ChunkVec::iterator it = std::remove_if(_visibleChunks.begin(), _visibleChunks.end(), [](const Chunk * a) { return !a; });
 		_visibleChunks.erase(it, _visibleChunks.end());
-		_nextVisibleChunks.clear();
 		_readyToSwap.store(false);
-		_needsSort = true;
 	}
-	if (_needsSort)
-	{
-		std::sort(_visibleChunks.begin(), _visibleChunks.end(), [this](const Chunk * a, const Chunk * b)
-			{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
-		_needsSort = false;
-	}
-	const Plane * planes = camera->getPlanes();
 	int i = 0;
-	for (Chunk * chunk : _visibleChunks)
+	const Plane * planes = camera->getPlanes();
+	if (!_isLocked.load())
 	{
-		if (!chunk)
-			continue;
-		ChunkState state = chunk->getState();
-		if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
+		_uploadedChunks.clear();
+		for (Chunk * chunk : _visibleChunks)
 		{
-			chunk->uploadAsset(engine);
-			i++;
+			if (!chunk)
+				continue;
+			ChunkState state = chunk->getState();
+			if (state == MESHED && i < MAX_UPLOAD_PER_FRAME)
+			{
+				chunk->uploadAsset(engine);
+				i++;
+			}
+			if (state == UPLOADED && _chunkIsFrustum(planes, chunk))
+				_uploadedChunks.push_back(chunk);
 		}
-		else if (state == UPLOADED && _chunkIsFrustum(planes, chunk))
-			chunk->drawAsset(engine, pipelineType);
 	}
+	std::sort(_uploadedChunks.begin(), _uploadedChunks.end(), [this](const Chunk * a, const Chunk * b)
+		{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
+	for (Chunk * chunk : _uploadedChunks)
+		chunk->drawAsset(engine, pipelineType);
 }
