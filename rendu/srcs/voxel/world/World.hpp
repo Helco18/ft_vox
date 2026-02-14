@@ -51,6 +51,8 @@ class World
 		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
 		void					update(AEngine * engine, Camera * camera);
 
+ 		PosFace					rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
+
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 
 	private:
@@ -65,7 +67,6 @@ class World
 		bool					_chunkIsFrustum(const Plane * planes, Chunk * chunk);
 
 		PosFace					_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
- 		PosFace					_rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
 
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
 		std::string				_name;

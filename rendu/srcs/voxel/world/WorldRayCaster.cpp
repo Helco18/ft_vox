@@ -71,7 +71,7 @@ PosFace World::_processRay(const glm::vec3 & pos, RayState & state, float maxDis
 	return p;
 }
 
-PosFace World::_rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance)
+PosFace World::rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance)
 {
 	glm::vec3	rayDir(glm::normalize(dir));
 	glm::vec3	deltaDist(glm::abs(1 / (rayDir.x)), glm::abs(1 / rayDir.y), glm::abs(1 / rayDir.z));
