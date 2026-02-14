@@ -88,7 +88,7 @@ void Chunk::build()
 
 float Chunk::getDistance(glm::vec3 pos) const
 {
-	return(glm::distance((glm::vec3)posToChunkPos(pos), (glm::vec3)_chunkLocation));
+	return(glm::distance((glm::vec3)locToChunkLoc(pos), (glm::vec3)_chunkLocation));
 }
 
 void Chunk::generateMesh()
@@ -146,13 +146,24 @@ bool Chunk::unload(AEngine * engine)
 	return true;
 }
 
-glm::ivec3 Chunk::posToChunkPos(glm::vec3 pos)
+glm::ivec3 Chunk::posToChunkPos(const glm::vec3 & loc)
 {
-	glm::vec3 chunkPos;
-	chunkPos.x = static_cast<int>(std::floor(static_cast<double>(pos.x) / CHUNK_WIDTH));
-	chunkPos.y = static_cast<int>(std::floor(static_cast<double>(pos.y) / CHUNK_HEIGHT));
-	chunkPos.z = static_cast<int>(std::floor(static_cast<double>(pos.z) / CHUNK_LENGTH));
+	glm::vec3	chunkPos;
+	glm::ivec3	block = floor(loc);
+
+	chunkPos.x = ((block.x % CHUNK_WIDTH) + CHUNK_WIDTH) % CHUNK_WIDTH;
+	chunkPos.y = ((block.y % CHUNK_HEIGHT) + CHUNK_HEIGHT) % CHUNK_HEIGHT;
+	chunkPos.z = ((block.z % CHUNK_LENGTH) + CHUNK_LENGTH) % CHUNK_LENGTH;
 	return chunkPos;
+}
+
+glm::ivec3 Chunk::locToChunkLoc(const glm::vec3 & loc)
+{
+	glm::vec3 chunkLoc;
+	chunkLoc.x = static_cast<int>(std::floor(static_cast<double>(loc.x) / CHUNK_WIDTH));
+	chunkLoc.y = static_cast<int>(std::floor(static_cast<double>(loc.y) / CHUNK_HEIGHT));
+	chunkLoc.z = static_cast<int>(std::floor(static_cast<double>(loc.z) / CHUNK_LENGTH));
+	return chunkLoc;
 }
 
 std::vector<Chunk *> Chunk::_computeNeighborChunks()

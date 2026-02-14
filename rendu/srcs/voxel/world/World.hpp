@@ -21,9 +21,10 @@ struct PosFace
 	glm::vec3 pos;
 };
 
-struct reyStat
+struct RayState
 {
-	glm::vec3 rey;
+	glm::vec3 ray;
+	glm::vec3 delta;
 	glm::vec3 o;
 };
 
@@ -63,11 +64,8 @@ class World
 		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
 		bool					_chunkIsFrustum(const Plane * planes, Chunk * chunk);
 
-		double					_ray(int dof, const glm::vec3 & pos, reyStat & stat);
-		double					_xLines(double ra,  const glm::vec3 & pos);
-		double					_yLines(double ra,  const glm::vec3 & pos);
-		double					_zLines(double ra,  const glm::vec3 & pos);
- 		PosFace					_rayCast(const glm::vec3 & pos, const glm::vec3 & dir);
+		PosFace					_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
+ 		PosFace					_rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
 
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
 		std::string				_name;

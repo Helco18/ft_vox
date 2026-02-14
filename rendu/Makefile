@@ -1,7 +1,7 @@
 # Compilation
 CC					=	g++
-CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD
-# CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD -fsanitize=address
+# CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD
+CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD -fsanitize=address
 LDFLAGS				=	-lvulkan -lGL -ldl
 
 # Names
@@ -64,6 +64,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
 						srcs/voxel/world/World.cpp \
 						srcs/voxel/world/WorldGeneration.cpp \
+						srcs/voxel/world/WorldRayCaster.cpp \
 						srcs/voxel/world/WorldUtils.cpp
 LIBS_C				=	libs/glad/gl.c
 LIBS_CPP			=	libs/imgui/imgui_demo.cpp \

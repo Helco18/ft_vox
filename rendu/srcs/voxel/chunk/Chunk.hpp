@@ -78,7 +78,8 @@ class Chunk
 		void						drawAsset(AEngine * engine, PipelineType pipelineType);
 		bool						unload(AEngine * engine);
 
-		static glm::ivec3			posToChunkPos(glm::vec3 pos);
+		static glm::ivec3			posToChunkPos(const glm::vec3 & pos);
+		static glm::ivec3			locToChunkLoc(const glm::vec3 & loc);
 		bool						isReadyForMesh();
 
 	private:

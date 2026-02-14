@@ -33,8 +33,11 @@ void World::update(AEngine * engine, Camera * camera)
 	static glm::ivec3 lastVisitedChunk(0, 0, 0);
 	static int oldRenderDistance = 0;
 	const glm::vec3 & camPos = camera->getPosition();
-	const glm::ivec3 currentChunk = Chunk::posToChunkPos(camPos);
+	const glm::ivec3 currentChunk = Chunk::locToChunkLoc(camPos);
 	const int renderDistance = camera->getRenderDistance();
+
+	glm::vec3 dir = camera->computeForward(0);
+	_rayCast(camPos, dir, 20.0f);
 
 	if (lastVisitedChunk == currentChunk && oldRenderDistance == renderDistance)
 		return;

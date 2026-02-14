@@ -11,7 +11,7 @@ void Gui::generateGui(GLFWwindow * window)
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
 	Camera * camera = windowManager->getCamera();
 	const glm::vec3 & position = camera->getPosition();
-	const glm::ivec3 & chunkLocation = Chunk::posToChunkPos(position);
+	const glm::ivec3 & chunkLocation = Chunk::locToChunkLoc(position);
 	glm::vec3 chunkPos = {
 		abs(static_cast<int>(std::floor(camera->getPosition().x)) % CHUNK_WIDTH),
 		abs(static_cast<int>(std::floor(camera->getPosition().y)) % CHUNK_HEIGHT),
