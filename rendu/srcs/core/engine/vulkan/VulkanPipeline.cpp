@@ -144,6 +144,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	colorBlending.attachmentCount = 1;
 	colorBlending.pAttachments = &colorBlendAttachment;
 
+	vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
 	PipelineData pipelineData;
 	pipelineData.pipelineInfo = pipelineInfo;
 	if (!pipelineInfo.descriptors.empty())
@@ -153,9 +154,10 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 		_createDescriptorPool(pipelineData);
 		_createDescriptorSetLayout(pipelineData);
 		_createDescriptorSets(pipelineData);
+		pipelineLayoutInfo.setLayoutCount = 1;
+		pipelineLayoutInfo.pSetLayouts = &*pipelineData.descriptorSetLayout;
 	}
 
-	vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
 	vk::PushConstantRange pcr;
 	if (pipelineInfo.uniformSize > 0)
 	{
@@ -167,9 +169,6 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	}
 	else
 		pipelineLayoutInfo.pushConstantRangeCount = 0;
-
-	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &*pipelineData.descriptorSetLayout;
 
 	pipelineData.layout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
 	pipelineData.commandBuffers = _createCommandBuffer(vk::CommandBufferLevel::eSecondary);

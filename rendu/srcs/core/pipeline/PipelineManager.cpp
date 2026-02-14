@@ -114,21 +114,24 @@ static void uploadSkybox(AEngine * engine)
 	PipelineManager::uploadPipeline(engine, infoSkybox, PIPELINE_SKYBOX);
 }
 
+static void uploadCrosshair(AEngine * engine)
+{
+	PipelineInfo infoCrosshair;
+	infoCrosshair.shaderName = "crosshair";
+	infoCrosshair.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	infoCrosshair.cullMode = CullMode::OFF;
+	infoCrosshair.blend = false;
+	infoCrosshair.depthTest = false;
+
+	PipelineManager::uploadPipeline(engine, infoCrosshair, PIPELINE_CROSSHAIR);
+}
+
 void PipelineManager::init(AEngine * engine)
 {
 	uploadSkybox(engine);
 	uploadVoxel(engine);
 	uploadLines(engine);
-
-	// PipelineInfo infoBasic;
-	// infoBasic.shaderName = "basic";
-	// infoBasic.attributes.clear();
-	// infoBasic.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
-	// infoBasic.attributeSize = sizeof(glm::vec2);
-	// infoBasic.blend = false;
-	// infoBasic.cullMode = OFF;
-	// infoBasic.depthTest = false;
-	// _uploadPipeline(engine, infoBasic, PIPELINE_BASIC);
+	uploadCrosshair(engine);
 }
 
 void PipelineManager::uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)

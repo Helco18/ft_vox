@@ -3,17 +3,11 @@
 #include "AEngine.hpp"
 #include "glm/glm.hpp"
 
-struct SkyboxVertex
-{
-	glm::vec3	position;
-	glm::vec3	normal;
-};
-
-class Skybox
+class Crosshair
 {
 	public:
-		Skybox() {};
-		~Skybox() {};
+		Crosshair() {};
+		~Crosshair() {};
 
 		void						generateMesh();
 		void						uploadAsset(AEngine * engine);
@@ -22,6 +16,6 @@ class Skybox
 
 	private:
 		Asset						_asset;
-		std::vector<SkyboxVertex>	_vertices;
+		std::vector<glm::vec2>		_vertices;
 		std::vector<uint32_t>		_indices;
 };

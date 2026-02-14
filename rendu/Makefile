@@ -51,6 +51,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/thread/ThreadWorker.cpp \
 						srcs/core/window/WindowCreation.cpp \
 						srcs/core/window/WindowManager.cpp \
+						srcs/crosshair/Crosshair.cpp \
 						srcs/environment/Environment.cpp \
 						srcs/skybox/Skybox.cpp \
 						srcs/tools/logger/Logger.cpp \
@@ -75,7 +76,7 @@ LIBS_CPP			=	libs/imgui/imgui_demo.cpp \
 						libs/imgui/imgui_impl_vulkan.cpp \
 						libs/imgui/imgui_widgets.cpp \
 						libs/imgui/imgui.cpp
-SHADERS_SRC			=	$(SHADER_PATH)/slang/basic.slang \
+SHADERS_SRC			=	$(SHADER_PATH)/slang/crosshair.slang \
 						$(SHADER_PATH)/slang/lines.slang \
 						$(SHADER_PATH)/slang/skybox.slang \
 						$(SHADER_PATH)/slang/voxel.slang
@@ -102,10 +103,11 @@ INCLUDES			=	-I libs \
 						-I srcs/core/texture \
 						-I srcs/core/thread \
 						-I srcs/core/window \
-						-I srcs/skybox \
-						-I srcs/environment \
+						-I srcs/crosshair \
 						-I srcs/entity \
 						-I srcs/entity/player \
+						-I srcs/environment \
+						-I srcs/skybox \
 						-I srcs/tools \
 						-I srcs/tools/exceptions \
 						-I srcs/tools/gui \

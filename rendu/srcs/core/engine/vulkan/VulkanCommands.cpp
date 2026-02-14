@@ -92,8 +92,11 @@ void VulkanEngine::_recordCommandBuffer()
 						static_cast<float>(_swapChainExtent.height), 0.0f, 1.0f));
 		commands.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), _swapChainExtent));
 		commands.bindPipeline(vk::PipelineBindPoint::eGraphics, pipelineData.pipeline);
-		commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineData.layout, 0,
-				*pipelineData.descriptorSets[_currentFrame], nullptr);
+		if (!pipelineData.pipelineInfo.descriptors.empty())
+		{
+			commands.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineData.layout, 0,
+					*pipelineData.descriptorSets[_currentFrame], nullptr);
+		}
 		const std::vector<Asset *> & drawableAssets = _drawableAssets[i];
 		for (const Asset * asset : drawableAssets)
 		{

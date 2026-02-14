@@ -5,6 +5,7 @@
 #include "TextureAtlas.hpp"
 #include "Skybox.hpp"
 #include "BlockData.hpp"
+#include "Crosshair.hpp"
 
 Environment::~Environment()
 {
@@ -54,12 +55,15 @@ void Environment::loop()
 	World * world;
 	Camera * camera;
 	Skybox sky;
+	Crosshair crosshair;
 
 	engine = _windowManager->getEngine();
 	world = WorldManager::getWorld(WORLD_NAME);
 	camera = _player.getCamera();
 	sky.generateMesh();
 	sky.uploadAsset(engine);
+	crosshair.generateMesh();
+	crosshair.uploadAsset(engine);
 	while (_running)
 	{
 		frameStart = glfwGetTime();
@@ -70,13 +74,16 @@ void Environment::loop()
 			if (world)
 				world->unloadChunks(engine);
 			sky.unload(engine);
+			crosshair.unload(engine);
 			_windowManager->swap();
 			engine = _windowManager->getEngine();
 			sky.uploadAsset(engine);
+			crosshair.uploadAsset(engine);
 			continue;
 		}
 		engine->beginFrame();
 		engine->beginImGui();
+		crosshair.drawAsset(engine);
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
 		if (world)
@@ -85,7 +92,7 @@ void Environment::loop()
 			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL, camera);
 		}
 		camera->renderViewMatrix(engine);
-		sky.drawAsset(engine, PIPELINE_SKYBOX);
+		// sky.drawAsset(engine);
 		engine->endFrame();
 		_windowManager->setDeltaTime(glfwGetTime() - frameStart);
 	}

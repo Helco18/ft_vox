@@ -56,9 +56,9 @@ void Skybox::uploadAsset(AEngine * engine)
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_SKYBOX).id);
 }
 
-void Skybox::drawAsset(AEngine * engine, PipelineType pipelineType)
+void Skybox::drawAsset(AEngine * engine)
 {
-	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
+	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(PIPELINE_SKYBOX).id);
 }
 
 void Skybox::unload(AEngine * engine)
