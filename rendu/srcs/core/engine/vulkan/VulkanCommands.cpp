@@ -71,9 +71,9 @@ void VulkanEngine::_recordCommandBuffer()
 		colorAttachmentInfo.resolveImageLayout = vk::ImageLayout::eColorAttachmentOptimal;
 
 		vk::RenderingInfo renderingInfo;
+		vk::RenderingAttachmentInfo depthAttachmentInfo;
 		if (pipelineData.pipelineInfo.depthTest || !i)
 		{
-			vk::RenderingAttachmentInfo depthAttachmentInfo;
 			vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
 			depthAttachmentInfo.imageView = _depthImageView;
 			depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;

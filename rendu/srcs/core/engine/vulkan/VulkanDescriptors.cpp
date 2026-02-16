@@ -12,6 +12,7 @@ void VulkanEngine::_createDescriptorPool(PipelineData & pipelineData)
 		vk::DescriptorPoolSize descriptor;
 		descriptor.type = VKValueConverter::getDescriptorType(descriptorInfo.type);
 		descriptor.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+		descriptors.emplace_back(descriptor);
 	}
 
 	vk::DescriptorPoolCreateInfo descriptorPoolInfo;
