@@ -14,12 +14,12 @@ void BlockData::init()
 	std::vector<std::string> sandTextures(6, "resources/assets/textures/sand.png");
 	std::vector<std::string> stoneTextures(6, "resources/assets/textures/stone.png");
 	
-	_dataRegistry.emplace(AIR, BlockData("air", false, false, {}));
-	_dataRegistry.emplace(DIRT, BlockData("dirt", true, false, dirtTextures));
-	_dataRegistry.emplace(GRASS, BlockData("grass", true, false, grassTextures));
-	_dataRegistry.emplace(WATER, BlockData("water", true, true, waterTextures));
-	_dataRegistry.emplace(SAND, BlockData("sand", true, false, sandTextures));
-	_dataRegistry.emplace(STONE, BlockData("stone", true, false, stoneTextures));
+	_dataRegistry.emplace(AIR, BlockData("air", false, false, false, {}));
+	_dataRegistry.emplace(DIRT, BlockData("dirt", true, true, false, dirtTextures));
+	_dataRegistry.emplace(GRASS, BlockData("grass", true, true, false, grassTextures));
+	_dataRegistry.emplace(WATER, BlockData("water", true, false, true, waterTextures));
+	_dataRegistry.emplace(SAND, BlockData("sand", true, true, false, sandTextures));
+	_dataRegistry.emplace(STONE, BlockData("stone", true, true, false, stoneTextures));
 }
 
 BlockData & BlockData::getBlockData(uint8_t type)

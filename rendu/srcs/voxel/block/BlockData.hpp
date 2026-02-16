@@ -28,8 +28,8 @@ enum BlockType
 class BlockData
 {
 	public:
-		BlockData(const std::string & name, bool isVisible, bool isLiquid, const std::vector<std::string> & textures): _name(name), _isVisible(isVisible),
-			_isLiquid(isLiquid), _textures(textures) {}
+		BlockData(const std::string & name, bool isVisible, bool isSolid, bool isLiquid, const std::vector<std::string> & textures): _name(name), _isVisible(isVisible),
+			_isSolid(isSolid), _isLiquid(isLiquid), _textures(textures) {}
 		~BlockData() {}
 
 		static void					init();
@@ -37,6 +37,7 @@ class BlockData
 
 		const std::string &			getName() const { return _name; }
 		bool						isVisible() const { return _isVisible; }
+		bool						isSolid() const { return _isSolid; }
 		bool						isLiquid() const { return _isLiquid; }
 		const std::string &			getTexturePath(int blockFace);
 
@@ -47,6 +48,7 @@ class BlockData
 
 		std::string					_name;
 		bool						_isVisible;
+		bool						_isSolid;
 		bool						_isLiquid;
 		std::vector<std::string>	_textures;
 };

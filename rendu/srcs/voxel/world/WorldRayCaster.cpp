@@ -30,7 +30,7 @@ PosFace World::_processRay(const glm::vec3 & pos, RayState & state, float maxDis
 {
 	float		distance = 0;
 	glm::ivec3	block(glm::floor(pos));
-	PosFace		p;
+	PosFace		p { BlockFace::BOTTOM, glm::vec3(0.0f), BlockType::AIR };
 
 	while (distance < maxDistance)
 	{
@@ -43,6 +43,7 @@ PosFace World::_processRay(const glm::vec3 & pos, RayState & state, float maxDis
 		if (blockType != BlockType::AIR && blockType != BlockType::WATER)
 		{
 			p.pos = block;
+			p.type = static_cast<BlockType>(blockType);
 			return p;
 		}
 

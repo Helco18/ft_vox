@@ -153,12 +153,44 @@ static void uploadCrosshair(AEngine * engine)
 	PipelineManager::uploadPipeline(engine, infoCrosshair, PIPELINE_CROSSHAIR);
 }
 
+static void uploadBlockOverlay(AEngine * engine)
+{
+	PipelineInfo infoBlockOverlay;
+	infoBlockOverlay.shaderName = "blockoverlay";
+	infoBlockOverlay.attributes.push_back({ sizeof(glm::vec3), 3, FLOAT3, false });
+	infoBlockOverlay.cullMode = CullMode::BACK;
+	infoBlockOverlay.blend = true;
+	infoBlockOverlay.depthTest = true;
+
+	DescriptorInfo cameraMatrix;
+	cameraMatrix.name = "CameraMatrix";
+	cameraMatrix.binding = 0;
+	cameraMatrix.count = 1;
+	cameraMatrix.size = sizeof(CameraBuffer);
+	cameraMatrix.stage = ShaderStage::VERTEX;
+	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
+
+	DescriptorInfo targetedBlock;
+	targetedBlock.name = "TargetedBlock";
+	targetedBlock.binding = 3;
+	targetedBlock.count = 1;
+	targetedBlock.size = sizeof(glm::mat4);
+	targetedBlock.stage = ShaderStage::VERTEX;
+	targetedBlock.type = DescriptorType::UNIFORM_BUFFER;
+
+	infoBlockOverlay.descriptors.push_back(cameraMatrix);
+	infoBlockOverlay.descriptors.push_back(targetedBlock);
+	infoBlockOverlay.attributeSize = calculateAttributeSize(infoBlockOverlay.attributes);
+	PipelineManager::uploadPipeline(engine, infoBlockOverlay, PIPELINE_BLOCKOVERLAY);
+}
+
 void PipelineManager::init(AEngine * engine)
 {
 	uploadSkybox(engine);
 	uploadVoxel(engine);
 	uploadLines(engine);
 	uploadCrosshair(engine);
+	uploadBlockOverlay(engine);
 }
 
 void PipelineManager::uploadPipeline(AEngine * engine, PipelineInfo & pipelineInfo, PipelineType pipelineType)

@@ -6,6 +6,7 @@
 #include "Skybox.hpp"
 #include "BlockData.hpp"
 #include "Crosshair.hpp"
+#include "BlockOverlay.hpp"
 
 Environment::~Environment()
 {
@@ -36,6 +37,7 @@ void Environment::init(ProgramParams & programParams)
 	camera->addPipelineToRender(PIPELINE_WIREFRAME);
 	camera->addPipelineToRender(PIPELINE_LINES);
 	camera->addPipelineToRender(PIPELINE_SKYBOX);
+	camera->addPipelineToRender(PIPELINE_BLOCKOVERLAY);
 	camera->setFOV(programParams.fov);
 	camera->setRenderDistance(programParams.renderDistance);
 	camera->setIgnoreYMovement(programParams.ignoreY);
@@ -44,6 +46,7 @@ void Environment::init(ProgramParams & programParams)
 
 	WorldManager::createWorld(WORLD_NAME);
 	WorldManager::loadWorld(WORLD_NAME);
+	_player.setWorld(WorldManager::getWorld(WORLD_NAME));
 
 	Logger::log(ENVIRONMENT, INFO, "Environment started.");
 }
@@ -56,6 +59,7 @@ void Environment::loop()
 	Camera * camera;
 	Skybox sky;
 	Crosshair crosshair;
+	BlockOverlay blockOverlay;
 
 	engine = _windowManager->getEngine();
 	world = WorldManager::getWorld(WORLD_NAME);
@@ -64,6 +68,8 @@ void Environment::loop()
 	sky.uploadAsset(engine);
 	crosshair.generateMesh();
 	crosshair.uploadAsset(engine);
+	blockOverlay.generateMesh();
+	blockOverlay.uploadAsset(engine);
 	while (_running)
 	{
 		frameStart = glfwGetTime();
@@ -75,10 +81,12 @@ void Environment::loop()
 				world->unloadChunks(engine);
 			sky.unload(engine);
 			crosshair.unload(engine);
+			blockOverlay.unload(engine);
 			_windowManager->swap();
 			engine = _windowManager->getEngine();
 			sky.uploadAsset(engine);
 			crosshair.uploadAsset(engine);
+			blockOverlay.uploadAsset(engine);
 			continue;
 		}
 		engine->beginFrame();
@@ -86,6 +94,7 @@ void Environment::loop()
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
 		crosshair.drawAsset(engine, camera->getWidth(), camera->getHeight());
+		blockOverlay.drawAsset(engine, _player.getTargetedBlock());
 		if (world)
 		{
 			world->update(engine, camera);

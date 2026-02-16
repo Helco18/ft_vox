@@ -20,7 +20,7 @@ void Crosshair::generateMesh()
 	_asset.vertices.vertexCount = _vertices.size();
 	_asset.vertices.size = _vertices.size() * sizeof(glm::vec2);
 	_asset.vertices.stride = sizeof(glm::vec2);
-	_asset.vertices.data = std::move(_vertices.data());
+	_asset.vertices.data = _vertices.data();
 	_asset.indices = _indices;
 }
 

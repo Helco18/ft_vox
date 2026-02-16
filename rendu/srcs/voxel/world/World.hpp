@@ -17,8 +17,9 @@
 
 struct PosFace
 {
-	BlockFace face;
-	glm::vec3 pos;
+	BlockFace 	face;
+	glm::vec3 	pos;
+	BlockType	type;
 };
 
 struct RayState
