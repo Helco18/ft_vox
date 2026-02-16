@@ -48,15 +48,24 @@ void BlockOverlay::uploadAsset(AEngine * engine)
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_BLOCKOVERLAY).id);
 }
 
-void BlockOverlay::drawAsset(AEngine * engine, const PosFace & targetedBlock)
+void BlockOverlay::drawAsset(AEngine * engine, const TargetedBlock & targetedBlock)
 {
+	static TargetedBlock lastTargetedBlock = { BlockFace::BOTTOM, glm::vec3(0.0f), BlockType::AIR };
 	static PipelineID pipelineID = PipelineManager::getPipeline(PIPELINE_BLOCKOVERLAY).id;
+	static EngineType lastEngineType = engine->getEngineType();
+
 	if (!BlockData::getBlockData(targetedBlock.type).isSolid())
 		return;
-	_model = glm::translate(glm::mat4(1.0f), targetedBlock.pos + glm::vec3(0.5f));
-	_model = glm::scale(_model, glm::vec3(1.0005f));
-	_model = glm::translate(_model, glm::vec3(-0.5f)); // Merci mbatty
-	engine->updateUniformBuffer(pipelineID, 3, &_model, sizeof(glm::mat4));
+	if (lastTargetedBlock.face != targetedBlock.face || lastTargetedBlock.type != targetedBlock.type || lastTargetedBlock.pos != targetedBlock.pos
+		|| lastEngineType != engine->getEngineType())
+	{
+		lastTargetedBlock = targetedBlock;
+		_model = glm::translate(glm::mat4(1.0f), targetedBlock.pos + glm::vec3(0.5f));
+		_model = glm::scale(_model, glm::vec3(1.0005f));
+		_model = glm::translate(_model, glm::vec3(-0.5f)); // Merci mbatty
+		lastEngineType = engine->getEngineType();
+		engine->updateUniformBuffer(pipelineID, 3, &_model, sizeof(glm::mat4));
+	}
 	engine->drawAsset(_asset.assetID, pipelineID);
 }
 

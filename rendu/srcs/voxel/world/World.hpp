@@ -15,7 +15,7 @@
 #define MAX_UPLOAD_PER_FRAME 128
 #define CHUNK_DELETION_DISTANCE 8
 
-struct PosFace
+struct TargetedBlock
 {
 	BlockFace 	face;
 	glm::vec3 	pos;
@@ -52,7 +52,7 @@ class World
 		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
 		void					update(AEngine * engine, Camera * camera);
 
- 		PosFace					rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
+ 		TargetedBlock					rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
 
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 
@@ -67,7 +67,7 @@ class World
 		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
 		bool					_chunkIsFrustum(const Plane * planes, Chunk * chunk);
 
-		PosFace					_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
+		TargetedBlock					_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
 
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
 		std::string				_name;

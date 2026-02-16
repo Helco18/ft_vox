@@ -49,6 +49,8 @@ void VulkanEngine::updateUniformBuffer(PipelineID pipelineID, unsigned int bindi
 
 void VulkanEngine::_processPendingUniforms()
 {
+	if (_pendingUniforms.empty())
+		return;
 	for (PendingUniform & uniform : _pendingUniforms)
 	{
 		PipelineData & pipelineData = _pipelineCache[uniform.pipelineID];
@@ -59,7 +61,8 @@ void VulkanEngine::_processPendingUniforms()
 			continue;
 		}
 		UniformBufferData & uniformBufferData = it->second;
-		memcpy(uniformBufferData.mapped[_currentFrame], uniform.data, uniform.size);
+		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+			memcpy(uniformBufferData.mapped[i], uniform.data, uniform.size);
 	}
 	_pendingUniforms.clear();
 }

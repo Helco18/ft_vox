@@ -34,8 +34,9 @@ void Crosshair::drawAsset(AEngine * engine, int width, int height)
 	static int oldWidth = 0;
 	static int oldHeight = 0;
 	static PipelineID pipelineID = PipelineManager::getPipeline(PIPELINE_CROSSHAIR).id;
+	static EngineType lastEngineType = engine->getEngineType();
 
-	if (oldWidth != width || oldHeight != height)
+	if (oldWidth != width || oldHeight != height || lastEngineType != engine->getEngineType())
 	{
 		_modelproj.proj = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f);
 		_modelproj.model = glm::translate(glm::mat4(1.0f), glm::vec3((static_cast<float>(width) / 2) - CROSSHAIR_SCALE / 2,
@@ -43,8 +44,9 @@ void Crosshair::drawAsset(AEngine * engine, int width, int height)
 		_modelproj.model = glm::scale(_modelproj.model, glm::vec3(CROSSHAIR_SCALE, CROSSHAIR_SCALE, 1.0f));
 		oldWidth = width;
 		oldHeight = height;
+		engine->updateUniformBuffer(pipelineID, 1, &_modelproj, sizeof(CrosshairBuffer));
+		lastEngineType = engine->getEngineType();
 	}
-	engine->updateUniformBuffer(pipelineID, 1, &_modelproj, sizeof(CrosshairBuffer));
 	engine->drawAsset(_asset.assetID, pipelineID);
 }
 

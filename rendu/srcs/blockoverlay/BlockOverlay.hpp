@@ -12,7 +12,7 @@ class BlockOverlay
 
 		void						generateMesh();
 		void						uploadAsset(AEngine * engine);
-		void						drawAsset(AEngine * engine, const PosFace & targetedBlock);
+		void						drawAsset(AEngine * engine, const TargetedBlock & targetedBlock);
 		void						unload(AEngine * engine);
 
 	private:

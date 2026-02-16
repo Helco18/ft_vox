@@ -26,11 +26,11 @@ static RayState rayInit(const glm::vec3 & pos, const glm::vec3 & rayDir, const g
 	return state;
 }
 
-PosFace World::_processRay(const glm::vec3 & pos, RayState & state, float maxDistance)
+TargetedBlock World::_processRay(const glm::vec3 & pos, RayState & state, float maxDistance)
 {
 	float		distance = 0;
 	glm::ivec3	block(glm::floor(pos));
-	PosFace		p { BlockFace::BOTTOM, glm::vec3(0.0f), BlockType::AIR };
+	TargetedBlock		p { BlockFace::BOTTOM, glm::vec3(0.0f), BlockType::AIR };
 
 	while (distance < maxDistance)
 	{
@@ -72,7 +72,7 @@ PosFace World::_processRay(const glm::vec3 & pos, RayState & state, float maxDis
 	return p;
 }
 
-PosFace World::rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance)
+TargetedBlock World::rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance)
 {
 	glm::vec3	rayDir(glm::normalize(dir));
 	glm::vec3	deltaDist(glm::abs(1 / (rayDir.x)), glm::abs(1 / rayDir.y), glm::abs(1 / rayDir.z));

@@ -208,7 +208,7 @@ void Camera::renderViewMatrix(AEngine * engine, bool resized)
 			_cameraBuffer.proj[1][1] *= -1;
 		_view = _cameraBuffer.proj * _cameraBuffer.view;
 		_extractPlanes();
+		for (PipelineType pipelineType : _pipelines)
+			engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, 0, &_cameraBuffer, sizeof(CameraBuffer));
 	}
-	for (PipelineType pipelineType : _pipelines)
-		engine->updateUniformBuffer(PipelineManager::getPipeline(pipelineType).id, 0, &_cameraBuffer, sizeof(CameraBuffer));
 }
