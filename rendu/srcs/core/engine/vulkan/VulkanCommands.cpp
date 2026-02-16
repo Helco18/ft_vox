@@ -70,22 +70,25 @@ void VulkanEngine::_recordCommandBuffer()
 		colorAttachmentInfo.resolveImageView = _swapChainImageViews[_imageIndex];
 		colorAttachmentInfo.resolveImageLayout = vk::ImageLayout::eColorAttachmentOptimal;
 
-		vk::RenderingAttachmentInfo depthAttachmentInfo;
-		vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
-		depthAttachmentInfo.imageView = _depthImageView;
-		depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-		depthAttachmentInfo.loadOp = !i ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eLoad;
-		depthAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
-		depthAttachmentInfo.clearValue = clearDepth;
-
 		vk::RenderingInfo renderingInfo;
+		if (pipelineData.pipelineInfo.depthTest || !i)
+		{
+			vk::RenderingAttachmentInfo depthAttachmentInfo;
+			vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
+			depthAttachmentInfo.imageView = _depthImageView;
+			depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+			depthAttachmentInfo.loadOp = !i ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eLoad;
+			depthAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
+			depthAttachmentInfo.clearValue = clearDepth;
+			renderingInfo.pDepthAttachment = &depthAttachmentInfo;
+		}
+
 		renderingInfo.renderArea.offset.x = 0;
 		renderingInfo.renderArea.offset.y = 0;
 		renderingInfo.renderArea.extent = _swapChainExtent;
 		renderingInfo.layerCount = 1;
 		renderingInfo.colorAttachmentCount = 1;
 		renderingInfo.pColorAttachments = &colorAttachmentInfo;
-		renderingInfo.pDepthAttachment = &depthAttachmentInfo;
 
 		commands.beginRendering(renderingInfo);
 		commands.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(_swapChainExtent.width),

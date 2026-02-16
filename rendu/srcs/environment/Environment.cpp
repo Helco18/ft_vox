@@ -83,16 +83,16 @@ void Environment::loop()
 		}
 		engine->beginFrame();
 		engine->beginImGui();
-		crosshair.drawAsset(engine);
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
+		crosshair.drawAsset(engine, camera->getWidth(), camera->getHeight());
 		if (world)
 		{
 			world->update(engine, camera);
 			world->render(engine, _windowManager->isWireframe() ? PIPELINE_WIREFRAME : PIPELINE_VOXEL, camera);
 		}
 		camera->renderViewMatrix(engine);
-		// sky.drawAsset(engine);
+		sky.drawAsset(engine);
 		engine->endFrame();
 		_windowManager->setDeltaTime(glfwGetTime() - frameStart);
 	}

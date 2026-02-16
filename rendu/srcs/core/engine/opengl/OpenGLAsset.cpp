@@ -52,9 +52,8 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 
 	glGenBuffers(1, &asset.ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, asset.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, asset.indices.size() * sizeof(uint32_t), asset.indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, asset.indices.size() * sizeof(asset.indices[0]), asset.indices.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindVertexArray(0);
 
 	asset.isUploaded = true;

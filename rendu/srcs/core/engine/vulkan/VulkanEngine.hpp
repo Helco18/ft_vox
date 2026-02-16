@@ -18,20 +18,21 @@ struct VKValueConverter
 {
 	static constexpr vk::Format getType(AttributeType type)
 	{
-		switch (static_cast<int>(type))
+		switch (type)
 		{
 			case FLOAT3: return vk::Format::eR32G32B32Sfloat;
 			case FLOAT2: return vk::Format::eR32G32Sfloat;
 			case FLOAT: return vk::Format::eR32Sfloat;
+			case INT: return vk::Format::eR16Sint;
 		}
 		return vk::Format::eUndefined;
 	}
 
 	static constexpr vk::DescriptorType getDescriptorType(DescriptorType type)
 	{
-		switch (static_cast<int>(type))
+		switch (type)
 		{
-			case UNIFORM_BUFFER: return vk::DescriptorType::eUniformBuffer;
+			case UNIFORM_BUFFER: case PUSH_CONSTANT: return vk::DescriptorType::eUniformBuffer;
 			case COMBINED_IMAGE_SAMPLER: return vk::DescriptorType::eCombinedImageSampler;
 		}
 		return vk::DescriptorType::eSampler;
@@ -39,7 +40,7 @@ struct VKValueConverter
 
 	static constexpr vk::PrimitiveTopology getDrawMode(DrawMode drawMode)
 	{
-		switch (static_cast<int>(drawMode))
+		switch (drawMode)
 		{
 			case DrawMode::TRIANGLES: return vk::PrimitiveTopology::eTriangleList;
 			case DrawMode::LINES: return vk::PrimitiveTopology::eLineList;
@@ -49,12 +50,33 @@ struct VKValueConverter
 
 	static constexpr vk::ShaderStageFlagBits getShaderStage(ShaderStage stage)
 	{
-		switch (static_cast<int>(stage))
+		switch (stage)
 		{
 			case VERTEX: return vk::ShaderStageFlagBits::eVertex;
 			case FRAGMENT: return vk::ShaderStageFlagBits::eFragment;
+			case ALL: return vk::ShaderStageFlagBits::eAll;
 		}
 		return vk::ShaderStageFlagBits::eAll;
+	}
+
+	static constexpr vk::Filter getFilter(TextureFiltering textureFiltering)
+	{
+		switch (textureFiltering)
+		{
+			case LINEAR: return vk::Filter::eLinear;
+			case NEAREST: return vk::Filter::eNearest;
+		}
+		return vk::Filter::eLinear;
+	}
+
+	static constexpr vk::SamplerMipmapMode getSamplerFilter(TextureFiltering textureFiltering)
+	{
+		switch (textureFiltering)
+		{
+			case LINEAR: return vk::SamplerMipmapMode::eLinear;
+			case NEAREST: return vk::SamplerMipmapMode::eNearest;
+		}
+		return vk::SamplerMipmapMode::eLinear;
 	}
 };
 
@@ -273,7 +295,7 @@ class VulkanEngine : public AEngine
 		void								_createTextures(PipelineData & pipelineData);
 		void								_createTextureImage(TextureData & textureData, TextureInfo & textureInfo);
 		void								_createTextureImageView(TextureData & textureData);
-		void								_createTextureSampler(TextureData & textureData);
+		void								_createTextureSampler(TextureData & textureData, TextureInfo & textureInfo);
 		void								_copyBufferToImage(const vk::raii::Buffer & buffer, vk::raii::Image & image, uint32_t width, uint32_t height);
 		void								_createDepthResources();
 		vk::Format							_findSupportedFormat(const std::vector<vk::Format> & candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features);

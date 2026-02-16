@@ -23,7 +23,7 @@ static const std::string getTimestampAsDate()
 
 static const std::string getLogSeverityPrefixColor(LogSeverity severity)
 {
-	switch (static_cast<int>(severity))
+	switch (severity)
 	{
 		case DEBUG: return MAGENTA"[DEBUG]";
 		case INFO: return GRAY"[INFO]";
@@ -36,7 +36,7 @@ static const std::string getLogSeverityPrefixColor(LogSeverity severity)
 
 static const std::string getLogSeverityPrefix(LogSeverity severity)
 {
-	switch (static_cast<int>(severity))
+	switch (severity)
 	{
 		case DEBUG: return "[DEBUG]";
 		case INFO: return "[INFO]";
@@ -49,7 +49,7 @@ static const std::string getLogSeverityPrefix(LogSeverity severity)
 
 static const std::string getLogSourcePrefix(LogSource source)
 {
-	switch (static_cast<int>(source))
+	switch (source)
 	{
 		case ENGINE_OPENGL: return "OPENGL";
 		case ENGINE_VULKAN: return "VULKAN";

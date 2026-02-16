@@ -90,12 +90,12 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	vk::PipelineRasterizationStateCreateInfo rasterizerFill;
 	rasterizerFill.depthClampEnable = vk::False; // Est-ce que l'on clamp les pixels non-visibles ou est-ce qu'on les discard
 	rasterizerFill.rasterizerDiscardEnable = vk::False;
-	switch (static_cast<int>(pipelineInfo.polygonMode))
+	switch (pipelineInfo.polygonMode)
 	{
 		case FILL: rasterizerFill.polygonMode = vk::PolygonMode::eFill; break;
 		case LINE: rasterizerFill.polygonMode = vk::PolygonMode::eLine; break;
 	}
-	switch (static_cast<int>(pipelineInfo.cullMode))
+	switch (pipelineInfo.cullMode)
 	{
 		case OFF: rasterizerFill.cullMode = vk::CullModeFlagBits::eNone; break;
 		case BACK: rasterizerFill.cullMode = vk::CullModeFlagBits::eBack; break;

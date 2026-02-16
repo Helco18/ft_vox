@@ -51,7 +51,8 @@ class Camera
 		uint8_t						getRenderDistance() const { return _renderDistance; }
 		const CameraBuffer &		getBuffer() const { return _cameraBuffer; }
 		bool						isIgnoringYMovement() const { return _ignoreY; }
-		glm::mat4 					getView() const { return _view; }
+		const glm::mat4 &			getView() const { return _view; }
+		const glm::mat4 &			getProj() const { return _cameraBuffer.proj; }
 		const Plane * 				getPlanes() const { return _planes; }
 
 		void						setPosition(const glm::vec3 & position) { _position = position; }
@@ -102,5 +103,5 @@ class Camera
 		bool						_ignoreY = false;
 		glm::mat4					_view;
 		Plane						_planes[4];
-
+		float						_aspectRatio = 0.0f;
 };

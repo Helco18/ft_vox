@@ -1,9 +1,11 @@
 #include "PipelineManager.hpp"
 #include "Chunk.hpp"
+#include "Crosshair.hpp"
 #include "CustomExceptions.hpp"
 #include "utils.hpp"
 #include "Camera.hpp"
 #include "TextureAtlas.hpp"
+#include "stb/stb_image.h"
 
 PipelineManager::PipelineMap PipelineManager::_pipelineMap;
 
@@ -119,10 +121,35 @@ static void uploadCrosshair(AEngine * engine)
 	PipelineInfo infoCrosshair;
 	infoCrosshair.shaderName = "crosshair";
 	infoCrosshair.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
+	infoCrosshair.attributes.push_back({ sizeof(glm::vec2), 2, FLOAT2, false });
 	infoCrosshair.cullMode = CullMode::OFF;
 	infoCrosshair.blend = false;
 	infoCrosshair.depthTest = false;
 
+	DescriptorInfo aspectRatio;
+	aspectRatio.name = "AspectRatio";
+	aspectRatio.binding = 1;
+	aspectRatio.count = 1;
+	aspectRatio.size = sizeof(CrosshairBuffer);
+	aspectRatio.stage = ShaderStage::VERTEX;
+	aspectRatio.type = DescriptorType::UNIFORM_BUFFER;
+
+	DescriptorInfo texture;
+	texture.name = "texture_0";
+	texture.binding = 2;
+	texture.count = 1;
+	texture.stage = ShaderStage::FRAGMENT;
+	texture.type = DescriptorType::COMBINED_IMAGE_SAMPLER;
+	TextureInfo textureInfo;
+
+	textureInfo.data = stbi_load("resources/assets/textures/crosshair.png", &textureInfo.width, &textureInfo.height, &textureInfo.colorChannels, 4);
+	textureInfo.colorChannels = 4;
+	textureInfo.filtering = TextureFiltering::NEAREST;
+	texture.textureInfo = textureInfo;
+
+	infoCrosshair.descriptors.push_back(aspectRatio);
+	infoCrosshair.descriptors.push_back(texture);
+	infoCrosshair.attributeSize = calculateAttributeSize(infoCrosshair.attributes);
 	PipelineManager::uploadPipeline(engine, infoCrosshair, PIPELINE_CROSSHAIR);
 }
 

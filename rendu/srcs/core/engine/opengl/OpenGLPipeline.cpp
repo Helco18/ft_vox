@@ -50,14 +50,14 @@ void OpenGLEngine::_applyPipeline(PipelineLayout & pipelineLayout)
 	PipelineInfo & pipelineInfo = pipelineLayout.pipelineInfo;
 
 	// Polygon Mode
-	switch (static_cast<int>(pipelineInfo.polygonMode))
+	switch (pipelineInfo.polygonMode)
 	{
 		case LINE: glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); break;
 		case FILL: glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); break;
 	}
 
 	// Cull Mode
-	switch (static_cast<int>(pipelineInfo.cullMode))
+	switch (pipelineInfo.cullMode)
 	{
 		case BACK: glEnable(GL_CULL_FACE); glCullFace(GL_BACK); break;
 		case OFF: glDisable(GL_CULL_FACE); break;

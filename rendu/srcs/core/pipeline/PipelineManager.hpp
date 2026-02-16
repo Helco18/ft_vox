@@ -27,6 +27,12 @@ enum AttributeType
 	INT
 };
 
+enum TextureFiltering
+{
+	LINEAR,
+	NEAREST
+};
+
 enum PolygonMode
 {
 	FILL,
@@ -69,10 +75,11 @@ struct Attribute
 
 struct TextureInfo
 {
-	int		width;
-	int		height;
-	int		colorChannels;
-	void *	data;
+	int					width;
+	int					height;
+	int					colorChannels;
+	void *				data;
+	TextureFiltering	filtering = TextureFiltering::LINEAR;
 };
 
 struct DescriptorInfo

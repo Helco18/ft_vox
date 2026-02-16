@@ -70,13 +70,13 @@ void VulkanEngine::_createTextureImageView(TextureData & textureData)
 	textureData.textureImageView = vk::raii::ImageView( _device, imageViewCreateInfo );
 }
 
-void VulkanEngine::_createTextureSampler(TextureData & textureData)
+void VulkanEngine::_createTextureSampler(TextureData & textureData, TextureInfo & textureInfo)
 {
 	vk::SamplerCreateInfo samplerInfo;
 	samplerInfo.flags = {};
-	samplerInfo.minFilter = vk::Filter::eLinear;
-	samplerInfo.magFilter = vk::Filter::eLinear;
-	samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+	samplerInfo.minFilter = VKValueConverter::getFilter(textureInfo.filtering);
+	samplerInfo.magFilter = VKValueConverter::getFilter(textureInfo.filtering);
+	samplerInfo.mipmapMode = VKValueConverter::getSamplerFilter(textureInfo.filtering);
 	samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;
 	samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;
 	samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;
@@ -99,7 +99,7 @@ void VulkanEngine::_createTextures(PipelineData & pipelineData)
 			TextureData & textureData = pipelineData.textures[descriptorInfo.binding];
 			_createTextureImage(textureData, descriptorInfo.textureInfo);
 			_createTextureImageView(textureData);
-			_createTextureSampler(textureData);
+			_createTextureSampler(textureData, descriptorInfo.textureInfo);
 		}
 	}
 }

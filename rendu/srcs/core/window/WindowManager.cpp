@@ -42,7 +42,7 @@ void WindowManager::load()
 	if (_windowPosX && _windowPosY)
 		glfwSetWindowPos(_window, _windowPosX, _windowPosY);
 
-	switch (static_cast<int>(_engineType))
+	switch (_engineType)
 	{
 		case VULKAN: _engine = new VulkanEngine(_window); break;
 		case OPENGL: _engine = new OpenGLEngine(_window); break;

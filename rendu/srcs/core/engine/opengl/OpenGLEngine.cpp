@@ -86,7 +86,6 @@ void OpenGLEngine::endFrame()
 				glDrawElements(polygonMode, asset->indices.size(), GL_UNSIGNED_INT, 0);
 			else
 				glDrawArrays(polygonMode, 0, asset->vertices.vertexCount);
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 			glBindVertexArray(0);
 		}
 	}

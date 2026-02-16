@@ -31,7 +31,7 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 	glm::quat qRoll;
 
 	_pitch += rotY;
-	switch (static_cast<int>(_type))
+	switch (_type)
 	{
 		case EULER:
 		{
@@ -123,7 +123,7 @@ glm::vec3 Camera::computeUp() const
 
 glm::mat4 Camera::computeView() const
 {
-	switch (static_cast<int>(_type))
+	switch (_type)
 	{
 		case EULER :
 		{

@@ -4,16 +4,17 @@
 #include "glad/gl.h"
 #include <GL/glext.h>
 #include "GLFW/glfw3.h"
+#include "Logger.hpp"
 
 #define OPENGL_SHADER_PATH "resources/shaders/glsl/"
 
 struct GLValueConverter
 {
-	static constexpr GLenum getType(AttributeType type)
+	static constexpr int getType(AttributeType type)
 	{
-		switch (static_cast<int>(type))
+		switch (type)
 		{
-			case AttributeType::FLOAT: return GL_FLOAT;
+			case AttributeType::FLOAT:
 			case AttributeType::FLOAT3:
 			case AttributeType::FLOAT2: return GL_FLOAT;
 			case AttributeType::INT: return GL_INT;
@@ -21,12 +22,22 @@ struct GLValueConverter
 		return 0;
 	}
 
-	static constexpr GLenum getDrawMode(DrawMode polygonMode)
+	static constexpr int getDrawMode(DrawMode polygonMode)
 	{
-		switch (static_cast<int>(polygonMode))
+		switch (polygonMode)
 		{
 			case DrawMode::TRIANGLES: return GL_TRIANGLES;
 			case DrawMode::LINES: return GL_LINES;
+		}
+		return 0;
+	}
+
+	static constexpr int getFiltering(TextureFiltering textureFiltering)
+	{
+		switch (textureFiltering)
+		{
+			case TextureFiltering::LINEAR: return GL_LINEAR;
+			case TextureFiltering::NEAREST: return GL_NEAREST;
 		}
 		return 0;
 	}
