@@ -29,8 +29,8 @@ VertexOutput vertMain(VertexInput input)
 }
 
 [shader("fragment")]
-float4 fragMain(VertexOutput xd) : SV_Target
+float4 fragMain(VertexOutput output) : SV_Target
 {
-    return float4((abs(xd.outPosition.x) % 255) / 255, (abs(xd.outPosition.y) % 255) / 255, (abs(xd.outPosition.z) % 255) / 255, 1.0f);
+    return float4((abs(output.outPosition.x) % 255) / 255, (abs(output.outPosition.y) % 255) / 255, (abs(output.outPosition.z) % 255) / 255, 1.0f);
     // return float4(0.2f, 0.0f, 0.7f, 1.0f);
 }
