@@ -12,13 +12,13 @@ class SimplexNoise
 		SimplexNoise(uint32_t seed = 0, float noiseScale = 0.01f, float offset = 0.0f);
 		~SimplexNoise() {};
 
-		double		queryState(const std::vector<double> & pos) const;
+		double		queryState(const std::array<double, N> & pos) const;
 		void		setFBM(int octave, float persistance, float lacunarity) { _octave =	octave; _persistance = persistance; _lacunarity = lacunarity; }
 		static void	printNoise(uint32_t seed); // DEBUG
 	private:
-		std::vector<double>	_gradient(int hash) const;
-		double				_dot(const std::vector<double> & a, const std::vector<double> & b) const;
-		double				_noise(const std::vector<double> & pos) const;
+		std::array<double, N>	_gradient(int hash) const;
+		double				_dot(const std::array<double, N> & a, const std::array<double, N> & b) const;
+		double				_noise(const std::array<double, N> & pos) const;
 
 		float		_noiseScale;
 		float		_offset;

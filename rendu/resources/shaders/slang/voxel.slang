@@ -17,18 +17,22 @@ struct VertexOutput
 	float2 outTexCoord;
 	float2 outUvMin;
 	float2 outUvMax;
-	float2 outUvRepeat;
+    float2 outUvRepeat;
+    float3 worldPos;
 };
 
 struct CameraMatrix
 {
 	float4x4 view;
 	float4x4 proj;
+    float3 camPos;
 };
 
 struct ChunkData
 {
-	float fadeValue;
+    float fadeValue;
+    float maxDistanceRendered;
+    float time;
 };
 
 [[vk::binding(0,0)]]
@@ -52,7 +56,7 @@ VertexOutput vertMain(VertexInput input)
 	output.sv_position = mul(cameraMatrix.proj, mul(cameraMatrix.view, float4(input.inPosition, 1.0)));
 	output.outNormal = input.inNormal;
 	output.outTexCoord = input.inTexCoord;
-
+	output.worldPos = input.inPosition;
 	output.outUvMin = input.inUvMin;
     output.outUvMax = input.inUvMax;
     output.outUvRepeat = input.inUvRepeat;
@@ -63,19 +67,29 @@ VertexOutput vertMain(VertexInput input)
 [shader("fragment")]
 float4 fragMain(VertexOutput inVert) : SV_Target
 {
-	float3 lightDir = normalize(float3(-0.5, 1.0, -0.5));
-	float diffuse = max(dot(inVert.outNormal, lightDir), 0.2);
+    // light -----------------------------------------------------------------
+    float3 lightDir = normalize(float3(-0.5, 1.0, -0.5));
+    float diffuse = max(dot(inVert.outNormal, lightDir), 0.2);
+    float3 ambientColor = float3(0.2, 0.2, 0.2);
+    diffuse = diffuse + ambientColor.r;
 
-	float3 ambientColor = float3(0.2, 0.2, 0.2);
-	diffuse = diffuse + ambientColor.r;
+    // UV + texture ------------------------------------------------------------
+    float2 tileSize = inVert.outUvMax - inVert.outUvMin;
+    // frac(x) retourne la partie décimale de x (equivalent a x - floor(x))
+    float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
+    // Samle return un float4 (RGBA) de la texture à l'UV donné
+    float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue * inVert.outAlpha);
+    vertColor.rgb *= diffuse;
 
-	float2 tileSize = inVert.outUvMax - inVert.outUvMin;
-	// frac(x) retourne la partie décimale de x (equivalent a x - floor(x))
-	float2 finalUV = inVert.outUvMin + frac(inVert.outTexCoord * inVert.outUvRepeat) * tileSize;
-	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue * inVert.outAlpha);
-	// float4 vertColor = texture.Sample(finalUV);
+    // Fog ---------------------------------------------------------------------
+    float3 fogColor = float3(0.7, 0.8, 1.0);
+    float fogStart = chunkData.maxDistanceRendered * 0.5f;
+    float fogEnd = chunkData.maxDistanceRendered;
+    float distanceToCamera = length(inVert.worldPos - cameraMatrix.camPos);
+    // saturate(x) clamp x entre 0 et 1
+    float fogFactor = saturate((fogEnd - distanceToCamera) / (fogEnd - fogStart));
 
-	vertColor.rgb *= diffuse;
+    float3 finalColor = lerp(fogColor, vertColor.rgb, fogFactor);
 
-	return vertColor;
+    return float4(finalColor, vertColor.a);
 }

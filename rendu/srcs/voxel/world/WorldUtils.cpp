@@ -31,7 +31,7 @@ Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location)
 	return getChunkAtChunkLocation(location.x, location.y, location.z);
 }
 
-static int getRenderDistanceMin()
+int World::getRenderDistanceMin()
 {
 	if (CHUNK_HEIGHT <= CHUNK_WIDTH && CHUNK_HEIGHT <= CHUNK_LENGTH)
 		return CHUNK_HEIGHT;

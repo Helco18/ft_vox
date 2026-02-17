@@ -39,9 +39,9 @@ SimplexNoise<N>::SimplexNoise(uint32_t seed, float noiseScale, float offset): _n
 }
 
 template <uint8_t N>
-double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
+double SimplexNoise<N>::queryState(const std::array<double, N> & pos) const
 {
-	std::vector<double> scalePos(N);
+	std::array<double, N> scalePos{};
 	for (uint8_t d = 0; d < N; ++d)
 	{
 		scalePos[d] = pos[d] * _noiseScale + _offset;
@@ -65,16 +65,16 @@ double SimplexNoise<N>::queryState(const std::vector<double> & pos) const
 }
 
 template <uint8_t N>
-double SimplexNoise<N>::_noise(const std::vector<double> & pos) const
+double SimplexNoise<N>::_noise(const std::array<double, N> & pos) const
 {
 	double value = 0.0;
 
 	// first corner : x0
 	// find the first corner of the simplex
-	std::vector<double> x0(N);
+	std::array<double, N> x0{};
 
 	// simplex cord
-	std::vector<double> i(N);
+	std::array<double, N> i{};
 
 	// SKEW :
 	double s = 0.0;
@@ -102,12 +102,12 @@ double SimplexNoise<N>::_noise(const std::vector<double> & pos) const
 	for (uint8_t corner = 0; corner <= N; ++corner)
 	{
 		// sélection de l'offset pour les angles (corner)
-		std::vector<double> offset(N, 0.0);
+		std::array<double, N> offset{};
 		for (uint8_t d = 0; d < corner; ++d)
 			offset[rank[d]] = 1.0;
 
 		// calcul des angles :
-		std::vector<double> x(N);
+		std::array<double, N> x{};
 		for (uint8_t d = 0; d < N; ++d)
 			x[d] = x0[d] - offset[d] + static_cast<double>(corner) * _G;
 
@@ -138,10 +138,10 @@ double SimplexNoise<N>::_noise(const std::vector<double> & pos) const
 }
 
 template <uint8_t N>
-std::vector<double>	SimplexNoise<N>::_gradient(int hash) const
+std::array<double, N>	SimplexNoise<N>::_gradient(int hash) const
 {
 
-	// std::vector<double> g(N);
+	// std::array<double, N> g{};
 	// double len = 0.0;
 	// for (uint8_t d = 0; d < N; ++d)
 	// {
@@ -153,49 +153,32 @@ std::vector<double>	SimplexNoise<N>::_gradient(int hash) const
 	// for (double & v : g)
 	// 	v *= len;
 
-	if (N == 2)
-	{
-		static const double grad2[8][2] = {
-			{1.0,1.0}, {-1.0,1.0}, {1.0,-1.0}, {-1.0,-1.0},
-			{1.0,0.0}, {-1.0,0.0}, {0.0,1.0}, {0.0,-1.0}
-		};
-		std::vector<double> g(2);
-	    int h = hash & 7;
-	    g[0] = grad2[h][0];
-	    g[1] = grad2[h][1];
+    std::array<double, N> g{}; // initialisé à 0
 
-	    return g;
-	}
-	else if (N == 3)
-	{
-		static const double grad3[12][3] = {
-			{1,1,0}, {-1,1,0}, {1,-1,0}, {-1,-1,0},
-			{1,0,1}, {-1,0,1}, {1,0,-1}, {-1,0,-1},
-			{0,1,1}, {0,-1,1}, {0,1,-1}, {0,-1,-1}
-		};
-		std::vector<double> g(3);
-	    int h = hash % 12;
-	    g[0] = grad3[h][0];
-	    g[1] = grad3[h][1];
-	    g[2] = grad3[h][2];
-
-	    return g;
-	}
-
-	static const double grad2[8][2] = {
-		{1.0,1.0}, {-1.0,1.0}, {1.0,-1.0}, {-1.0,-1.0},
-		{1.0,0.0}, {-1.0,0.0}, {0.0,1.0}, {0.0,-1.0}
-	};
-	std::vector<double> g(2);
-    int h = hash & 7;
-    g[0] = grad2[h][0];
-    g[1] = grad2[h][1];
-
+    if constexpr (N == 2) {
+        static const double grad2[8][2] = {
+            {1,1},{-1,1},{1,-1},{-1,-1},
+            {1,0},{-1,0},{0,1},{0,-1}
+        };
+        int h = hash & 7;
+        g[0] = grad2[h][0];
+        g[1] = grad2[h][1];
+    } else if constexpr (N == 3) {
+        static const double grad3[12][3] = {
+            {1,1,0},{-1,1,0},{1,-1,0},{-1,-1,0},
+            {1,0,1},{-1,0,1},{1,0,-1},{-1,0,-1},
+            {0,1,1},{0,-1,1},{0,1,-1},{0,-1,-1}
+        };
+        int h = hash % 12;
+        g[0] = grad3[h][0];
+        g[1] = grad3[h][1];
+        g[2] = grad3[h][2];
+    }
     return g;
 }
 
 template <uint8_t N>
-double	SimplexNoise<N>::_dot(const std::vector<double> & a, const std::vector<double> & b) const
+double	SimplexNoise<N>::_dot(const std::array<double, N> & a, const std::array<double, N> & b) const
 {
 	double r = 0.0;
 	for (uint8_t d = 0; d < N; ++d)

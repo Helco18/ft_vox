@@ -48,6 +48,8 @@ struct ChunkAsset
 struct ChunkData
 {
 	float	fadeValue;
+	float	maxDistanceRendered;
+	float	time;
 };
 
 class Chunk
@@ -97,7 +99,7 @@ class Chunk
 		std::vector<glm::vec3>		_linesPos;
 		std::atomic<ChunkState>		_state;
 		std::mutex					_workerMutex;
-		ChunkData					_chunkData { 0.0f };
+		ChunkData					_chunkData { 0.0f, 0.0f, 0.0f };
 		std::atomic_bool			_isDirty = false;
 		std::atomic_bool			_isTakenByWorker = false;
 

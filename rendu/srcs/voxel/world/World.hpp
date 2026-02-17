@@ -55,6 +55,7 @@ class World
 		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
 		void					update(AEngine * engine, Camera * camera);
 
+		static int				getRenderDistanceMin();
  		TargetedBlock			rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
 
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
