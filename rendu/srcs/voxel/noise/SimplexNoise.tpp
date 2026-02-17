@@ -130,17 +130,16 @@ double SimplexNoise<N>::_noise(const std::vector<double> & pos) const
 			value += t * t * _dot(_gradient(hash), x);
 		}
 	}
-
+	if constexpr (N == 2)
+		return 70.6 * value;
+	else if constexpr (N == 3)
+		return 32.0 * value;
 	return 70.6 * value;
 }
 
 template <uint8_t N>
 std::vector<double>	SimplexNoise<N>::_gradient(int hash) const
 {
-	static const double grad2[8][2] = {
-		{1.0,1.0}, {-1.0,1.0}, {1.0,-1.0}, {-1.0,-1.0},
-		{1.0,0.0}, {-1.0,0.0}, {0.0,1.0}, {0.0,-1.0}
-	};
 
 	// std::vector<double> g(N);
 	// double len = 0.0;
@@ -154,6 +153,39 @@ std::vector<double>	SimplexNoise<N>::_gradient(int hash) const
 	// for (double & v : g)
 	// 	v *= len;
 
+	if (N == 2)
+	{
+		static const double grad2[8][2] = {
+			{1.0,1.0}, {-1.0,1.0}, {1.0,-1.0}, {-1.0,-1.0},
+			{1.0,0.0}, {-1.0,0.0}, {0.0,1.0}, {0.0,-1.0}
+		};
+		std::vector<double> g(2);
+	    int h = hash & 7;
+	    g[0] = grad2[h][0];
+	    g[1] = grad2[h][1];
+
+	    return g;
+	}
+	else if (N == 3)
+	{
+		static const double grad3[12][3] = {
+			{1,1,0}, {-1,1,0}, {1,-1,0}, {-1,-1,0},
+			{1,0,1}, {-1,0,1}, {1,0,-1}, {-1,0,-1},
+			{0,1,1}, {0,-1,1}, {0,1,-1}, {0,-1,-1}
+		};
+		std::vector<double> g(3);
+	    int h = hash % 12;
+	    g[0] = grad3[h][0];
+	    g[1] = grad3[h][1];
+	    g[2] = grad3[h][2];
+
+	    return g;
+	}
+
+	static const double grad2[8][2] = {
+		{1.0,1.0}, {-1.0,1.0}, {1.0,-1.0}, {-1.0,-1.0},
+		{1.0,0.0}, {-1.0,0.0}, {0.0,1.0}, {0.0,-1.0}
+	};
 	std::vector<double> g(2);
     int h = hash & 7;
     g[0] = grad2[h][0];

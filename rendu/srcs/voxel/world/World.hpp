@@ -46,6 +46,7 @@ class World
 		Chunk *					getChunkAtChunkLocation(int x, int y, int z);
 		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location);
 		const SimplexNoise<2> &	getNoise() const { return _noise; }
+		const SimplexNoise<3> &	getNoiseCave() const { return _noiseCave; }
 		bool					isLoaded() const { return _isLoaded.load(); }
 		bool					isLocked() const { return _isLocked.load(); }
 
@@ -54,7 +55,7 @@ class World
 		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
 		void					update(AEngine * engine, Camera * camera);
 
- 		TargetedBlock					rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
+ 		TargetedBlock			rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
 
 		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 
@@ -72,6 +73,7 @@ class World
 		TargetedBlock			_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
 
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
+		SimplexNoise<3>			_noiseCave = SimplexNoise<3>(42, 0.005f, 100000.0f);
 		std::string				_name;
 		ChunkMap				_chunkMap;
 		ChunkVec				_visibleChunks;

@@ -13,6 +13,7 @@ World::~World()
 void World::load()
 {
 	_noise.setFBM(3, 0.5, 2.0);
+	_noiseCave.setFBM(1, 0.5, 2.0);
 	_isLoaded.store(true);
 	_chunkPool.start(ThreadPool::getAvailableThreads() - 2); // Minus 2 for Vulkan threads
 	_chunkPool.submitTask([this]() { _generateChunks(); });
