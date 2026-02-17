@@ -165,6 +165,7 @@ class VulkanEngine : public AEngine
 		~VulkanEngine();
 
 		void								load() override;
+		void								setVsync(bool vsync) override;
 		void								beginFrame() override;
 		AssetID								uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		void								unloadAsset(AssetID assetID) override;
@@ -209,6 +210,7 @@ class VulkanEngine : public AEngine
 		vk::Format							_swapChainImageFormat;
 		std::vector<vk::Image>				_swapChainImages;
 		std::vector<vk::raii::ImageView>	_swapChainImageViews;
+		bool								_vsync = false;
 
 		// MSAA
 		vk::raii::Image						_msaaImage = nullptr;

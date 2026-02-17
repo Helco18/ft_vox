@@ -11,18 +11,6 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	PendingAsset pendingAsset;
 	pendingAsset.pipelineID = pipelineID;
 	pendingAsset.asset = &asset;
-	if (asset.vertices.data)
-	{
-		try
-		{
-			_createVertexBuffer(pendingAsset);
-			if (!asset.indices.empty())
-				_createIndexBuffer(pendingAsset);
-		} catch (const vk::OutOfDeviceMemoryError & e)
-		{
-			Logger::log(ENGINE_VULKAN, FATAL, e.what());
-		}
-	}
 	_pendingAssets.emplace_back(std::move(pendingAsset));
 	return assetID;
 }
@@ -58,6 +46,18 @@ void VulkanEngine::_processPendingAssets()
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
+		if (asset->vertices.data)
+		{
+			try
+			{
+				_createVertexBuffer(pendingAsset);
+				if (!asset->indices.empty())
+					_createIndexBuffer(pendingAsset);
+			} catch (const vk::OutOfDeviceMemoryError & e)
+			{
+				Logger::log(ENGINE_VULKAN, FATAL, e.what());
+			}
+		}
 		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
 			vk::BufferCopy(0, 0, asset->vertices.size));
 		if (!asset->indices.empty())

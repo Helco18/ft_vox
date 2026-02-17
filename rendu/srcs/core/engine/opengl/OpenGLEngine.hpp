@@ -69,6 +69,7 @@ class OpenGLEngine : public AEngine
 		~OpenGLEngine();
 
 		void				load() override;
+		void				setVsync(bool vsync) override;
 		void				beginFrame() override;
 		AssetID				uploadAsset(Asset & asset, PipelineID pipelineID) override;
 		void				unloadAsset(AssetID assetID) override;

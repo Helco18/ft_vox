@@ -12,11 +12,7 @@ void Gui::generateGui(GLFWwindow * window)
 	Camera * camera = windowManager->getCamera();
 	const glm::vec3 & position = camera->getPosition();
 	const glm::ivec3 & chunkLocation = Chunk::locToChunkLoc(position);
-	glm::vec3 chunkPos = {
-		abs(static_cast<int>(std::floor(camera->getPosition().x)) % CHUNK_WIDTH),
-		abs(static_cast<int>(std::floor(camera->getPosition().y)) % CHUNK_HEIGHT),
-		abs(static_cast<int>(std::floor(camera->getPosition().z)) % CHUNK_LENGTH)
-	};
+	const glm::ivec3 chunkPos = Chunk::posToChunkPos(position);
 
 	ImGui::NewFrame();
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
@@ -27,7 +23,7 @@ void Gui::generateGui(GLFWwindow * window)
 		position.x, position.y, position.z);
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Chunk XYZ: %d / %d / %d",
 		chunkLocation.x, chunkLocation.y, chunkLocation.z);
-	ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Chunk Pos: %.3f / %.3f / %.3f",
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "Chunk Pos: %d / %d / %d",
 		chunkPos.x, chunkPos.y, chunkPos.z);
 
 	static int currentRenderDistance = camera->getRenderDistance();
@@ -46,6 +42,11 @@ void Gui::generateGui(GLFWwindow * window)
 	static bool isIgnoringYMovement = camera->isIgnoringYMovement();
 	if (ImGui::Checkbox("Ignore Y Movement", &isIgnoringYMovement))
 		camera->setIgnoreYMovement(isIgnoringYMovement);
+
+	ImGui::SameLine();
+	static bool isVsync = windowManager->isVsyncEnabled();
+	if (ImGui::Checkbox("VSync", &isVsync))
+		windowManager->setVsync(isVsync);
 
 	ImGui::End();
 }

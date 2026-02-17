@@ -9,7 +9,7 @@ class Environment;
 class WindowManager
 {
 	public:
-		WindowManager(EngineType engineType, Environment * environment);
+		WindowManager(EngineType engineType, Environment * environment, bool vsync = false);
 		~WindowManager();
 
 		void			load();
@@ -25,12 +25,14 @@ class WindowManager
 		bool			isChunkBordersActive() const { return _chunkBordersActive; }
 		bool			isWireframe() const { return _isWireframeEnabled; }
 		bool			isSwapRequested() const { return _isSwapRequested; }
+		bool			isVsyncEnabled() const { return _vsync; }
 
 		void			setDeltaTime(double deltaTime) { _deltaTime = deltaTime; }
 		void			setWidth(int width) { _width = width; }
 		void			setHeight(int height) { _height = height; }
 		void			setWindowPosX(int windowPosX) { _windowPosX = windowPosX; }
 		void			setWindowPosY(int windowPosY) { _windowPosY = windowPosY; }
+		void			setVsync(bool vsync) { _vsync = vsync; _engine->setVsync(_vsync); }
 		void			requestSwap() { _isSwapRequested = true; }
 
 		void			toggleFullscreen();
@@ -58,6 +60,7 @@ class WindowManager
 		bool			_chunkBordersActive = false;
 		bool			_isWireframeEnabled = false;
 		bool			_isActive = false;
+		bool			_vsync = false;
 
 		GLFWwindow *	_createWindow();
 		void			_setIcon(GLFWwindow * window);

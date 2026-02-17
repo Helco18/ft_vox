@@ -172,7 +172,7 @@ void Chunk::setBlockAt(const glm::vec3 & position, BlockType newType)
 		|| localPos.y >= CHUNK_HEIGHT || localPos.y < 0
 		|| localPos.z >= CHUNK_LENGTH || localPos.z < 0)
 	{
-		Logger::log(VOXEL, WARNING, "Requested invalid block change at: "\
+		Logger::log(VOXEL, WARNING, "Requested invalid block change at: "
 			+ toString(position.x) + ", "
 			+ toString(position.y) + ", "
 			+ toString(position.z) + ".");
@@ -182,12 +182,6 @@ void Chunk::setBlockAt(const glm::vec3 & position, BlockType newType)
 		_blocks[localPos.x][localPos.y][localPos.z] = newType;
 	}
 	_world->_dirtyChunks.push_back(this);
-	_world->_dirtyChunks.push_back(_northChunk);
-	_world->_dirtyChunks.push_back(_southChunk);
-	_world->_dirtyChunks.push_back(_eastChunk);
-	_world->_dirtyChunks.push_back(_westChunk);
-	_world->_dirtyChunks.push_back(_topChunk);
-	_world->_dirtyChunks.push_back(_bottomChunk);
 }
 
 std::vector<Chunk *> Chunk::_computeNeighborChunks()

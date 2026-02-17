@@ -38,7 +38,7 @@ static ProgramParams parseArgs(int ac, char ** av)
 			{
 				if (str[i] == 'd')
 					g_debug = DebugLevel::DEBUG_MESSAGES;
-				else if (str[i] == 'v')
+				else if (str[i] == 'v' && strcmp(&str[i], "vsync"))
 					g_debug = DebugLevel::VALIDATION;
 				else if (str[i] == 'p')
 					Profiler::enable();
@@ -57,6 +57,11 @@ static ProgramParams parseArgs(int ac, char ** av)
 				else if (!strcmp(&str[i], "ignoreY"))
 				{
 					params.ignoreY = true;
+					break;
+				}
+				else if (!strcmp(&str[i], "vsync"))
+				{
+					params.vsync = true;
 					break;
 				}
 				else

@@ -6,9 +6,9 @@
 #include "Logger.hpp"
 #include <iomanip>
 
-WindowManager::WindowManager(EngineType engineType, Environment * environment):
+WindowManager::WindowManager(EngineType engineType, Environment * environment, bool vsync):
 	_environment(environment), _engineType(engineType), _width(WIDTH), _height(HEIGHT),
-	_windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false)
+	_windowPosX(0), _windowPosY(0), _isFullscreen(false), _isSwapRequested(false), _vsync(vsync)
 {
 	_camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), _width, _height);
 	_lastFpsUpdate = glfwGetTime();
@@ -50,6 +50,8 @@ void WindowManager::load()
 	}
 
 	_engine->load();
+	if (_vsync)
+		_engine->setVsync(_vsync);
 	PipelineManager::init(_engine);
 
 	glfwSetWindowUserPointer(_window, this);

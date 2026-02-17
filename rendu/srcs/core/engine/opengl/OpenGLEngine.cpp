@@ -48,6 +48,11 @@ void OpenGLEngine::load()
 	Logger::log(ENGINE_OPENGL, INFO, "OpenGL engine initialized successfully.");
 }
 
+void OpenGLEngine::setVsync(bool vsync)
+{
+	glfwSwapInterval(vsync);
+}
+
 void OpenGLEngine::beginFrame()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

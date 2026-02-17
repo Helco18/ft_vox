@@ -28,7 +28,7 @@ void Environment::init(ProgramParams & programParams)
 	TextureAtlas::pushTexture("resources/assets/textures/stone.png");
 	TextureAtlas::createAtlas();
 
-	_windowManager = new WindowManager(programParams.engineType, this);
+	_windowManager = new WindowManager(programParams.engineType, this, programParams.vsync);
 	_windowManager->load();
 
 	Camera * camera = _windowManager->getCamera();

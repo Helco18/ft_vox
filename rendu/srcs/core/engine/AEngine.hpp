@@ -59,6 +59,7 @@ class AEngine
 		virtual ~AEngine() {}
 
 		virtual void		load() = 0;
+		virtual void		setVsync(bool vsync) = 0;
 		virtual void		beginFrame() = 0;
 		virtual AssetID		uploadAsset(Asset & asset, PipelineID pipelineID) = 0;
 		virtual void		unloadAsset(AssetID assetID) = 0;

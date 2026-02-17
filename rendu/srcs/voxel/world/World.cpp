@@ -72,6 +72,20 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 	}
 	int i = 0;
 	const Plane * planes = camera->getPlanes();
+	for (Chunk * chunk : _dirtyChunks)
+	{
+		if (!chunk)
+			continue;
+		ChunkState state = chunk->getState();
+		if (state >= MESHED)
+		{
+			if (state == UPLOADED)
+				chunk->unload(engine);
+			chunk->generateMesh();
+			chunk->uploadAsset(engine);
+		}
+	}
+	_dirtyChunks.clear();
 	if (!_isLocked.load())
 	{
 		_uploadedChunks.clear();

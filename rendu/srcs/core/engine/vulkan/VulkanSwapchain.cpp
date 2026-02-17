@@ -25,10 +25,13 @@ vk::PresentModeKHR VulkanEngine::_chooseSwapPresentMode(const std::vector<vk::Pr
 	if (RUNNING_ON_VALGRIND)
 		return vk::PresentModeKHR::eFifo;
 	#endif
-	for (const vk::PresentModeKHR & presentMode : presentModes)
+	if (!_vsync)
 	{
-		if (presentMode == vk::PresentModeKHR::eImmediate)
-			return presentMode;
+		for (const vk::PresentModeKHR & presentMode : presentModes)
+		{
+			if (presentMode == vk::PresentModeKHR::eImmediate)
+				return presentMode;
+		}
 	}
 	return vk::PresentModeKHR::eFifo;
 }

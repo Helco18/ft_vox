@@ -70,6 +70,15 @@ void VulkanEngine::load()
 	Logger::log(ENGINE_VULKAN, INFO, "Vulkan engine initialized successfully.");
 }
 
+void VulkanEngine::setVsync(bool vsync)
+{
+	if (_vsync != vsync)
+	{
+		_vsync = vsync;
+		_recreateSwapchain();
+	}
+}
+
 void VulkanEngine::beginFrame()
 {
 	_drawableAssets.clear();
