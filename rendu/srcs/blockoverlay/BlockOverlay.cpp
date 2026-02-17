@@ -64,7 +64,7 @@ void BlockOverlay::drawAsset(AEngine * engine, const TargetedBlock & targetedBlo
 		_model = glm::scale(_model, glm::vec3(1.0005f));
 		_model = glm::translate(_model, glm::vec3(-0.5f)); // Merci mbatty
 		lastEngineType = engine->getEngineType();
-		engine->updateUniformBuffer(pipelineID, 3, &_model, sizeof(glm::mat4));
+		engine->updateUniformBuffer(pipelineID, 1, &_model, sizeof(glm::mat4));
 	}
 	engine->drawAsset(_asset.assetID, pipelineID);
 }

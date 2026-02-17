@@ -172,7 +172,7 @@ static void uploadBlockOverlay(AEngine * engine)
 
 	DescriptorInfo targetedBlock;
 	targetedBlock.name = "TargetedBlock";
-	targetedBlock.binding = 3;
+	targetedBlock.binding = 1;
 	targetedBlock.count = 1;
 	targetedBlock.size = sizeof(glm::mat4);
 	targetedBlock.stage = ShaderStage::VERTEX;

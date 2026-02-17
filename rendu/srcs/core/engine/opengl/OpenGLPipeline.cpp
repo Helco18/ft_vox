@@ -90,4 +90,7 @@ void OpenGLEngine::_applyPipeline(PipelineLayout & pipelineLayout)
 		glUniform1i(textureIndex, 0);
 		i++;
 	}
+
+	for (const std::pair<const unsigned int, UniformBufferStream> & uniformPair : pipelineLayout.uniformBufferStreams)
+		glBindBufferBase(GL_UNIFORM_BUFFER, uniformPair.second.binding, uniformPair.second.ubo);
 }

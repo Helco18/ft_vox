@@ -1,6 +1,5 @@
 #include "InputManager.hpp"
 #include "Environment.hpp"
-#include "WorldManager.hpp"
 
 void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
 {
@@ -15,7 +14,7 @@ void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
 		camera->changeSpeed(-SCROLL_SPEED);
 }
 
-void InputManager::interceptMouse(WindowManager * windowManager)
+void InputManager::interceptMouse(WindowManager * windowManager, Player & player)
 {
 	static double oldMouseX, oldMouseY = 0;
 	if (!windowManager->getEngine()->isInitialized())
@@ -23,12 +22,20 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 
 	GLFWwindow * window = windowManager->getWindow();
 	Camera * camera = windowManager->getCamera();
+	TargetedBlock targetedBlock = player.getTargetedBlock();
 
 	int width, height;
 	double mouseX, mouseY;
 
 	width = windowManager->getWidth();
 	height = windowManager->getHeight();
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) && targetedBlock.type != BlockType::AIR)
+	{
+		Chunk * chunk = player.getWorld()->getChunkAt(targetedBlock.pos);
+		if (!chunk)
+			return;
+		chunk->setBlockAt(targetedBlock.pos, BlockType::AIR);
+	}
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
 	{
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

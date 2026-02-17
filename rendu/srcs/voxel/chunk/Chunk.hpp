@@ -7,6 +7,7 @@
 #include <mutex>
 #include "OBJModel.hpp"
 #include "AEngine.hpp"
+#include "BlockData.hpp"
 
 class World;
 
@@ -71,7 +72,8 @@ class Chunk
 
 		void						setState(ChunkState state) { _state.store(state); }
 		void						setDirty(bool dirty) { _isDirty.store(dirty); }
-
+		void						setBlockAt(const glm::vec3 & position, BlockType newType);
+	
 		void						build();
 		void						generateMesh();
 		void						uploadAsset(AEngine * engine);

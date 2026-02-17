@@ -60,6 +60,7 @@ void Environment::loop()
 	Skybox sky;
 	Crosshair crosshair;
 	BlockOverlay blockOverlay;
+	TargetedBlock targetedBlock;
 
 	engine = _windowManager->getEngine();
 	world = WorldManager::getWorld(WORLD_NAME);
@@ -89,12 +90,13 @@ void Environment::loop()
 			blockOverlay.uploadAsset(engine);
 			continue;
 		}
+		targetedBlock = _player.getTargetedBlock();
 		engine->beginFrame();
 		engine->beginImGui();
-		InputManager::interceptMouse(_windowManager);
+		InputManager::interceptMouse(_windowManager, _player);
 		InputManager::interceptMovements(_windowManager);
 		crosshair.drawAsset(engine, camera->getWidth(), camera->getHeight());
-		blockOverlay.drawAsset(engine, _player.getTargetedBlock());
+		blockOverlay.drawAsset(engine, targetedBlock);
 		if (world)
 		{
 			world->update(engine, camera);

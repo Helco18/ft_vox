@@ -32,6 +32,8 @@ struct RayState
 class World
 {
 	public:
+		friend class Chunk;
+
 		World(const std::string & name): _name(name) {}
 		~World();
 
@@ -67,7 +69,7 @@ class World
 		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
 		bool					_chunkIsFrustum(const Plane * planes, Chunk * chunk);
 
-		TargetedBlock					_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
+		TargetedBlock			_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
 
 		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
 		std::string				_name;
@@ -75,6 +77,7 @@ class World
 		ChunkVec				_visibleChunks;
 		ChunkVec				_nextVisibleChunks;
 		ChunkVec				_uploadedChunks;
+		ChunkVec				_dirtyChunks;
 		std::atomic_bool		_readyToSwap = false;
 		ThreadPool				_chunkPool;
 		std::mutex				_mapMutex;

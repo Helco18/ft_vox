@@ -22,7 +22,7 @@ struct TargetedBlock
 [[vk::binding(0,0)]]
 ConstantBuffer<CameraMatrix> cameraMatrix;
 
-[[vk::binding(3,0)]]
+[[vk::binding(1,0)]]
 ConstantBuffer<TargetedBlock> targetedBlock;
 
 [shader("vertex")]

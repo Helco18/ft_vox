@@ -76,7 +76,6 @@ void OpenGLEngine::endFrame()
 			AssetInfo & assetInfo = _assetCache[asset->assetID];
 			for (UniformBufferStream & uniformInfo : assetInfo.uniformBufferStreams)
 			{
-				glBindBuffer(GL_UNIFORM_BUFFER, uniformInfo.ubo);
 				glBindBufferBase(GL_UNIFORM_BUFFER, uniformInfo.binding, uniformInfo.ubo);
 				glBufferSubData(GL_UNIFORM_BUFFER, 0, uniformInfo.size, uniformInfo.data);
 			}

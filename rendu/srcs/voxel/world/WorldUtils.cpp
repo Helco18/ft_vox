@@ -21,12 +21,12 @@ Chunk * World::getChunkAtChunkLocation(int x, int y, int z)
 	return nullptr;
 }
 
-inline Chunk * World::getChunkAt(const glm::vec3 & location)
+Chunk * World::getChunkAt(const glm::vec3 & location)
 {
 	return getChunkAt(location.x, location.y, location.z);
 }
 
-inline Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location)
+Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location)
 {
 	return getChunkAtChunkLocation(location.x, location.y, location.z);
 }
