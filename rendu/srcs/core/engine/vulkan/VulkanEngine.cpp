@@ -112,9 +112,6 @@ void VulkanEngine::endFrame()
 
 		_device.resetFences(*_inFlightFences[_currentFrame]);
 
-		_processPendingUnloads();
-		_processPendingUniforms();
-		_processPendingAssets();
 		_retrieveCommandBuffers();
 
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
