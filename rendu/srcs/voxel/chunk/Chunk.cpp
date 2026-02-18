@@ -199,7 +199,19 @@ void Chunk::setBlockAt(const glm::vec3 & position, BlockType newType)
 		std::lock_guard<std::mutex> lg(_workerMutex);
 		_blocks[localPos.x][localPos.y][localPos.z] = newType;
 	}
-	_world->_dirtyChunks.push_back(this);
+	if (localPos.x == 15)
+		_world->_dirtyChunks.push_back({_northChunk, glm::vec3(position.x + 1, position.y, position.z)});
+	if (localPos.x == 0)
+		_world->_dirtyChunks.push_back({_southChunk, glm::vec3(position.x- 1, position.y, position.z)});
+	if (localPos.z == 15)
+		_world->_dirtyChunks.push_back({_eastChunk, glm::vec3(position.x, position.y, position.z + 1)});
+	if (localPos.z == 0)
+		_world->_dirtyChunks.push_back({_westChunk, glm::vec3(position.x, position.y, position.z - 1)});
+	if (localPos.y == 15)
+		_world->_dirtyChunks.push_back({_topChunk, glm::vec3(position.x, position.y + 1, position.z)});
+	if (localPos.y == 0)
+		_world->_dirtyChunks.push_back({_bottomChunk, glm::vec3(position.x, position.y - 1, position.z)});
+	_world->_dirtyChunks.push_back({this, glm::vec3(position.x, position.y, position.z)});
 }
 
 std::vector<Chunk *> Chunk::_computeNeighborChunks()

@@ -219,7 +219,7 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 	}
 }
 
-static glm::ivec3 getFaceDir(int axis, FaceDirection faceDir)
+inline static glm::ivec3 getFaceDir(int axis, FaceDirection faceDir)
 {
 	switch (axis)
 	{
@@ -230,7 +230,7 @@ static glm::ivec3 getFaceDir(int axis, FaceDirection faceDir)
 	return glm::ivec3(0);
 }
 
-static BlockFace getBlockFace(int axis, FaceDirection faceDir)
+inline static BlockFace getBlockFace(int axis, FaceDirection faceDir)
 {
 	switch (axis)
 	{
@@ -241,7 +241,7 @@ static BlockFace getBlockFace(int axis, FaceDirection faceDir)
 	return NORTH;
 }
 
-static int getProcessedIndex(FaceDirection faceDir)
+inline static int getProcessedIndex(FaceDirection faceDir)
 {
 	return (faceDir == FaceDirection::FORWARD ? 0 : 1);
 }
@@ -448,7 +448,7 @@ void Chunk::_buildAsset()
 	_asset.vertices.stride = sizeof(ChunkVertex);
 }
 
-void Chunk::updateMesh(glm::ivec3 pos)
+void Chunk::updateMesh(glm::vec3 pos)
 {
 	pos = posToChunkPos(pos);
 	for (int axis = 0; axis < 3; ++axis)
@@ -466,6 +466,8 @@ void Chunk::updateMesh(glm::ivec3 pos)
 void Chunk::_generateGreedyMesh()
 {
 	Profiler p("Chunk::generateGreedyMesh");
+	_chunkOpaqueAsset = {};
+	_chunkTransparencyAsset = {};
 	_chunkOpaqueAsset[0].resize(CHUNK_WIDTH);
 	_chunkOpaqueAsset[1].resize(CHUNK_HEIGHT);
 	_chunkOpaqueAsset[2].resize(CHUNK_LENGTH);
@@ -473,16 +475,6 @@ void Chunk::_generateGreedyMesh()
 	_chunkTransparencyAsset[0].resize(CHUNK_WIDTH);
 	_chunkTransparencyAsset[1].resize(CHUNK_HEIGHT);
 	_chunkTransparencyAsset[2].resize(CHUNK_LENGTH);
-	for (int axis = 0; axis < 3; ++axis)
-	{
-		for (int sliceIndex = 0; sliceIndex < (axis == 0 ? CHUNK_WIDTH : (axis == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)); ++sliceIndex)
-		{
-			_chunkOpaqueAsset[axis][sliceIndex].vertices.clear();
-			_chunkOpaqueAsset[axis][sliceIndex].indices.clear();
-			_chunkTransparencyAsset[axis][sliceIndex].vertices.clear();
-			_chunkTransparencyAsset[axis][sliceIndex].indices.clear();
-		}
-	}
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -491,5 +483,7 @@ void Chunk::_generateGreedyMesh()
 	}
 	_buildAsset();
 
-	_generateFrameMesh();
+	if (_oldChunkFinalAsset.vertices.empty())
+		_generateFrameMesh();
+	_oldChunkFinalAsset = _chunkFinalAsset;
 }

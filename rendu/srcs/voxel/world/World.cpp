@@ -73,16 +73,18 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 	}
 	int i = 0;
 	const Plane * planes = camera->getPlanes();
-	for (Chunk * chunk : _dirtyChunks)
+	for (std::pair<Chunk *, glm::vec3> chunkPair : _dirtyChunks)
 	{
+		Chunk * chunk = chunkPair.first;
 		if (!chunk)
 			continue;
+		const glm::vec3 & pos = chunkPair.second;
 		ChunkState state = chunk->getState();
 		if (state >= MESHED)
 		{
 			if (state == UPLOADED)
 				chunk->unload(engine);
-			chunk->generateMesh();
+			chunk->updateMesh(pos);
 		}
 	}
 	_dirtyChunks.clear();

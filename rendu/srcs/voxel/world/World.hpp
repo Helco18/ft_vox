@@ -80,7 +80,7 @@ class World
 		ChunkVec				_visibleChunks;
 		ChunkVec				_nextVisibleChunks;
 		ChunkVec				_uploadedChunks;
-		ChunkVec				_dirtyChunks;
+		std::vector<std::pair<Chunk *, glm::vec3>>				_dirtyChunks;
 		std::atomic_bool		_readyToSwap = false;
 		ThreadPool				_chunkPool;
 		std::mutex				_mapMutex;

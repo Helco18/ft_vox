@@ -86,7 +86,7 @@ class Chunk
 		static glm::ivec3						locToChunkLoc(const glm::vec3 & loc);
 		bool									isReadyForMesh();
 
-		void									updateMesh(glm::ivec3 pos);
+		void									updateMesh(glm::vec3 pos);
 
 	private:
 		World *									_world;
@@ -96,6 +96,7 @@ class Chunk
 		std::array<std::vector<ChunkAsset>, 3>	_chunkOpaqueAsset;
 		std::array<std::vector<ChunkAsset>, 3>	_chunkTransparencyAsset;
 		ChunkAsset								_chunkFinalAsset;
+		ChunkAsset								_oldChunkFinalAsset;
 
 		Asset									_assetFrame;
 		Asset									_asset;

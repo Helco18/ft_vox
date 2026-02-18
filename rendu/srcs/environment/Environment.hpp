@@ -22,6 +22,8 @@ class Environment
 
 		void		init(ProgramParams & programParams);
 		void		loop();
+		
+		Player &	getPlayer() { return _player; }
 
 		void		stop() { _running = false; }
 

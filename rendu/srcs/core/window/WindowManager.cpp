@@ -56,6 +56,7 @@ void WindowManager::load()
 
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, WindowManager::framebufferResizeCallback);
+	glfwSetMouseButtonCallback(_window, InputManager::interceptOneTimeClicks);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
 	glfwSetScrollCallback(_window, InputManager::interceptScroll);
 

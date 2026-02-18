@@ -15,6 +15,7 @@ class InputManager
 
 		static void interceptInputs(GLFWwindow * window, int key, int, int action, int);
 		static void	interceptMovements(WindowManager * windowManager);
-		static void	interceptMouse(WindowManager * windowManager, Player & player);
+		static void	interceptMouse(WindowManager * windowManager);
+		static void	interceptOneTimeClicks(GLFWwindow * window, int action, int key, int);
 		static void	interceptScroll(GLFWwindow * window, double xoffset, double yoffset);
 };

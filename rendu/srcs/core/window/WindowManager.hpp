@@ -16,6 +16,7 @@ class WindowManager
 		bool			drawFrame();
 		void			swap();
 
+		Environment *	getEnvironment() const { return _environment; }
 		AEngine *		getEngine() const { return _engine; }
 		GLFWwindow *	getWindow() const { return _window; }
 		Camera *		getCamera() const { return _camera; }

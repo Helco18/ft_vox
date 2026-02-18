@@ -14,7 +14,7 @@ void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
 		camera->changeSpeed(-SCROLL_SPEED);
 }
 
-void InputManager::interceptMouse(WindowManager * windowManager, Player & player)
+void InputManager::interceptMouse(WindowManager * windowManager)
 {
 	static double oldMouseX, oldMouseY = 0;
 	if (!windowManager->getEngine()->isInitialized())
@@ -22,20 +22,12 @@ void InputManager::interceptMouse(WindowManager * windowManager, Player & player
 
 	GLFWwindow * window = windowManager->getWindow();
 	Camera * camera = windowManager->getCamera();
-	TargetedBlock targetedBlock = player.getTargetedBlock();
 
 	int width, height;
 	double mouseX, mouseY;
 
 	width = windowManager->getWidth();
 	height = windowManager->getHeight();
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) && targetedBlock.type != BlockType::AIR)
-	{
-		Chunk * chunk = player.getWorld()->getChunkAt(targetedBlock.pos);
-		if (!chunk)
-			return;
-		chunk->setBlockAt(targetedBlock.pos, BlockType::AIR);
-	}
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
 	{
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -57,6 +49,21 @@ void InputManager::interceptMouse(WindowManager * windowManager, Player & player
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			glfwSetCursorPos(window, (static_cast<float>(width) / 2), (static_cast<float>(height) / 2));
 		}
+	}
+}
+
+void InputManager::interceptOneTimeClicks(GLFWwindow * window, int key, int action, int)
+{
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+	Player & player = windowManager->getEnvironment()->getPlayer();
+	TargetedBlock targetedBlock = player.getTargetedBlock();
+
+	if (action == GLFW_PRESS && key == GLFW_MOUSE_BUTTON_LEFT && targetedBlock.type != BlockType::AIR)
+	{
+		Chunk * chunk = player.getWorld()->getChunkAt(targetedBlock.pos);
+		if (!chunk)
+			return;
+		chunk->setBlockAt(targetedBlock.pos, BlockType::AIR);
 	}
 }
 
