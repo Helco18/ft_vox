@@ -44,9 +44,9 @@ void Crosshair::drawAsset(AEngine * engine, int width, int height)
 		_modelproj.model = glm::scale(_modelproj.model, glm::vec3(CROSSHAIR_SCALE, CROSSHAIR_SCALE, 1.0f));
 		oldWidth = width;
 		oldHeight = height;
-		engine->updateUniformBuffer(pipelineID, 1, &_modelproj, sizeof(CrosshairBuffer));
 		lastEngineType = engine->getEngineType();
 	}
+	engine->updateUniformBuffer(pipelineID, 1, &_modelproj, sizeof(CrosshairBuffer));
 	engine->drawAsset(_asset.assetID, pipelineID);
 }
 

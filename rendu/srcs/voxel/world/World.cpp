@@ -83,7 +83,6 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 			if (state == UPLOADED)
 				chunk->unload(engine);
 			chunk->generateMesh();
-			chunk->uploadAsset(engine);
 		}
 	}
 	_dirtyChunks.clear();

@@ -128,7 +128,7 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 	return asset;
 }
 
-glm::ivec3 Chunk::_sliceToWorld(int axis, int sliceIndex, int u, int v) {
+inline glm::ivec3 Chunk::_sliceToWorld(int axis, int sliceIndex, int u, int v) {
 	if (axis == 0)
 		return glm::ivec3(sliceIndex, u, v);
 	if (axis == 1)

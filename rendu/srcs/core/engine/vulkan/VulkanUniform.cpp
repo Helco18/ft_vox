@@ -61,8 +61,7 @@ void VulkanEngine::_processPendingUniforms()
 			continue;
 		}
 		UniformBufferData & uniformBufferData = it->second;
-		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
-			memcpy(uniformBufferData.mapped[i], uniform.data, uniform.size);
+		memcpy(uniformBufferData.mapped[_currentFrame], uniform.data, uniform.size);
 	}
 	_pendingUniforms.clear();
 }

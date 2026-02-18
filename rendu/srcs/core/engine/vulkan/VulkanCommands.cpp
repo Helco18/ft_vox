@@ -72,16 +72,13 @@ void VulkanEngine::_recordCommandBuffer()
 
 		vk::RenderingInfo renderingInfo;
 		vk::RenderingAttachmentInfo depthAttachmentInfo;
-		if (pipelineData.pipelineInfo.depthTest || !i)
-		{
-			vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
-			depthAttachmentInfo.imageView = _depthImageView;
-			depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
-			depthAttachmentInfo.loadOp = !i ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eLoad;
-			depthAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
-			depthAttachmentInfo.clearValue = clearDepth;
-			renderingInfo.pDepthAttachment = &depthAttachmentInfo;
-		}
+		vk::ClearValue clearDepth = vk::ClearDepthStencilValue(1.0f, 0.0f);
+		depthAttachmentInfo.imageView = _depthImageView;
+		depthAttachmentInfo.imageLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+		depthAttachmentInfo.loadOp = !i ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eLoad;
+		depthAttachmentInfo.storeOp = vk::AttachmentStoreOp::eStore;
+		depthAttachmentInfo.clearValue = clearDepth;
+		renderingInfo.pDepthAttachment = &depthAttachmentInfo;
 
 		renderingInfo.renderArea.offset.x = 0;
 		renderingInfo.renderArea.offset.y = 0;
