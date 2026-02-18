@@ -59,67 +59,73 @@ class Chunk
 		Chunk(const glm::ivec3 & chunkLocation, World * world = nullptr): Chunk(chunkLocation.x, chunkLocation.y, chunkLocation.z, world) {}
 		~Chunk() {};
 
-		const glm::ivec3 &			getChunkLocation() const { return _chunkLocation; }
-		int							getChunkX() const { return _chunkLocation.x; }
-		int							getChunkY() const { return _chunkLocation.y; }
-		int							getChunkZ() const { return _chunkLocation.z; }
-		ChunkState					getState() const { return _state.load(); }
-		Asset &						getAsset() { return _asset; }
-		uint8_t						getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
-		float						getDistance(glm::vec3 pos) const;
-		const glm::vec3 &			getMin() const { return _min; };
-		const glm::vec3 &			getMax() const { return _max; };
-		bool						isDirty() const { return _isDirty.load(); }
-		bool						isTakenByWorker() const { return _isTakenByWorker.load(); }
+		const glm::ivec3 &						getChunkLocation() const { return _chunkLocation; }
+		int										getChunkX() const { return _chunkLocation.x; }
+		int										getChunkY() const { return _chunkLocation.y; }
+		int										getChunkZ() const { return _chunkLocation.z; }
+		ChunkState								getState() const { return _state.load(); }
+		Asset &									getAsset() { return _asset; }
+		uint8_t									getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
+		float									getDistance(glm::vec3 pos) const;
+		const glm::vec3 &						getMin() const { return _min; };
+		const glm::vec3 &						getMax() const { return _max; };
+		bool									isDirty() const { return _isDirty.load(); }
+		bool									isTakenByWorker() const { return _isTakenByWorker.load(); }
 
-		void						setState(ChunkState state) { _state.store(state); }
-		void						setDirty(bool dirty) { _isDirty.store(dirty); }
-		void						setBlockAt(const glm::vec3 & position, BlockType newType);
-	
-		void						build();
-		void						generateMesh();
-		void						uploadAsset(AEngine * engine);
-		void						drawAsset(AEngine * engine, PipelineType pipelineType);
-		bool						unload(AEngine * engine);
+		void									setState(ChunkState state) { _state.store(state); }
+		void									setDirty(bool dirty) { _isDirty.store(dirty); }
+		void									setBlockAt(const glm::vec3 & position, BlockType newType);
+		
+		void									build();
+		void									generateMesh();
+		void									uploadAsset(AEngine * engine);
+		void									drawAsset(AEngine * engine, PipelineType pipelineType);
+		bool									unload(AEngine * engine);
 
-		static glm::ivec3			posToChunkPos(const glm::vec3 & pos);
-		static glm::ivec3			locToChunkLoc(const glm::vec3 & loc);
-		bool						isReadyForMesh();
+		static glm::ivec3						posToChunkPos(const glm::vec3 & pos);
+		static glm::ivec3						locToChunkLoc(const glm::vec3 & loc);
+		bool									isReadyForMesh();
+
+		void									updateMesh(glm::ivec3 pos);
 
 	private:
-		World *						_world;
-		glm::ivec3					_chunkLocation;
-		uint8_t						_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
-		ChunkAsset					_chunkOpaqueAsset;
-		ChunkAsset					_chunkTransparencyAsset;
-		ChunkAsset					_chunkFinalAsset;
-		Asset						_asset;
-		Asset						_assetFrame;
-		std::vector<ChunkVertex>	_vertices;
-		std::vector<glm::vec3>		_linesPos;
-		std::atomic<ChunkState>		_state;
-		std::mutex					_workerMutex;
-		ChunkData					_chunkData { 0.0f, 0.0f, 0.0f };
-		std::atomic_bool			_isDirty = false;
-		std::atomic_bool			_isTakenByWorker = false;
+		World *									_world;
+		glm::ivec3								_chunkLocation;
+		uint8_t									_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 
-		Chunk * 					_northChunk = nullptr;
-		Chunk * 					_southChunk = nullptr;
-		Chunk * 					_eastChunk = nullptr;
-		Chunk * 					_westChunk = nullptr;
-		Chunk * 					_topChunk = nullptr;
-		Chunk * 					_bottomChunk = nullptr;
+		std::array<std::vector<ChunkAsset>, 3>	_chunkOpaqueAsset;
+		std::array<std::vector<ChunkAsset>, 3>	_chunkTransparencyAsset;
+		ChunkAsset								_chunkFinalAsset;
 
-		glm::vec3					_min;
-		glm::vec3					_max;
+		Asset									_assetFrame;
+		Asset									_asset;
 
-		void						_generateGreedyMesh();
-		void						_processFace(int u, int v, std::vector<std::array<bool,2>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
-		ChunkAsset					_generateQuadMesh(float width, float height, float depth, int face);
-		void						_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face);
-		void						_generateSliceMeshing(int axis, int sliceIndex);
-		uint8_t						_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
-		glm::ivec3					_sliceToWorld(int axis, int sliceIndex, int u, int v);
-		void						_generateFrameMesh();
-		std::vector<Chunk *>		_computeNeighborChunks();
+		std::vector<ChunkVertex>				_vertices;
+		std::vector<glm::vec3>					_linesPos;
+		std::atomic<ChunkState>					_state;
+		std::mutex								_workerMutex;
+		ChunkData								_chunkData { 0.0f, 0.0f, 0.0f };
+		std::atomic_bool						_isDirty = false;
+		std::atomic_bool						_isTakenByWorker = false;
+
+		Chunk * 								_northChunk = nullptr;
+		Chunk * 								_southChunk = nullptr;
+		Chunk * 								_eastChunk = nullptr;
+		Chunk * 								_westChunk = nullptr;
+		Chunk * 								_topChunk = nullptr;
+		Chunk * 								_bottomChunk = nullptr;
+
+		glm::vec3								_min;
+		glm::vec3								_max;
+
+		void									_generateGreedyMesh();
+		void									_buildAsset();
+		void									_processFace(int u, int v, std::vector<std::array<bool,2>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax);
+		ChunkAsset								_generateQuadMesh(float width, float height, float depth, int face);
+		void									_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face, int axis, int sliceIndex);
+		void									_generateSliceMeshing(int axis, int sliceIndex);
+		uint8_t									_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
+		glm::ivec3								_sliceToWorld(int axis, int sliceIndex, int u, int v);
+		void									_generateFrameMesh();
+		std::vector<Chunk *> 					_computeNeighborChunks();
 };
