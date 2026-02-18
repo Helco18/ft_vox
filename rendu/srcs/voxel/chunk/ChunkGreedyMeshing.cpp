@@ -459,6 +459,22 @@ void Chunk::updateMesh(glm::vec3 pos)
 		_chunkTransparencyAsset[axis][sliceIndex].vertices.clear();
 		_chunkTransparencyAsset[axis][sliceIndex].indices.clear();
 		_generateSliceMeshing(axis, (axis == 0 ? pos.x : (axis == 1 ? pos.y : pos.z)));
+		if (sliceIndex + 1 < (axis == 0 ? CHUNK_WIDTH : (axis == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)))
+		{
+			_chunkOpaqueAsset[axis][sliceIndex + 1].vertices.clear();
+			_chunkOpaqueAsset[axis][sliceIndex + 1].indices.clear();
+			_chunkTransparencyAsset[axis][sliceIndex + 1].vertices.clear();
+			_chunkTransparencyAsset[axis][sliceIndex + 1].indices.clear();
+			_generateSliceMeshing(axis, (axis == 0 ? pos.x + 1 : (axis == 1 ? pos.y + 1 : pos.z + 1)));
+		}
+		if (sliceIndex - 1 >= 0 && sliceIndex - 1 < (axis == 0 ? CHUNK_WIDTH : (axis == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)))
+		{
+			_chunkOpaqueAsset[axis][sliceIndex - 1].vertices.clear();
+			_chunkOpaqueAsset[axis][sliceIndex - 1].indices.clear();
+			_chunkTransparencyAsset[axis][sliceIndex - 1].vertices.clear();
+			_chunkTransparencyAsset[axis][sliceIndex - 1].indices.clear();
+			_generateSliceMeshing(axis, (axis == 0 ? pos.x - 1 : (axis == 1 ? pos.y - 1 : pos.z - 1)));
+		}
 	}
 	_buildAsset();
 }
