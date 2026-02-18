@@ -3,6 +3,7 @@
 #include "World.hpp"
 #include "Logger.hpp"
 #include "SimplexNoise.hpp"
+#include "Profiler.hpp"
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(IDLE)
 {
@@ -39,6 +40,7 @@ bool Chunk::isReadyForMesh()
 
 void Chunk::build()
 {
+	Profiler p("Chunk::build");
 	_isTakenByWorker.store(true);
 	std::lock_guard<std::mutex> lg(_workerMutex);
 
@@ -126,6 +128,7 @@ void Chunk::uploadAsset(AEngine * engine)
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
+	Profiler p("Chunk::drawAsset");
 	if (!_workerMutex.try_lock())
 		return;
 

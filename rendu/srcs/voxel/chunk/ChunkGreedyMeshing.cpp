@@ -2,6 +2,7 @@
 #include "TextureAtlas.hpp"
 #include "Logger.hpp"
 #include "BlockData.hpp"
+#include "Profiler.hpp"
 
 ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int face)
 {
@@ -128,7 +129,8 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 	return asset;
 }
 
-inline glm::ivec3 Chunk::_sliceToWorld(int axis, int sliceIndex, int u, int v) {
+inline glm::ivec3 Chunk::_sliceToWorld(int axis, int sliceIndex, int u, int v)
+{
 	if (axis == 0)
 		return glm::ivec3(sliceIndex, u, v);
 	if (axis == 1)
@@ -244,7 +246,7 @@ static int getProcessedIndex(FaceDirection faceDir)
 	return (faceDir == FaceDirection::FORWARD ? 0 : 1);
 }
 
-void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2>>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax)
+void Chunk::_processFace(int u, int v, std::vector<std::array<bool,2>> & processed, FaceDirection faceDir, int axis, int sliceIndex, int uMax, int vMax)
 {
 	int pIndex = getProcessedIndex(faceDir);
 	glm::ivec3 dir = getFaceDir(axis, faceDir);
@@ -252,7 +254,7 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
 
 	glm::ivec3 pos = _sliceToWorld(axis, sliceIndex, u, v);
 	uint8_t block = _blocks[pos.x][pos.y][pos.z];
-	if (block == 0 || processed[u][v][pIndex])
+	if (block == 0 || processed[u + v * uMax][pIndex])
 		return;
 
 	uint8_t neighbor = _getNeighborBlock(pos, dir);
@@ -269,7 +271,7 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
 		uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
 		uint8_t nextNeighbor = _getNeighborBlock(nextPos, dir);
 		blockData = BlockData::getBlockData(nextNeighbor);
-		if (nextBlock != block || (blockData.isVisible() && (!blockData.isLiquid() || (blockData.isLiquid() && (nextBlock != neighbor)))) || processed[uNext][v][pIndex])
+		if (nextBlock != block || (blockData.isVisible() && (!blockData.isLiquid() || (blockData.isLiquid() && (nextBlock != neighbor)))) || processed[uNext + v * uMax][pIndex])
 			break;
 		width++;
 		uNext++;
@@ -287,7 +289,7 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
 			uint8_t nextBlock = _blocks[nextPos.x][nextPos.y][nextPos.z];
 			uint8_t nextNeighbor = _getNeighborBlock(nextPos, dir);
 			blockData = BlockData::getBlockData(nextNeighbor);
-			if (nextBlock != block || (blockData.isVisible() && (!blockData.isLiquid() || (blockData.isLiquid() && (nextBlock != neighbor)))) || processed[i][vNext][pIndex])
+			if (nextBlock != block || (blockData.isVisible() && (!blockData.isLiquid() || (blockData.isLiquid() && (nextBlock != neighbor)))) || processed[i + vNext * uMax][pIndex])
 				break;
 			height++;
 			vNext++;
@@ -305,7 +307,7 @@ void Chunk::_processFace(int u, int v, std::vector<std::vector<std::array<bool,2
 
 	for (int i = u; i < u + width; ++i)
 		for (int j = v; j < v + height; ++j)
-			processed[i][j][pIndex] = true;
+			processed[i + j * uMax][pIndex] = true;
 }
 
 void Chunk::_generateSliceMeshing(int axis, int sliceIndex)
@@ -328,7 +330,7 @@ void Chunk::_generateSliceMeshing(int axis, int sliceIndex)
 		vMax = CHUNK_HEIGHT;
 	}
 
-	std::vector<std::vector<std::array<bool,2>>> processed( uMax, std::vector<std::array<bool,2>>(vMax, {false,false}));
+	std::vector<std::array<bool,2>> processed(uMax * vMax, {false, false});
 
 	for (int u = 0; u < uMax; ++u)
 	{
@@ -403,8 +405,13 @@ void Chunk::_generateFrameMesh()
 
 void Chunk::_generateGreedyMesh()
 {
+	Profiler p("Chunk::generateGreedyMesh");
+	_chunkOpaqueAsset.vertices.clear();
+	_chunkOpaqueAsset.indices.clear();
+	_chunkTransparencyAsset.vertices.clear();
+	_chunkTransparencyAsset.indices.clear();
+	_chunkFinalAsset.vertices.clear();
 	_chunkFinalAsset.indices.clear();
-	_chunkFinalAsset.indices.shrink_to_fit();
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -426,11 +433,8 @@ void Chunk::_generateGreedyMesh()
 		_asset.indices = _chunkFinalAsset.indices;
 		_asset.vertices.size = _chunkFinalAsset.vertices.size() * sizeof(ChunkVertex);
 		_chunkTransparencyAsset.indices.clear();
-		_chunkTransparencyAsset.indices.shrink_to_fit();
 		_chunkOpaqueAsset.indices.clear();
-		_chunkOpaqueAsset.indices.shrink_to_fit();
 		_chunkFinalAsset.indices.clear();
-		_chunkFinalAsset.indices.shrink_to_fit();
 	}
 	_generateFrameMesh();
 	_asset.vertices.stride = sizeof(ChunkVertex);
