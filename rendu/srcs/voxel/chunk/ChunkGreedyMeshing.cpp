@@ -12,8 +12,8 @@ ChunkAsset Chunk::_generateQuadMesh(float width, float height, float depth, int 
 
 	ChunkVertex v[4];
 
-	v[0].texCoord = {0.0f, 0.005f};
-	v[1].texCoord = {1.0f, 0.005f};
+	v[0].texCoord = {0.0f, 0.005f / height};
+	v[1].texCoord = {1.0f, 0.005f / height};
 	v[2].texCoord = {1.0f, 1.0f};
 	v[3].texCoord = {0.0f, 1.0f};
 
