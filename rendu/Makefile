@@ -63,8 +63,10 @@ SRCS				=	srcs/main.cpp \
 						srcs/tools/utils/utils.cpp \
 						srcs/voxel/WorldManager.cpp \
 						srcs/voxel/block/BlockData.cpp \
+						srcs/voxel/chunk/proceduralTools/heightMap/HeightMap.cpp \
 						srcs/voxel/chunk/Chunk.cpp \
 						srcs/voxel/chunk/ChunkGreedyMeshing.cpp \
+						srcs/voxel/chunk/ChunkProceduralTools.cpp \
 						srcs/voxel/world/World.cpp \
 						srcs/voxel/world/WorldGeneration.cpp \
 						srcs/voxel/world/WorldRayCaster.cpp \
@@ -120,8 +122,9 @@ INCLUDES			=	-I libs \
 						-I srcs/tools/utils \
 						-I srcs/voxel \
 						-I srcs/voxel/block \
+						-I srcs/voxel/chunk/proceduralTools/noise \
+						-I srcs/voxel/chunk/proceduralTools/heightMap \
 						-I srcs/voxel/chunk \
-						-I srcs/voxel/noise \
 						-I srcs/voxel/world
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 

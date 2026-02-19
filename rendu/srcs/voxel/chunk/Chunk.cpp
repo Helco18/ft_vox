@@ -4,6 +4,7 @@
 #include "Logger.hpp"
 #include "SimplexNoise.hpp"
 #include "Profiler.hpp"
+#include "HeightMap.hpp"
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(IDLE)
 {
@@ -51,27 +52,37 @@ void Chunk::build()
 	double worldYOffset = static_cast<double>(_chunkLocation.y * CHUNK_HEIGHT);
 	double worldZOffset = static_cast<double>(_chunkLocation.z * CHUNK_LENGTH);
 
+	HeightMap heightMap(CHUNK_WIDTH, CHUNK_LENGTH);
+	int height;
+	if (_chunkLocation.y < -2 || _chunkLocation.y > 2)
+		height = 0;
+	else
+	{
+		heightMap.computeHeight(worldXOffset, worldZOffset, _world->getNoise(), 2);
+	}
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
 		double worldX = static_cast<double>(x + worldXOffset);
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
 			double worldZ = static_cast<double>(z + worldZOffset);
-			int height;
-			if (_chunkLocation.y < -2)
-				height = 0;
-			else if (_chunkLocation.y > 2)
+			if (_chunkLocation.y < -2 || _chunkLocation.y > 2)
 				height = 0;
 			else
 			{
-				double noiseValue = _world->getNoise().queryState({worldX, worldZ});
+				double noiseValue = heightMap.getHeight(x, z);
 				height = static_cast<int>(std::floor(noiseValue * 30));
 			}
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
 				int worldY = (y + worldYOffset);
 				if (worldY == height && worldY >= 0)
-					_blocks[x][y][z] = worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
+				{
+					if ( heightMap.getSlope(x, z) > 0.05f)
+						_blocks[x][y][z] = BlockType::STONE;
+					else
+						_blocks[x][y][z] = worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
+				}
 				else if (worldY > height)
 					_blocks[x][y][z] = (worldY) <= 0 ? BlockType::WATER : BlockType::AIR;
 				else
@@ -89,7 +100,12 @@ void Chunk::build()
 							_blocks[x][y][z] = BlockType::STONE;
 					}
 					else
-						_blocks[x][y][z] = BlockType::DIRT;
+					{
+						if (heightMap.getSlope(x, z) > 0.05f)
+							_blocks[x][y][z] = BlockType::STONE;
+						else
+							_blocks[x][y][z] = BlockType::DIRT;
+					}
 				}
 			}
 		}
