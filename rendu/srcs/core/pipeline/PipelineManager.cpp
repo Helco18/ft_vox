@@ -151,6 +151,7 @@ static void uploadCrosshair(AEngine * engine)
 	infoCrosshair.descriptors.push_back(texture);
 	infoCrosshair.attributeSize = calculateAttributeSize(infoCrosshair.attributes);
 	PipelineManager::uploadPipeline(engine, infoCrosshair, PIPELINE_CROSSHAIR);
+	stbi_image_free(textureInfo.data);
 }
 
 static void uploadBlockOverlay(AEngine * engine)
