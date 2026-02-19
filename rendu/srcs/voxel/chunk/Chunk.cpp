@@ -91,7 +91,7 @@ void Chunk::build()
 						_blocks[x][y][z] = BlockType::SAND;
 					else if (worldY <= height - 2 - (height % 2))
 					{
-						double caveValu = _world->getNoiseCave().queryState({worldX * 15.0, worldZ * 15.0, static_cast<double>(worldY) * 15.0});
+						double caveValu = _world->getNoiseCave().queryState({worldX * 5.0, worldZ * 5.0, static_cast<double>(worldY) * 5.0});
 						double depthFactor = std::clamp(-worldY / 50.0, 0.0, 1.0);
 						caveValu *= depthFactor;
 						if (caveValu > 0.15)
