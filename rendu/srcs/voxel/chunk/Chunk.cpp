@@ -90,15 +90,7 @@ void Chunk::build()
 					if (worldY >= -3 && worldY <= -1)
 						_blocks[x][y][z] = BlockType::SAND;
 					else if (worldY <= height - 2 - (height % 2))
-					{
-						double caveValu = _world->getNoiseCave().queryState({worldX * 5.0, worldZ * 5.0, static_cast<double>(worldY) * 5.0});
-						double depthFactor = std::clamp(-worldY / 50.0, 0.0, 1.0);
-						caveValu *= depthFactor;
-						if (caveValu > 0.15)
-							_blocks[x][y][z] = BlockType::AIR;
-						else
-							_blocks[x][y][z] = BlockType::STONE;
-					}
+						_addCave(worldX, worldY, worldZ, x, y, z, height);
 					else
 					{
 						if (heightMap.getSlope(x, z) > 0.05f)
