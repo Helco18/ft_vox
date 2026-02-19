@@ -128,8 +128,8 @@ void VulkanEngine::_retrieveCommandBuffers()
 {
 	_frameCommandBuffers[_currentFrame].reset();
 	_processPendingUnloads();
-	_processPendingUniforms();
 	_processPendingAssets();
+	_processPendingUniforms();
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	_frameCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 

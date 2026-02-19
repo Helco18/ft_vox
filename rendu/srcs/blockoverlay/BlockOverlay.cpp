@@ -61,7 +61,7 @@ void BlockOverlay::drawAsset(AEngine * engine, const TargetedBlock & targetedBlo
 	{
 		lastTargetedBlock = targetedBlock;
 		_model = glm::translate(glm::mat4(1.0f), targetedBlock.pos + glm::vec3(0.5f));
-		_model = glm::scale(_model, glm::vec3(1.0005f));
+		_model = glm::scale(_model, glm::vec3(1.001f));
 		_model = glm::translate(_model, glm::vec3(-0.5f)); // Merci mbatty
 		lastEngineType = engine->getEngineType();
 	}

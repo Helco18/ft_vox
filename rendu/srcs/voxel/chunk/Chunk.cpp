@@ -126,7 +126,8 @@ void Chunk::uploadAsset(AEngine * engine)
 		return;
 
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
-	engine->uploadAsset(_assetFrame, PipelineManager::getPipeline(PIPELINE_LINES).id);
+	if (!_assetFrame.isUploaded)
+		engine->uploadAsset(_assetFrame, PipelineManager::getPipeline(PIPELINE_LINES).id);
 	setState(UPLOADED);
 	_workerMutex.unlock();
 }
@@ -148,6 +149,18 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 	if (windowManager->isChunkBordersActive())
 		engine->drawAsset(_assetFrame.assetID, PipelineManager::getPipeline(PIPELINE_LINES).id);
 	_workerMutex.unlock();
+}
+
+bool Chunk::unloadMesh(AEngine * engine)
+{
+	if (!_workerMutex.try_lock())
+		return false;
+
+	engine->unloadAsset(_asset.assetID);
+	setState(MESHED);
+	setDirty(true);
+	_workerMutex.unlock();
+	return true;
 }
 
 bool Chunk::unload(AEngine * engine)

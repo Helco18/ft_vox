@@ -80,6 +80,7 @@ class Chunk
 		void									generateMesh();
 		void									uploadAsset(AEngine * engine);
 		void									drawAsset(AEngine * engine, PipelineType pipelineType);
+		bool									unloadMesh(AEngine * engine);
 		bool									unload(AEngine * engine);
 
 		static glm::ivec3						posToChunkPos(const glm::vec3 & pos);
