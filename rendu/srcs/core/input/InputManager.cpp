@@ -55,6 +55,8 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 void InputManager::interceptOneTimeClicks(GLFWwindow * window, int key, int action, int)
 {
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+	if (windowManager->getEngine()->isGuiEnabled())
+		return;
 	Player & player = windowManager->getEnvironment()->getPlayer();
 	TargetedBlock targetedBlock = player.getTargetedBlock();
 

@@ -49,16 +49,17 @@ void WindowManager::load()
 		default: throw WindowException("Unknown Engine type.");
 	}
 
-	_engine->load();
-	if (_vsync)
-		_engine->setVsync(_vsync);
-	PipelineManager::init(_engine);
-
 	glfwSetWindowUserPointer(_window, this);
 	glfwSetFramebufferSizeCallback(_window, WindowManager::framebufferResizeCallback);
 	glfwSetMouseButtonCallback(_window, InputManager::interceptOneTimeClicks);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
 	glfwSetScrollCallback(_window, InputManager::interceptScroll);
+
+	_engine->load();
+	if (_vsync)
+		_engine->setVsync(_vsync);
+	PipelineManager::init(_engine);
+
 
 	if (_isFullscreen)
 	{

@@ -37,58 +37,58 @@ class World
 		World(const std::string & name): _name(name) {}
 		~World();
 
-		void					load();
+		void										load();
 
-		const std::string &		getName() { return _name; }
+		const std::string &							getName() { return _name; }
 
-		Chunk *					getChunkAt(int x, int y, int z);
-		Chunk *					getChunkAt(const glm::vec3 & location);
-		Chunk *					getChunkAtChunkLocation(int x, int y, int z);
-		Chunk *					getChunkAtChunkLocation(const glm::vec3 & location);
-		const SimplexNoise<2> &	getNoise() const { return _noise; }
-		const SimplexNoise<3> &	getNoiseCave() const { return _noiseCave; }
-		bool					isLoaded() const { return _isLoaded.load(); }
-		bool					isLocked() const { return _isLocked.load(); }
+		Chunk *										getChunkAt(int x, int y, int z);
+		Chunk *										getChunkAt(const glm::vec3 & location);
+		Chunk *										getChunkAtChunkLocation(int x, int y, int z);
+		Chunk *										getChunkAtChunkLocation(const glm::vec3 & location);
+		const SimplexNoise<2> &						getNoise() const { return _noise; }
+		const SimplexNoise<3> &						getNoiseCave() const { return _noiseCave; }
+		bool										isLoaded() const { return _isLoaded.load(); }
+		bool										isLocked() const { return _isLocked.load(); }
 
-		void					lockGeneration(bool locked) { _isLocked.store(locked); }
-		void					unloadChunks(AEngine * engine);
-		void					render(AEngine * engine, PipelineType pipelineType, Camera * camera);
-		void					update(AEngine * engine, Camera * camera);
+		void										lockGeneration(bool locked) { _isLocked.store(locked); }
+		void										unloadChunks(AEngine * engine);
+		void										render(AEngine * engine, PipelineType pipelineType, Camera * camera);
+		void										update(AEngine * engine, Camera * camera);
 
-		static int				getRenderDistanceMin();
- 		TargetedBlock			rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
+		static int									getRenderDistanceMin();
+ 		TargetedBlock								rayCast(const glm::vec3 & pos, const glm::vec3 & dir, float maxDistance);
 
-		void					requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
+		void										requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 
 	private:
-		typedef std::unordered_map<glm::ivec3, std::unique_ptr<Chunk>> ChunkMap;
-		typedef std::vector<Chunk *>					ChunkVec;
+		typedef std::unordered_map<glm::ivec3, std::unique_ptr<Chunk>>	ChunkMap;
+		typedef std::vector<Chunk *>									ChunkVec;
 
-		void					_generateChunks();
-		void					_computeRenderDistance(const int renderDistance);
-		bool					_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
-		ChunkVec				_queryChunksInRange();
-		void					_checkForChunkDeletion(AEngine * engine, Camera * camera);
-		bool					_chunkIsFrustum(const Plane * planes, Chunk * chunk);
+		void										_generateChunks();
+		void										_computeRenderDistance(const int renderDistance);
+		bool										_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
+		ChunkVec									_queryChunksInRange();
+		void										_checkForChunkDeletion(AEngine * engine, Camera * camera);
+		bool										_chunkIsFrustum(const Plane * planes, Chunk * chunk);
 
-		TargetedBlock			_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
+		TargetedBlock								_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
 
-		SimplexNoise<2>			_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
-		SimplexNoise<3>			_noiseCave = SimplexNoise<3>(42, 0.005f, 100000.0f);
-		std::string				_name;
-		ChunkMap				_chunkMap;
-		ChunkVec				_visibleChunks;
-		ChunkVec				_nextVisibleChunks;
-		ChunkVec				_uploadedChunks;
-		std::vector<std::pair<Chunk *, glm::vec3>>				_dirtyChunks;
-		std::atomic_bool		_readyToSwap = false;
-		ThreadPool				_chunkPool;
-		std::mutex				_mapMutex;
-		std::mutex				_visibleChunksMutex;
-		glm::vec3				_renderPoint;
-		std::atomic_bool		_isLoaded = false;
-		std::atomic_bool		_isProceduralRequested = false;
-		std::atomic_bool		_isLocked = false;
-		std::condition_variable	_cv;
-		glm::ivec3				_renderDistance = glm::ivec3(0.0);
+		SimplexNoise<2>								_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
+		SimplexNoise<3>								_noiseCave = SimplexNoise<3>(42, 0.005f, 100000.0f);
+		std::string									_name;
+		ChunkMap									_chunkMap;
+		ChunkVec									_visibleChunks;
+		ChunkVec									_nextVisibleChunks;
+		ChunkVec									_uploadedChunks;
+		std::vector<std::pair<Chunk *, glm::vec3>>	_dirtyChunks;
+		std::atomic_bool							_readyToSwap = false;
+		ThreadPool									_chunkPool;
+		std::mutex									_mapMutex;
+		std::mutex									_visibleChunksMutex;
+		glm::vec3									_renderPoint;
+		std::atomic_bool							_isLoaded = false;
+		std::atomic_bool							_isProceduralRequested = false;
+		std::atomic_bool							_isLocked = false;
+		std::condition_variable						_cv;
+		glm::ivec3									_renderDistance = glm::ivec3(0.0);
 };
