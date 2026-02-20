@@ -100,7 +100,7 @@ void Chunk::build()
 					}
 				}
 				if (_blocks[x][y][z] != BlockType::AIR && _blocks[x][y][z] != BlockType::WATER)
-				_addCave(worldX, worldY, worldZ, x, y, z, height);
+					_addCave(worldX, worldY, worldZ, x, y, z, height);
 			}
 		}
 	}
