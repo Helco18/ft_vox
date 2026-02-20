@@ -131,4 +131,5 @@ class Chunk
 		void									_generateFrameMesh();
 		void									_addCave(double worldX, double worldY, double worldZ, int x, int y, int z, int height);
 		std::vector<Chunk *> 					_computeNeighborChunks();
+		glm::vec3								_computeQuadSize(const glm::ivec3 & pos, int face);
 };

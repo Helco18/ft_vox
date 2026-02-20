@@ -174,13 +174,26 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 	return _blocks[x][y][z];
 }
 
+glm::vec3 Chunk::_computeQuadSize(const glm::ivec3 & pos, int face)
+{
+	glm::vec3 state(0.0f);
+
+	if (_blocks[pos.x][pos.y][pos.z] != BlockType::WATER)
+		return state;
+	else if (face == TOP)
+		return glm::vec3(0.0f, 0.0f, 0.2f);
+	else if (face != BOTTOM && _getNeighborBlock(pos, glm::vec3(0.0, 1.0, 0.0)) != BlockType::WATER)
+		return glm::vec3(0.0f, 0.2f, 0.0f);
+	else
+		return state;
+}
+
 void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int countBlockHeight, int face, int axis, int sliceIndex)
 {
+	glm::vec3 state = _computeQuadSize(pos, face);
 	ChunkAsset quad;
-	if (_blocks[pos.x][pos.y][pos.z] == BlockType::WATER && face == TOP)
-		quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.2f, face);
-	else
-		quad = _generateQuadMesh(countBlockWidth, countBlockHeight, 0.0f, face);
+	quad = _generateQuadMesh(countBlockWidth - state.x, countBlockHeight - state.y, state.z, face);
+
 	uint32_t verticesAddedO = _chunkOpaqueAsset[axis][sliceIndex].vertices.size();
 	uint32_t verticesAddedT = _chunkTransparencyAsset[axis][sliceIndex].vertices.size();
 	for (ChunkVertex & vertex : quad.vertices)
