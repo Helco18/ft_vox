@@ -4,7 +4,7 @@
 
 void Chunk::_addCave(double worldX, double worldY, double worldZ, int x, int y, int z, int height)
 {
-    double depthFactor = std::clamp(-worldY / 50.0, 0.0, 1.0);
+    double depthFactor = std::clamp((-worldY +20) / 50.0, 0.1, 1.0);
     // --- CAVE GENERATION --- : spaghetti 2
     double scaleX = 3.0;
     double scaleY = 5.0;
@@ -17,8 +17,6 @@ void Chunk::_addCave(double worldX, double worldY, double worldZ, int x, int y, 
     SimplexNoise<3> noise = _world->getNoiseCave();
 
     double caveValue = noise.queryState({px, py, pz});
-
-    caveValue *= depthFactor;
 
     double target = 0.0;     // millieu de la bande
     double epsilon = 0.032;    // largeur de la bande
@@ -37,13 +35,9 @@ void Chunk::_addCave(double worldX, double worldY, double worldZ, int x, int y, 
         double gy = ny1 - caveValue;
         double gz = nz1 - caveValue;
         double gradientMagnitude = sqrt(gx * gx + gy * gy + gz * gz);
-        if (gradientMagnitude < gradientThreshold)
+        if (gradientMagnitude / depthFactor < gradientThreshold)
             _blocks[x][y][z] = BlockType::AIR;
-        else
-            _blocks[x][y][z] = BlockType::STONE;
     }
-    else
-        _blocks[x][y][z] = BlockType::STONE;
     // --- CAVE GENERATION --- : holl
     if (worldY < height - 60)
     {

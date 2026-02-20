@@ -90,7 +90,7 @@ void Chunk::build()
 					if (worldY >= -3 && worldY <= -1)
 						_blocks[x][y][z] = BlockType::SAND;
 					else if (worldY <= height - 2 - (height % 2))
-						_addCave(worldX, worldY, worldZ, x, y, z, height);
+						_blocks[x][y][z] = BlockType::STONE;
 					else
 					{
 						if (heightMap.getSlope(x, z) > 0.05f)
@@ -99,6 +99,8 @@ void Chunk::build()
 							_blocks[x][y][z] = BlockType::DIRT;
 					}
 				}
+				if (_blocks[x][y][z] != BlockType::AIR && _blocks[x][y][z] != BlockType::WATER)
+					_addCave(worldX, worldY, worldZ, x, y, z, height);
 			}
 		}
 	}
