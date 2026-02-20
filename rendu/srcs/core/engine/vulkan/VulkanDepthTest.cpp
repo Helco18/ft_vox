@@ -27,7 +27,7 @@ vk::Format VulkanEngine::_findDepthFormat()
 void VulkanEngine::_transitionDepthImage()
 {
 	vk::CommandBufferAllocateInfo allocInfo;
-    allocInfo.commandPool = _commandPool;
+    allocInfo.commandPool = _graphicsCommandPool;
     allocInfo.level = vk::CommandBufferLevel::ePrimary;
     allocInfo.commandBufferCount = 1;
 

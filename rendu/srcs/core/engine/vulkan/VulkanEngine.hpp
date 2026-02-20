@@ -84,6 +84,7 @@ struct QueueIndices
 {
 	uint32_t	graphicsIndex;
 	uint32_t	presentIndex;
+	uint32_t	transferIndex;
 };
 
 struct TransitionImageViewLayoutInfo
@@ -200,7 +201,8 @@ class VulkanEngine : public AEngine
 		// Physical/Logical device
 		vk::raii::PhysicalDevice			_physicalDevice = nullptr;
 		vk::raii::Device					_device = nullptr;
-		vk::raii::Queue						_queue = nullptr;
+		vk::raii::Queue						_graphicsQueue = nullptr;
+		vk::raii::Queue						_transferQueue = nullptr;
 		QueueIndices						_queueIndices;
 
 		// Swapchain & Images
@@ -218,8 +220,10 @@ class VulkanEngine : public AEngine
 		vk::raii::ImageView					_msaaImageView = nullptr;
 
 		// Commands & Descriptor
-		vk::raii::CommandPool				_commandPool = nullptr;
+		vk::raii::CommandPool				_graphicsCommandPool = nullptr;
+		vk::raii::CommandPool				_transferCommandPool = nullptr;
 		CommandBuffers						_frameCommandBuffers;
+		CommandBuffers						_transferCommandBuffers;
 
 		// Sync primitives
 		Semaphores							_presentCompleteSemaphores;
@@ -269,13 +273,13 @@ class VulkanEngine : public AEngine
 		void								_createMultisamplingImage();
 		void								_createGraphicsPipelines();
 		vk::raii::ShaderModule				_createShaderModule(const std::vector<char> & shaderSrc) const;
-		void								_createCommandPool(vk::CommandPoolCreateFlags flags);
+		vk::raii::CommandPool				_createCommandPool(uint32_t queueIndex, vk::CommandPoolCreateFlags flags);
 		void								_createVertexBuffer(PendingAsset & pendingAsset);
 		void								_createIndexBuffer(PendingAsset & pendingAsset);
 		void								_processPendingAssets();
 		void								_processPendingUniforms();
 		void								_processPendingUnloads();
-		CommandBuffers						_createCommandBuffer(vk::CommandBufferLevel level);
+		CommandBuffers						_createCommandBuffer(vk::raii::CommandPool & commandPool, vk::CommandBufferLevel level);
 		void								_recordCommandBuffer();
 		void								_retrieveCommandBuffers();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

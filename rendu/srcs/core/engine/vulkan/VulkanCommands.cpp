@@ -1,27 +1,25 @@
 #include "VulkanEngine.hpp"
 #include "Logger.hpp"
 
-void VulkanEngine::_createCommandPool(vk::CommandPoolCreateFlags flags)
+vk::raii::CommandPool VulkanEngine::_createCommandPool(uint32_t queueIndex, vk::CommandPoolCreateFlags flags)
 {
 	// La command pool va stocker nos command buffers
 	vk::CommandPoolCreateInfo commandPoolInfo;
 	// On veut record nos commandes à chaque frame donc on reset la pool et re-record avec ce flag
 	// L'autre flag est pour les commandes à courtes durée de vie (Transient)
 	commandPoolInfo.flags = flags;
-	commandPoolInfo.queueFamilyIndex = _queueIndices.graphicsIndex;
+	commandPoolInfo.queueFamilyIndex = queueIndex;
 
-	_commandPool = vk::raii::CommandPool(_device, commandPoolInfo);
-
-	Logger::log(ENGINE_VULKAN, INFO, "Created Command Pool.");
+	return vk::raii::CommandPool(_device, commandPoolInfo);
 }
 
-VulkanEngine::CommandBuffers VulkanEngine::_createCommandBuffer(vk::CommandBufferLevel level)
+VulkanEngine::CommandBuffers VulkanEngine::_createCommandBuffer(vk::raii::CommandPool & commandPool, vk::CommandBufferLevel level)
 {
 	CommandBuffers commandBuffers;
 
 	// Les command buffers sont des instructions que l'on va donner au GPU, comme celle de draw.
 	vk::CommandBufferAllocateInfo commandBufferInfo;
-	commandBufferInfo.commandPool = _commandPool;
+	commandBufferInfo.commandPool = commandPool;
 	// Primaire : Peut être submit à la queue pour être exécutée
 	// Secondaire : Ne peut pas être submit directement et doit être appelée par une primaire
 	commandBufferInfo.level = level;
@@ -171,7 +169,7 @@ void VulkanEngine::_retrieveCommandBuffers()
 vk::raii::CommandBuffer VulkanEngine::_beginSingleTimeCommands()
 {
 	vk::CommandBufferAllocateInfo allocInfo;
-	allocInfo.commandPool = _commandPool;
+	allocInfo.commandPool = _graphicsCommandPool;
 	allocInfo.level = vk::CommandBufferLevel::ePrimary;
 	allocInfo.commandBufferCount = 1;
 
@@ -191,6 +189,6 @@ void VulkanEngine::_endSingleTimeCommands(vk::raii::CommandBuffer & commandBuffe
 	vk::SubmitInfo submitInfo;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &*commandBuffer;
-	_queue.submit(submitInfo);
-	_queue.waitIdle();
+	_graphicsQueue.submit(submitInfo);
+	_graphicsQueue.waitIdle();
 }

@@ -47,9 +47,11 @@ void VulkanEngine::load()
 	// On crée un *command pool* avec les flags :
 	// - "reset" pour avoir la possibilité de reset chaque buffer individuellement (sinon on ne pourrait que reset la pool entière)
 	// - "transient" pour optimiser les commandes qui vont etre fréquemment reset
-	_createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
+	_graphicsCommandPool = _createCommandPool(_queueIndices.graphicsIndex, vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
+	_transferCommandPool = _createCommandPool(_queueIndices.transferIndex, vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
 
-	_frameCommandBuffers = _createCommandBuffer(vk::CommandBufferLevel::ePrimary);
+	_frameCommandBuffers = _createCommandBuffer(_graphicsCommandPool, vk::CommandBufferLevel::ePrimary);
+	_transferCommandBuffers = _createCommandBuffer(_transferCommandPool, vk::CommandBufferLevel::ePrimary);
 
 	_createMultisamplingImage();
 	// On crée les buffers pour stocker les données géométriques :
@@ -125,7 +127,7 @@ void VulkanEngine::endFrame()
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_imageIndex];
 
-		_queue.submit(submitInfo, *_inFlightFences[_currentFrame]);
+		_graphicsQueue.submit(submitInfo, *_inFlightFences[_currentFrame]);
 
 		vk::PresentInfoKHR presentInfoKHR;
 		presentInfoKHR.waitSemaphoreCount = 1;
@@ -134,7 +136,7 @@ void VulkanEngine::endFrame()
 		presentInfoKHR.pSwapchains = &*_swapChain;
 		presentInfoKHR.pImageIndices = &_imageIndex;
 
-		vk::Result presentResult = _queue.presentKHR(presentInfoKHR);
+		vk::Result presentResult = _graphicsQueue.presentKHR(presentInfoKHR);
 		if (presentResult != vk::Result::eSuccess)
 		{
 			if (presentResult == vk::Result::eSuboptimalKHR)

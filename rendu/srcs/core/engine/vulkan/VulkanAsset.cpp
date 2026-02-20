@@ -42,7 +42,9 @@ void VulkanEngine::_processPendingAssets()
 {
 	if (_pendingAssets.empty())
 		return;
-	vk::raii::CommandBuffer commandBuffer = _beginSingleTimeCommands();
+	_transferCommandBuffers[_currentFrame].reset();
+	vk::CommandBufferBeginInfo commandBufferBeginInfo;
+	_transferCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
@@ -58,15 +60,20 @@ void VulkanEngine::_processPendingAssets()
 				Logger::log(ENGINE_VULKAN, FATAL, e.what());
 			}
 		}
-		commandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
+		_transferCommandBuffers[_currentFrame].copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
 			vk::BufferCopy(0, 0, asset->vertices.size));
 		if (!asset->indices.empty())
 		{
-			commandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
+			_transferCommandBuffers[_currentFrame].copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
 				vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
 		}
 	}
-	_endSingleTimeCommands(commandBuffer);
+	_transferCommandBuffers[_currentFrame].end();
+	vk::SubmitInfo submitInfo;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &*_transferCommandBuffers[_currentFrame];
+	_transferQueue.submit(submitInfo);
+	_transferQueue.waitIdle();
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;

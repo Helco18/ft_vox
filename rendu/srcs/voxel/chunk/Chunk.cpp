@@ -161,6 +161,8 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 
 bool Chunk::unloadMesh(AEngine * engine)
 {
+	if (!_asset.isUploaded)
+		return false;
 	if (!_workerMutex.try_lock())
 		return false;
 
@@ -173,6 +175,8 @@ bool Chunk::unloadMesh(AEngine * engine)
 
 bool Chunk::unload(AEngine * engine)
 {
+	if (!_asset.isUploaded || !_assetFrame.isUploaded)
+		return false;
 	if (!_workerMutex.try_lock())
 		return false;
 

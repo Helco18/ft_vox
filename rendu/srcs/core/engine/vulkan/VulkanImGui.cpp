@@ -22,7 +22,7 @@ void VulkanEngine::_initImGui()
 	descriptorPoolInfo.pPoolSizes = poolSizes.data();
 
 	_imGuiPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
-	_imGuiCommandBuffers = _createCommandBuffer(vk::CommandBufferLevel::eSecondary);
+	_imGuiCommandBuffers = _createCommandBuffer(_graphicsCommandPool, vk::CommandBufferLevel::eSecondary);
 
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -40,7 +40,7 @@ void VulkanEngine::_initImGui()
 	initInfo.PhysicalDevice = *_physicalDevice;
 	initInfo.Device = *_device;
 	initInfo.QueueFamily = _queueIndices.graphicsIndex;
-	initInfo.Queue = *_queue;
+	initInfo.Queue = *_graphicsQueue;
 	initInfo.DescriptorPool = *_imGuiPool;
 	initInfo.MinImageCount = 2;
 	initInfo.ImageCount = _swapChainImages.size();
