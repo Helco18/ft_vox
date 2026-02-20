@@ -1,6 +1,6 @@
 #include "HeightMap.hpp"
 
-inline int HeightMap::_index(int x, int z) const
+int HeightMap::_index(int x, int z) const
 {
 	return x + z * _sizeX;
 }
