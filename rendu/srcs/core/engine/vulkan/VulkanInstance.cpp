@@ -149,10 +149,9 @@ QueueIndices VulkanEngine::_findQueueFamilies() const
 	QueueIndices queueIndices;
 	// Trouve l'index de la première queue family
 	const std::vector<vk::QueueFamilyProperties> queueFamilyProperties = _physicalDevice.getQueueFamilyProperties();
-	uint32_t i = 0;
 
 	// Trouve l'index de la queue family properties qui possède les graphics
-	while (i < queueFamilyProperties.size())
+	for (uint32_t i = 0; i < queueFamilyProperties.size(); ++i)
 	{
 		if (queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eGraphics)
 		{
@@ -170,10 +169,14 @@ QueueIndices VulkanEngine::_findQueueFamilies() const
 			queueIndices.transferIndex = i;
 			queueFamilyFound.second = true;
 		}
-		++i;
 	}
 	if (queueFamilyFound.first && queueFamilyFound.second)
 		return queueIndices;
+	else if (queueFamilyFound.first && !queueFamilyFound.second)
+	{
+		queueIndices.transferIndex = queueIndices.graphicsIndex;
+		return queueIndices;
+	}
 	throw VulkanException("No queue family supporting graphics and present found.");
 }
 
