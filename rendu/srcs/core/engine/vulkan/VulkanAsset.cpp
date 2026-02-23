@@ -25,7 +25,7 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		return;
 	AssetData & assetData = _assetDataCache[assetID];
 	Asset * asset = assetData.asset;
-	if (!asset || !asset->vertices.data)
+	if (!asset || !asset->isUploaded || !asset->vertices.data)
 	{
 		Logger::log(ENGINE_VULKAN, DEBUG, "POUET POUET :)))))))))))))))");
 		return;
@@ -96,8 +96,8 @@ void VulkanEngine::_processPendingUnloads()
 {
 	if (_pendingUnloads.empty())
 		return;
-	_graphicsQueue.waitIdle();
-	for (AssetID assetID : _pendingUnloads)
+	for (AssetID assetID : _nextPendingUnloads)
 		_assetDataCache.erase(assetID);
-	_pendingUnloads.clear();
+	_nextPendingUnloads.clear();
+	_nextPendingUnloads = _pendingUnloads;
 }
