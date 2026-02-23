@@ -222,7 +222,7 @@ class VulkanEngine : public AEngine
 		// Commands & Descriptor
 		vk::raii::CommandPool				_graphicsCommandPool = nullptr;
 		vk::raii::CommandPool				_transferCommandPool = nullptr;
-		CommandBuffers						_frameCommandBuffers;
+		CommandBuffers						_graphicsCommandBuffers;
 		CommandBuffers						_transferCommandBuffers;
 
 		// Sync primitives
@@ -251,7 +251,6 @@ class VulkanEngine : public AEngine
 		std::vector<PendingUniform>			_pendingUniforms;
 		std::vector<PendingAsset>			_pendingAssets;
 		std::vector<AssetID>				_pendingUnloads;
-		std::vector<AssetID>				_nextPendingUnloads;
 
 		// Threads
 		ThreadPool							_threadPool;

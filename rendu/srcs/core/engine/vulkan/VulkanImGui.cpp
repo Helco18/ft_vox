@@ -102,7 +102,7 @@ void VulkanEngine::_renderImGui()
 	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commands);
 	commands.endRendering();
 	commands.end();
-	_frameCommandBuffers[_currentFrame].executeCommands(commands);
+	_graphicsCommandBuffers[_currentFrame].executeCommands(commands);
 	_imGuiThisFrame = false;
 }
 

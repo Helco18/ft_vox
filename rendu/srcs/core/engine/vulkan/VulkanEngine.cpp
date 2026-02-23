@@ -50,7 +50,7 @@ void VulkanEngine::load()
 	_graphicsCommandPool = _createCommandPool(_queueIndices.graphicsIndex, vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
 	_transferCommandPool = _createCommandPool(_queueIndices.transferIndex, vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
 
-	_frameCommandBuffers = _createCommandBuffer(_graphicsCommandPool, vk::CommandBufferLevel::ePrimary);
+	_graphicsCommandBuffers = _createCommandBuffer(_graphicsCommandPool, vk::CommandBufferLevel::ePrimary);
 	_transferCommandBuffers = _createCommandBuffer(_transferCommandPool, vk::CommandBufferLevel::ePrimary);
 
 	_createMultisamplingImage();
@@ -123,7 +123,7 @@ void VulkanEngine::endFrame()
 		submitInfo.pWaitSemaphores = &*_presentCompleteSemaphores[_currentFrame];
 		submitInfo.pWaitDstStageMask = &waitDstStageMask;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &*_frameCommandBuffers[_currentFrame];
+		submitInfo.pCommandBuffers = &*_graphicsCommandBuffers[_currentFrame];
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &*_renderFinishedSemaphores[_imageIndex];
 

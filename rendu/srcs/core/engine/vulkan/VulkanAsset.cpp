@@ -92,7 +92,7 @@ void VulkanEngine::_processPendingUnloads()
 {
 	if (_pendingUnloads.empty())
 		return;
-	for (AssetID assetID : _nextPendingUnloads)
+	for (AssetID assetID : _pendingUnloads)
 		_assetDataCache.erase(assetID);
-	_nextPendingUnloads = _pendingUnloads;
+	_pendingUnloads.clear();
 }

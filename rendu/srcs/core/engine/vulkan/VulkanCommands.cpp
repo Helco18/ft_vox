@@ -117,19 +117,19 @@ void VulkanEngine::_recordCommandBuffer()
 		}
 		commands.endRendering();
 		commands.end();
-		_frameCommandBuffers[_currentFrame].executeCommands(commands);
+		_graphicsCommandBuffers[_currentFrame].executeCommands(commands);
 	}
 	_renderImGui();
 }
 
 void VulkanEngine::_retrieveCommandBuffers()
 {
-	_frameCommandBuffers[_currentFrame].reset();
+	_graphicsCommandBuffers[_currentFrame].reset();
 	_processPendingUnloads();
 	_processPendingAssets();
 	_processPendingUniforms();
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
-	_frameCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);
+	_graphicsCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);
 
 	TransitionImageViewLayoutInfo transitionImageViewInfo;
 	transitionImageViewInfo.imageIndex = _imageIndex;
@@ -163,7 +163,7 @@ void VulkanEngine::_retrieveCommandBuffers()
 	presentSrcInfo.dstStageMask = vk::PipelineStageFlagBits2::eBottomOfPipe;
 
 	_transitionImageViewLayout(presentSrcInfo);
-	_frameCommandBuffers[_currentFrame].end();
+	_graphicsCommandBuffers[_currentFrame].end();
 }
 
 vk::raii::CommandBuffer VulkanEngine::_beginSingleTimeCommands()

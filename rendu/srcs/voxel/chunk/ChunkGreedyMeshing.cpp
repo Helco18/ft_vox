@@ -463,6 +463,12 @@ void Chunk::_buildAsset()
 
 void Chunk::updateMesh(glm::vec3 pos)
 {
+	if (_chunkFinalAsset.vertices.empty())
+	{
+		_generateGreedyMesh();
+		setState(MESHED);
+		return;
+	}
 	pos = posToChunkPos(pos);
 	for (int axis = 0; axis < 3; ++axis)
 	{

@@ -95,5 +95,5 @@ void VulkanEngine::_transitionImageViewLayout(TransitionImageViewLayoutInfo info
 	dependencyInfo.imageMemoryBarrierCount = 1;
 	dependencyInfo.pImageMemoryBarriers = &barrier;
 
-	_frameCommandBuffers[_currentFrame].pipelineBarrier2(dependencyInfo);
+	_graphicsCommandBuffers[_currentFrame].pipelineBarrier2(dependencyInfo);
 }

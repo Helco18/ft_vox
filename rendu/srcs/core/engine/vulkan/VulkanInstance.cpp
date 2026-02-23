@@ -269,7 +269,7 @@ void VulkanEngine::_createLogicalDevice()
 	_device = vk::raii::Device(_physicalDevice, deviceCreateInfo);
 
 	_graphicsQueue = vk::raii::Queue(_device, _queueIndices.graphicsIndex, 0);
-	_transferQueue = vk::raii::Queue(_device, _queueIndices.transferIndex, 0);
+	_transferQueue = vk::raii::Queue(_device, _queueIndices.transferIndex, _queueIndices.graphicsIndex == _queueIndices.transferIndex ? 1 : 0);
 
 	Logger::log(ENGINE_VULKAN, INFO, "Created Logical Device.");
 }
