@@ -57,9 +57,7 @@ void Chunk::build()
 	if (_chunkLocation.y < -2 || _chunkLocation.y > 2)
 		height = 0;
 	else
-	{
 		heightMap.computeHeight(worldXOffset, worldZOffset, _world->getNoise(), 2);
-	}
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
 		double worldX = static_cast<double>(x + worldXOffset);
@@ -78,7 +76,7 @@ void Chunk::build()
 				int worldY = (y + worldYOffset);
 				if (worldY == height && worldY >= 0)
 				{
-					if ( heightMap.getSlope(x, z) > 0.05f)
+					if (heightMap.getSlope(x, z) > 0.05f)
 						_blocks[x][y][z] = BlockType::STONE;
 					else
 						_blocks[x][y][z] = worldY <= 2 ? BlockType::SAND : BlockType::GRASS;

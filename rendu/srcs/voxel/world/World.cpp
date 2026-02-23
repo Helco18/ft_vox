@@ -73,8 +73,6 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		_visibleChunks.erase(it, _visibleChunks.end());
 		_readyToSwap.store(false);
 	}
-	int i = 0;
-	const Plane * planes = camera->getPlanes();
 	for (std::pair<Chunk *, glm::vec3> chunkPair : _dirtyChunks)
 	{
 		Chunk * chunk = chunkPair.first;
@@ -87,9 +85,14 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 			if (state == UPLOADED)
 				chunk->unloadMesh(engine);
 			chunk->updateMesh(pos);
+			Logger::log(VOXEL, INFO, "state :" + toString(chunk->getState()));
+			chunk->uploadAsset(engine);
+			Logger::log(VOXEL, INFO, "state :" + toString(chunk->getState()));
 		}
 	}
 	_dirtyChunks.clear();
+	int i = 0;
+	const Plane * planes = camera->getPlanes();
 	if (!_isLocked.load())
 	{
 		_uploadedChunks.clear();
