@@ -12,6 +12,7 @@ struct ProgramParams
 	bool		ignoreY = false;
 	uint8_t		fov = 80;
 	bool		vsync = false;
+	uint32_t	seed = 42;
 };
 
 class Environment

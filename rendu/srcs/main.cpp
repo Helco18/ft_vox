@@ -16,7 +16,7 @@ static ProgramParams parseArgs(int ac, char ** av)
 		{
 			if (str.empty())
 				throw GeneralException("Specify a value for parameter of type '" + toString(paramMode) + "'.");
-			uint16_t value = std::atoi(str.c_str());
+			uint32_t value = std::atol(str.c_str());
 			switch (paramMode)
 			{
 				case 'r': {
@@ -28,6 +28,11 @@ static ProgramParams parseArgs(int ac, char ** av)
 					if (strSize > 3 || value > 180 || value == 0 || !std::all_of(str.begin(), str.end(), [](const char c) { return std::isdigit(c); }))
 						throw GeneralException("FOV of '" + str + "' is invalid. It must only contain numbers and be between 1 and 180.");
 					params.fov = value;
+				} break;
+				case 's': {
+					if (!std::all_of(str.begin(), str.end(), [](const char c) { return std::isdigit(c); }))
+						throw GeneralException("Seed of '" + str + "' is invalid. It must only contain numbers.");
+					params.seed = value;
 				} break;
 			}
 			paramMode = 0;
@@ -44,6 +49,8 @@ static ProgramParams parseArgs(int ac, char ** av)
 					Profiler::enable();
 				else if (str[i] == 'r')
 					paramMode = 'r';
+				else if (str[i] == 's')
+					paramMode = 's';
 				else if (!strcmp(&str[i], "fov"))
 				{
 					paramMode = 'f';

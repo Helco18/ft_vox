@@ -44,7 +44,7 @@ void Environment::init(ProgramParams & programParams)
 
 	BlockData::init();
 
-	WorldManager::createWorld(WORLD_NAME, 42);
+	WorldManager::createWorld(WORLD_NAME, programParams.seed);
 	WorldManager::loadWorld(WORLD_NAME);
 	_player.setWorld(WorldManager::getWorld(WORLD_NAME));
 
