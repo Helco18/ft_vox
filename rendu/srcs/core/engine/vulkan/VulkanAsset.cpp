@@ -11,7 +11,11 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	PendingAsset pendingAsset;
 	pendingAsset.pipelineID = pipelineID;
 	pendingAsset.asset = &asset;
+	AssetData assetData;
+	asset.isUploaded = true;
+	assetData.asset = &asset;
 	_pendingAssets.emplace_back(std::move(pendingAsset));
+	_assetDataCache[assetID] = std::move(assetData);
 	return assetID;
 }
 
@@ -21,8 +25,11 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 		return;
 	AssetData & assetData = _assetDataCache[assetID];
 	Asset * asset = assetData.asset;
-	if (!asset || !asset->isUploaded || !asset->vertices.data)
+	if (!asset || !asset->vertices.data)
+	{
+		Logger::log(ENGINE_VULKAN, DEBUG, "POUET POUET :)))))))))))))))");
 		return;
+	}
 	_drawableAssets[pipelineID].push_back(asset);
 }
 
@@ -42,9 +49,8 @@ void VulkanEngine::_processPendingAssets()
 {
 	if (_pendingAssets.empty())
 		return;
-	_transferCommandBuffers[_currentFrame].reset();
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
-	_transferCommandBuffers[_currentFrame].begin(commandBufferBeginInfo);
+	_transferCommandBuffer.begin(commandBufferBeginInfo);
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
@@ -60,30 +66,28 @@ void VulkanEngine::_processPendingAssets()
 				Logger::log(ENGINE_VULKAN, FATAL, e.what());
 			}
 		}
-		_transferCommandBuffers[_currentFrame].copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
+		_transferCommandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
 			vk::BufferCopy(0, 0, asset->vertices.size));
 		if (!asset->indices.empty())
 		{
-			_transferCommandBuffers[_currentFrame].copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
+			_transferCommandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
 				vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
 		}
 	}
-	_transferCommandBuffers[_currentFrame].end();
+	_transferCommandBuffer.end();
 	vk::SubmitInfo submitInfo;
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &*_transferCommandBuffers[_currentFrame];
+	submitInfo.pCommandBuffers = &*_transferCommandBuffer;
 	_transferQueue.submit(submitInfo);
 	_transferQueue.waitIdle();
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
-		AssetData assetData;
+		AssetData & assetData = _assetDataCache[asset->assetID];
 		assetData.pipelineID = pendingAsset.pipelineID;
 		assetData.asset = asset;
 		assetData.vbo = std::move(pendingAsset.vertexData);
 		assetData.ibo = std::move(pendingAsset.indexData);
-		asset->isUploaded = true;
-		_assetDataCache.try_emplace(asset->assetID, std::move(assetData));
 	}
 	_pendingAssets.clear();
 }
@@ -92,6 +96,7 @@ void VulkanEngine::_processPendingUnloads()
 {
 	if (_pendingUnloads.empty())
 		return;
+	_graphicsQueue.waitIdle();
 	for (AssetID assetID : _pendingUnloads)
 		_assetDataCache.erase(assetID);
 	_pendingUnloads.clear();

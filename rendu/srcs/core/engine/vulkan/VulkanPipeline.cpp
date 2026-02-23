@@ -171,7 +171,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 		pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 	pipelineData.layout = vk::raii::PipelineLayout(_device, pipelineLayoutInfo);
-	pipelineData.commandBuffers = _createCommandBuffer(_graphicsCommandPool, vk::CommandBufferLevel::eSecondary);
+	pipelineData.commandBuffers = _createCommandBuffers(_graphicsCommandPool, vk::CommandBufferLevel::eSecondary, MAX_FRAMES_IN_FLIGHT);
 
 	vk::PipelineRenderingCreateInfo pipelineRenderingInfo;
 	pipelineRenderingInfo.colorAttachmentCount = 1;

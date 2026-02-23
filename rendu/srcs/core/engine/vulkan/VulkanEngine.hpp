@@ -223,7 +223,7 @@ class VulkanEngine : public AEngine
 		vk::raii::CommandPool				_graphicsCommandPool = nullptr;
 		vk::raii::CommandPool				_transferCommandPool = nullptr;
 		CommandBuffers						_graphicsCommandBuffers;
-		CommandBuffers						_transferCommandBuffers;
+		vk::raii::CommandBuffer				_transferCommandBuffer = nullptr;
 
 		// Sync primitives
 		Semaphores							_presentCompleteSemaphores;
@@ -278,7 +278,7 @@ class VulkanEngine : public AEngine
 		void								_processPendingAssets();
 		void								_processPendingUniforms();
 		void								_processPendingUnloads();
-		CommandBuffers						_createCommandBuffer(vk::raii::CommandPool & commandPool, vk::CommandBufferLevel level);
+		CommandBuffers						_createCommandBuffers(vk::raii::CommandPool & commandPool, vk::CommandBufferLevel level, uint8_t count);
 		void								_recordCommandBuffer();
 		void								_retrieveCommandBuffers();
 		void								_transitionImageViewLayout(TransitionImageViewLayoutInfo info);

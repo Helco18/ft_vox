@@ -13,7 +13,7 @@ vk::raii::CommandPool VulkanEngine::_createCommandPool(uint32_t queueIndex, vk::
 	return vk::raii::CommandPool(_device, commandPoolInfo);
 }
 
-VulkanEngine::CommandBuffers VulkanEngine::_createCommandBuffer(vk::raii::CommandPool & commandPool, vk::CommandBufferLevel level)
+VulkanEngine::CommandBuffers VulkanEngine::_createCommandBuffers(vk::raii::CommandPool & commandPool, vk::CommandBufferLevel level, uint8_t count)
 {
 	CommandBuffers commandBuffers;
 
@@ -23,7 +23,7 @@ VulkanEngine::CommandBuffers VulkanEngine::_createCommandBuffer(vk::raii::Comman
 	// Primaire : Peut être submit à la queue pour être exécutée
 	// Secondaire : Ne peut pas être submit directement et doit être appelée par une primaire
 	commandBufferInfo.level = level;
-	commandBufferInfo.commandBufferCount = MAX_FRAMES_IN_FLIGHT;
+	commandBufferInfo.commandBufferCount = count;
 
 	commandBuffers = vk::raii::CommandBuffers(_device, commandBufferInfo);
 

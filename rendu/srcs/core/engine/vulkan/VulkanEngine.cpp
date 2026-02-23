@@ -50,8 +50,8 @@ void VulkanEngine::load()
 	_graphicsCommandPool = _createCommandPool(_queueIndices.graphicsIndex, vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
 	_transferCommandPool = _createCommandPool(_queueIndices.transferIndex, vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient);
 
-	_graphicsCommandBuffers = _createCommandBuffer(_graphicsCommandPool, vk::CommandBufferLevel::ePrimary);
-	_transferCommandBuffers = _createCommandBuffer(_transferCommandPool, vk::CommandBufferLevel::ePrimary);
+	_graphicsCommandBuffers = _createCommandBuffers(_graphicsCommandPool, vk::CommandBufferLevel::ePrimary, MAX_FRAMES_IN_FLIGHT);
+	_transferCommandBuffer = std::move(_createCommandBuffers(_transferCommandPool, vk::CommandBufferLevel::ePrimary, 1)[0]);
 
 	_createMultisamplingImage();
 	// On crée les buffers pour stocker les données géométriques :

@@ -85,9 +85,7 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 			if (state == UPLOADED)
 				chunk->unloadMesh(engine);
 			chunk->updateMesh(pos);
-			Logger::log(VOXEL, INFO, "state :" + toString(chunk->getState()));
 			chunk->uploadAsset(engine);
-			Logger::log(VOXEL, INFO, "state :" + toString(chunk->getState()));
 		}
 	}
 	_dirtyChunks.clear();

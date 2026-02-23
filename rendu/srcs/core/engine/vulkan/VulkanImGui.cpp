@@ -22,7 +22,7 @@ void VulkanEngine::_initImGui()
 	descriptorPoolInfo.pPoolSizes = poolSizes.data();
 
 	_imGuiPool = vk::raii::DescriptorPool( _device, descriptorPoolInfo );
-	_imGuiCommandBuffers = _createCommandBuffer(_graphicsCommandPool, vk::CommandBufferLevel::eSecondary);
+	_imGuiCommandBuffers = _createCommandBuffers(_graphicsCommandPool, vk::CommandBufferLevel::eSecondary, MAX_FRAMES_IN_FLIGHT);
 
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
