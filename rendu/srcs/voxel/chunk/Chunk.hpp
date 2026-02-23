@@ -54,6 +54,8 @@ struct ChunkData
 
 class Chunk
 {
+	friend class TerrainGenerator;
+
 	public:
 		Chunk(int x = 0, int y = 0, int z = 0, World * world = nullptr);
 		Chunk(const glm::ivec3 & chunkLocation, World * world = nullptr): Chunk(chunkLocation.x, chunkLocation.y, chunkLocation.z, world) {}
@@ -129,7 +131,6 @@ class Chunk
 		uint8_t									_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
 		glm::ivec3								_sliceToWorld(int axis, int sliceIndex, int u, int v);
 		void									_generateFrameMesh();
-		void									_addCave(double worldX, double worldY, double worldZ, int x, int y, int z, int height);
 		std::vector<Chunk *> 					_computeNeighborChunks();
 		glm::vec3								_computeQuadSize(const glm::ivec3 & pos, int face);
 };

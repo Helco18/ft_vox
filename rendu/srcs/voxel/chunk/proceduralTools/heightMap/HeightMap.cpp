@@ -53,19 +53,16 @@ float HeightMap::getSlope(int x, int z) const
 	return std::sqrt(dx*dx + dz*dz) * 0.5f;
 }
 
-void HeightMap::computeHeight(int worldX, int worldZ, const SimplexNoise<2>& noise, int step)
+void HeightMap::computeHeight(int worldX, int worldZ, const SimplexNoise<2> & noise, int step)
 {
 	for (int z = 0; z < _sizeZ; z += step)
 	{
 		for (int x = 0; x < _sizeX; x += step)
 		{
-			std::array<double, 2> p = {
-				static_cast<double>(worldX + x),
-				static_cast<double>(worldZ + z)
-			};
-
+			std::array<double, 2> p = {static_cast<double>(worldX + x), static_cast<double>(worldZ + z)};
 			_data[_index(x, z)] = noise.queryState(p);
 		}
 	}
+
 	_interpolate(step);
 }

@@ -18,7 +18,7 @@ class SimplexNoise
 	private:
 		std::array<double, N>	_gradient(int hash) const;
 		double					_dot(const std::array<double, N> & a, const std::array<double, N> & b) const;
-		double					_noise(const std::array<double, N> & pos) const;
+		double					_terrainNoise(const std::array<double, N> & pos) const;
 
 		float					_noiseScale;
 		float					_offset;

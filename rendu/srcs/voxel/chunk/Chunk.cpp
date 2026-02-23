@@ -1,10 +1,10 @@
-#include "Chunk.hpp"
 #include "WindowManager.hpp"
 #include "World.hpp"
 #include "Logger.hpp"
 #include "SimplexNoise.hpp"
 #include "Profiler.hpp"
 #include "HeightMap.hpp"
+#include "TerrainGenerator.hpp"
 
 Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(glm::ivec3(x, y, z)), _state(IDLE)
 {
@@ -48,60 +48,9 @@ void Chunk::build()
 	if (!_world->isLoaded())
 			return;
 
-	double worldXOffset = static_cast<double>(_chunkLocation.x * CHUNK_WIDTH);
-	double worldYOffset = static_cast<double>(_chunkLocation.y * CHUNK_HEIGHT);
-	double worldZOffset = static_cast<double>(_chunkLocation.z * CHUNK_LENGTH);
-
+	TerrainGenerator terrainGenerator(_world, _chunkLocation);
 	HeightMap heightMap(CHUNK_WIDTH, CHUNK_LENGTH);
-	int height;
-	if (_chunkLocation.y < -2 || _chunkLocation.y > 2)
-		height = 0;
-	else
-		heightMap.computeHeight(worldXOffset, worldZOffset, _world->getNoise(), 2);
-	for (int x = 0; x < CHUNK_WIDTH; ++x)
-	{
-		double worldX = static_cast<double>(x + worldXOffset);
-		for (int z = 0; z < CHUNK_LENGTH; ++z)
-		{
-			double worldZ = static_cast<double>(z + worldZOffset);
-			if (_chunkLocation.y < -2 || _chunkLocation.y > 2)
-				height = 0;
-			else
-			{
-				double noiseValue = heightMap.getHeight(x, z);
-				height = static_cast<int>(std::floor(noiseValue * 30));
-			}
-			for (int y = 0; y < CHUNK_HEIGHT; ++y)
-			{
-				int worldY = (y + worldYOffset);
-				if (worldY == height && worldY >= 0)
-				{
-					if (heightMap.getSlope(x, z) > 0.05f)
-						_blocks[x][y][z] = BlockType::STONE;
-					else
-						_blocks[x][y][z] = worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
-				}
-				else if (worldY > height)
-					_blocks[x][y][z] = (worldY) <= 0 ? BlockType::WATER : BlockType::AIR;
-				else
-				{
-					if (worldY >= -3 && worldY <= -1)
-						_blocks[x][y][z] = BlockType::SAND;
-					else if (worldY <= height - 2 - (height % 2))
-						_blocks[x][y][z] = BlockType::STONE;
-					else
-					{
-						if (heightMap.getSlope(x, z) > 0.05f)
-							_blocks[x][y][z] = BlockType::STONE;
-						else
-							_blocks[x][y][z] = BlockType::DIRT;
-					}
-				}
-				if (_blocks[x][y][z] != BlockType::AIR && _blocks[x][y][z] != BlockType::WATER)
-					_addCave(worldX, worldY, worldZ, x, y, z, height);
-			}
-		}
-	}
+	terrainGenerator.generateTerrain(this);
 	setState(BUILT);
 	setDirty(true);
 	dirtyCheck({_northChunk, _southChunk, _westChunk, _eastChunk, _topChunk, _bottomChunk});

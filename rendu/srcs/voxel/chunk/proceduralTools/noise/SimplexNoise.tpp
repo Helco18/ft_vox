@@ -57,7 +57,7 @@ double SimplexNoise<N>::queryState(const std::array<double, N> & pos) const
 	{
 		for (uint8_t d = 0; d < N; ++d)
 			scalePos[d] *= frequency;
-		value += _noise(scalePos) * amplitude;
+		value += _terrainNoise(scalePos) * amplitude;
 		amplitude *= _persistance;
 		frequency *= _lacunarity;
 	}
@@ -65,7 +65,7 @@ double SimplexNoise<N>::queryState(const std::array<double, N> & pos) const
 }
 
 template <uint8_t N>
-double SimplexNoise<N>::_noise(const std::array<double, N> & pos) const
+double SimplexNoise<N>::_terrainNoise(const std::array<double, N> & pos) const
 {
 	double value = 0.0;
 
