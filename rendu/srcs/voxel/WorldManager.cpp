@@ -11,9 +11,14 @@ World * WorldManager::getWorld(const std::string & name)
 	return nullptr;
 }
 
-void WorldManager::createWorld(const std::string & name)
+void WorldManager::createWorld(const std::string & name, std::optional<uint32_t> optSeed)
 {
-	_worldMap[name] = new World(name);
+	uint32_t seed;
+	if (!optSeed.has_value())
+		seed = time(NULL);
+	else
+		seed = optSeed.value();
+	_worldMap[name] = new World(name, seed);
 
 	Logger::log(VOXEL, INFO, "Created world " + name + ".");
 }

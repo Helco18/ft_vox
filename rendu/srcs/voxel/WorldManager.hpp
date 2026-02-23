@@ -1,6 +1,7 @@
 #pragma once
 
 #include "World.hpp"
+#include <optional>
 
 class WorldManager
 {
@@ -9,7 +10,7 @@ class WorldManager
 		~WorldManager() = delete;
 
 		static World *	getWorld(const std::string & name);
-		static void		createWorld(const std::string & name);
+		static void		createWorld(const std::string & name, std::optional<uint32_t> optSeed = std::nullopt);
 		static void		loadWorld(const std::string & name);
 		static void		destroy();
 

@@ -34,7 +34,10 @@ class World
 	public:
 		friend class Chunk;
 
-		World(const std::string & name): _name(name) {}
+		World(const std::string & name, uint32_t seed): _seed(seed),
+			_noise(SimplexNoise<2>(seed, 0.005f, 100000.0f)),
+			_noiseCave(SimplexNoise<3>(seed, 0.005f, 100000.0f)),
+			_name(name) {}
 		~World();
 
 		void										load();
@@ -73,8 +76,9 @@ class World
 
 		TargetedBlock								_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
 
-		SimplexNoise<2>								_noise = SimplexNoise<2>(42, 0.005f, 100000.0f);
-		SimplexNoise<3>								_noiseCave = SimplexNoise<3>(42, 0.005f, 100000.0f);
+		uint32_t									_seed;
+		SimplexNoise<2>								_noise;
+		SimplexNoise<3>								_noiseCave;
 		std::string									_name;
 		ChunkMap									_chunkMap;
 		ChunkVec									_visibleChunks;
