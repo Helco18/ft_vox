@@ -48,9 +48,9 @@ void Chunk::build()
 	if (!_world->isLoaded())
 			return;
 
-	TerrainGenerator terrainGenerator(_world, _chunkLocation);
-	HeightMap heightMap(CHUNK_WIDTH, CHUNK_LENGTH);
-	terrainGenerator.generateTerrain(this);
+	TerrainGenerator terrainGenerator(this, _world, _chunkLocation);
+	terrainGenerator.generateTerrain();
+
 	setState(BUILT);
 	setDirty(true);
 	dirtyCheck({_northChunk, _southChunk, _westChunk, _eastChunk, _topChunk, _bottomChunk});
