@@ -36,7 +36,7 @@ TargetedBlock World::_processRay(const glm::vec3 & pos, RayState & state, float 
 	{
 		Chunk * chunk = getChunkAt(block.x, block.y, block.z);
 
-		if (!chunk || chunk->getState() < BUILT)
+		if (!chunk || chunk->isTakenByWorker() || chunk->getState() < BUILT)
 			return p;
 		glm::vec3 chunkpos = chunk->posToChunkPos(block);
 		uint8_t blockType = chunk->getBlock(chunkpos.x, chunkpos.y, chunkpos.z);
