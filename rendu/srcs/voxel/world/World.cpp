@@ -57,8 +57,6 @@ void World::update(AEngine * engine, Camera * camera)
 
 void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 {
-	static std::vector<Chunk *> chunksToUnload;
-
 	if (_readyToSwap)
 	{
 		{
