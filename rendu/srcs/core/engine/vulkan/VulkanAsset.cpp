@@ -11,7 +11,7 @@ AssetID VulkanEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	PendingAsset pendingAsset;
 	pendingAsset.pipelineID = pipelineID;
 	pendingAsset.asset = &asset;
-	AssetData assetData;
+	AssetData assetData {};
 	asset.isUploaded = true;
 	assetData.asset = &asset;
 	_pendingAssets.emplace_back(std::move(pendingAsset));
