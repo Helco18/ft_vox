@@ -10,11 +10,11 @@ class TerrainGenerator
 	public:
 		TerrainGenerator(Chunk * chunk, World * world, const glm::vec3 & chunkLocation);
 		~TerrainGenerator() {};
-		
+
 		void	generateTerrain();
 
 	private:
-		void		_computeTerrainHeight(int x, int z);
+		void		_computeTerrainHeight(int x, int z, int worldX, int worldZ);
 		void		_computeBlock(int x, int y, int z, double worldX, double worldZ);
 		void		_paintSurface(int x, int y, int z, float slope, double worldY);
 		void		_splitSkyFromSea(int x, int y, int z, double worldY);

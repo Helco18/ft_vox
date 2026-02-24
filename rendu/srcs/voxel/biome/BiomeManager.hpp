@@ -6,7 +6,13 @@
 
 enum BiomeType
 {
-	OCEAN
+	OCEAN,
+	PLAINS,
+	DESERT,
+	MESA,
+	ICE_SPIKES,
+	TUNDRA,
+	MOUNTAINS
 };
 
 class BiomeManager
@@ -15,7 +21,7 @@ class BiomeManager
 		BiomeManager() = delete;
 		~BiomeManager() = delete;
 
-		static void				init();
+		static void				init(uint32_t seed);
 		static const ABiome &	getBiome(BiomeType biomeType);
 
 	private:

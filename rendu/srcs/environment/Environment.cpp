@@ -44,7 +44,7 @@ void Environment::init(ProgramParams & programParams)
 	camera->setIgnoreYMovement(programParams.ignoreY);
 
 	BlockData::init();
-	BiomeManager::init();
+	BiomeManager::init(programParams.seed);
 
 	WorldManager::createWorld(WORLD_NAME, programParams.seed);
 	WorldManager::loadWorld(WORLD_NAME);

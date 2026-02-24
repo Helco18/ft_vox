@@ -103,14 +103,11 @@ void TerrainGenerator::_computeBlock(int x, int y, int z, double worldX, double 
 		_addCave(x, y, z, worldX, worldY, worldZ, _height);
 }
 
-void TerrainGenerator::_computeTerrainHeight(int x, int z)
+void TerrainGenerator::_computeTerrainHeight(int x, int z, int worldX, int worldZ)
 {
-	const ABiome & biome = BiomeManager::getBiome(BiomeType::OCEAN);
+	const ABiome & biome = BiomeManager::getBiome(BiomeType::MOUNTAINS);
 	if (biome.isWithinRange(_chunkLocation.y))
-	{
-		double noiseValue = _heightMap.getHeight(x, z);
-		_height = biome.computeBiomeHeight(noiseValue);
-	}
+		_height = biome.computeBiomeHeight(_heightMap, x, z, worldX, worldZ);
 }
 
 void TerrainGenerator::generateTerrain()
@@ -125,7 +122,7 @@ void TerrainGenerator::generateTerrain()
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
 			double worldZ = static_cast<double>(z + _worldZOffset);
-			_computeTerrainHeight(x, z);
+			_computeTerrainHeight(x, z, worldX, worldZ);
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 				_computeBlock(x, y, z, worldX, worldZ);
 		}

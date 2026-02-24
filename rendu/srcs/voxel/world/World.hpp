@@ -78,8 +78,8 @@ class World
 
 		uint32_t									_seed;
 		SimplexNoise<2>								_terrainNoise;
-		SimplexNoise<2>								_temperatureNoise;
-		SimplexNoise<2>								_heightNoise;
+		// SimplexNoise<2>								_temperatureNoise;
+		// SimplexNoise<2>								_heightNoise;
 		SimplexNoise<3>								_noiseCave;
 		std::string									_name;
 		ChunkMap									_chunkMap;
