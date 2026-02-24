@@ -24,7 +24,8 @@ void BiomeManager::init(uint32_t seed)
 
 const ABiome & BiomeManager::getBiome(BiomeType biomeType)
 {
-	if (biomeType >= _biomeAtlas.size())
+	BiomeAtlas::iterator it = _biomeAtlas.find(biomeType);
+	if (it == _biomeAtlas.end())
 		throw VoxelException("Couldn't get biome type: " + toString(biomeType) + ".");
-	return *_biomeAtlas[biomeType];
+	return *it->second;
 }

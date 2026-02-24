@@ -8,6 +8,7 @@ class ABiome
 	public:
 		ABiome(uint32_t seed, int terrainHeightOffset, int y1, int y2) :
 			_seed(seed), _terrainHeightOffset(terrainHeightOffset), _chunkHeightClamp(std::pair<int, int>(y1, y2)) {}
+		virtual ~ABiome() = default;
 
 		inline bool			isWithinRange(int y) const
 		{

@@ -4,6 +4,7 @@
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
 #include "utils.hpp"
+#include <filesystem>
 
 TextureAtlas::TextureMap TextureAtlas::_textureMap;
 TextureAtlas::AtlasData TextureAtlas::_atlasData;
@@ -67,6 +68,19 @@ void TextureAtlas::pushTexture(const std::string & texturePath)
 	_width += texture->width;
 	_textureMap.emplace(texturePath, std::move(texture));
 	Logger::log(TEXTURE, DEBUG, "Loaded texture at: " + texturePath);
+}
+
+void TextureAtlas::pushFolder(const std::string & folderPath)
+{
+	if (!std::filesystem::exists(folderPath))
+	{
+		Logger::log(TEXTURE, ERROR, "Couldn't find folder at: " + folderPath);
+		return;
+	}
+
+	std::filesystem::directory_iterator it(folderPath);	
+	for (const std::filesystem::directory_entry & entry : it)
+		pushTexture(entry.path());
 }
 
 Texture * TextureAtlas::getTexture(const std::string & texturePath)

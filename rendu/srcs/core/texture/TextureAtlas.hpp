@@ -24,6 +24,7 @@ class TextureAtlas
 		~TextureAtlas() = delete;
 	
 		static void				pushTexture(const std::string & texturePath);
+		static void				pushFolder(const std::string & folderPath);
 		static void				createAtlas();
 
 		static Texture *		getTexture(const std::string & texturePath);

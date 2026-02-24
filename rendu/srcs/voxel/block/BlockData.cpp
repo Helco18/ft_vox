@@ -7,7 +7,7 @@ BlockData::BlockDataRegistry BlockData::_dataRegistry;
 void BlockData::init()
 {
 	std::vector<std::string> dirtTextures(6, "resources/assets/textures/dirt.png");
-	std::vector<std::string> grassTextures(6, "resources/assets/textures/dirt_tmp.png");
+	std::vector<std::string> grassTextures(6, "resources/assets/textures/grass_block_side.png");
 	grassTextures[BlockFace::BOTTOM] = "resources/assets/textures/dirt.png";
 	grassTextures[BlockFace::TOP] = "resources/assets/textures/grass_block_top.png";
 	std::vector<std::string> waterTextures(6, "resources/assets/textures/blue_stone.png");

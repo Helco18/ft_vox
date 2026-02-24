@@ -21,15 +21,7 @@ void Environment::init(ProgramParams & programParams)
 	if (!OBJModel::loadModels())
 		throw EnvironmentException("Failed to load models.");
 
-	TextureAtlas::pushTexture("resources/assets/textures/dirt.png");
-	TextureAtlas::pushTexture("resources/assets/textures/dirt_tmp.png");
-	TextureAtlas::pushTexture("resources/assets/textures/grass_block_top.png");
-	TextureAtlas::pushTexture("resources/assets/textures/blue_stone.png");
-	TextureAtlas::pushTexture("resources/assets/textures/sand.png");
-	TextureAtlas::pushTexture("resources/assets/textures/stone.png");
-	TextureAtlas::pushTexture("resources/assets/textures/ice.png");
-	TextureAtlas::pushTexture("resources/assets/textures/snow_2.png");
-	TextureAtlas::pushTexture("resources/assets/textures/sand_stone.png");
+	TextureAtlas::pushFolder("resources/assets/textures");
 	TextureAtlas::createAtlas();
 
 	_windowManager = new WindowManager(programParams.engineType, this, programParams.vsync);

@@ -1,6 +1,6 @@
 # Compilation
 CC					=	g++
-CFLAGS				=	-Wall -Wextra -Werror --std=c++17 -MP -MMD -march=native -O3 -ffast-math -fno-rtti -pthread
+CFLAGS				=	-Wall -Wextra -Werror --std=c++17 -MP -MMD -O3 -ffast-math -fno-rtti -pthread
 # CFLAGS				=	-Wall -Wextra -Werror -g --std=c++17 -MP -MMD -fsanitize=address -ffast-math -fno-rtti -pthread
 LDFLAGS				=	-lvulkan -lGL -ldl
 
