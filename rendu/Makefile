@@ -62,6 +62,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/tools/utils/stb_image.cpp \
 						srcs/tools/utils/utils.cpp \
 						srcs/voxel/WorldManager.cpp \
+						srcs/voxel/biome/BiomeManager.cpp \
 						srcs/voxel/block/BlockData.cpp \
 						srcs/voxel/chunk/proceduralTools/heightMap/HeightMap.cpp \
 						srcs/voxel/chunk/proceduralTools/terrainGenerator/TerrainGenerator.cpp \
@@ -121,11 +122,13 @@ INCLUDES			=	-I libs \
 						-I srcs/tools/profiler \
 						-I srcs/tools/utils \
 						-I srcs/voxel \
+						-I srcs/voxel/biome \
+						-I srcs/voxel/biome/biomeTypes \
 						-I srcs/voxel/block \
+						-I srcs/voxel/chunk \
 						-I srcs/voxel/chunk/proceduralTools/noise \
 						-I srcs/voxel/chunk/proceduralTools/heightMap \
 						-I srcs/voxel/chunk/proceduralTools/terrainGenerator \
-						-I srcs/voxel/chunk \
 						-I srcs/voxel/world
 GLFW				=	$(GLFW_PATH)/libglfw3.a
 

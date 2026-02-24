@@ -7,6 +7,7 @@
 #include "BlockData.hpp"
 #include "Crosshair.hpp"
 #include "BlockOverlay.hpp"
+#include "BiomeManager.hpp"
 
 Environment::~Environment()
 {
@@ -43,6 +44,7 @@ void Environment::init(ProgramParams & programParams)
 	camera->setIgnoreYMovement(programParams.ignoreY);
 
 	BlockData::init();
+	BiomeManager::init();
 
 	WorldManager::createWorld(WORLD_NAME, programParams.seed);
 	WorldManager::loadWorld(WORLD_NAME);

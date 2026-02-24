@@ -1,4 +1,5 @@
 #include "TerrainGenerator.hpp"
+#include "BiomeManager.hpp"
 #include "SimplexNoise.hpp"
 
 TerrainGenerator::TerrainGenerator(Chunk * chunk, World * world, const glm::vec3 & chunkLocation):
@@ -104,10 +105,11 @@ void TerrainGenerator::_computeBlock(int x, int y, int z, double worldX, double 
 
 void TerrainGenerator::_computeTerrainHeight(int x, int z)
 {
-	if (_chunkLocation.y >= -2 && _chunkLocation.y <= 2)
+	const ABiome & biome = BiomeManager::getBiome(BiomeType::OCEAN);
+	if (biome.isWithinRange(_chunkLocation.y))
 	{
 		double noiseValue = _heightMap.getHeight(x, z);
-		_height = static_cast<int>(std::floor(noiseValue * 30));
+		_height = biome.computeBiomeHeight(noiseValue);
 	}
 }
 
