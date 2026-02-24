@@ -22,7 +22,7 @@ uint8_t MountainsBiome::fillWorld(int height, double worldY, float slope) const
 		return BlockType::STONE;
 	else
 	{
-		if (slope > 0.05f)
+		if (slope > 2.0f)
 			return BlockType::STONE;
 		else
 			return BlockType::DIRT;
@@ -36,7 +36,7 @@ uint8_t MountainsBiome::splitSkyFromSea(double worldY) const
 
 uint8_t MountainsBiome::paintSurface(double worldY, float slope) const
 {
-	if (slope > 0.05f)
+	if (slope > 2.0f)
 		return BlockType::STONE;
 	else
 		return worldY <= 2 ? BlockType::SAND : BlockType::GRASS;

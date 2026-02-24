@@ -78,14 +78,14 @@ int TerrainGenerator::_computeTerrainHeight(const ABiome & biome, int x, int z, 
 
 void TerrainGenerator::generateTerrain()
 {
-	if (_chunkLocation.y > -2 && _chunkLocation.y < 2)
+	if (_chunkLocation.y >= -2 && _chunkLocation.y <= 2)
 		_heightMap.computeHeight(_worldXOffset, _worldZOffset, _world->getNoise(), 2);
-	for (int x = 0; x < CHUNK_WIDTH; ++x)
+	for (int x = -1; x < CHUNK_WIDTH + 1; ++x)
 	{
 		double worldX = static_cast<double>(x + _worldXOffset);
-		for (int z = 0; z < CHUNK_LENGTH; ++z)
+		for (int z = -1; z < CHUNK_LENGTH + 1; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::PLAINS);
+			const ABiome & biome = BiomeManager::getBiome(BiomeType::MOUNTAINS);
 			double worldZ = static_cast<double>(z + _worldZOffset);
 			_heightMap.setHeight(x, z, _computeTerrainHeight(biome, x, z, worldX, worldZ));
 		}
@@ -95,7 +95,7 @@ void TerrainGenerator::generateTerrain()
 		double worldX = static_cast<double>(x + _worldXOffset);
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::PLAINS);
+			const ABiome & biome = BiomeManager::getBiome(BiomeType::MOUNTAINS);
 			double worldZ = static_cast<double>(z + _worldZOffset);
 			float slope = _heightMap.getSlope(x, z);
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
