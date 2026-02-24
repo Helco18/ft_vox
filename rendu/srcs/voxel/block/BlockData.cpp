@@ -13,6 +13,9 @@ void BlockData::init()
 	std::vector<std::string> waterTextures(6, "resources/assets/textures/blue_stone.png");
 	std::vector<std::string> sandTextures(6, "resources/assets/textures/sand.png");
 	std::vector<std::string> stoneTextures(6, "resources/assets/textures/stone.png");
+	std::vector<std::string> iceTextures(6, "resources/assets/textures/ice.png");
+	std::vector<std::string> snowTextures(6, "resources/assets/textures/snow_2.png");
+	std::vector<std::string> sandstoneTextures(6, "resources/assets/textures/sand_stone.png");
 	
 	_dataRegistry.emplace(AIR, BlockData("air", false, false, false, {}));
 	_dataRegistry.emplace(DIRT, BlockData("dirt", true, true, false, dirtTextures));
@@ -20,6 +23,9 @@ void BlockData::init()
 	_dataRegistry.emplace(WATER, BlockData("water", true, false, true, waterTextures));
 	_dataRegistry.emplace(SAND, BlockData("sand", true, true, false, sandTextures));
 	_dataRegistry.emplace(STONE, BlockData("stone", true, true, false, stoneTextures));
+	_dataRegistry.emplace(ICE, BlockData("ice", true, true, false, iceTextures));
+	_dataRegistry.emplace(SNOW, BlockData("snow", true, true, false, snowTextures));
+	_dataRegistry.emplace(SANDSTONE, BlockData("sandstone", true, true, false, sandstoneTextures));
 }
 
 BlockData & BlockData::getBlockData(uint8_t type)

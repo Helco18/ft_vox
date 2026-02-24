@@ -9,8 +9,8 @@ int	DesertBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int world
 
 uint8_t DesertBiome::fillWorld(int height, double worldY, float) const
 {
-	if (worldY >= -3 && worldY <= -1)
-		return BlockType::SAND;
+	if (worldY >= -3)
+		return BlockType::SANDSTONE;
 	else if (worldY <= height - 2 - (height % 2))
 		return BlockType::STONE;
 	else

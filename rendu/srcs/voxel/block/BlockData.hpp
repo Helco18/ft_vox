@@ -22,7 +22,10 @@ enum BlockType
 	GRASS,
 	WATER,
 	SAND,
-	STONE
+	STONE,
+	ICE,
+	SNOW,
+	SANDSTONE
 };
 
 class BlockData

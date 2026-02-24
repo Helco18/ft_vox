@@ -27,6 +27,9 @@ void Environment::init(ProgramParams & programParams)
 	TextureAtlas::pushTexture("resources/assets/textures/blue_stone.png");
 	TextureAtlas::pushTexture("resources/assets/textures/sand.png");
 	TextureAtlas::pushTexture("resources/assets/textures/stone.png");
+	TextureAtlas::pushTexture("resources/assets/textures/ice.png");
+	TextureAtlas::pushTexture("resources/assets/textures/snow_2.png");
+	TextureAtlas::pushTexture("resources/assets/textures/sand_stone.png");
 	TextureAtlas::createAtlas();
 
 	_windowManager = new WindowManager(programParams.engineType, this, programParams.vsync);
