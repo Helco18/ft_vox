@@ -15,6 +15,9 @@ class ABiome
 		}
 
 		virtual int			computeBiomeHeight(HeightMap & heightMap, int x, int z, int worldX, int worldZ) const = 0;
+		virtual uint8_t		paintSurface(double worldY, float slope) const = 0;
+		virtual uint8_t		splitSkyFromSea(double worldY) const = 0;
+		virtual uint8_t		fillWorld(int height, double worldY, float slope) const = 0;
 
 	protected:
 		typedef std::pair<int, int>	ChunkHeightClamp;

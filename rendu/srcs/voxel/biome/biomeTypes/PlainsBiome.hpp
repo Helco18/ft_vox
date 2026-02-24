@@ -7,12 +7,12 @@
 class PlainsBiome : public ABiome
 {
 	public:
-		PlainsBiome(uint32_t seed) : ABiome(seed, 8, -1, 1), _biomeNoise(SimplexNoise<2>(seed, 0.01f, 100000.0f)) { _biomeNoise.setFBM(2, 0.5, 2.0); };
+		PlainsBiome(uint32_t seed) : ABiome(seed, 10, -1, 1), _biomeNoise(SimplexNoise<2>(seed, 0.01f, 100000.0f)) { _biomeNoise.setFBM(2, 0.5, 2.0); };
 
-		int	computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const override
-		{
-			return static_cast<int>(std::floor(_biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 5) + _terrainHeightOffset);
-		}
+		int				computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const override;
+		uint8_t			paintSurface(double worldY, float slope) const override;
+		uint8_t			splitSkyFromSea(double worldY) const override;
+		uint8_t			fillWorld(int height, double worldY, float slope) const override;
 
 	private:
 		SimplexNoise<2>	_biomeNoise;

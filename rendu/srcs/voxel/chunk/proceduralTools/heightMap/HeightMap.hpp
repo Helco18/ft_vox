@@ -13,6 +13,7 @@ class HeightMap
 		float				getHeight(int x, int z) const { return _data[_index(x + 2, z + 2)]; }
 
 		void				computeHeight(int worldX, int worldZ, const SimplexNoise<2> & noise, int step);
+		void				setHeight(int x, int z, int value) { _data[_index(x + 2, z + 2)] = value; }
 
 		float				getSlope(int x, int z) const;
 

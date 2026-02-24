@@ -63,6 +63,13 @@ SRCS				=	srcs/main.cpp \
 						srcs/tools/utils/utils.cpp \
 						srcs/voxel/WorldManager.cpp \
 						srcs/voxel/biome/BiomeManager.cpp \
+						srcs/voxel/biome/biomeTypes/DesertBiome.cpp \
+						srcs/voxel/biome/biomeTypes/IceSpikesBiome.cpp \
+						srcs/voxel/biome/biomeTypes/MesaBiome.cpp \
+						srcs/voxel/biome/biomeTypes/MountainsBiome.cpp \
+						srcs/voxel/biome/biomeTypes/OceanBiome.cpp \
+						srcs/voxel/biome/biomeTypes/PlainsBiome.cpp \
+						srcs/voxel/biome/biomeTypes/TundraBiome.cpp \
 						srcs/voxel/block/BlockData.cpp \
 						srcs/voxel/chunk/proceduralTools/heightMap/HeightMap.cpp \
 						srcs/voxel/chunk/proceduralTools/terrainGenerator/TerrainGenerator.cpp \
