@@ -47,7 +47,6 @@ World::ChunkVec World::_queryChunksInRange()
 
 void World::_generateChunks()
 {
-	ChunkVec chunksToGenerate;
 	std::mutex cvMutex;
 
 	while (true)
@@ -139,13 +138,16 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 			|| chunkPos.y * CHUNK_HEIGHT > renderDistanceEast || chunkPos.y * CHUNK_HEIGHT < renderDistanceWest
 			|| chunkPos.z * CHUNK_LENGTH > renderDistanceUp || chunkPos.z * CHUNK_LENGTH < renderDistanceDown)
 		{
-			if (chunk->getState() != UPLOADED || chunk->isTakenByWorker())
+			if (chunk->isTakenByWorker())
 				continue;
-			if (chunk->unload(engine))
+			ChunkState state = chunk->getState();
+			if (state == UPLOADED)
 			{
-				chunksToDelete.push_back(chunkPos);
-				_chunkMap[chunkPos] = nullptr;
+				if (!chunk->unload(engine))
+					continue;
 			}
+			chunksToDelete.push_back(chunkPos);
+			_chunkMap[chunkPos] = nullptr;
 		}
 	}
 	for (const glm::ivec3 & pos : chunksToDelete)
