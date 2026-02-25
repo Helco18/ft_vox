@@ -36,7 +36,9 @@ class World
 
 		World(const std::string & name, uint32_t seed): _seed(seed),
 			_terrainNoise(SimplexNoise<2>(seed, 0.005f, 100000.0f)),
-			_noiseCave(SimplexNoise<3>(seed, 0.005f, 100000.0f)),
+			_temperatureNoise(SimplexNoise<2>(seed, 0.0005f, 100000.0f)),
+			_heightNoise(SimplexNoise<2>(seed, 0.0002f, 100000.0f)),
+			_caveNoise(SimplexNoise<3>(seed, 0.005f, 100000.0f)),
 			_name(name) {}
 		~World();
 
@@ -48,8 +50,10 @@ class World
 		Chunk *										getChunkAt(const glm::vec3 & location);
 		Chunk *										getChunkAtChunkLocation(int x, int y, int z);
 		Chunk *										getChunkAtChunkLocation(const glm::vec3 & location);
-		const SimplexNoise<2> &						getNoise() const { return _terrainNoise; }
-		const SimplexNoise<3> &						getNoiseCave() const { return _noiseCave; }
+		const SimplexNoise<2> &						getTerrainNoise() const { return _terrainNoise; }
+		const SimplexNoise<2> &						getTemperatureNoise() const { return _temperatureNoise; }
+		const SimplexNoise<2> &						getHeightNoise() const { return _heightNoise; }
+		const SimplexNoise<3> &						getNoiseCave() const { return _caveNoise; }
 		bool										isLoaded() const { return _isLoaded.load(); }
 		bool										isLocked() const { return _isLocked.load(); }
 
@@ -78,9 +82,9 @@ class World
 
 		uint32_t									_seed;
 		SimplexNoise<2>								_terrainNoise;
-		// SimplexNoise<2>								_temperatureNoise;
-		// SimplexNoise<2>								_heightNoise;
-		SimplexNoise<3>								_noiseCave;
+		SimplexNoise<2>								_temperatureNoise;
+		SimplexNoise<2>								_heightNoise;
+		SimplexNoise<3>								_caveNoise;
 		std::string									_name;
 		ChunkMap									_chunkMap;
 		ChunkVec									_visibleChunks;

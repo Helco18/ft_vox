@@ -208,7 +208,7 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 		if (!texture)
 			return;
 		if (_blocks[pos.x][pos.y][pos.z] == BlockType::WATER)
-			tmp.alpha = 0.5f;
+			tmp.alpha = 0.75f;
 		else
 			tmp.alpha = 1.0f;
 		tmp.uvMin = texture->uvMin;

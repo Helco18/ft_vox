@@ -7,7 +7,8 @@
 class MountainsBiome : public ABiome
 {
 	public:
-		MountainsBiome(uint32_t seed) : ABiome(seed, 20, -1, 9), _biomeNoise(SimplexNoise<2>(seed, 0.002f, 100000.0f)) { _biomeNoise.setFBM(4, 0.30, 1.8); };
+		MountainsBiome(uint32_t seed, std::pair<float, float> temperatureRange, std::pair<float, float> heightRange)
+			: ABiome(seed, temperatureRange, heightRange, 20, -1, 9), _biomeNoise(SimplexNoise<2>(seed, 0.002f, 100000.0f)) { _biomeNoise.setFBM(4, 0.30, 1.8); };
 
 		double			computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const override;
 		uint8_t			paintSurface(HeightMap & heightMap, int x, int z, int worldX, int worldY, int worldZ, double slope) const override;

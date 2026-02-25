@@ -50,3 +50,12 @@ const std::string getFileAsString(const char * name)
 		throw GeneralException("File " + filename + " is empty.");
 	return (content);
 }
+
+float getDistanceInterval(float min, float max, float value)
+{
+	if (value < min)
+		return min - value;
+	else if (value > max)
+		return value - max;
+	return 0;
+}

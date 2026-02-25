@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ABiome.hpp"
+#include "BiomeManager.hpp"
 #include "HeightMap.hpp"
 #include "World.hpp"
 
@@ -15,7 +16,7 @@ class TerrainGenerator
 		void		generateTerrain();
 
 	private:
-		double		_computeTerrainHeight(const ABiome & biome, int x, int z, int worldX, int worldZ);
+		double		_computeTerrainHeight(int x, int z, int worldX, int worldZ);
 		uint8_t		_computeBlock(const ABiome & biome, int x, int z, int worldX, int worldY, int worldZ,  int height, double slope);
 		void		_addCave(int x, int y, int z, int worldX, int worldY, int worldZ, int height);
 
@@ -23,6 +24,7 @@ class TerrainGenerator
 		World *		_world;
 		glm::vec3	_chunkLocation;
 		HeightMap	_heightMap;
+		HeightMap	_biomeMap;
 		double		_worldXOffset;
 		double		_worldYOffset;
 		double		_worldZOffset;

@@ -10,7 +10,7 @@ void BlockData::init()
 	std::vector<std::string> grassTextures(6, "resources/assets/textures/grass_block_side.png");
 	grassTextures[BlockFace::BOTTOM] = "resources/assets/textures/dirt.png";
 	grassTextures[BlockFace::TOP] = "resources/assets/textures/grass_block_top.png";
-	std::vector<std::string> waterTextures(6, "resources/assets/textures/blue_stone.png");
+	std::vector<std::string> waterTextures(6, "resources/assets/textures/water.png");
 	std::vector<std::string> sandTextures(6, "resources/assets/textures/sand.png");
 	std::vector<std::string> stoneTextures(6, "resources/assets/textures/stone.png");
 	std::vector<std::string> iceTextures(6, "resources/assets/textures/ice.png");

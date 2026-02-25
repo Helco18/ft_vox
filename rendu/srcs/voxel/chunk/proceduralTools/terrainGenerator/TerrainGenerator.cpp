@@ -3,7 +3,7 @@
 #include "SimplexNoise.hpp"
 
 TerrainGenerator::TerrainGenerator(Chunk * chunk, World * world, const glm::vec3 & chunkLocation):
-	_chunk(chunk), _world(world), _chunkLocation(chunkLocation), _heightMap(CHUNK_WIDTH, CHUNK_LENGTH)
+	_chunk(chunk), _world(world), _chunkLocation(chunkLocation), _heightMap(CHUNK_WIDTH, CHUNK_LENGTH), _biomeMap(CHUNK_WIDTH, CHUNK_LENGTH)
 {
 	_worldXOffset = static_cast<double>(_chunkLocation.x * CHUNK_WIDTH);
 	_worldYOffset = static_cast<double>(_chunkLocation.y * CHUNK_HEIGHT);
@@ -69,34 +69,52 @@ uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, int x, int z, int 
 		return biome.fillWorld(worldX, worldZ, height, worldY, slope);
 }
 
-double TerrainGenerator::_computeTerrainHeight(const ABiome & biome, int x, int z, int worldX, int worldZ)
+double TerrainGenerator::_computeTerrainHeight(int x, int z, int worldX, int worldZ)
 {
-	if (biome.isWithinRange(_chunkLocation.y))
-		return biome.computeBiomeHeight(_heightMap, x, z, worldX, worldZ);
-	return 0;
+	// double temperature = 0.0;
+	double temperature = std::clamp((worldX % 3000) + _world->getTemperatureNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}), -1.0, 1.0);
+	std::vector<BiomeDistanceInfo> biomeDistanceInfos = BiomeManager::getBiomeSamples(temperature, (_biomeMap.getHeight(x, z) * 0.4));
+	std::vector<double> biomeHeights;
+
+	for (BiomeDistanceInfo & biomeDistanceInfo : biomeDistanceInfos)
+	{
+		ABiome * biome = biomeDistanceInfo.biome;
+		double biomeHeight = biome->computeBiomeHeight(_heightMap, x, z, worldX, worldZ);
+		while (biomeDistanceInfo.distance < 0.2f)
+		{
+			biomeHeights.push_back(biomeHeight);
+			biomeDistanceInfo.distance += 0.001f;
+		}
+	}
+
+	if (biomeHeights.empty())
+		return 0;
+	return std::accumulate(biomeHeights.begin(), biomeHeights.end(), 0.0f) / biomeHeights.size();
 }
 
 void TerrainGenerator::generateTerrain()
 {
+	_biomeMap.computeHeight(_worldXOffset, _worldZOffset, _world->getHeightNoise(), 2);
 	if (_chunkLocation.y >= -2 && _chunkLocation.y <= 2)
-		_heightMap.computeHeight(_worldXOffset, _worldZOffset, _world->getNoise(), 2);
+		_heightMap.computeHeight(_worldXOffset, _worldZOffset, _world->getTerrainNoise(), 2);
 	for (int x = -1; x < CHUNK_WIDTH + 1; ++x)
 	{
-		double worldX = static_cast<double>(x + _worldXOffset);
+		int worldX = x + _worldXOffset;
 		for (int z = -1; z < CHUNK_LENGTH + 1; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::MOUNTAINS);
-			double worldZ = static_cast<double>(z + _worldZOffset);
-			_heightMap.setHeight(x, z, _computeTerrainHeight(biome, x, z, worldX, worldZ));
+			int worldZ = z + _worldZOffset;
+			_heightMap.setHeight(x, z, _computeTerrainHeight(x, z, worldX, worldZ));
 		}
 	}
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
-		double worldX = static_cast<double>(x + _worldXOffset);
+		int worldX = x + _worldXOffset;
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::MOUNTAINS);
-			double worldZ = static_cast<double>(z + _worldZOffset);
+			int worldZ = z + _worldZOffset;
+			double temperature = std::clamp((worldX % 3000) + _world->getTemperatureNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}), -1.0, 1.0);
+			// double temperature = 0.0;
+			const ABiome & biome = BiomeManager::getBiomeAt(temperature, _biomeMap.getHeight(x, z) * 0.4);
 			double slope = _heightMap.getSlope(x, z);
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
