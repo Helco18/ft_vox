@@ -127,29 +127,31 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 	int renderDistanceDown = camPos.z - renderDistance * CHUNK_LENGTH;
 
 	std::vector<glm::ivec3> chunksToDelete;
-	std::lock_guard<std::mutex> lg(_mapMutex);
-	for (const std::pair<const glm::ivec3, std::unique_ptr<Chunk>> & chunkPair : _chunkMap)
+	std::vector<Chunk *> chunksToUnload;
 	{
-		const std::unique_ptr<Chunk> & chunk = chunkPair.second;
-		if (!chunk)
-			continue;
-		const glm::ivec3 & chunkPos = chunkPair.first;
-		if (chunkPos.x * CHUNK_WIDTH > renderDistanceNorth || chunkPos.x * CHUNK_WIDTH < renderDistanceSouth
-			|| chunkPos.y * CHUNK_HEIGHT > renderDistanceEast || chunkPos.y * CHUNK_HEIGHT < renderDistanceWest
-			|| chunkPos.z * CHUNK_LENGTH > renderDistanceUp || chunkPos.z * CHUNK_LENGTH < renderDistanceDown)
+		std::lock_guard<std::mutex> lg(_mapMutex);
+		for (const std::pair<const glm::ivec3, std::unique_ptr<Chunk>> & chunkPair : _chunkMap)
 		{
-			if (chunk->isTakenByWorker())
+			const std::unique_ptr<Chunk> & chunk = chunkPair.second;
+			if (!chunk)
 				continue;
-			ChunkState state = chunk->getState();
-			if (state == UPLOADED)
+			const glm::ivec3 & chunkPos = chunkPair.first;
+			if (chunkPos.x * CHUNK_WIDTH > renderDistanceNorth || chunkPos.x * CHUNK_WIDTH < renderDistanceSouth
+				|| chunkPos.y * CHUNK_HEIGHT > renderDistanceEast || chunkPos.y * CHUNK_HEIGHT < renderDistanceWest
+				|| chunkPos.z * CHUNK_LENGTH > renderDistanceUp || chunkPos.z * CHUNK_LENGTH < renderDistanceDown)
 			{
-				if (!chunk->unload(engine))
+				if (chunk->isTakenByWorker())
 					continue;
+				ChunkState state = chunk->getState();
+				if (state == UPLOADED)
+					chunksToUnload.push_back(chunk.get());
+				chunksToDelete.push_back(chunkPos);
 			}
-			chunksToDelete.push_back(chunkPos);
-			_chunkMap[chunkPos] = nullptr;
 		}
 	}
+	for (Chunk * chunk : chunksToUnload)
+		chunk->unload(engine);
+	std::lock_guard<std::mutex> lg(_mapMutex);
 	for (const glm::ivec3 & pos : chunksToDelete)
 		_chunkMap.erase(pos);
 }

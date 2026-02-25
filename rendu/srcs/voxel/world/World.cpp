@@ -64,10 +64,11 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		{
 			std::lock_guard<std::mutex> lg(_visibleChunksMutex);
 			_visibleChunks = _nextVisibleChunks;
-			_nextVisibleChunks.clear();
+			_nextVisibleChunks = {};
 		}
 		ChunkVec::iterator it = std::remove_if(_visibleChunks.begin(), _visibleChunks.end(), [](const Chunk * a) { return !a; });
 		_visibleChunks.erase(it, _visibleChunks.end());
+		_visibleChunks.shrink_to_fit();
 		_readyToSwap.store(false);
 	}
 	for (std::pair<Chunk *, glm::vec3> chunkPair : _dirtyChunks)
@@ -85,12 +86,12 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 			chunk->uploadAsset(engine);
 		}
 	}
-	_dirtyChunks.clear();
+	_dirtyChunks = {};
 	int i = 0;
 	const Plane * planes = camera->getPlanes();
 	if (!_isLocked.load())
 	{
-		_uploadedChunks.clear();
+		_uploadedChunks = {};
 		for (Chunk * chunk : _visibleChunks)
 		{
 			if (!chunk)

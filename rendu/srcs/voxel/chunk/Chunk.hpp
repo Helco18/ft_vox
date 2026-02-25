@@ -99,7 +99,6 @@ class Chunk
 		std::array<std::vector<ChunkAsset>, 3>	_chunkOpaqueAsset;
 		std::array<std::vector<ChunkAsset>, 3>	_chunkTransparencyAsset;
 		ChunkAsset								_chunkFinalAsset;
-		ChunkAsset								_oldChunkFinalAsset;
 
 		Asset									_assetFrame;
 		Asset									_asset;
