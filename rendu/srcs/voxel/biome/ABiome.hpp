@@ -15,10 +15,10 @@ class ABiome
 			return (y >= _chunkHeightClamp.first && y <= _chunkHeightClamp.second);
 		}
 
-		virtual int			computeBiomeHeight(HeightMap & heightMap, int x, int z, int worldX, int worldZ) const = 0;
-		virtual uint8_t		paintSurface(double worldY, float slope) const = 0;
-		virtual uint8_t		splitSkyFromSea(double worldY) const = 0;
-		virtual uint8_t		fillWorld(int height, double worldY, float slope) const = 0;
+		virtual double		computeBiomeHeight(HeightMap & heightMap, int x, int z, int worldX, int worldZ) const = 0;
+		virtual uint8_t		paintSurface(HeightMap & heightMap, int x, int z, int worldX, int worldY, int worldZ, double slope) const = 0;
+		virtual uint8_t		splitSkyFromSea(int worldY) const = 0;
+		virtual uint8_t		fillWorld(int worldX, int worldZ, int height, int worldY, double slope) const = 0;
 
 	protected:
 		typedef std::pair<int, int>	ChunkHeightClamp;

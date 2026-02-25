@@ -10,7 +10,7 @@ TerrainGenerator::TerrainGenerator(Chunk * chunk, World * world, const glm::vec3
 	_worldZOffset = static_cast<double>(_chunkLocation.z * CHUNK_LENGTH);
 }
 
-void TerrainGenerator::_addCave(int x, int y, int z, double worldX, double worldY, double worldZ, int height)
+void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int worldZ, int height)
 {
 	double depthFactor = std::clamp((-worldY +20) / 50.0, 0.1, 1.0);
 	// --- CAVE GENERATION --- : spaghetti 2
@@ -56,20 +56,20 @@ void TerrainGenerator::_addCave(int x, int y, int z, double worldX, double world
 	}
 }
 
-uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, float slope, double worldY, int height)
+uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, int x, int z, int worldX, int worldY, int worldZ, int height, double slope)
 {
 	// Bloc le plus haut du terrain lorsqu'il est au-dessus de Y=SEA_LEVEL
 	if (worldY == height && worldY >= SEA_LEVEL)
-		return biome.paintSurface(worldY, slope);
+		return biome.paintSurface(_heightMap, x, z, worldX, worldY, worldZ, slope);
 	// On dépasse la hauteur du noise
 	else if (worldY > height)
 		return biome.splitSkyFromSea(worldY);
 	// On remplit l'intérieur du terrain
 	else
-		return biome.fillWorld(height, worldY, slope);
+		return biome.fillWorld(worldX, worldZ, height, worldY, slope);
 }
 
-int TerrainGenerator::_computeTerrainHeight(const ABiome & biome, int x, int z, int worldX, int worldZ)
+double TerrainGenerator::_computeTerrainHeight(const ABiome & biome, int x, int z, int worldX, int worldZ)
 {
 	if (biome.isWithinRange(_chunkLocation.y))
 		return biome.computeBiomeHeight(_heightMap, x, z, worldX, worldZ);
@@ -85,7 +85,7 @@ void TerrainGenerator::generateTerrain()
 		double worldX = static_cast<double>(x + _worldXOffset);
 		for (int z = -1; z < CHUNK_LENGTH + 1; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::DESERT);
+			const ABiome & biome = BiomeManager::getBiome(BiomeType::MESA);
 			double worldZ = static_cast<double>(z + _worldZOffset);
 			_heightMap.setHeight(x, z, _computeTerrainHeight(biome, x, z, worldX, worldZ));
 		}
@@ -95,14 +95,14 @@ void TerrainGenerator::generateTerrain()
 		double worldX = static_cast<double>(x + _worldXOffset);
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::DESERT);
+			const ABiome & biome = BiomeManager::getBiome(BiomeType::MESA);
 			double worldZ = static_cast<double>(z + _worldZOffset);
-			float slope = _heightMap.getSlope(x, z);
+			double slope = _heightMap.getSlope(x, z);
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
 				int height = _heightMap.getHeight(x, z);
-				double worldY = (y + _worldYOffset);
-				_chunk->_blocks[x][y][z] = _computeBlock(biome, slope, worldY, height);
+				int worldY = (y + _worldYOffset);
+				_chunk->_blocks[x][y][z] = _computeBlock(biome, x, z, worldX, worldY, worldZ, height, slope);
 				// On creuse les caves
 				if (_chunk->_blocks[x][y][z] != BlockType::AIR && _chunk->_blocks[x][y][z] != BlockType::WATER)
 					_addCave(x, y, z, worldX, worldY, worldZ, height);

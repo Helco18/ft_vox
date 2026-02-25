@@ -9,10 +9,10 @@ class DesertBiome : public ABiome
 	public:
 		DesertBiome(uint32_t seed) : ABiome(seed, 11, -1, 1), _biomeNoise(SimplexNoise<2>(seed, 0.01f, 100000.0f)) { _biomeNoise.setFBM(2, 0.5, 2.0); };
 	
-		int				computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const override;
-		uint8_t			paintSurface(double worldY, float slope) const override;
-		uint8_t			splitSkyFromSea(double worldY) const override;
-		uint8_t			fillWorld(int height, double worldY, float slope) const override;
+		double			computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const override;
+		uint8_t			paintSurface(HeightMap & heightMap, int x, int z, int worldX, int worldY, int worldZ, double slope) const override;
+		uint8_t			splitSkyFromSea(int worldY) const override;
+		uint8_t			fillWorld(int worldX, int worldZ, int height, int worldY, double slope) const override;
 	
 	private:
 		SimplexNoise<2>	_biomeNoise;

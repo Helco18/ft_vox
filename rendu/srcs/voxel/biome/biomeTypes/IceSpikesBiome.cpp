@@ -2,28 +2,28 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-int	IceSpikesBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int worldX, int worldZ) const
+double IceSpikesBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int worldX, int worldZ) const
 {
 	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 60;
 	if (noiseValue > 50)
-		return static_cast<int>(std::floor(heightMap.getHeight(x, z) * 10) + _terrainHeightOffset) + noiseValue - 50;
-	return static_cast<int>(std::floor(heightMap.getHeight(x, z) * 10) + _terrainHeightOffset);
+		return heightMap.getHeight(x, z) * 10.0 + _terrainHeightOffset + noiseValue - 50;
+	return heightMap.getHeight(x, z) * 10.0 + _terrainHeightOffset;
 }
 
-uint8_t IceSpikesBiome::fillWorld(int height, double worldY, float) const
+uint8_t IceSpikesBiome::fillWorld(int, int, int, int worldY, double) const
 {
-	if (worldY <= height - 2 - (height % 2))
-		return worldY > 0 ? BlockType::ICE : BlockType::STONE;
-	else
-		return BlockType::SNOW;
+	return worldY > 0 ? BlockType::ICE : BlockType::STONE;
 }
 
-uint8_t IceSpikesBiome::splitSkyFromSea(double worldY) const
+uint8_t IceSpikesBiome::splitSkyFromSea(int worldY) const
 {
-	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
+	return (worldY) <= SEA_LEVEL ? BlockType::ICE : BlockType::AIR;
 }
 
-uint8_t IceSpikesBiome::paintSurface(double, float) const
+uint8_t IceSpikesBiome::paintSurface(HeightMap & heightMap, int x, int z, int, int, int, double) const
 {
+	double height = heightMap.getHeight(x, z);
+	if (height <= -0.45)
+		return BlockType::WHITE_GRAVEL;
 	return BlockType::SNOW;
 }

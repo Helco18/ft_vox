@@ -2,27 +2,27 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-int	DesertBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const
+double DesertBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const
 {
-	return static_cast<int>(std::floor(_biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 8) + _terrainHeightOffset);
+	return _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 8 + _terrainHeightOffset;
 }
 
-uint8_t DesertBiome::fillWorld(int height, double worldY, float) const
+uint8_t DesertBiome::fillWorld(int, int, int, int worldY, double) const
 {
-	if (worldY >= -3)
+	if (worldY >= -50)
 		return BlockType::SANDSTONE;
-	else if (worldY <= height - 2 - (height % 2))
+	else if (worldY < -50)
 		return BlockType::STONE;
 	else
 		return BlockType::SAND;
 }
 
-uint8_t DesertBiome::splitSkyFromSea(double worldY) const
+uint8_t DesertBiome::splitSkyFromSea(int worldY) const
 {
 	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t DesertBiome::paintSurface(double, float) const
+uint8_t DesertBiome::paintSurface(HeightMap &, int, int, int, int, int, double) const
 {
 	return BlockType::SAND;
 }

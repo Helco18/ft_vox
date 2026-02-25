@@ -10,12 +10,12 @@ class HeightMap
 		HeightMap(int sizeX, int sizeZ): _sizeX(sizeX + 4), _sizeZ(sizeZ + 4), _data(_sizeX * _sizeZ, 0.0f) {};
 		~HeightMap() {};
 
-		float				getHeight(int x, int z) const { return _data[_index(x + 2, z + 2)]; }
+		double				getHeight(int x, int z) const { return _data[_index(x + 2, z + 2)]; }
 
 		void				computeHeight(int worldX, int worldZ, const SimplexNoise<2> & noise, int step);
-		void				setHeight(int x, int z, int value) { _data[_index(x + 2, z + 2)] = value; }
+		void				setHeight(int x, int z, double value) { _data[_index(x + 2, z + 2)] = value; }
 
-		float				getSlope(int x, int z) const;
+		double				getSlope(int x, int z) const;
 
 	private:
 		int					_index(int x, int z) const;
@@ -23,5 +23,5 @@ class HeightMap
 
 		int					_sizeX;
 		int					_sizeZ;
-		std::vector<float>	_data;
+		std::vector<double>	_data;
 };

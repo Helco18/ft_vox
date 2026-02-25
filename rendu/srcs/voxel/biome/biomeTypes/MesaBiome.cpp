@@ -2,41 +2,79 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-int	MesaBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int, int) const
+double MesaBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int, int) const
 {
 	double noiseValue = heightMap.getHeight(x, z);
-	if (noiseValue > 0.0 && noiseValue < 0.6)
-		return static_cast<int>(std::floor(noiseValue * 60) + _terrainHeightOffset);
-	else if (noiseValue > 0.6)
-		return static_cast<int>(std::floor(noiseValue * 10) + _terrainHeightOffset + 30);
+	if (noiseValue > 0.0 && noiseValue < 0.2)
+		return static_cast<int>(std::floor(noiseValue * 150) + _terrainHeightOffset);
+	else if (noiseValue >= 0.2)
+		return static_cast<int>(std::floor(noiseValue * 10) + _terrainHeightOffset + 29);
 	else
 		return static_cast<int>(std::floor(noiseValue * 10) + _terrainHeightOffset);
 }
 
-uint8_t MesaBiome::fillWorld(int height, double worldY, float slope) const
+static uint8_t paintStratification(int worldY)
 {
-	if (worldY >= -3 && worldY <= -1)
-		return BlockType::SAND;
-	else if (worldY <= height - 2 - (height % 2))
-		return BlockType::STONE;
-	else
-	{
-		if (slope > 0.05f)
-			return BlockType::STONE;
-		else
-			return BlockType::DIRT;
-	}
+	if (worldY >= 14 && worldY <= 16)
+		return BlockType::WHITE_STONE;
+	else if (worldY == 17)
+		return BlockType::BROWN_STONE;
+	else if (worldY >= 18 && worldY <= 19)
+		return BlockType::RED_STONE;
+	else if (worldY >= 20 && worldY <= 22)
+		return BlockType::SANDSTONE;
+	else if (worldY >= 23 && worldY <= 24)
+		return BlockType::BROWN_STONE;
+	else if (worldY >= 25 && worldY <= 26)
+		return BlockType::SANDSTONE;
+	else if (worldY == 27)
+		return BlockType::WHITE_STONE;
+	else if (worldY == 28)
+		return BlockType::BROWN_STONE;
+	else if (worldY >= 29 && worldY <= 31)
+		return BlockType::RED_STONE;
+	else if (worldY >= 32 && worldY <= 33)
+		return BlockType::SANDSTONE;
+	else if (worldY == 34)
+		return BlockType::WHITE_STONE;
+	else if (worldY == 35)
+		return BlockType::BROWN_STONE;
+	return BlockType::RED_STONE;
 }
 
-uint8_t MesaBiome::splitSkyFromSea(double worldY) const
+uint8_t MesaBiome::fillWorld(int worldX, int worldZ, int, int worldY, double) const
+{
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	if (worldY >= 14 && worldY <= 35)
+		return paintStratification(worldY);
+	if (worldY >= 14 && worldY <= 22)
+		return BlockType::WHITE_STONE;
+	else if (worldY >= 16 && worldY <= 17)
+		return BlockType::RED_STONE;
+	else if (worldY > (-50 + noiseValue * 5) && worldY < 0 - noiseValue * 5)
+		return BlockType::SANDSTONE;
+	else if (worldY <= -40)
+		return BlockType::STONE;
+	return BlockType::RED_STONE;
+}
+
+uint8_t MesaBiome::splitSkyFromSea(int worldY) const
 {
 	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t MesaBiome::paintSurface(double worldY, float slope) const
+uint8_t MesaBiome::paintSurface(HeightMap &, int, int, int worldX, int worldY, int worldZ, double slope) const
 {
-	if (slope > 0.05f)
-		return BlockType::STONE;
-	else
-		return worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	if (slope > 2.0f)
+	{
+		if (worldY >= 14 && worldY <= 35)
+			return paintStratification(worldY);
+		return BlockType::RED_STONE;
+	}
+	else if (worldY >= 0 && worldY < (7 + noiseValue * 5))
+		return BlockType::SAND;
+	else if (worldY >= 2)
+		return BlockType::RED_SAND;
+	return SAND;
 }

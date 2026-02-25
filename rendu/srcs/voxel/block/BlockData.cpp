@@ -14,8 +14,15 @@ void BlockData::init()
 	std::vector<std::string> sandTextures(6, "resources/assets/textures/sand.png");
 	std::vector<std::string> stoneTextures(6, "resources/assets/textures/stone.png");
 	std::vector<std::string> iceTextures(6, "resources/assets/textures/ice.png");
+	iceTextures[BlockFace::TOP] = "resources/assets/textures/ice_top.png";
 	std::vector<std::string> snowTextures(6, "resources/assets/textures/snow_2.png");
 	std::vector<std::string> sandstoneTextures(6, "resources/assets/textures/sand_stone.png");
+	std::vector<std::string> redSandTextures(6, "resources/assets/textures/red_sand.png");
+	std::vector<std::string> redStoneTextures(6, "resources/assets/textures/red_stone.png");
+	std::vector<std::string> whiteStoneTextures(6, "resources/assets/textures/white_stone.png");
+	std::vector<std::string> blackStoneTextures(6, "resources/assets/textures/black_stone.png");
+	std::vector<std::string> whiteGravelTextures(6, "resources/assets/textures/white_gravel.png");
+	std::vector<std::string> brownStoneTextures(6, "resources/assets/textures/brown_stone.png");
 	
 	_dataRegistry.emplace(AIR, BlockData("air", false, false, false, {}));
 	_dataRegistry.emplace(DIRT, BlockData("dirt", true, true, false, dirtTextures));
@@ -26,6 +33,12 @@ void BlockData::init()
 	_dataRegistry.emplace(ICE, BlockData("ice", true, true, false, iceTextures));
 	_dataRegistry.emplace(SNOW, BlockData("snow", true, true, false, snowTextures));
 	_dataRegistry.emplace(SANDSTONE, BlockData("sandstone", true, true, false, sandstoneTextures));
+	_dataRegistry.emplace(RED_SAND, BlockData("red_sand", true, true, false, redSandTextures));
+	_dataRegistry.emplace(RED_STONE, BlockData("red_stone", true, true, false, redStoneTextures));
+	_dataRegistry.emplace(WHITE_STONE, BlockData("white_stone", true, true, false, whiteStoneTextures));
+	_dataRegistry.emplace(BLACK_STONE, BlockData("black_stone", true, true, false, blackStoneTextures));
+	_dataRegistry.emplace(WHITE_GRAVEL, BlockData("white_gravel", true, true, false, whiteGravelTextures));
+	_dataRegistry.emplace(BROWN_STONE, BlockData("brown_stone", true, true, false, brownStoneTextures));
 }
 
 BlockData & BlockData::getBlockData(uint8_t type)

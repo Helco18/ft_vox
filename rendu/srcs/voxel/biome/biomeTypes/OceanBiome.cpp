@@ -2,12 +2,12 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-int	OceanBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int, int) const
+double	OceanBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int, int) const
 {
-	return static_cast<int>(std::floor(heightMap.getHeight(x, z) * 10) + _terrainHeightOffset);
+	return heightMap.getHeight(x, z) * 10.0 + _terrainHeightOffset;
 }
 
-uint8_t OceanBiome::fillWorld(int height, double worldY, float) const
+uint8_t OceanBiome::fillWorld(int, int, int height, int worldY, double) const
 {
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::SAND;
@@ -17,12 +17,12 @@ uint8_t OceanBiome::fillWorld(int height, double worldY, float) const
 		return BlockType::DIRT;
 }
 
-uint8_t OceanBiome::splitSkyFromSea(double worldY) const
+uint8_t OceanBiome::splitSkyFromSea(int worldY) const
 {
 	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t OceanBiome::paintSurface(double worldY, float) const
+uint8_t OceanBiome::paintSurface(HeightMap &, int, int, int, int worldY, int, double) const
 {
 	return worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
 }

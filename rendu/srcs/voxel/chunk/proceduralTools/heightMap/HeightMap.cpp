@@ -38,7 +38,7 @@ void HeightMap::_interpolate(int step)
 	}
 }
 
-float HeightMap::getSlope(int x, int z) const
+double HeightMap::getSlope(int x, int z) const
 {
 	x += 2;
 	z += 2;
@@ -47,8 +47,8 @@ float HeightMap::getSlope(int x, int z) const
 	int zm = std::max(0, z-1);
 	int zp = std::min(_sizeZ-1, z+1);
 
-	float dx = _data[_index(xp, z)] - _data[_index(xm, z)];
-	float dz = _data[_index(x, zp)] - _data[_index(x, zm)];
+	double dx = _data[_index(xp, z)] - _data[_index(xm, z)];
+	double dz = _data[_index(x, zp)] - _data[_index(x, zm)];
 
 	return std::sqrt(dx*dx + dz*dz) * 0.5f;
 }

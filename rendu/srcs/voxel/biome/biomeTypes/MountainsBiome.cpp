@@ -2,7 +2,7 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-int	MountainsBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const
+double MountainsBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const
 {
 	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
 	if (noiseValue > -0.5 && noiseValue <= 0.5)
@@ -11,10 +11,10 @@ int	MountainsBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int wo
 		noiseValue = noiseValue * 200 + 0;
 	else
 		noiseValue = noiseValue * 40 + 10;
-	return static_cast<int>(std::floor(noiseValue) + _terrainHeightOffset);
+	return noiseValue + _terrainHeightOffset;
 }
 
-uint8_t MountainsBiome::fillWorld(int height, double worldY, float slope) const
+uint8_t MountainsBiome::fillWorld(int, int, int height, int worldY, double slope) const
 {
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::SAND;
@@ -29,12 +29,12 @@ uint8_t MountainsBiome::fillWorld(int height, double worldY, float slope) const
 	}
 }
 
-uint8_t MountainsBiome::splitSkyFromSea(double worldY) const
+uint8_t MountainsBiome::splitSkyFromSea(int worldY) const
 {
 	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t MountainsBiome::paintSurface(double worldY, float slope) const
+uint8_t MountainsBiome::paintSurface(HeightMap &, int, int, int, int worldY, int, double slope) const
 {
 	if (slope > 2.0f)
 		return BlockType::STONE;
