@@ -16,8 +16,10 @@ double MountainsBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int
 
 uint8_t MountainsBiome::fillWorld(int, int, int height, int worldY, double slope) const
 {
+	if (slope < 10.0 - (15 - worldY * 0.05) && worldY > height - 2 - (height % 2))
+		return BlockType::SNOW;
 	if (worldY >= -3 && worldY <= -1)
-		return BlockType::SAND;
+		return BlockType::WHITE_GRAVEL;
 	else if (worldY <= height - 2 - (height % 2))
 		return BlockType::STONE;
 	else
@@ -34,10 +36,15 @@ uint8_t MountainsBiome::splitSkyFromSea(int worldY) const
 	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t MountainsBiome::paintSurface(HeightMap &, int, int, int, int worldY, int, double slope) const
+uint8_t MountainsBiome::paintSurface(HeightMap &, int , int , int worldX, int worldY, int worldZ, double slope) const
 {
+	if (slope < 10.0 - (15 - worldY * 0.05))
+		return BlockType::SNOW;
 	if (slope > 2.0f)
 		return BlockType::STONE;
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	if (noiseValue <= -0.75)
+		return BlockType::WHITE_GRAVEL;
 	else
-		return worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
+		return BlockType::GRASS;
 }

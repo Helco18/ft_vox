@@ -85,7 +85,7 @@ void TerrainGenerator::generateTerrain()
 		double worldX = static_cast<double>(x + _worldXOffset);
 		for (int z = -1; z < CHUNK_LENGTH + 1; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::MESA);
+			const ABiome & biome = BiomeManager::getBiome(BiomeType::MOUNTAINS);
 			double worldZ = static_cast<double>(z + _worldZOffset);
 			_heightMap.setHeight(x, z, _computeTerrainHeight(biome, x, z, worldX, worldZ));
 		}
@@ -95,7 +95,7 @@ void TerrainGenerator::generateTerrain()
 		double worldX = static_cast<double>(x + _worldXOffset);
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
-			const ABiome & biome = BiomeManager::getBiome(BiomeType::MESA);
+			const ABiome & biome = BiomeManager::getBiome(BiomeType::MOUNTAINS);
 			double worldZ = static_cast<double>(z + _worldZOffset);
 			double slope = _heightMap.getSlope(x, z);
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
