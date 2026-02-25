@@ -80,7 +80,7 @@ double TerrainGenerator::_computeTerrainHeight(int x, int z, int worldX, int wor
 	{
 		ABiome * biome = biomeDistanceInfo.biome;
 		double biomeHeight = biome->computeBiomeHeight(_heightMap, x, z, worldX, worldZ);
-		while (biomeDistanceInfo.distance < 0.2f)
+		while (biomeDistanceInfo.distance < 0.1f)
 		{
 			biomeHeights.push_back(biomeHeight);
 			biomeDistanceInfo.distance += 0.001f;

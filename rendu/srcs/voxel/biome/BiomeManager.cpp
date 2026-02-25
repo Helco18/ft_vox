@@ -74,7 +74,7 @@ std::vector<BiomeDistanceInfo> BiomeManager::getBiomeSamples(float temperature, 
 		float heightDiff = getDistanceInterval(heightMin, heightMax, height);
 
 		float finalDiff = std::abs(std::max(temperatureDiff, heightDiff));
-		if (finalDiff < 0.2)
+		if (finalDiff < 0.1)
 			biomeDistanceInfos.push_back({ finalDiff, biome.get() });
 	}
 	return biomeDistanceInfos;
