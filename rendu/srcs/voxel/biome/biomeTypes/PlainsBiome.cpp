@@ -7,8 +7,10 @@ double PlainsBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int wo
 	return _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 5.0 + _terrainHeightOffset;
 }
 
-uint8_t PlainsBiome::fillWorld(int, int, int height, int worldY, double) const
+uint8_t PlainsBiome::fillWorld(int, int, int height, int worldY, double slope) const
 {
+	if (slope > 2.0f)
+		return BlockType::STONE;
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::SAND;
 	else if (worldY <= height - 2 - (height % 2))
@@ -22,7 +24,9 @@ uint8_t PlainsBiome::splitSkyFromSea(int worldY) const
 	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t PlainsBiome::paintSurface(HeightMap &, int, int, int, int worldY, int, double) const
+uint8_t PlainsBiome::paintSurface(HeightMap &, int, int, int, int worldY, int, double slope) const
 {
+	if (slope > 2.0f)
+		return BlockType::STONE;
 	return worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
 }

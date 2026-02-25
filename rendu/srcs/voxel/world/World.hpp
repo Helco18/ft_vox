@@ -37,7 +37,7 @@ class World
 		World(const std::string & name, uint32_t seed): _seed(seed),
 			_terrainNoise(SimplexNoise<2>(seed, 0.005f, 100000.0f)),
 			_temperatureNoise(SimplexNoise<2>(seed, 0.0005f, 100000.0f)),
-			_heightNoise(SimplexNoise<2>(seed, 0.0002f, 100000.0f)),
+			_heightNoise(SimplexNoise<2>(seed, 0.0001f, 100000.0f)),
 			_caveNoise(SimplexNoise<3>(seed, 0.005f, 100000.0f)),
 			_name(name) {}
 		~World();

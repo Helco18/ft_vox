@@ -73,7 +73,7 @@ double TerrainGenerator::_computeTerrainHeight(int x, int z, int worldX, int wor
 {
 	// double temperature = 0.0;
 	double temperature = std::clamp((worldX * 0.0001) + _world->getTemperatureNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 0.02, -1.0, 1.0);
-	std::vector<BiomeDistanceInfo> biomeDistanceInfos = BiomeManager::getBiomeSamples(temperature, (_biomeMap.getHeight(x, z) * 0.4));
+	std::vector<BiomeDistanceInfo> biomeDistanceInfos = BiomeManager::getBiomeSamples(temperature, (std::clamp(_biomeMap.getHeight(x, z) * 0.5, -1.0, 1.0)));
 	std::vector<double> biomeHeights;
 
 	for (BiomeDistanceInfo & biomeDistanceInfo : biomeDistanceInfos)
@@ -114,7 +114,7 @@ void TerrainGenerator::generateTerrain()
 			int worldZ = z + _worldZOffset;
 			double temperature = std::clamp((worldX * 0.0001) + _world->getTemperatureNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 0.02, -1.0, 1.0);
 			// double temperature = 0.0;
-			const ABiome & biome = BiomeManager::getBiomeAt(temperature, _biomeMap.getHeight(x, z) * 0.4);
+			const ABiome & biome = BiomeManager::getBiomeAt(temperature, std::clamp(_biomeMap.getHeight(x, z) * 0.5, -1.0, 1.0));
 			double slope = _heightMap.getSlope(x, z);
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
