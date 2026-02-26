@@ -12,7 +12,7 @@ TerrainGenerator::TerrainGenerator(Chunk * chunk, World * world, const glm::vec3
 
 void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int worldZ, int height)
 {
-	double depthFactor = std::clamp((-(worldY - height) +20) / 50.0, 0.1, 1.0);
+	double depthFactor = std::clamp((-(worldY - height) + 10) / 50.0, 0.1, 1.0);
 	// --- CAVE GENERATION --- : spaghetti 2
 	double scaleX = 3.0;
 	double scaleY = 5.0;
