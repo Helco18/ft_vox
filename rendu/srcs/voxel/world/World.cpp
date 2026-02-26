@@ -23,9 +23,9 @@ void World::load()
 
 void World::unloadChunks(AEngine * engine)
 {
-	for (const std::pair<const glm::ivec3, std::unique_ptr<Chunk>> & chunks : _chunkMap)
+	for (const std::pair<const glm::ivec3, std::shared_ptr<Chunk>> & chunks : _chunkMap)
 	{
-		const std::unique_ptr<Chunk> & chunk = chunks.second;
+		const std::shared_ptr<Chunk> & chunk = chunks.second;
 		if (chunk && chunk->getState() == UPLOADED)
 			chunk->unload(engine);
 	}
@@ -46,14 +46,17 @@ void World::update(AEngine * engine, Camera * camera)
 		oldRenderDistance = renderDistance;
 		_computeRenderDistance(renderDistance);
 	}
+	_isProceduralRequested.store(true);
+	_renderPoint = camPos;
 	if (lastVisitedChunk != currentChunk)
 	{
 		lastVisitedChunk = currentChunk;
 		if (!_isLocked.load())
+		{
+			_chunkPool.clearTasks();
 			_checkForChunkDeletion(engine, camera);
+		}
 	}
-	_renderPoint = camPos;
-	_isProceduralRequested.store(true);
 	_cv.notify_one();
 }
 
@@ -66,14 +69,11 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 			_visibleChunks = _nextVisibleChunks;
 			_nextVisibleChunks = {};
 		}
-		ChunkVec::iterator it = std::remove_if(_visibleChunks.begin(), _visibleChunks.end(), [](const Chunk * a) { return !a; });
-		_visibleChunks.erase(it, _visibleChunks.end());
-		_visibleChunks.shrink_to_fit();
 		_readyToSwap.store(false);
 	}
-	for (std::pair<Chunk *, glm::vec3> chunkPair : _dirtyChunks)
+	for (std::pair<std::shared_ptr<Chunk>, glm::vec3> chunkPair : _dirtyChunks)
 	{
-		Chunk * chunk = chunkPair.first;
+		std::shared_ptr<Chunk> chunk = chunkPair.first;
 		if (!chunk)
 			continue;
 		const glm::vec3 & pos = chunkPair.second;
@@ -90,10 +90,17 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 	_dirtyChunks = {};
 	int i = 0;
 	const Plane * planes = camera->getPlanes();
+	if (_cleanVisibleChunks)
+	{
+		ChunkVec::iterator it = std::remove_if(_visibleChunks.begin(), _visibleChunks.end(), [](const std::shared_ptr<Chunk> a) { return !a; });
+		_visibleChunks.erase(it, _visibleChunks.end());
+		_visibleChunks.shrink_to_fit();
+		_cleanVisibleChunks = false;
+	}
 	if (!_isLocked.load())
 	{
 		_uploadedChunks = {};
-		for (Chunk * chunk : _visibleChunks)
+		for (std::shared_ptr<Chunk> chunk : _visibleChunks)
 		{
 			if (!chunk)
 				continue;
@@ -107,8 +114,8 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 				_uploadedChunks.push_back(chunk);
 		}
 	}
-	std::sort(_uploadedChunks.begin(), _uploadedChunks.end(), [this](const Chunk * a, const Chunk * b)
+	std::sort(_uploadedChunks.begin(), _uploadedChunks.end(), [this](const std::shared_ptr<Chunk> a, const std::shared_ptr<Chunk> b)
 		{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
-	for (Chunk * chunk : _uploadedChunks)
+	for (std::shared_ptr<Chunk> chunk : _uploadedChunks)
 		chunk->drawAsset(engine, pipelineType);
 }

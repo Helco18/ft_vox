@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #define CHUNK_WIDTH 32
 #define CHUNK_HEIGHT 32
 #define CHUNK_LENGTH 32
@@ -111,12 +112,12 @@ class Chunk
 		std::atomic_bool						_isDirty = false;
 		std::atomic_bool						_isTakenByWorker = false;
 
-		Chunk * 								_northChunk = nullptr;
-		Chunk * 								_southChunk = nullptr;
-		Chunk * 								_eastChunk = nullptr;
-		Chunk * 								_westChunk = nullptr;
-		Chunk * 								_topChunk = nullptr;
-		Chunk * 								_bottomChunk = nullptr;
+		std::shared_ptr<Chunk> 					_northChunk = nullptr;
+		std::shared_ptr<Chunk> 					_southChunk = nullptr;
+		std::shared_ptr<Chunk> 					_eastChunk = nullptr;
+		std::shared_ptr<Chunk> 					_westChunk = nullptr;
+		std::shared_ptr<Chunk> 					_topChunk = nullptr;
+		std::shared_ptr<Chunk> 					_bottomChunk = nullptr;
 
 		glm::vec3								_min;
 		glm::vec3								_max;
@@ -130,6 +131,6 @@ class Chunk
 		uint8_t									_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
 		glm::ivec3								_sliceToWorld(int axis, int sliceIndex, int u, int v);
 		void									_generateFrameMesh();
-		std::vector<Chunk *> 					_computeNeighborChunks();
+		std::vector<std::shared_ptr<Chunk>> 	_computeNeighborChunks();
 		glm::vec3								_computeQuadSize(const glm::ivec3 & pos, int face);
 };

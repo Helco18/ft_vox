@@ -29,18 +29,18 @@ World::ChunkVec World::_queryChunksInRange()
 				ChunkMap::iterator it = _chunkMap.find(location);
 				if (it != _chunkMap.end())
 				{
-					chunks.push_back(it->second.get());
+					chunks.push_back(it->second);
 					continue;
 				}
-				std::unique_ptr<Chunk> chunk = std::make_unique<Chunk>(x, y, z, this);
+				std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(x, y, z, this);
 				_chunkMap.try_emplace(location, std::move(chunk));
-				chunks.push_back(_chunkMap[location].get());
+				chunks.push_back(_chunkMap[location]);
 			}
 		}
 	}
 
 	cameraPosition = _renderPoint;
-	std::sort(chunks.begin(), chunks.end(), [cameraPosition](const Chunk * a, const Chunk * b)
+	std::sort(chunks.begin(), chunks.end(), [cameraPosition](const std::shared_ptr<Chunk> a, const std::shared_ptr<Chunk> b)
 		{ return a->getDistance(cameraPosition) < b->getDistance(cameraPosition);});
 	return chunks;
 }
@@ -71,18 +71,15 @@ void World::_generateChunks()
 		bool isProceduralRequested = false;
 		do {
 			chunksReady = true;
-			for (Chunk * chunk : newChunks)
+			for (std::shared_ptr<Chunk> chunk : newChunks)
 			{
 				if (!_isLoaded.load(std::memory_order_relaxed))
 					return;
-				if (!chunk || chunk->isTakenByWorker())
-					continue;
-				ChunkState state = chunk->getState();
 				isProceduralRequested = _isProceduralRequested.load(std::memory_order_relaxed);
 				if (isProceduralRequested)
 				{
 					_chunkPool.clearTasks();
-					for (Chunk * chunk : newChunks)
+					for (std::shared_ptr<Chunk> chunk : newChunks)
 					{
 						if (!chunk || chunk->isTakenByWorker())
 							continue;
@@ -94,6 +91,9 @@ void World::_generateChunks()
 					}
 					break;
 				}
+				if (!chunk || chunk->isTakenByWorker())
+					continue;
+				ChunkState state = chunk->getState();
 				if (state == IDLE)
 				{
 					chunk->setState(BUILDING);
@@ -128,30 +128,28 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 
 	std::vector<glm::ivec3> chunksToDelete;
 	std::vector<Chunk *> chunksToUnload;
+	std::lock_guard<std::mutex> lg(_mapMutex);
+	for (const std::pair<const glm::ivec3, std::shared_ptr<Chunk>> & chunkPair : _chunkMap)
 	{
-		std::lock_guard<std::mutex> lg(_mapMutex);
-		for (const std::pair<const glm::ivec3, std::unique_ptr<Chunk>> & chunkPair : _chunkMap)
+		const std::shared_ptr<Chunk> & chunk = chunkPair.second;
+		if (!chunk)
+			continue;
+		const glm::ivec3 & chunkPos = chunkPair.first;
+		if (chunkPos.x * CHUNK_WIDTH > renderDistanceNorth || chunkPos.x * CHUNK_WIDTH < renderDistanceSouth
+			|| chunkPos.y * CHUNK_HEIGHT > renderDistanceEast || chunkPos.y * CHUNK_HEIGHT < renderDistanceWest
+			|| chunkPos.z * CHUNK_LENGTH > renderDistanceUp || chunkPos.z * CHUNK_LENGTH < renderDistanceDown)
 		{
-			const std::unique_ptr<Chunk> & chunk = chunkPair.second;
-			if (!chunk)
+			if (chunk->isTakenByWorker())
 				continue;
-			const glm::ivec3 & chunkPos = chunkPair.first;
-			if (chunkPos.x * CHUNK_WIDTH > renderDistanceNorth || chunkPos.x * CHUNK_WIDTH < renderDistanceSouth
-				|| chunkPos.y * CHUNK_HEIGHT > renderDistanceEast || chunkPos.y * CHUNK_HEIGHT < renderDistanceWest
-				|| chunkPos.z * CHUNK_LENGTH > renderDistanceUp || chunkPos.z * CHUNK_LENGTH < renderDistanceDown)
-			{
-				if (chunk->isTakenByWorker())
-					continue;
-				ChunkState state = chunk->getState();
-				if (state == UPLOADED)
-					chunksToUnload.push_back(chunk.get());
-				chunksToDelete.push_back(chunkPos);
-			}
+			ChunkState state = chunk->getState();
+			if (state == UPLOADED)
+				chunksToUnload.push_back(chunk.get());
+			chunksToDelete.push_back(chunkPos);
 		}
 	}
 	for (Chunk * chunk : chunksToUnload)
 		chunk->unload(engine);
-	std::lock_guard<std::mutex> lg(_mapMutex);
 	for (const glm::ivec3 & pos : chunksToDelete)
 		_chunkMap.erase(pos);
+	_cleanVisibleChunks = true;
 }

@@ -34,7 +34,7 @@ TargetedBlock World::_processRay(const glm::vec3 & pos, RayState & state, float 
 
 	while (distance < maxDistance)
 	{
-		Chunk * chunk = getChunkAt(block.x, block.y, block.z);
+		std::shared_ptr<Chunk> chunk = getChunkAt(block.x, block.y, block.z);
 
 		if (!chunk || chunk->isTakenByWorker() || chunk->getState() < BUILT)
 			return p;

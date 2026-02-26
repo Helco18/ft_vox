@@ -1,6 +1,6 @@
 #include "World.hpp"
 
-Chunk * World::getChunkAt(int x, int y, int z)
+std::shared_ptr<Chunk> World::getChunkAt(int x, int y, int z)
 {
 	int chunkX;
 	int chunkY;
@@ -12,21 +12,21 @@ Chunk * World::getChunkAt(int x, int y, int z)
 	return getChunkAtChunkLocation(chunkX, chunkY, chunkZ);
 }
 
-Chunk * World::getChunkAtChunkLocation(int x, int y, int z)
+std::shared_ptr<Chunk> World::getChunkAtChunkLocation(int x, int y, int z)
 {
 	std::lock_guard<std::mutex> lg(_mapMutex);
 	ChunkMap::const_iterator it = _chunkMap.find(glm::ivec3(x, y, z));
 	if (it != _chunkMap.end())
-		return it->second.get();
+		return it->second;
 	return nullptr;
 }
 
-Chunk * World::getChunkAt(const glm::vec3 & location)
+std::shared_ptr<Chunk> World::getChunkAt(const glm::vec3 & location)
 {
 	return getChunkAt(location.x, location.y, location.z);
 }
 
-Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location)
+std::shared_ptr<Chunk> World::getChunkAtChunkLocation(const glm::vec3 & location)
 {
 	return getChunkAtChunkLocation(location.x, location.y, location.z);
 }
@@ -73,7 +73,7 @@ static float getSignedDistanceToPlane(const glm::vec3 & pos, const Plane & p)
 	return(glm::dot(normal, pos) + (p.plane[3]));
 }
 
-bool World::_chunkIsFrustum(const Plane * planes, Chunk * chunk)
+bool World::_chunkIsFrustum(const Plane * planes, std::shared_ptr<Chunk> chunk)
 {
 	const glm::vec3 & min = chunk->getMin();
 	const glm::vec3 & max = chunk->getMax();
