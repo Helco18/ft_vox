@@ -2,13 +2,16 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-double TundraBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const
+double TundraBiome::computeBiomeHeight(const BiomePaintingInfo & paintingInfo) const
 {
-	return _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 5.0 + _terrainHeightOffset;
+	return _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)}) * 5.0 + _terrainHeightOffset;
 }
 
-uint8_t TundraBiome::fillWorld(int, int, int height, int worldY, double) const
+uint8_t TundraBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 {
+	int worldY = paintingInfo.worldY;
+	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
+
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::WHITE_GRAVEL;
 	else if (worldY <= height - 2 - (height % 2))
@@ -17,16 +20,18 @@ uint8_t TundraBiome::fillWorld(int, int, int height, int worldY, double) const
 		return BlockType::SNOW;
 }
 
-uint8_t TundraBiome::splitSkyFromSea(int worldY) const
+uint8_t TundraBiome::splitSkyFromSea(const BiomePaintingInfo & paintingInfo) const
 {
+	int worldY = paintingInfo.worldY;
+
 	if (worldY == SEA_LEVEL)
 		return BlockType::ICE;
 	return (worldY) < SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t TundraBiome::paintSurface(HeightMap &, int, int, int worldX, int, int worldZ, double) const
+uint8_t TundraBiome::paintSurface(const BiomePaintingInfo & paintingInfo) const
 {
-	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 5;
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)}) * 5;
 	if (noiseValue <= -5.8)
 		return BlockType::WHITE_GRAVEL;
 	return BlockType::SNOW;

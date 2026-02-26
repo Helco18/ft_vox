@@ -2,13 +2,16 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-double	OceanBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int, int) const
+double	OceanBiome::computeBiomeHeight(const BiomePaintingInfo & paintingInfo) const
 {
-	return heightMap.getHeight(x, z) * 10.0 + _terrainHeightOffset;
+	return paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z) * 10.0 + _terrainHeightOffset;
 }
 
-uint8_t OceanBiome::fillWorld(int, int, int height, int worldY, double) const
+uint8_t OceanBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 {
+	int worldY = paintingInfo.worldY;
+	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
+
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::SAND;
 	else if (worldY <= height - 2 - (height % 2))
@@ -17,12 +20,12 @@ uint8_t OceanBiome::fillWorld(int, int, int height, int worldY, double) const
 		return BlockType::DIRT;
 }
 
-uint8_t OceanBiome::splitSkyFromSea(int worldY) const
+uint8_t OceanBiome::splitSkyFromSea(const BiomePaintingInfo & paintingInfo) const
 {
-	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
+	return paintingInfo.worldY <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t OceanBiome::paintSurface(HeightMap &, int, int, int, int worldY, int, double) const
+uint8_t OceanBiome::paintSurface(const BiomePaintingInfo & paintingInfo) const
 {
-	return worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
+	return paintingInfo.worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
 }

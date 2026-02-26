@@ -56,30 +56,31 @@ void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int
 	}
 }
 
-uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, int x, int z, int worldX, int worldY, int worldZ, int height, double slope)
+uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, BiomePaintingInfo & biomePaintingInfo)
 {
+	int worldY = biomePaintingInfo.worldY;
+	int height = biomePaintingInfo.heightMap->getHeight(biomePaintingInfo.x, biomePaintingInfo.z);
 	// Bloc le plus haut du terrain lorsqu'il est au-dessus de Y=SEA_LEVEL
 	if (worldY == height && worldY >= SEA_LEVEL)
-		return biome.paintSurface(_heightMap, x, z, worldX, worldY, worldZ, slope);
+		return biome.paintSurface(biomePaintingInfo);
 	// On dépasse la hauteur du noise
 	else if (worldY > height)
-		return biome.splitSkyFromSea(worldY);
+		return biome.splitSkyFromSea(biomePaintingInfo);
 	// On remplit l'intérieur du terrain
 	else
-		return biome.fillWorld(worldX, worldZ, height, worldY, slope);
+		return biome.fillWorld(biomePaintingInfo);
 }
 
-double TerrainGenerator::_computeTerrainHeight(int x, int z, int worldX, int worldZ)
+double TerrainGenerator::_computeTerrainHeight(const BiomePaintingInfo & paintingInfo)
 {
-	// double temperature = 0.0;
-	double temperature = std::clamp((worldX * 0.0001) + _world->getTemperatureNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 0.02, -1.0, 1.0);
-	std::vector<BiomeDistanceInfo> biomeDistanceInfos = BiomeManager::getBiomeSamples(temperature, (std::clamp(_biomeMap.getHeight(x, z) * 0.5, -1.0, 1.0)));
+	std::vector<BiomeDistanceInfo> biomeDistanceInfos = BiomeManager::getBiomeSamples(paintingInfo.temperature,
+		(std::clamp(_biomeMap.getHeight(paintingInfo.x, paintingInfo.z) * 0.5, -1.0, 1.0)));
 	std::vector<double> biomeHeights;
 
 	for (BiomeDistanceInfo & biomeDistanceInfo : biomeDistanceInfos)
 	{
 		ABiome * biome = biomeDistanceInfo.biome;
-		double biomeHeight = biome->computeBiomeHeight(_heightMap, x, z, worldX, worldZ);
+		double biomeHeight = biome->computeBiomeHeight(paintingInfo);
 		while (biomeDistanceInfo.distance < 0.1f)
 		{
 			biomeHeights.push_back(biomeHeight);
@@ -94,33 +95,43 @@ double TerrainGenerator::_computeTerrainHeight(int x, int z, int worldX, int wor
 
 void TerrainGenerator::generateTerrain()
 {
+	BiomePaintingInfo paintingInfo;
+	paintingInfo.heightMap = &_heightMap;
+	paintingInfo.biomeMap = &_biomeMap;
+
 	_biomeMap.computeHeight(_worldXOffset, _worldZOffset, _world->getHeightNoise(), 2);
 	if (_chunkLocation.y >= -2 && _chunkLocation.y <= 2)
 		_heightMap.computeHeight(_worldXOffset, _worldZOffset, _world->getTerrainNoise(), 2);
 	for (int x = -1; x < CHUNK_WIDTH + 1; ++x)
 	{
-		int worldX = x + _worldXOffset;
+		paintingInfo.x = x;
+		paintingInfo.worldX = x + _worldXOffset;
 		for (int z = -1; z < CHUNK_LENGTH + 1; ++z)
 		{
-			int worldZ = z + _worldZOffset;
-			_heightMap.setHeight(x, z, _computeTerrainHeight(x, z, worldX, worldZ));
+			paintingInfo.z = z;
+			paintingInfo.worldZ = z + _worldZOffset;
+			_heightMap.setHeight(x, z, _computeTerrainHeight(paintingInfo));
 		}
 	}
 	for (int x = 0; x < CHUNK_WIDTH; ++x)
 	{
 		int worldX = x + _worldXOffset;
+		paintingInfo.x = x;
+		paintingInfo.worldX = worldX;
 		for (int z = 0; z < CHUNK_LENGTH; ++z)
 		{
 			int worldZ = z + _worldZOffset;
-			double temperature = std::clamp((worldX * 0.0001) + _world->getTemperatureNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 0.02, -1.0, 1.0);
-			// double temperature = 0.0;
-			const ABiome & biome = BiomeManager::getBiomeAt(temperature, std::clamp(_biomeMap.getHeight(x, z) * 0.5, -1.0, 1.0));
-			double slope = _heightMap.getSlope(x, z);
+			paintingInfo.z = z;
+			paintingInfo.worldZ = worldZ;
+			paintingInfo.temperature = std::clamp((worldX * 0.0001) + _world->getTemperatureNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)}) * 0.02, -1.0, 1.0);
+			const ABiome & biome = BiomeManager::getBiomeAt(paintingInfo.temperature, std::clamp(_biomeMap.getHeight(x, z) * 0.5, -1.0, 1.0));
+			paintingInfo.slope = _heightMap.getSlope(x, z);
 			for (int y = 0; y < CHUNK_HEIGHT; ++y)
 			{
 				int height = _heightMap.getHeight(x, z);
 				int worldY = (y + _worldYOffset);
-				_chunk->_blocks[x][y][z] = _computeBlock(biome, x, z, worldX, worldY, worldZ, height, slope);
+				paintingInfo.worldY = worldY;
+				_chunk->_blocks[x][y][z] = _computeBlock(biome, paintingInfo);
 				// On creuse les caves
 				if (_chunk->_blocks[x][y][z] != BlockType::AIR && _chunk->_blocks[x][y][z] != BlockType::WATER)
 					_addCave(x, y, z, worldX, worldY, worldZ, height);

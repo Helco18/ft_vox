@@ -68,7 +68,7 @@ class Chunk
 		ChunkState								getState() const { return _state.load(); }
 		Asset &									getAsset() { return _asset; }
 		uint8_t									getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
-		float									getDistance(glm::vec3 pos) const;
+		inline float							getDistance(glm::vec3 pos) const { return(glm::distance((glm::vec3)locToChunkLoc(pos), (glm::vec3)_chunkLocation)); };
 		const glm::vec3 &						getMin() const { return _min; };
 		const glm::vec3 &						getMax() const { return _max; };
 		bool									isDirty() const { return _isDirty.load(); }

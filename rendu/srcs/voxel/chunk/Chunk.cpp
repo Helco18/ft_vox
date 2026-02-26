@@ -57,11 +57,6 @@ void Chunk::build()
 	_isTakenByWorker.store(false);
 }
 
-float Chunk::getDistance(glm::vec3 pos) const
-{
-	return(glm::distance((glm::vec3)locToChunkLoc(pos), (glm::vec3)_chunkLocation));
-}
-
 void Chunk::generateMesh()
 {
 	_isTakenByWorker.store(true);
@@ -73,7 +68,10 @@ void Chunk::generateMesh()
 	if (_asset.vertices.data && !_asset.indices.empty())
 		setState(MESHED);
 	else
+	{
 		setState(MESHED_EMPTY);
+		_chunkData.fadeValue = 1.0f;
+	}
 	_isTakenByWorker.store(false);
 }
 

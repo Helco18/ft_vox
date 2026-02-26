@@ -2,9 +2,9 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-double MesaBiome::computeBiomeHeight(HeightMap & heightMap, int x, int z, int, int) const
+double MesaBiome::computeBiomeHeight(const BiomePaintingInfo & paintingInfo) const
 {
-	double noiseValue = heightMap.getHeight(x, z);
+	double noiseValue = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
 	if (noiseValue > 0.0 && noiseValue < 0.2)
 		return static_cast<int>(std::floor(noiseValue * 150) + _terrainHeightOffset);
 	else if (noiseValue >= 0.2)
@@ -42,9 +42,11 @@ static uint8_t paintStratification(int worldY)
 	return BlockType::RED_STONE;
 }
 
-uint8_t MesaBiome::fillWorld(int worldX, int worldZ, int, int worldY, double) const
+uint8_t MesaBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 {
-	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	int worldY = paintingInfo.worldY;
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
+
 	if (worldY >= 14 && worldY <= 35)
 		return paintStratification(worldY);
 	if (worldY >= 14 && worldY <= 22)
@@ -58,15 +60,17 @@ uint8_t MesaBiome::fillWorld(int worldX, int worldZ, int, int worldY, double) co
 	return BlockType::RED_STONE;
 }
 
-uint8_t MesaBiome::splitSkyFromSea(int worldY) const
+uint8_t MesaBiome::splitSkyFromSea(const BiomePaintingInfo & paintingInfo) const
 {
-	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
+	return paintingInfo.worldY <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t MesaBiome::paintSurface(HeightMap &, int, int, int worldX, int worldY, int worldZ, double slope) const
+uint8_t MesaBiome::paintSurface(const BiomePaintingInfo & paintingInfo) const
 {
-	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
-	if (slope > 2.0f)
+	int worldY = paintingInfo.worldY;
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
+
+	if (paintingInfo.slope > 2.0f)
 	{
 		if (worldY >= 14 && worldY <= 35)
 			return paintStratification(worldY);

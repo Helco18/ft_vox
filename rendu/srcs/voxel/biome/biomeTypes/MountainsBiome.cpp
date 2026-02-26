@@ -2,9 +2,9 @@
 #include "BlockData.hpp"
 #include "TerrainGenerator.hpp"
 
-double MountainsBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int worldZ) const
+double MountainsBiome::computeBiomeHeight(const BiomePaintingInfo & paintingInfo) const
 {
-	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 	if (noiseValue > -0.5 && noiseValue <= 0.5)
 		noiseValue = noiseValue * 110 + 45;
 	else if (noiseValue > 0.5)
@@ -14,8 +14,12 @@ double MountainsBiome::computeBiomeHeight(HeightMap &, int, int, int worldX, int
 	return noiseValue + _terrainHeightOffset;
 }
 
-uint8_t MountainsBiome::fillWorld(int, int, int height, int worldY, double slope) const
+uint8_t MountainsBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 {
+	int worldY = paintingInfo.worldY;
+	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
+	double slope = paintingInfo.slope;
+
 	if (slope < 10.0 - (15 - worldY * 0.05) && worldY > height - 2 - (height % 2))
 		return BlockType::SNOW;
 	if (worldY >= -3 && worldY <= -1)
@@ -31,18 +35,20 @@ uint8_t MountainsBiome::fillWorld(int, int, int height, int worldY, double slope
 	}
 }
 
-uint8_t MountainsBiome::splitSkyFromSea(int worldY) const
+uint8_t MountainsBiome::splitSkyFromSea(const BiomePaintingInfo & paintingInfo) const
 {
-	return (worldY) <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
+	return paintingInfo.worldY <= SEA_LEVEL ? BlockType::WATER : BlockType::AIR;
 }
 
-uint8_t MountainsBiome::paintSurface(HeightMap &, int , int , int worldX, int worldY, int worldZ, double slope) const
+uint8_t MountainsBiome::paintSurface(const BiomePaintingInfo & paintingInfo) const
 {
-	if (slope < 10.0 - (15 - worldY * 0.05))
+	double slope = paintingInfo.slope;
+
+	if (slope < 10.0 - (15 - paintingInfo.worldY * 0.05))
 		return BlockType::SNOW;
 	if (slope > 2.0f)
 		return BlockType::STONE;
-	double noiseValue = _biomeNoise.queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 	if (noiseValue <= -0.75)
 		return BlockType::WHITE_GRAVEL;
 	else

@@ -3,6 +3,19 @@
 #include "HeightMap.hpp"
 #include <iterator>
 
+struct BiomePaintingInfo
+{
+	HeightMap *	heightMap;
+	HeightMap *	biomeMap;
+	int			x;
+	int			z;
+	int			worldX;
+	int			worldY;
+	int			worldZ;
+	double		slope;
+	double		temperature;
+};
+
 class ABiome
 {
 	public:
@@ -13,10 +26,10 @@ class ABiome
 
 		inline bool							isWithinRange(int y) const { return (y >= _chunkHeightClamp.first && y <= _chunkHeightClamp.second); }
 
-		virtual double						computeBiomeHeight(HeightMap & heightMap, int x, int z, int worldX, int worldZ) const = 0;
-		virtual uint8_t						paintSurface(HeightMap & heightMap, int x, int z, int worldX, int worldY, int worldZ, double slope) const = 0;
-		virtual uint8_t						splitSkyFromSea(int worldY) const = 0;
-		virtual uint8_t						fillWorld(int worldX, int worldZ, int height, int worldY, double slope) const = 0;
+		virtual double						computeBiomeHeight(const BiomePaintingInfo & paintingInfo) const = 0;
+		virtual uint8_t						paintSurface(const BiomePaintingInfo & paintingInfo) const = 0;
+		virtual uint8_t						splitSkyFromSea(const BiomePaintingInfo & paintingInfo) const = 0;
+		virtual uint8_t						fillWorld(const BiomePaintingInfo & paintingInfo) const = 0;
 
 		const std::pair<float, float> &		getTemperatureRange() const { return _temperatureRange; }
 		const std::pair<float, float> &		getHeightRange() const { return _heightRange; }
