@@ -56,42 +56,48 @@ void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int
 	}
 }
 
-void TerrainGenerator::_addFlyingIsland(int x, int y, int z, int worldX, int worldY, int worldZ, int )
+void TerrainGenerator::_addFlyingIsland(const BiomePaintingInfo & paintingInfo, int y)
 {
-	double hight = _world->getTerrainNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
-	double start = 192;
-	double end = 191;
-	if (hight < -0.3)
+	int x = paintingInfo.x;
+	int z = paintingInfo.z;
+	int worldX = paintingInfo.worldX;
+	int worldY = paintingInfo.worldY;
+	int worldZ = paintingInfo.worldZ;
+	double height = _world->getTerrainNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	int start = 192;
+	int end = 191;
+
+	if (height < -0.3)
 	{
-		start = 640 - abs(hight) * 40;
-		end = 640 - 14 + abs(hight) * 10;
+		start = 640 - abs(height) * 40;
+		end = 640 - 14 + abs(height) * 10;
 	}
 	else
 		return ;
 	if (worldY >= start && worldY <= end)
 	{
-		if (worldY == static_cast<int>(end))
+		if (worldY == end)
 			_chunk->_blocks[x][y][z] = BlockType::GRASS;
-		else if (worldY <= end - 2 - (static_cast<int>(end) % 2))
+		else if (worldY <= end - 3 - _world->getHeightNoise().queryState({static_cast<double>(worldX * 100), static_cast<double>(worldZ * 100)}))
 			_chunk->_blocks[x][y][z] = BlockType::STONE;
 		else
 			_chunk->_blocks[x][y][z] = BlockType::DIRT;
 	}
 }
 
-uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, BiomePaintingInfo & biomePaintingInfo)
+uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, BiomePaintingInfo & paintingInfo)
 {
-	int worldY = biomePaintingInfo.worldY;
-	int height = biomePaintingInfo.heightMap->getHeight(biomePaintingInfo.x, biomePaintingInfo.z);
+	int worldY = paintingInfo.worldY;
+	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
 	// Bloc le plus haut du terrain lorsqu'il est au-dessus de Y=SEA_LEVEL
 	if (worldY == height && worldY >= SEA_LEVEL)
-		return biome.paintSurface(biomePaintingInfo);
+		return biome.paintSurface(paintingInfo);
 	// On dépasse la hauteur du noise
 	else if (worldY > height)
-		return biome.splitSkyFromSea(biomePaintingInfo);
+		return biome.splitSkyFromSea(paintingInfo);
 	// On remplit l'intérieur du terrain
 	else
-		return biome.fillWorld(biomePaintingInfo);
+		return biome.fillWorld(paintingInfo);
 }
 
 double TerrainGenerator::_computeTerrainHeight(const BiomePaintingInfo & paintingInfo)
@@ -160,7 +166,7 @@ void TerrainGenerator::generateTerrain()
 				if (_chunk->_blocks[x][y][z] != BlockType::AIR && _chunk->_blocks[x][y][z] != BlockType::WATER)
 					_addCave(x, y, z, worldX, worldY, worldZ, height);
 				if (_chunkLocation.y >= 18 && _chunkLocation.y <= 20)
-					_addFlyingIsland(x, y, z, worldX, worldY, worldZ, height);
+					_addFlyingIsland(paintingInfo, y);
 			}
 		}
 	}

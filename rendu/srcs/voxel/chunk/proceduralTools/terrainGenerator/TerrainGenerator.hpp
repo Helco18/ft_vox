@@ -17,9 +17,9 @@ class TerrainGenerator
 
 	private:
 		double		_computeTerrainHeight(const BiomePaintingInfo & paintingInfo);
-		uint8_t		_computeBlock(const ABiome & biome, BiomePaintingInfo & biomePaintingInfo);
+		uint8_t		_computeBlock(const ABiome & biome, BiomePaintingInfo & paintingInfo);
 		void		_addCave(int x, int y, int z, int worldX, int worldY, int worldZ, int height);
-		void		_addFlyingIsland(int x, int y, int z, int worldX, int worldY, int worldZ, int height);
+		void		_addFlyingIsland(const BiomePaintingInfo & paintingInfo, int y);
 
 		Chunk *		_chunk;
 		World *		_world;
