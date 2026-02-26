@@ -16,7 +16,7 @@ static ProgramParams parseArgs(int ac, char ** av)
 		{
 			if (str.empty())
 				throw GeneralException("Specify a value for parameter of type '" + toString(paramMode) + "'.");
-			uint32_t value = std::atol(str.c_str());
+			int32_t value = std::atof(str.c_str());
 			switch (paramMode)
 			{
 				case 'r': {
@@ -34,6 +34,21 @@ static ProgramParams parseArgs(int ac, char ** av)
 						throw GeneralException("Seed of '" + str + "' is invalid. It must only contain numbers.");
 					params.seed = value;
 				} break;
+				case 'x': {
+					if (!std::all_of(str.begin() + (str[0] == '-'), str.end(), [](const char c) { return std::isdigit(c); }))
+						throw GeneralException("Coordinate X '" + str + "' is invalid. It must only contain numbers.");
+					params.spawnLocation.x = value;
+				} break;
+				case 'y': {
+					if (!std::all_of(str.begin() + (str[0] == '-'), str.end(), [](const char c) { return std::isdigit(c); }))
+						throw GeneralException("Coordinate Y '" + str + "' is invalid. It must only contain numbers.");
+					params.spawnLocation.y = value;
+				} break;
+				case 'z': {
+					if (!std::all_of(str.begin() + (str[0] == '-'), str.end(), [](const char c) { return std::isdigit(c); }))
+						throw GeneralException("Coordinate Z '" + str + "' is invalid. It must only contain numbers.");
+					params.spawnLocation.z = value;
+				} break;
 			}
 			paramMode = 0;
 		}
@@ -47,10 +62,8 @@ static ProgramParams parseArgs(int ac, char ** av)
 					g_debug = DebugLevel::VALIDATION;
 				else if (str[i] == 'p')
 					Profiler::enable();
-				else if (str[i] == 'r')
-					paramMode = 'r';
-				else if (str[i] == 's')
-					paramMode = 's';
+				else if (str[i] == 'r' || str[i] == 's' || str[i] == 'x' || str[i] == 'y' || str[i] == 'z')
+					paramMode = str[i];
 				else if (!strcmp(&str[i], "fov"))
 				{
 					paramMode = 'f';

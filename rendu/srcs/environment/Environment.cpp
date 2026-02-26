@@ -28,6 +28,7 @@ void Environment::init(ProgramParams & programParams)
 	_windowManager->load();
 
 	Camera * camera = _windowManager->getCamera();
+	camera->setPosition(programParams.spawnLocation);
 	_player.setCamera(camera);
 	camera->addPipelineToRender(PIPELINE_VOXEL);
 	camera->addPipelineToRender(PIPELINE_WIREFRAME);

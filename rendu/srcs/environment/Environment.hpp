@@ -13,6 +13,7 @@ struct ProgramParams
 	uint8_t		fov = 80;
 	bool		vsync = false;
 	uint32_t	seed = 42;
+	glm::vec3	spawnLocation = glm::vec3(0.0f);
 };
 
 class Environment
