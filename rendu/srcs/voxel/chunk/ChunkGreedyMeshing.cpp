@@ -497,6 +497,8 @@ void Chunk::updateMesh(glm::vec3 pos)
 		}
 	}
 	_buildAsset();
+	if (_chunkFinalAsset.vertices.empty())
+		setState(MESHED_EMPTY);
 }
 
 void Chunk::_generateGreedyMesh()
