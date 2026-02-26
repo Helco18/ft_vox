@@ -56,6 +56,29 @@ void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int
 	}
 }
 
+void TerrainGenerator::_addFlyingIsland(int x, int y, int z, int worldX, int worldY, int worldZ, int )
+{
+	double hight = _world->getTerrainNoise().queryState({static_cast<double>(worldX), static_cast<double>(worldZ)});
+	double start = 192;
+	double end = 191;
+	if (hight < -0.3)
+	{
+		start = 640 - abs(hight) * 40;
+		end = 640 - 14 + abs(hight) * 10;
+	}
+	else
+		return ;
+	if (worldY >= start && worldY <= end)
+	{
+		if (worldY == static_cast<int>(end))
+			_chunk->_blocks[x][y][z] = BlockType::GRASS;
+		else if (worldY <= end - 2 - (static_cast<int>(end) % 2))
+			_chunk->_blocks[x][y][z] = BlockType::STONE;
+		else
+			_chunk->_blocks[x][y][z] = BlockType::DIRT;
+	}
+}
+
 uint8_t TerrainGenerator::_computeBlock(const ABiome & biome, BiomePaintingInfo & biomePaintingInfo)
 {
 	int worldY = biomePaintingInfo.worldY;
@@ -81,6 +104,7 @@ double TerrainGenerator::_computeTerrainHeight(const BiomePaintingInfo & paintin
 	{
 		ABiome * biome = biomeDistanceInfo.biome;
 		double biomeHeight = biome->computeBiomeHeight(paintingInfo);
+
 		while (biomeDistanceInfo.distance < 0.1f)
 		{
 			biomeHeights.push_back(biomeHeight);
@@ -135,6 +159,8 @@ void TerrainGenerator::generateTerrain()
 				// On creuse les caves
 				if (_chunk->_blocks[x][y][z] != BlockType::AIR && _chunk->_blocks[x][y][z] != BlockType::WATER)
 					_addCave(x, y, z, worldX, worldY, worldZ, height);
+				if (_chunkLocation.y >= 18 && _chunkLocation.y <= 20)
+					_addFlyingIsland(x, y, z, worldX, worldY, worldZ, height);
 			}
 		}
 	}
