@@ -8,7 +8,7 @@
 
 void VulkanEngine::_initImGui()
 {
-	std::vector<vk::DescriptorPoolSize> poolSizes =
+	const std::vector<vk::DescriptorPoolSize> poolSizes =
 	{
 		{ vk::DescriptorType::eSampler, 100 },
 		{ vk::DescriptorType::eCombinedImageSampler, 100 },

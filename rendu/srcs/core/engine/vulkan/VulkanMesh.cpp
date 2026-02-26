@@ -10,7 +10,7 @@ vk::VertexInputBindingDescription VulkanEngine::_getBindingDescription(PipelineI
 VulkanEngine::VertexAttributeDescriptionVector VulkanEngine::_getAttributeDescription(PipelineInfo & pipelineInfo) const
 {
 	VertexAttributeDescriptionVector vadVector;
-	std::vector<Attribute> attributes = pipelineInfo.attributes;
+	const std::vector<Attribute> & attributes = pipelineInfo.attributes;
 	size_t offset = 0;
 
 	// Spécifier ce que notre vertex a comme attributs. Ici, nous avons sa position dans la location 0 et sa couleur dans la location 1.

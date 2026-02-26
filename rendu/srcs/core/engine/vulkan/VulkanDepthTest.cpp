@@ -16,7 +16,7 @@ vk::Format VulkanEngine::_findSupportedFormat(const std::vector<vk::Format> & ca
 
 vk::Format VulkanEngine::_findDepthFormat()
 {
-	std::vector<vk::Format> formats = { 
+	const std::vector<vk::Format> formats = { 
 		vk::Format::eD24UnormS8Uint,
 		vk::Format::eD32Sfloat,
 		vk::Format::eD32SfloatS8Uint

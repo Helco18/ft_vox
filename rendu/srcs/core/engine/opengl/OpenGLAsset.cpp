@@ -14,7 +14,7 @@ AssetID OpenGLEngine::uploadAsset(Asset & asset, PipelineID pipelineID)
 	}
 	PipelineLayout & pipelineLayout = it->second;
 	PipelineInfo & pipelineInfo = pipelineLayout.pipelineInfo;
-	std::vector<Attribute> attributes = pipelineInfo.attributes;
+	const std::vector<Attribute> & attributes = pipelineInfo.attributes;
 	size_t offset = 0;
 
 	glGenVertexArrays(1, &asset.assetID);

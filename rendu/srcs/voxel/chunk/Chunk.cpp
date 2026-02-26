@@ -15,7 +15,7 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 	_asset.vertices.data = nullptr;
 }
 
-static void dirtyCheck(std::vector<Chunk *> chunks)
+static void dirtyCheck(const std::vector<Chunk *> & chunks)
 {
 	for (Chunk * chunk : chunks)
 	{
@@ -30,7 +30,7 @@ static void dirtyCheck(std::vector<Chunk *> chunks)
 bool Chunk::isReadyForMesh()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	std::vector<Chunk *> chunks = _computeNeighborChunks();
+	const std::vector<Chunk *> & chunks = _computeNeighborChunks();
 	for (Chunk * chunk : chunks)
 	{
 		if (!chunk || chunk->getState() < BUILT)

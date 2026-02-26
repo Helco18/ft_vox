@@ -57,7 +57,7 @@ VulkanEngine::RequiredLayers VulkanEngine::_getRequiredLayers() const
 	}
 
 	// On regarde si les layers requis sont supportés par notre implémentation Vulkan
-	std::vector<vk::LayerProperties> layerProperties = _context.enumerateInstanceLayerProperties();
+	const std::vector<vk::LayerProperties> layerProperties = _context.enumerateInstanceLayerProperties();
 	for (uint32_t i = 0; i < requiredLayers.size(); ++i)
 	{
 		bool foundExtension = false;
@@ -92,7 +92,7 @@ VulkanEngine::RequiredExtensions VulkanEngine::_getRequiredExtensions() const
 		requiredExtensions.push_back(vk::EXTDebugUtilsExtensionName);
 
 	// On récupère les extensions dont dispose notre contexte Vulkan
-	std::vector<vk::ExtensionProperties> extensionsProperties = _context.enumerateInstanceExtensionProperties();
+	const std::vector<vk::ExtensionProperties> extensionsProperties = _context.enumerateInstanceExtensionProperties();
 	// Pour chaque extension requises par GLFW, on regarde si elle existe dans notre contexte Vulkan.
 	// Si une manque, alors on ne peut pas initialiser GLFW.
 	for (const char * tmp : requiredExtensions)
@@ -114,7 +114,7 @@ VulkanEngine::RequiredExtensions VulkanEngine::_getRequiredExtensions() const
 
 void VulkanEngine::_selectPhysicalDevice()
 {
-	std::vector<vk::raii::PhysicalDevice> devices = _instance.enumeratePhysicalDevices();
+	const std::vector<vk::raii::PhysicalDevice> devices = _instance.enumeratePhysicalDevices();
 
 	if (devices.empty())
 		throw VulkanException("Failed to find a GPU compatible with Vulkan.");
@@ -183,7 +183,7 @@ QueueIndices VulkanEngine::_findQueueFamilies() const
 void VulkanEngine::_checkDeviceExtensions(const std::vector<const char *> & deviceExtensions) const
 {
 	// On récupère les device extensions dont dispose notre GPU.
-	std::vector<vk::ExtensionProperties> deviceExtensionProperties = _physicalDevice.enumerateDeviceExtensionProperties();
+	const std::vector<vk::ExtensionProperties> deviceExtensionProperties = _physicalDevice.enumerateDeviceExtensionProperties();
 	// Pour chaque extension requises par Vulkan, on regarde si elle existe dans notre GPU.
 	// Si une manque, alors on ne peut pas initialiser Vulkan.
 	for (const char * tmp : deviceExtensions)
@@ -219,7 +219,7 @@ void VulkanEngine::_createLogicalDevice()
 	// (par exemple VK_KHR_swapchain, nécessaire pour l’affichage).
 	_checkDeviceExtensions(deviceExtensions);
 
-	std::vector<vk::QueueFamilyProperties> qfp = _physicalDevice.getQueueFamilyProperties();
+	const std::vector<vk::QueueFamilyProperties> qfp = _physicalDevice.getQueueFamilyProperties();
 	float graphicsPriority = 0.0f;
 	float transferPriority = 1.0f;
 	_queueIndices = _findQueueFamilies();

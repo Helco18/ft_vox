@@ -42,11 +42,10 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	fragInfo.module = *shaderModule;
 	fragInfo.pName = "fragMain";
 
-	std::vector<vk::PipelineShaderStageCreateInfo> shaderStages = { vertexInfo, fragInfo };
-	shaderStages.shrink_to_fit();
+	const std::array<vk::PipelineShaderStageCreateInfo, 2> shaderStages = { vertexInfo, fragInfo };
 
 	// On rend notre viewport dynamique pour plus de flexibilité
-	std::vector<vk::DynamicState> dynamicStates = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
+	const std::array<vk::DynamicState, 2> dynamicStates = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
 	vk::PipelineDynamicStateCreateInfo dynamicStateInfo;
 	dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 	dynamicStateInfo.pDynamicStates = dynamicStates.data();

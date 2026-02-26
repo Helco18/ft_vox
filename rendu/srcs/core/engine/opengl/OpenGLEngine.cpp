@@ -62,7 +62,7 @@ void OpenGLEngine::beginFrame()
 
 void OpenGLEngine::endFrame()
 {
-	for (std::pair<const PipelineID, std::vector<Asset *>> & pipelinePair : _pipelineAssetMap)
+	for (const std::pair<const PipelineID, std::vector<Asset *>> & pipelinePair : _pipelineAssetMap)
 	{
 		PipelineMap::iterator pipelineit = _pipelineMap.find(pipelinePair.first);
 		if (pipelineit == _pipelineMap.end())
