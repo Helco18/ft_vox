@@ -90,13 +90,6 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 	_dirtyChunks = {};
 	int i = 0;
 	const Plane * planes = camera->getPlanes();
-	if (_cleanVisibleChunks)
-	{
-		ChunkVec::iterator it = std::remove_if(_visibleChunks.begin(), _visibleChunks.end(), [](const Chunk * a) { return !a; });
-		_visibleChunks.erase(it, _visibleChunks.end());
-		_visibleChunks.shrink_to_fit();
-		_cleanVisibleChunks = false;
-	}
 	if (!_isLocked.load())
 	{
 		_uploadedChunks = {};

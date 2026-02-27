@@ -69,6 +69,8 @@ void World::_generateChunks()
 		}
 		bool chunksReady;
 		bool isProceduralRequested = false;
+		std::vector<Task> taskList;
+		taskList.reserve(newChunks.size());
 		do {
 			chunksReady = true;
 			for (Chunk * chunk : newChunks)
@@ -97,20 +99,22 @@ void World::_generateChunks()
 				if (state == IDLE)
 				{
 					chunk->setState(BUILDING);
-					_chunkPool.submitTask([chunk]() { chunk->build(); });
+					taskList.push_back([chunk]() { chunk->build(); });
 					chunksReady = false;
 				}
 				else if (state == BUILT && chunk->isReadyForMesh())
 				{
 					chunk->setState(MESHING);
-					_chunkPool.submitTask([chunk]() { chunk->generateMesh(); });
+					taskList.push_back([chunk]() { chunk->generateMesh(); });
 					chunksReady = false;
 				}
 				else if (state == BUILDING || state == MESHING)
 					chunksReady = false;
 			}
-			if (!chunksReady && !isProceduralRequested)
+			if (!chunksReady && !isProceduralRequested && taskList.empty())
 				std::this_thread::yield();
+			_chunkPool.submitBatch(taskList);
+			taskList.clear();
 		} while (!chunksReady && !isProceduralRequested);
 	}
 }
@@ -154,5 +158,4 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 		_chunkMap.erase(chunk->getChunkLocation());
 		delete chunk;
 	}
-	_cleanVisibleChunks = true;
 }

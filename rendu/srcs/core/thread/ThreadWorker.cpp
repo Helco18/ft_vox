@@ -24,7 +24,7 @@ void ThreadWorker::_loop()
 				return;
 
 			task = std::move(_taskQueue.front());
-			_taskQueue.pop();
+			_taskQueue.pop_front();
 		}
 		if (task)
 			task();

@@ -46,14 +46,27 @@ void ThreadPool::submitTask(Task task)
 		return;
 	}
 	std::lock_guard<std::mutex> lock(_queueMutex);
-	_taskQueue.push(std::move(task));
+	_taskQueue.push_back(std::move(task));
+	_wakerCv.notify_one();
+}
+
+void ThreadPool::submitBatch(const std::vector<Task> & task)
+{
+	if (!_isActive.load())
+	{
+		if (!_isStopped)
+			Logger::log(THREAD, WARNING, "Attempted to submit a task to ThreadPool #" + toString(_id) + " before starting it.");
+		return;
+	}
+	std::lock_guard<std::mutex> lock(_queueMutex);
+	_taskQueue.insert(_taskQueue.end(), task.begin(), task.end());
 	_wakerCv.notify_one();
 }
 
 void ThreadPool::clearTasks()
 {
 	std::lock_guard<std::mutex> lock(_queueMutex);
-	_taskQueue = std::queue<Task>();
+	_taskQueue = {};
 }
 
 void ThreadPool::stop()

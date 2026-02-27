@@ -13,6 +13,7 @@ class ThreadPool
 		void					start(uint16_t requestedThreads);
 		void					stop();
 		void					submitTask(Task task); // use Task task = [params]() { func(params); }; to send it.
+		void					submitBatch(const std::vector<Task> & task);
 		void					clearTasks();
 
 		static uint16_t			getAvailableThreads() { return _availableThreads; }
@@ -25,7 +26,7 @@ class ThreadPool
 		static uint16_t			_count;
 		static uint16_t			_availableThreads;
 		uint16_t				_id;
-		std::queue<Task>		_taskQueue;
+		std::deque<Task>		_taskQueue;
 		std::condition_variable _wakerCv;
 		std::mutex 				_queueMutex;
 		WorkerPoolMap			_workers;

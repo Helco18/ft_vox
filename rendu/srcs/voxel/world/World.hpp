@@ -92,7 +92,6 @@ class World
 		ChunkVec									_uploadedChunks;
 		std::vector<std::pair<Chunk *, glm::vec3>>	_dirtyChunks;
 		std::atomic_bool							_readyToSwap = false;
-		bool										_cleanVisibleChunks = false;
 		ThreadPool									_chunkPool;
 		std::mutex									_mapMutex;
 		std::mutex									_visibleChunksMutex;
