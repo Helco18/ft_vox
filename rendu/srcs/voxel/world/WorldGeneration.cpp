@@ -32,7 +32,7 @@ World::ChunkVec World::_queryChunksInRange()
 					chunks.push_back(it->second);
 					continue;
 				}
-				std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>(x, y, z, this);
+				Chunk * chunk = new Chunk(x, y, z, this);
 				_chunkMap.try_emplace(location, std::move(chunk));
 				chunks.push_back(_chunkMap[location]);
 			}
@@ -40,7 +40,7 @@ World::ChunkVec World::_queryChunksInRange()
 	}
 
 	cameraPosition = _renderPoint;
-	std::sort(chunks.begin(), chunks.end(), [cameraPosition](const std::shared_ptr<Chunk> a, const std::shared_ptr<Chunk> b)
+	std::sort(chunks.begin(), chunks.end(), [cameraPosition](const Chunk * a, const Chunk * b)
 		{ return a->getDistance(cameraPosition) < b->getDistance(cameraPosition);});
 	return chunks;
 }
@@ -71,7 +71,7 @@ void World::_generateChunks()
 		bool isProceduralRequested = false;
 		do {
 			chunksReady = true;
-			for (std::shared_ptr<Chunk> chunk : newChunks)
+			for (Chunk * chunk : newChunks)
 			{
 				if (!_isLoaded.load(std::memory_order_relaxed))
 					return;
@@ -79,7 +79,7 @@ void World::_generateChunks()
 				if (isProceduralRequested)
 				{
 					_chunkPool.clearTasks();
-					for (std::shared_ptr<Chunk> chunk : newChunks)
+					for (Chunk * chunk : newChunks)
 					{
 						if (!chunk || chunk->isTakenByWorker())
 							continue;
@@ -126,12 +126,12 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 	int renderDistanceUp = camPos.z + renderDistance * CHUNK_LENGTH;
 	int renderDistanceDown = camPos.z - renderDistance * CHUNK_LENGTH;
 
-	std::vector<glm::ivec3> chunksToDelete;
+	std::vector<Chunk *> chunksToDelete;
 	std::vector<Chunk *> chunksToUnload;
 	std::lock_guard<std::mutex> lg(_mapMutex);
-	for (const std::pair<const glm::ivec3, std::shared_ptr<Chunk>> & chunkPair : _chunkMap)
+	for (const std::pair<const glm::ivec3, Chunk *> & chunkPair : _chunkMap)
 	{
-		const std::shared_ptr<Chunk> & chunk = chunkPair.second;
+		Chunk * chunk = chunkPair.second;
 		if (!chunk)
 			continue;
 		const glm::ivec3 & chunkPos = chunkPair.first;
@@ -143,13 +143,16 @@ void World::_checkForChunkDeletion(AEngine * engine, Camera * camera)
 				continue;
 			ChunkState state = chunk->getState();
 			if (state == UPLOADED)
-				chunksToUnload.push_back(chunk.get());
-			chunksToDelete.push_back(chunkPos);
+				chunksToUnload.push_back(chunk);
+			chunksToDelete.push_back(chunk);
 		}
 	}
 	for (Chunk * chunk : chunksToUnload)
 		chunk->unload(engine);
-	for (const glm::ivec3 & pos : chunksToDelete)
-		_chunkMap.erase(pos);
+	for (Chunk * chunk : chunksToDelete)
+	{
+		_chunkMap.erase(chunk->getChunkLocation());
+		delete chunk;
+	}
 	_cleanVisibleChunks = true;
 }

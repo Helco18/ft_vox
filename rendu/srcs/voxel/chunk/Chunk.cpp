@@ -15,9 +15,9 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 	_asset.vertices.data = nullptr;
 }
 
-static void dirtyCheck(const std::vector<std::shared_ptr<Chunk>> & chunks)
+static void dirtyCheck(const std::vector<Chunk *> & chunks)
 {
-	for (std::shared_ptr<Chunk> chunk : chunks)
+	for (Chunk * chunk : chunks)
 	{
 		if (!chunk)
 			continue;
@@ -30,8 +30,8 @@ static void dirtyCheck(const std::vector<std::shared_ptr<Chunk>> & chunks)
 bool Chunk::isReadyForMesh()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	const std::vector<std::shared_ptr<Chunk>> & chunks = _computeNeighborChunks();
-	for (std::shared_ptr<Chunk> chunk : chunks)
+	const std::vector<Chunk *> & chunks = _computeNeighborChunks();
+	for (Chunk * chunk : chunks)
 	{
 		if (!chunk || chunk->getState() < BUILT)
 			return false;
@@ -183,10 +183,10 @@ void Chunk::setBlockAt(const glm::vec3 & position, BlockType newType)
 		_world->_dirtyChunks.push_back({_topChunk, glm::vec3(position.x, position.y + 1, position.z)});
 	if (localPos.y == 0)
 		_world->_dirtyChunks.push_back({_bottomChunk, glm::vec3(position.x, position.y - 1, position.z)});
-	_world->_dirtyChunks.push_back({_world->getChunkAt(_chunkLocation), glm::vec3(position.x, position.y, position.z)});
+	_world->_dirtyChunks.push_back({this, glm::vec3(position.x, position.y, position.z)});
 }
 
-std::vector<std::shared_ptr<Chunk>> Chunk::_computeNeighborChunks()
+std::vector<Chunk *> Chunk::_computeNeighborChunks()
 {
 	_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
 	_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);

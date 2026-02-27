@@ -62,7 +62,7 @@ void InputManager::interceptOneTimeClicks(GLFWwindow * window, int key, int acti
 
 	if (action == GLFW_PRESS && key == GLFW_MOUSE_BUTTON_LEFT && targetedBlock.type != BlockType::AIR)
 	{
-		std::shared_ptr<Chunk> chunk = player.getWorld()->getChunkAt(targetedBlock.pos);
+		Chunk * chunk = player.getWorld()->getChunkAt(targetedBlock.pos);
 		if (!chunk)
 			return;
 		chunk->setBlockAt(targetedBlock.pos, BlockType::AIR);

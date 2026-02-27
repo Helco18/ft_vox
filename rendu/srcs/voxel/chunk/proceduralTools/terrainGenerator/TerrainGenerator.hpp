@@ -13,20 +13,20 @@ class TerrainGenerator
 		TerrainGenerator(Chunk * chunk, World * world, const glm::vec3 & chunkLocation);
 		~TerrainGenerator() {};
 
-		void		generateTerrain();
+		void						generateTerrain();
 
 	private:
-		double		_computeTerrainHeight(const BiomePaintingInfo & paintingInfo);
-		uint8_t		_computeBlock(const ABiome & biome, BiomePaintingInfo & paintingInfo);
-		void		_addCave(int x, int y, int z, int worldX, int worldY, int worldZ, int height);
-		void		_addFlyingIsland(const BiomePaintingInfo & paintingInfo, int y);
+		double						_computeTerrainHeight(const BiomePaintingInfo & paintingInfo);
+		uint8_t						_computeBlock(const ABiome & biome, BiomePaintingInfo & paintingInfo);
+		void						_addCave(int x, int y, int z, int worldX, int worldY, int worldZ, int height);
+		void						_addFlyingIsland(const BiomePaintingInfo & paintingInfo, int y);
 
 		Chunk *		_chunk;
-		World *		_world;
-		glm::vec3	_chunkLocation;
-		HeightMap	_heightMap;
-		HeightMap	_biomeMap;
-		double		_worldXOffset;
-		double		_worldYOffset;
-		double		_worldZOffset;
+		World *						_world;
+		glm::vec3					_chunkLocation;
+		HeightMap					_heightMap;
+		HeightMap					_biomeMap;
+		double						_worldXOffset;
+		double						_worldYOffset;
+		double						_worldZOffset;
 };

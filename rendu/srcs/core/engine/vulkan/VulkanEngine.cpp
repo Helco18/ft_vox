@@ -83,7 +83,7 @@ void VulkanEngine::setVsync(bool vsync)
 
 void VulkanEngine::beginFrame()
 {
-	_drawableAssets = {};
+	_drawableAssets.clear();
 	if (_drawableAssets.size() != _pipelineCache.size())
 		_drawableAssets.resize(_pipelineCache.size());
 }
