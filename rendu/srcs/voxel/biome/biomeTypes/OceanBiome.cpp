@@ -10,14 +10,16 @@ double	OceanBiome::computeBiomeHeight(const BiomePaintingInfo & paintingInfo) co
 uint8_t OceanBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 {
 	int worldY = paintingInfo.worldY;
-	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 
-	if (worldY >= -3 && worldY <= -1)
-		return BlockType::SAND;
-	else if (worldY <= height - 2 - (height % 2))
-		return BlockType::STONE;
-	else
+	if (worldY >= -2 - noiseValue * 2 && worldY <= 0)
+		return paintingInfo.temperature < -0.2f - noiseValue * 0.05 ? BlockType::WHITE_GRAVEL : BlockType::SAND;
+	else if (worldY < -4 - noiseValue * 5 && worldY > -20 - noiseValue * 5)
+		return BlockType::WHITE_GRAVEL;
+	else if (worldY < -20 - noiseValue * 5 && worldY > -30 - noiseValue * 5)
 		return BlockType::DIRT;
+	else
+		return BlockType::STONE;
 }
 
 uint8_t OceanBiome::splitSkyFromSea(const BiomePaintingInfo & paintingInfo) const
