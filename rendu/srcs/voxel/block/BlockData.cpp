@@ -23,6 +23,7 @@ void BlockData::init()
 	std::vector<std::string> blackStoneTextures(6, "resources/assets/textures/black_stone.png");
 	std::vector<std::string> whiteGravelTextures(6, "resources/assets/textures/white_gravel.png");
 	std::vector<std::string> brownStoneTextures(6, "resources/assets/textures/brown_stone.png");
+	std::vector<std::string> magmaStoneTextures(6, "resources/assets/textures/magma_stone.png");
 	
 	_dataRegistry.emplace(AIR, BlockData("air", false, false, false, {}));
 	_dataRegistry.emplace(DIRT, BlockData("dirt", true, true, false, dirtTextures));
@@ -39,6 +40,7 @@ void BlockData::init()
 	_dataRegistry.emplace(BLACK_STONE, BlockData("black_stone", true, true, false, blackStoneTextures));
 	_dataRegistry.emplace(WHITE_GRAVEL, BlockData("white_gravel", true, true, false, whiteGravelTextures));
 	_dataRegistry.emplace(BROWN_STONE, BlockData("brown_stone", true, true, false, brownStoneTextures));
+	_dataRegistry.emplace(MAGMA_STONE, BlockData("magma_stone", true, true, false, magmaStoneTextures));
 }
 
 BlockData & BlockData::getBlockData(uint8_t type)

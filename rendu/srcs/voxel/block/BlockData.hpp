@@ -31,7 +31,8 @@ enum BlockType
 	WHITE_STONE,
 	BLACK_STONE,
 	WHITE_GRAVEL,
-	BROWN_STONE
+	BROWN_STONE,
+	MAGMA_STONE
 };
 
 class BlockData

@@ -11,9 +11,12 @@ uint8_t TundraBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 {
 	int worldY = paintingInfo.worldY;
 	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::WHITE_GRAVEL;
+	else if (worldY < -500 + noiseValue * 10)
+		return BlockType::MAGMA_STONE;
 	else if (worldY <= height - 2 - (height % 2))
 		return BlockType::STONE;
 	else

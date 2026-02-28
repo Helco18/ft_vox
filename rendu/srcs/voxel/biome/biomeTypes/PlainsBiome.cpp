@@ -11,11 +11,14 @@ uint8_t PlainsBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 {
 	int worldY = paintingInfo.worldY;
 	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
+	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 
 	if (paintingInfo.slope > 2.0f)
 		return BlockType::STONE;
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::SAND;
+	else if (worldY < -500 + noiseValue * 10)
+		return BlockType::MAGMA_STONE;
 	else if (worldY <= height - 2 - (height % 2))
 		return BlockType::STONE;
 	else
