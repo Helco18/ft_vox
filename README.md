@@ -4,6 +4,36 @@ les concepts avancés du rendu bas niveau et de la programmation GPU moderne.
 
 *Réalisé par [Gaël Cannaud](https://github.com/Helco18) et [Sébastien Craeymeersch](https://github.com/AgarOther).*
 
+## Build
+
+Assurez-vous que les dépendances suivantes sont présentes :  
+
+- **Vulkan SDK** (version minimale recommandée : 1.3.x)  
+- Compilateur **C++17** ou supérieur  
+- Make et outils de build standards (cmake, wget, tar, git)  
+
+Toutes les librairies nécessaires (**GLFW**, **GLM**, **stb_image**, **GLAD**, **ImGUI**) sont automatiquement téléchargées et installées via le Makefile.
+
+Pour compiler le projet :  
+
+```bash
+git clone https://github.com/Helco18/ft_vox.git
+cd ft_vox/rendu
+make
+```
+
+## Run
+
+Pour lancer l’exécutable :
+```Bash
+./ft_vox [flags]
+```
+
+## Build / Run rapide en une seule commande
+```Bash
+make && ./ft_vox
+```
+
 ## Hot-swappable rendering backend
 
 Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une abstraction complète des APIs graphiques. Notre architecture permet un rendu multi-backend avec bascule d’API graphique à chaud entre OpenGL et Vulkan, à tout moment de l’exécution.
