@@ -42,6 +42,7 @@ class Camera
 		const glm::vec3 &			getPosition() const { return _position; }
 		const glm::quat &			getOrientation() const { return _orientation; }
 		const glm::vec3	&			getAltitude() const { return _altitude; }
+		CameraType					getCameraType() const { return _type; }
 		int							getWidth() const { return _width; }
 		int							getHeight() const { return _height; }
 		float						getYaw() const { return _yaw; }
@@ -51,7 +52,6 @@ class Camera
 		float						getSpeed() const { return _speed; }
 		uint8_t						getRenderDistance() const { return _renderDistance; }
 		const CameraBuffer &		getBuffer() const { return _cameraBuffer; }
-		bool						isIgnoringYMovement() const { return _ignoreY; }
 		const glm::mat4 &			getView() const { return _view; }
 		const glm::mat4 &			getProj() const { return _cameraBuffer.proj; }
 		const Plane * 				getPlanes() const { return _planes; }
@@ -66,7 +66,6 @@ class Camera
 		void						setSpeed(float speed) { _speed = speed; }
 		void						setRenderDistance(int renderDistance) { _renderDistance = renderDistance; }
 		void						setCameraType(CameraType type);
-		void						setIgnoreYMovement(bool ignoreY) { _ignoreY = ignoreY; }
 
 		void						changeYaw(float yaw) { _yaw += yaw; }
 		void						changePitch(float pitch) { _pitch += pitch; }
@@ -101,7 +100,6 @@ class Camera
 		std::vector<PipelineType>	_pipelines;
 		CameraType					_type = EULER;
 		CameraBuffer				_cameraBuffer;
-		bool						_ignoreY = false;
 		glm::mat4					_view;
 		Plane						_planes[4];
 		float						_aspectRatio = 0.0f;

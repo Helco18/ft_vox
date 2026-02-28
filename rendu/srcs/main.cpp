@@ -74,11 +74,6 @@ static ProgramParams parseArgs(int ac, char ** av)
 					params.engineType = OPENGL;
 					break;
 				}
-				else if (!strcmp(&str[i], "ignoreY"))
-				{
-					params.ignoreY = true;
-					break;
-				}
 				else if (!strcmp(&str[i], "vsync"))
 				{
 					params.vsync = true;

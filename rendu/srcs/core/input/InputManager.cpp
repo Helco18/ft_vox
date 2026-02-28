@@ -97,7 +97,7 @@ void InputManager::interceptMovements(WindowManager * windowManager)
 	velocity = speed * deltaTime;
 	pos = camera->getPosition();
 	up = camera->computeUp();
-	forward = camera->computeForward(camera->isIgnoringYMovement());
+	forward = camera->computeForward(camera->getCameraType() == CameraType::FPS);
 	right = camera->computeRight();
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		pos += forward * velocity;

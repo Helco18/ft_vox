@@ -34,6 +34,7 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 	switch (_type)
 	{
 		case EULER:
+		case FPS:
 		{
 			roll = 0;
 			up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -58,25 +59,6 @@ void Camera::updateOrientation(double mouseX, double mouseY, float roll)
 			right = glm::normalize(_orientation * glm::vec3(1.0f, 0.0f, 0.0f));
 			forward = glm::normalize(_orientation * glm::vec3(0.0f, 0.0f, -1.0f));
 			qRoll = glm::angleAxis(glm::radians(roll), forward);
-			break;
-		}
-		case FPS:
-		{
-			roll = 0;
-			up = glm::vec3(0.0f, 1.0f, 0.0f);
-			right = glm::vec3(1.0f, 0.0f, 0.0f);
-			forward = glm::vec3(0.0f, 0.0f, -1.0f);
-			qRoll = glm::angleAxis(glm::radians(0.0f), forward);
-			if (_pitch > 89.0f)
-			{
-				rotY -= _pitch - 89.0f;
-				_pitch = 89.0f;
-			}
-			else if (_pitch < -89.0f)
-			{
-				rotY -= _pitch - -89.0f;
-				_pitch = -89.0f;
-			}
 			break;
 		}
 	}
@@ -126,6 +108,7 @@ glm::mat4 Camera::computeView() const
 	switch (_type)
 	{
 		case EULER :
+		case FPS :
 		{
 			glm::mat4 view = glm::lookAt(_position, _position + computeForward(false), computeUp());
 			return(view);
@@ -135,11 +118,6 @@ glm::mat4 Camera::computeView() const
 			glm::mat4 rot = glm::mat4_cast(glm::conjugate(_orientation));
 			glm::mat4 trans = glm::translate(glm::mat4(1.0f), -_position);
 			return(rot * trans);
-		}
-		case FPS :
-		{
-			glm::mat4 view = glm::lookAt(_position, _position + computeForward(false), computeUp());
-			return(view);
 		}
 		default: return (glm::mat4());
 	}
@@ -155,8 +133,6 @@ glm::vec3 Camera::getEulerAngles() const
 
 void Camera::setCameraType(CameraType type)
 {
-	if (type == FPS)
-		Logger::log(ENVIRONMENT, WARNING, "FPS camera pas fini");
 	if (type != SIX_DOF)
 	{
 		_pitch = 0.0f;

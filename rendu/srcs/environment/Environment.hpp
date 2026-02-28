@@ -9,7 +9,6 @@ struct ProgramParams
 {
 	uint8_t		renderDistance = 8;
 	EngineType	engineType = VULKAN;
-	bool		ignoreY = false;
 	uint8_t		fov = 80;
 	bool		vsync = false;
 	uint32_t	seed = 42;

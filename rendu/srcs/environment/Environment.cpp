@@ -37,7 +37,6 @@ void Environment::init(ProgramParams & programParams)
 	camera->addPipelineToRender(PIPELINE_BLOCKOVERLAY);
 	camera->setFOV(programParams.fov);
 	camera->setRenderDistance(programParams.renderDistance);
-	camera->setIgnoreYMovement(programParams.ignoreY);
 
 	BlockData::init();
 	BiomeManager::init(programParams.seed);

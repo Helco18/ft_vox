@@ -39,11 +39,6 @@ void Gui::generateGui(GLFWwindow * window)
 		WorldManager::getWorld(WORLD_NAME)->lockGeneration(isLocked);
 
 	ImGui::SameLine();
-	static bool isIgnoringYMovement = camera->isIgnoringYMovement();
-	if (ImGui::Checkbox("Ignore Y Movement", &isIgnoringYMovement))
-		camera->setIgnoreYMovement(isIgnoringYMovement);
-
-	ImGui::SameLine();
 	static bool isVsync = windowManager->isVsyncEnabled();
 	if (ImGui::Checkbox("VSync", &isVsync))
 		windowManager->setVsync(isVsync);
