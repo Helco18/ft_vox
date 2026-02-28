@@ -12,7 +12,7 @@ Assurez-vous que les dépendances suivantes sont présentes :
 - Compilateur **C++17** ou supérieur  
 - Make et outils de build standards (cmake, wget, tar, git)  
 
-Toutes les librairies nécessaires (**GLFW**, **GLM**, **stb_image**, **GLAD**, **ImGUI**) sont automatiquement téléchargées et installées via le Makefile.
+Toutes les librairies nécessaires (**GLFW**, **GLM**, **stb_image**, **GLAD**) sont automatiquement téléchargées et installées via le Makefile.
 
 Pour compiler le projet :  
 
