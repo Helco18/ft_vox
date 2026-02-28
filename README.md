@@ -20,6 +20,9 @@ Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une ab
 - **SHIFT** : accélérer la caméra
 - **Molette haut / bas** : ajuster la vitesse de déplacement
 - **Q / E** : contrôle du tangage *(uniquement en mode 6-DOF)*
+- **LEFT CLIC** : casse les blocks
+- **F6** : affiche la bordure des chunks
+- **F7** : active le wireframe
 
 ## Flags de l’exécutable
 
