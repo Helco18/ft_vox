@@ -34,7 +34,7 @@ Pour lancer l’exécutable :
 make && ./ft_vox
 ```
 
-## Hot-swappable rendering backend
+## Hot-swappable RHI
 
 Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une abstraction complète des APIs graphiques. Notre architecture permet un rendu multi-backend avec bascule d’API graphique à chaud entre OpenGL et Vulkan, à tout moment de l’exécution.
 
@@ -50,7 +50,7 @@ Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une ab
 - **SHIFT** : accélérer la caméra
 - **Molette haut / bas** : ajuster la vitesse de déplacement
 - **Q / E** : contrôle du tangage *(uniquement en mode 6-DOF)*
-- **LEFT CLIC** : casse les blocks
+- **Clic droit** : casse les blocks
 - **F6** : affiche la bordure des chunks
 - **F7** : active le wireframe
 
@@ -60,14 +60,17 @@ L’exécutable supporte plusieurs flags d’exécution :
 - `-gl` `-opengl` : force l’utilisation de l’API **OpenGL** au lancement. *(Vulkan est utilisé par défaut)*
 - `-f` / `-fov` : initialise le **FOV** à la valeur renseignée. *(Valeurs par défaut : 90)*
 - `-p` : active le **profiler intégré**.
-- `-d` : active les **messages de debug**.
-- `-v` / `-vsync` : active la **synchronisation verticale**.
-- `-r=<distance>` : initialise la limite de **render distance** à la valeur renseignée. *(La valeur par défaut est 10 chunks de 32×32×32)*
-- `-x=<coordX>` / `-y=<coordY>` /  `-z=<coordZ>` : définit la **position de spawn** par défaut. *(Valeurs par défaut : 0, 0, 0)*
+- `-d` : active les 
+**messages de debug du programme et de l'engine**.
+- `-v` : active seulement les **messages de debug de l'engine**.
+- `-vsync` : active la **synchronisation verticale**.
+- `-r <distance>` : initialise la limite de **render distance** à la valeur renseignée. *(La valeur par défaut est 10 chunks de 32×32×32)*
+- `-x <coordX>` / `-y <coordY>` /  `-z <coordZ>` : définit la **position de spawn** par défaut. *(Valeurs par défaut : 0, 0, 0)*
+- `-s` : définit la **seed utilisée pour la génération**. *(Seed par défaut : 42)*
 
 ## Stack technique
 
-Ce projet utilise la bibliothèque [GLFW](https://www.glfw.org) pour la création de la fenêtre et la gestion des entrées, ainsi que [OpenGL](https://www.opengl.org/) et [Vulkan](https://www.vulkan.org) pour le rendu graphique. Les shaders sont en [Slang](https://shader-slang.org/) pour assurer la compatibilité multi-backend. La caméra est entièrement gérée avec des **quaternions** pour des rotations précises et fluides, évitant ainsi le gimbal lock. Nous utilisons également notre **Simplex Noise** pour l’optimisation de la génération procédurale. Le projet est entièrement en **C++** et s’appuie sur un **Makefile**. L’exécutable gère différents **flags de compilation et d’exécution** pour faciliter le build, les tests et la configuration.  
+Ce projet utilise la bibliothèque [GLFW](https://www.glfw.org) pour la création de la fenêtre et la gestion des entrées, ainsi que [OpenGL](https://www.opengl.org/) et [Vulkan](https://www.vulkan.org) pour le rendu graphique. Les shaders sont en [Slang](https://shader-slang.org/) pour assurer la compatibilité multi-backend : c'est une langue de programmation de shaders qui permet de compiler sur OpenGL et Vulkan. La caméra est entièrement gérée avec des **quaternions** pour des rotations précises et fluides, évitant ainsi le gimbal lock. Nous utilisons également notre **Simplex Noise** pour l’optimisation de la génération procédurale. Le projet est entièrement en **C++** et en **Slang**. L’exécutable gère différents **flags de compilation et d’exécution** pour faciliter le build, les tests et la configuration.
   
 Pour les tests et l’optimisation, nous disposons d’outils comme un **profiler intégré** fournissant des statistiques détaillées sur le nombre d’appels et les temps d’exécution moyens et médians des fonctions, tandis qu’un **logger** permet de suivre en temps réel les différentes étapes du programme. L’exécutable retourne **0 en cas de réussite** et **1 en cas d’erreur**.
 
