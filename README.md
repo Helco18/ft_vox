@@ -1,5 +1,5 @@
 # ft_vox
-ft_vox est un projet de moteur graphique 3D, conçu pour explorer
+ft_vox est un projet de voxel utilisant un moteur graphique 3D, conçu pour explorer
 les concepts avancés du rendu bas niveau et de la programmation GPU moderne.
 
 *Réalisé par [Gaël Cannaud](https://github.com/Helco18) et [Sébastien Craeymeersch](https://github.com/AgarOther).*

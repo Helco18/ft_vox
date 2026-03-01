@@ -5,7 +5,7 @@
 class CustomException: public std::exception
 {
 	public:
-		explicit CustomException(LogSource source, const std::string & message): _source(source), _message(message) {}
+		CustomException(LogSource source, const std::string & message): _source(source), _message(message) {}
 		const char *	what() const noexcept override { return _message.c_str(); };
 		LogSource		getSource() const { return _source; }
 
