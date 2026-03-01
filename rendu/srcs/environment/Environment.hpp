@@ -21,12 +21,12 @@ class Environment
 		Environment() {};
 		~Environment();
 
-		void		init(ProgramParams & programParams);
-		void		loop();
+		void			init(ProgramParams & programParams);
+		void			loop();
 		
-		Player &	getPlayer() { return _player; }
+		Player &		getPlayer() { return _player; }
 
-		void		stop() { _running = false; }
+		void			stop() { _running = false; }
 
 	private:
 		WindowManager *	_windowManager = nullptr;
