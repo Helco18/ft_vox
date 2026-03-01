@@ -21,9 +21,10 @@ void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int
 	double px = worldX * scaleX;
 	double py = worldY * scaleY;
 	double pz = static_cast<double>(worldZ) * scaleZ;
-	const SimplexNoise<3> & noise = _chunk->_world->getNoiseCave();
+	const SimplexNoise<3> & noise = _chunk->_world->getCaveNoise();
 
 	double caveValue = noise.queryState({px, py, pz});
+	bool isNether = worldY < -500 - caveValue * 20 && worldY >= -2000 + caveValue * 20;
 
 	double target = 0.0;     // milieu de la bande
 	double epsilon = 0.032;    // largeur de la bande
@@ -42,16 +43,16 @@ void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int
 		double gy = ny1 - caveValue;
 		double gz = nz1 - caveValue;
 		double gradientMagnitude = sqrt(gx * gx + gy * gy + gz * gz);
-		if (gradientMagnitude / depthFactor < gradientThreshold)
+		if (gradientMagnitude / depthFactor < gradientThreshold + isNether * 0.001)
 			_chunk->_blocks[x][y][z] = BlockType::AIR;
 	}
 	// --- CAVE GENERATION --- : cheese
 	if (worldY < height - 60)
 	{
-		caveValue = _chunk->_world->getNoiseCave().queryState({worldX * 2.0, worldY * 4.0, static_cast<double>(worldZ) * 2.0});
+		caveValue = _chunk->_world->getCaveNoise().queryState({worldX * 2.0, worldY * 4.0, static_cast<double>(worldZ) * 2.0});
 		depthFactor = std::clamp(-(worldY - height) / 50.0, 0.0, 1.0);
 		caveValue *= depthFactor;
-		if (caveValue > 0.3)
+		if (caveValue > 0.3 - isNether * (0.5 - (_world->getNetherNoise().queryState({worldX * 0.1, worldY * 0.1, worldZ * 0.1}) * 20)))
 			_chunk->_blocks[x][y][z] = BlockType::AIR;
 	}
 }

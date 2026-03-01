@@ -17,8 +17,10 @@ uint8_t PlainsBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 		return BlockType::STONE;
 	if (worldY >= -3 && worldY <= -1)
 		return BlockType::SAND;
-	else if (worldY < -500 + noiseValue * 10)
+	else if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;
+	else if (worldY <= -1990 + noiseValue * 10)
+		return BlockType::BLACK_STONE;
 	else if (worldY <= height - 2 - (height % 2))
 		return BlockType::STONE;
 	else

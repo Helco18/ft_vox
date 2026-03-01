@@ -15,8 +15,10 @@ uint8_t TundraBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 
 	if (worldY >= -6 && worldY <= -1)
 		return BlockType::WHITE_GRAVEL;
-	else if (worldY < -500 + noiseValue * 10)
+	else if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;
+	else if (worldY <= -1990 + noiseValue * 10)
+		return BlockType::BLACK_STONE;
 	else if (worldY <= height - 2 - (height % 2))
 		return BlockType::STONE;
 	else

@@ -83,8 +83,12 @@ float4 fragMain(VertexOutput output) : SV_Target
 	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue * output.outAlpha);
 	vertColor.rgb *= diffuse;
 
-	// Fog ---------------------------------------------------------------------
-	float3 fogColor = float3(0.7, 0.8, 1.0);
+    // Fog ---------------------------------------------------------------------
+    float3 fogColor;
+    if (output.camPos.y <= -500.0f)
+        fogColor = float3(35.0f / 255.0f, 0.0, 0.0);
+    else
+        fogColor = float3(0.7, 0.8, 1.0);
 	float fogStart = chunkData.maxDistanceRendered * 0.5f;
 	float fogEnd = chunkData.maxDistanceRendered;
 	float distanceToCamera = length(output.worldPos - output.camPos);

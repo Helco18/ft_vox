@@ -55,8 +55,10 @@ uint8_t MesaBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 		return BlockType::RED_STONE;
 	else if (worldY > (-50 + noiseValue * 5) && worldY < 0 - noiseValue * 5)
 		return BlockType::SANDSTONE;
-	else if (worldY < -500 + noiseValue * 10)
+	else if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;
+	else if (worldY <= -1990 + noiseValue * 10)
+		return BlockType::BLACK_STONE;
 	else if (worldY <= -40)
 		return BlockType::STONE;
 	return BlockType::RED_STONE;

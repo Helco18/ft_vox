@@ -17,8 +17,10 @@ uint8_t IceSpikesBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 	int worldY = paintingInfo.worldY;
 	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 
-	if (worldY < -500 + noiseValue * 10)
+	if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;
+	else if (worldY <= -1990 + noiseValue * 10)
+		return BlockType::BLACK_STONE;
 	return paintingInfo.worldY > 0 ? BlockType::ICE : BlockType::STONE;
 }
 

@@ -16,6 +16,7 @@ void World::load()
 	_temperatureNoise.setFBM(2, 0.5, 2.0);
 	_caveNoise.setFBM(1, 0.5, 2.0);
 	_heightNoise.setFBM(3, 1.0, 2.0);
+	_netherNoise.setFBM(2, 0.5, 2.0);
 	_isLoaded.store(true);
 	_chunkPool.start(ThreadPool::getAvailableThreads());
 	_chunkPool.submitTask([this]() { _generateChunks(); });

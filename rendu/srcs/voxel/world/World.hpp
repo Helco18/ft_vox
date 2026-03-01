@@ -39,6 +39,7 @@ class World
 			_temperatureNoise(SimplexNoise<2>(seed, 0.0005f, 100000.0f)),
 			_heightNoise(SimplexNoise<2>(seed, 0.0001f, 100000.0f)),
 			_caveNoise(SimplexNoise<3>(seed, 0.005f, 100000.0f)),
+			_netherNoise(SimplexNoise<3>(seed, 0.1f, 100000.0f)),
 			_name(name) {}
 		~World();
 
@@ -52,7 +53,8 @@ class World
 		const SimplexNoise<2> &									getTerrainNoise() const { return _terrainNoise; }
 		const SimplexNoise<2> &									getTemperatureNoise() const { return _temperatureNoise; }
 		const SimplexNoise<2> &									getHeightNoise() const { return _heightNoise; }
-		const SimplexNoise<3> &									getNoiseCave() const { return _caveNoise; }
+		const SimplexNoise<3> &									getCaveNoise() const { return _caveNoise; }
+		const SimplexNoise<3> &									getNetherNoise() const { return _netherNoise; }
 		bool													isLoaded() const { return _isLoaded.load(); }
 		bool													isLocked() const { return _isLocked.load(); }
 
@@ -84,6 +86,7 @@ class World
 		SimplexNoise<2>											_temperatureNoise;
 		SimplexNoise<2>											_heightNoise;
 		SimplexNoise<3>											_caveNoise;
+		SimplexNoise<3>											_netherNoise;
 		std::string												_name;
 		ChunkMap												_chunkMap;
 		ChunkVec												_visibleChunks;
