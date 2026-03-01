@@ -197,11 +197,12 @@ void Chunk::setBlockAt(const glm::vec3 & position, BlockType newType)
 		_world->_dirtyChunks.push_back({_topChunk, glm::vec3(position.x, position.y + 1, position.z)});
 	if (localPos.y == 0)
 		_world->_dirtyChunks.push_back({_bottomChunk, glm::vec3(position.x, position.y - 1, position.z)});
-	_world->_dirtyChunks.push_back({_world->getChunkAt(_chunkLocation), glm::vec3(position.x, position.y, position.z)});
+	_world->_dirtyChunks.push_back({_self, glm::vec3(position.x, position.y, position.z)});
 }
 
 std::array<std::weak_ptr<Chunk>, 6> Chunk::_computeNeighborChunks()
 {
+	_self = _world->getChunkAtChunkLocation(_chunkLocation);
 	_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
 	_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);
 	_eastChunk = _world->getChunkAtChunkLocation(_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1);

@@ -115,6 +115,7 @@ class Chunk
 		std::atomic_bool						_isTakenByWorker = false;
 		std::atomic_bool						_deleted = false;
 
+		std::weak_ptr<Chunk> 					_self;
 		std::weak_ptr<Chunk> 					_northChunk;
 		std::weak_ptr<Chunk> 					_southChunk;
 		std::weak_ptr<Chunk> 					_eastChunk;
