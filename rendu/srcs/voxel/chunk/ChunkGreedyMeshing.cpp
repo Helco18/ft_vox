@@ -144,30 +144,37 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 	int y = pos.y + normal.y;
 	int z = pos.z + normal.z;
 
+	std::shared_ptr<Chunk> northChunk = _northChunk.lock();
+	std::shared_ptr<Chunk> southChunk = _southChunk.lock();
+	std::shared_ptr<Chunk> topChunk = _topChunk.lock();
+	std::shared_ptr<Chunk> bottomChunk = _bottomChunk.lock();
+	std::shared_ptr<Chunk> eastChunk = _eastChunk.lock();
+	std::shared_ptr<Chunk> westChunk = _westChunk.lock();
+
 	if (x < 0 || x >= CHUNK_WIDTH)
 	{
-		if (normal.x == -1 && _southChunk.lock() && _southChunk.lock()->getState() >= BUILT)
-			return _southChunk.lock()->getBlock(CHUNK_WIDTH - 1, y, z);
-		else if (normal.x == 1 && _northChunk.lock() && _northChunk.lock()->getState() >= BUILT)
-			return _northChunk.lock()->getBlock(0, y, z);
+		if (normal.x == -1 && southChunk && southChunk->getState() >= BUILT)
+			return southChunk->getBlock(CHUNK_WIDTH - 1, y, z);
+		else if (normal.x == 1 && northChunk && northChunk->getState() >= BUILT)
+			return northChunk->getBlock(0, y, z);
 		else
 			return 0;
 	}
 	if (y < 0 || y >= CHUNK_HEIGHT)
 	{
-		if (normal.y == -1 && _bottomChunk.lock() && _bottomChunk.lock()->getState() >= BUILT)
-			return _bottomChunk.lock()->getBlock(x, CHUNK_HEIGHT - 1, z);
-		else if (normal.y == 1 && _topChunk.lock() && _topChunk.lock()->getState() >= BUILT)
-			return _topChunk.lock()->getBlock(x, 0, z);
+		if (normal.y == -1 && bottomChunk && bottomChunk->getState() >= BUILT)
+			return bottomChunk->getBlock(x, CHUNK_HEIGHT - 1, z);
+		else if (normal.y == 1 && topChunk && topChunk->getState() >= BUILT)
+			return topChunk->getBlock(x, 0, z);
 		else
 			return 0;
 	}
 	if (z < 0 || z >= CHUNK_LENGTH)
 	{
-		if (normal.z == -1 && _westChunk.lock() && _westChunk.lock()->getState() >= BUILT)
-			return _westChunk.lock()->getBlock(x, y, CHUNK_LENGTH - 1);
-		else if (normal.z == 1 && _eastChunk.lock() && _eastChunk.lock()->getState() >= BUILT)
-			return _eastChunk.lock()->getBlock(x, y, 0);
+		if (normal.z == -1 && westChunk && westChunk->getState() >= BUILT)
+			return westChunk->getBlock(x, y, CHUNK_LENGTH - 1);
+		else if (normal.z == 1 && eastChunk && eastChunk->getState() >= BUILT)
+			return eastChunk->getBlock(x, y, 0);
 		else
 			return 0;
 	}
