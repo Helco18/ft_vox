@@ -64,10 +64,8 @@ void VulkanEngine::load()
 	// ils permettent de s’assurer que les opérations GPU (rendu, présentation, etc.) s’exécutent dans le bon ordre et ne se chevauchent pas.
 	_createSyncObjects();
 
-	// On construit notre *graphics pipeline*, c’est-à-dire la configuration complète du pipeline graphique :
-	// shaders, entrées vertex, assemblage, rasterization, blending, etc.
-
 	_initImGui();
+	_pendingUnloads.resize(MAX_FRAMES_IN_FLIGHT);
 	_isInitalized = true;
 	Logger::log(ENGINE_VULKAN, INFO, "Vulkan engine initialized successfully.");
 }
@@ -86,6 +84,7 @@ void VulkanEngine::beginFrame()
 	_drawableAssets.clear();
 	if (_drawableAssets.size() != _pipelineCache.size())
 		_drawableAssets.resize(_pipelineCache.size());
+	_processPendingUnloads();
 }
 
 void VulkanEngine::endFrame()

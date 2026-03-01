@@ -125,7 +125,6 @@ void VulkanEngine::_recordCommandBuffer()
 void VulkanEngine::_retrieveCommandBuffers()
 {
 	_graphicsCommandBuffers[_currentFrame].reset();
-	_processPendingUnloads();
 	_processPendingAssets();
 	_processPendingUniforms();
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;

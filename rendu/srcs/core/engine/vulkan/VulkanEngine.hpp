@@ -250,8 +250,7 @@ class VulkanEngine : public AEngine
 		DrawableAssets						_drawableAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
 		std::vector<PendingAsset>			_pendingAssets;
-		std::vector<AssetID>				_pendingUnloads;
-		std::vector<AssetID>				_nextPendingUnloads;
+		std::vector<std::vector<AssetID>>	_pendingUnloads;
 
 		// Threads
 		ThreadPool							_threadPool;

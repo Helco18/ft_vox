@@ -42,7 +42,7 @@ void VulkanEngine::unloadAsset(AssetID assetID)
 	if (!asset || !asset->isUploaded)
 		return;
 	asset->isUploaded = false;
-	_pendingUnloads.push_back(assetID);
+	_pendingUnloads[_currentFrame].push_back(assetID);
 }
 
 void VulkanEngine::_processPendingAssets()
@@ -94,10 +94,9 @@ void VulkanEngine::_processPendingAssets()
 
 void VulkanEngine::_processPendingUnloads()
 {
-	if (_pendingUnloads.empty())
+	if (_pendingUnloads[_currentFrame].empty())
 		return;
-	for (AssetID assetID : _nextPendingUnloads)
+	for (AssetID assetID : _pendingUnloads[_currentFrame])
 		_assetDataCache.erase(assetID);
-	_nextPendingUnloads.clear();
-	_nextPendingUnloads = _pendingUnloads;
+	_pendingUnloads[_currentFrame].clear();
 }
