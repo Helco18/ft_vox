@@ -15,10 +15,11 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 	_asset.vertices.data = nullptr;
 }
 
-static void dirtyCheck(const std::vector<Chunk *> & chunks)
+static void dirtyCheck(const std::array<std::weak_ptr<Chunk>, 6> & chunks)
 {
-	for (Chunk * chunk : chunks)
+	for (std::weak_ptr<Chunk> ptr : chunks)
 	{
+		std::shared_ptr<Chunk> chunk = ptr.lock();
 		if (!chunk)
 			continue;
 		ChunkState state = chunk->getState();
@@ -30,9 +31,10 @@ static void dirtyCheck(const std::vector<Chunk *> & chunks)
 bool Chunk::isReadyForMesh()
 {
 	std::lock_guard<std::mutex> lg(_workerMutex);
-	const std::vector<Chunk *> & chunks = _computeNeighborChunks();
-	for (Chunk * chunk : chunks)
+	const std::array<std::weak_ptr<Chunk>, 6> & chunks = _computeNeighborChunks();
+	for (std::weak_ptr<Chunk> ptr : chunks)
 	{
+		std::shared_ptr<Chunk> chunk = ptr.lock();
 		if (!chunk || chunk->getState() < BUILT)
 			return false;
 	}
@@ -41,6 +43,9 @@ bool Chunk::isReadyForMesh()
 
 void Chunk::build()
 {
+	if (_deleted.load())
+		return;
+
 	Profiler p("Chunk::build");
 	_isTakenByWorker.store(true);
 	std::lock_guard<std::mutex> lg(_workerMutex);
@@ -59,6 +64,9 @@ void Chunk::build()
 
 void Chunk::generateMesh()
 {
+	if (_deleted.load())
+		return;
+
 	_isTakenByWorker.store(true);
 	std::lock_guard<std::mutex> lg(_workerMutex);
 
@@ -77,7 +85,7 @@ void Chunk::generateMesh()
 
 void Chunk::uploadAsset(AEngine * engine)
 {
-	if (!_workerMutex.try_lock())
+	if (_deleted.load() || !_workerMutex.try_lock())
 		return;
 
 	engine->uploadAsset(_asset, PipelineManager::getPipeline(PIPELINE_VOXEL).id);
@@ -89,6 +97,9 @@ void Chunk::uploadAsset(AEngine * engine)
 
 void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 {
+	if (_deleted.load())
+		return;
+
 	Profiler p("Chunk::drawAsset");
 	if (!_workerMutex.try_lock())
 		return;
@@ -157,6 +168,9 @@ glm::ivec3 Chunk::locToChunkLoc(const glm::vec3 & loc)
 
 void Chunk::setBlockAt(const glm::vec3 & position, BlockType newType)
 {
+	if (_deleted.load())
+		return;
+
 	glm::ivec3 localPos = posToChunkPos(position);
 	if (localPos.x >= CHUNK_WIDTH || localPos.x < 0
 		|| localPos.y >= CHUNK_HEIGHT || localPos.y < 0
@@ -183,10 +197,10 @@ void Chunk::setBlockAt(const glm::vec3 & position, BlockType newType)
 		_world->_dirtyChunks.push_back({_topChunk, glm::vec3(position.x, position.y + 1, position.z)});
 	if (localPos.y == 0)
 		_world->_dirtyChunks.push_back({_bottomChunk, glm::vec3(position.x, position.y - 1, position.z)});
-	_world->_dirtyChunks.push_back({this, glm::vec3(position.x, position.y, position.z)});
+	_world->_dirtyChunks.push_back({_world->getChunkAt(_chunkLocation), glm::vec3(position.x, position.y, position.z)});
 }
 
-std::vector<Chunk *> Chunk::_computeNeighborChunks()
+std::array<std::weak_ptr<Chunk>, 6> Chunk::_computeNeighborChunks()
 {
 	_northChunk = _world->getChunkAtChunkLocation(_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z);
 	_southChunk = _world->getChunkAtChunkLocation(_chunkLocation.x - 1, _chunkLocation.y, _chunkLocation.z);

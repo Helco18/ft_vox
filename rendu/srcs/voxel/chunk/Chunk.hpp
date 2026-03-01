@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #define CHUNK_WIDTH 32
 #define CHUNK_HEIGHT 32
 #define CHUNK_LENGTH 32
@@ -73,10 +74,12 @@ class Chunk
 		const glm::vec3 &						getMax() const { return _max; };
 		bool									isDirty() const { return _isDirty.load(); }
 		bool									isTakenByWorker() const { return _isTakenByWorker.load(); }
+		bool									isMarkedForDeletion() const { return _deleted.load(); }
 
 		void									setState(ChunkState state) { _state.store(state); }
 		void									setDirty(bool dirty) { _isDirty.store(dirty); }
 		void									setBlockAt(const glm::vec3 & position, BlockType newType);
+		void									markDeleted() { _deleted.store(true); };
 		
 		void									build();
 		void									generateMesh();
@@ -89,7 +92,7 @@ class Chunk
 		static glm::ivec3						locToChunkLoc(const glm::vec3 & loc);
 		bool									isReadyForMesh();
 
-		void									updateMesh(glm::vec3 pos);
+		void									updateMesh(const glm::vec3 & pos);
 
 	private:
 		World *									_world;
@@ -110,13 +113,14 @@ class Chunk
 		ChunkData								_chunkData { 0.0f, 0.0f, 0.0f };
 		std::atomic_bool						_isDirty = false;
 		std::atomic_bool						_isTakenByWorker = false;
+		std::atomic_bool						_deleted = false;
 
-		Chunk * 								_northChunk = nullptr;
-		Chunk * 								_southChunk = nullptr;
-		Chunk * 								_eastChunk = nullptr;
-		Chunk * 								_westChunk = nullptr;
-		Chunk * 								_topChunk = nullptr;
-		Chunk * 								_bottomChunk = nullptr;
+		std::weak_ptr<Chunk> 					_northChunk;
+		std::weak_ptr<Chunk> 					_southChunk;
+		std::weak_ptr<Chunk> 					_eastChunk;
+		std::weak_ptr<Chunk> 					_westChunk;
+		std::weak_ptr<Chunk> 					_topChunk;
+		std::weak_ptr<Chunk> 					_bottomChunk;
 
 		glm::vec3								_min;
 		glm::vec3								_max;
@@ -130,6 +134,6 @@ class Chunk
 		uint8_t									_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & normal);
 		glm::ivec3								_sliceToWorld(int axis, int sliceIndex, int u, int v);
 		void									_generateFrameMesh();
-		std::vector<Chunk *> 					_computeNeighborChunks();
+		std::array<std::weak_ptr<Chunk>, 6> 	_computeNeighborChunks();
 		glm::vec3								_computeQuadSize(const glm::ivec3 & pos, int face);
 };

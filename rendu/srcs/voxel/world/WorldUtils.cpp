@@ -1,6 +1,6 @@
 #include "World.hpp"
 
-Chunk * World::getChunkAt(int x, int y, int z)
+std::shared_ptr<Chunk> World::getChunkAt(int x, int y, int z)
 {
 	int chunkX;
 	int chunkY;
@@ -12,7 +12,7 @@ Chunk * World::getChunkAt(int x, int y, int z)
 	return getChunkAtChunkLocation(chunkX, chunkY, chunkZ);
 }
 
-Chunk * World::getChunkAtChunkLocation(int x, int y, int z)
+std::shared_ptr<Chunk> World::getChunkAtChunkLocation(int x, int y, int z)
 {
 	std::lock_guard<std::mutex> lg(_mapMutex);
 	ChunkMap::const_iterator it = _chunkMap.find(glm::ivec3(x, y, z));
@@ -21,12 +21,12 @@ Chunk * World::getChunkAtChunkLocation(int x, int y, int z)
 	return nullptr;
 }
 
-Chunk * World::getChunkAt(const glm::vec3 & location)
+std::shared_ptr<Chunk> World::getChunkAt(const glm::vec3 & location)
 {
 	return getChunkAt(location.x, location.y, location.z);
 }
 
-Chunk * World::getChunkAtChunkLocation(const glm::vec3 & location)
+std::shared_ptr<Chunk> World::getChunkAtChunkLocation(const glm::vec3 & location)
 {
 	return getChunkAtChunkLocation(location.x, location.y, location.z);
 }

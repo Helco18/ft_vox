@@ -46,10 +46,10 @@ class World
 
 		const std::string &							getName() { return _name; }
 
-		Chunk *						getChunkAt(int x, int y, int z);
-		Chunk *						getChunkAt(const glm::vec3 & location);
-		Chunk *						getChunkAtChunkLocation(int x, int y, int z);
-		Chunk *						getChunkAtChunkLocation(const glm::vec3 & location);
+		std::shared_ptr<Chunk>						getChunkAt(int x, int y, int z);
+		std::shared_ptr<Chunk>						getChunkAt(const glm::vec3 & location);
+		std::shared_ptr<Chunk>						getChunkAtChunkLocation(int x, int y, int z);
+		std::shared_ptr<Chunk>						getChunkAtChunkLocation(const glm::vec3 & location);
 		const SimplexNoise<2> &						getTerrainNoise() const { return _terrainNoise; }
 		const SimplexNoise<2> &						getTemperatureNoise() const { return _temperatureNoise; }
 		const SimplexNoise<2> &						getHeightNoise() const { return _heightNoise; }
@@ -68,8 +68,8 @@ class World
 		void										requestProcedural() { _isProceduralRequested.store(true); _cv.notify_one(); } // DEBUG ONLY!
 
 	private:
-		typedef std::unordered_map<glm::ivec3, Chunk *>	ChunkMap;
-		typedef std::vector<Chunk *>									ChunkVec;
+		typedef std::unordered_map<glm::ivec3, std::shared_ptr<Chunk>>	ChunkMap;
+		typedef std::vector<std::shared_ptr<Chunk>>						ChunkVec;
 
 		void										_generateChunks();
 		void										_computeRenderDistance(const int renderDistance);
@@ -90,7 +90,7 @@ class World
 		ChunkVec									_visibleChunks;
 		ChunkVec									_nextVisibleChunks;
 		ChunkVec									_uploadedChunks;
-		std::vector<std::pair<Chunk *, glm::vec3>>	_dirtyChunks;
+		std::vector<std::pair<std::weak_ptr<Chunk>, glm::vec3>>	_dirtyChunks;
 		std::atomic_bool							_readyToSwap = false;
 		ThreadPool									_chunkPool;
 		std::mutex									_mapMutex;

@@ -146,28 +146,28 @@ uint8_t Chunk::_getNeighborBlock(const glm::ivec3 & pos, const glm::ivec3 & norm
 
 	if (x < 0 || x >= CHUNK_WIDTH)
 	{
-		if (normal.x == -1 && _southChunk && _southChunk->getState() >= BUILT)
-			return _southChunk->getBlock(CHUNK_WIDTH - 1, y, z);
-		else if (normal.x == 1 && _northChunk && _northChunk->getState() >= BUILT)
-			return _northChunk->getBlock(0, y, z);
+		if (normal.x == -1 && _southChunk.lock() && _southChunk.lock()->getState() >= BUILT)
+			return _southChunk.lock()->getBlock(CHUNK_WIDTH - 1, y, z);
+		else if (normal.x == 1 && _northChunk.lock() && _northChunk.lock()->getState() >= BUILT)
+			return _northChunk.lock()->getBlock(0, y, z);
 		else
 			return 0;
 	}
 	if (y < 0 || y >= CHUNK_HEIGHT)
 	{
-		if (normal.y == -1 && _bottomChunk && _bottomChunk->getState() >= BUILT)
-			return _bottomChunk->getBlock(x, CHUNK_HEIGHT - 1, z);
-		else if (normal.y == 1 && _topChunk && _topChunk->getState() >= BUILT)
-			return _topChunk->getBlock(x, 0, z);
+		if (normal.y == -1 && _bottomChunk.lock() && _bottomChunk.lock()->getState() >= BUILT)
+			return _bottomChunk.lock()->getBlock(x, CHUNK_HEIGHT - 1, z);
+		else if (normal.y == 1 && _topChunk.lock() && _topChunk.lock()->getState() >= BUILT)
+			return _topChunk.lock()->getBlock(x, 0, z);
 		else
 			return 0;
 	}
 	if (z < 0 || z >= CHUNK_LENGTH)
 	{
-		if (normal.z == -1 && _westChunk && _westChunk->getState() >= BUILT)
-			return _westChunk->getBlock(x, y, CHUNK_LENGTH - 1);
-		else if (normal.z == 1 && _eastChunk && _eastChunk->getState() >= BUILT)
-			return _eastChunk->getBlock(x, y, 0);
+		if (normal.z == -1 && _westChunk.lock() && _westChunk.lock()->getState() >= BUILT)
+			return _westChunk.lock()->getBlock(x, y, CHUNK_LENGTH - 1);
+		else if (normal.z == 1 && _eastChunk.lock() && _eastChunk.lock()->getState() >= BUILT)
+			return _eastChunk.lock()->getBlock(x, y, 0);
 		else
 			return 0;
 	}
@@ -462,7 +462,7 @@ void Chunk::_buildAsset()
 	_asset.vertices.stride = sizeof(ChunkVertex);
 }
 
-void Chunk::updateMesh(glm::vec3 pos)
+void Chunk::updateMesh(const glm::vec3 & pos)
 {
 	if (_chunkFinalAsset.vertices.empty())
 	{
@@ -470,22 +470,23 @@ void Chunk::updateMesh(glm::vec3 pos)
 		setState(MESHED);
 		return;
 	}
-	pos = posToChunkPos(pos);
+	glm::vec3 newPos = pos;
+	newPos = posToChunkPos(newPos);
 	for (int axis = 0; axis < 3; ++axis)
 	{
-		int sliceIndex = (axis == 0 ? pos.x : (axis == 1 ? pos.y : pos.z));
+		int sliceIndex = (axis == 0 ? newPos.x : (axis == 1 ? newPos.y : newPos.z));
 		_chunkOpaqueAsset[axis][sliceIndex].vertices = {};
 		_chunkOpaqueAsset[axis][sliceIndex].indices = {};
 		_chunkTransparencyAsset[axis][sliceIndex].vertices = {};
 		_chunkTransparencyAsset[axis][sliceIndex].indices = {};
-		_generateSliceMeshing(axis, (axis == 0 ? pos.x : (axis == 1 ? pos.y : pos.z)));
+		_generateSliceMeshing(axis, (axis == 0 ? newPos.x : (axis == 1 ? newPos.y : newPos.z)));
 		if (sliceIndex + 1 < (axis == 0 ? CHUNK_WIDTH : (axis == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)))
 		{
 			_chunkOpaqueAsset[axis][sliceIndex + 1].vertices = {};
 			_chunkOpaqueAsset[axis][sliceIndex + 1].indices = {};
 			_chunkTransparencyAsset[axis][sliceIndex + 1].vertices = {};
 			_chunkTransparencyAsset[axis][sliceIndex + 1].indices = {};
-			_generateSliceMeshing(axis, (axis == 0 ? pos.x + 1 : (axis == 1 ? pos.y + 1 : pos.z + 1)));
+			_generateSliceMeshing(axis, (axis == 0 ? newPos.x + 1 : (axis == 1 ? newPos.y + 1 : newPos.z + 1)));
 		}
 		if (sliceIndex - 1 >= 0 && sliceIndex - 1 < (axis == 0 ? CHUNK_WIDTH : (axis == 1 ? CHUNK_HEIGHT : CHUNK_LENGTH)))
 		{
@@ -493,7 +494,7 @@ void Chunk::updateMesh(glm::vec3 pos)
 			_chunkOpaqueAsset[axis][sliceIndex - 1].indices = {};
 			_chunkTransparencyAsset[axis][sliceIndex - 1].vertices = {};
 			_chunkTransparencyAsset[axis][sliceIndex - 1].indices = {};
-			_generateSliceMeshing(axis, (axis == 0 ? pos.x - 1 : (axis == 1 ? pos.y - 1 : pos.z - 1)));
+			_generateSliceMeshing(axis, (axis == 0 ? newPos.x - 1 : (axis == 1 ? newPos.y - 1 : newPos.z - 1)));
 		}
 	}
 	_buildAsset();

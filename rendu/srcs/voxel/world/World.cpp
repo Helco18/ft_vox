@@ -23,9 +23,9 @@ void World::load()
 
 void World::unloadChunks(AEngine * engine)
 {
-	for (const std::pair<const glm::ivec3, Chunk *> & chunks : _chunkMap)
+	for (const std::pair<const glm::ivec3, std::shared_ptr<Chunk>> & chunks : _chunkMap)
 	{
-		Chunk * chunk = chunks.second;
+		std::shared_ptr<Chunk> chunk = chunks.second;
 		if (chunk && chunk->getState() == UPLOADED)
 			chunk->unload(engine);
 	}
@@ -71,9 +71,9 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 		}
 		_readyToSwap.store(false);
 	}
-	for (const std::pair<Chunk *, glm::vec3> & chunkPair : _dirtyChunks)
+	for (const std::pair<std::weak_ptr<Chunk>, glm::vec3> & chunkPair : _dirtyChunks)
 	{
-		Chunk * chunk = chunkPair.first;
+		std::shared_ptr<Chunk> chunk = chunkPair.first.lock();
 		if (!chunk)
 			continue;
 		const glm::vec3 & pos = chunkPair.second;
@@ -93,7 +93,7 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 	if (!_isLocked.load())
 	{
 		_uploadedChunks = {};
-		for (Chunk * chunk : _visibleChunks)
+		for (std::shared_ptr<Chunk> chunk : _visibleChunks)
 		{
 			if (!chunk)
 				continue;
@@ -103,12 +103,12 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 				chunk->uploadAsset(engine);
 				i++;
 			}
-			if (state == UPLOADED && _chunkIsFrustum(planes, chunk))
+			if (state == UPLOADED && _chunkIsFrustum(planes, chunk.get()))
 				_uploadedChunks.push_back(chunk);
 		}
 	}
-	std::sort(_uploadedChunks.begin(), _uploadedChunks.end(), [this](const Chunk * a, const Chunk * b)
+	std::sort(_uploadedChunks.begin(), _uploadedChunks.end(), [this](const std::shared_ptr<Chunk> a, const std::shared_ptr<Chunk> b)
 		{ return a->getDistance(_renderPoint) > b->getDistance(_renderPoint);});
-	for (Chunk * chunk : _uploadedChunks)
+	for (std::shared_ptr<Chunk> chunk : _uploadedChunks)
 		chunk->drawAsset(engine, pipelineType);
 }
