@@ -36,7 +36,7 @@ make && ./ft_vox
 
 ## Hot-swappable RHI
 
-Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une abstraction complète des APIs graphiques. Notre architecture permet un rendu multi-backend avec bascule d’API graphique à chaud entre OpenGL et Vulkan, à tout moment de l’exécution. Les deux engines reposent sur un principe **agnostique** : ils ne connaissent pas le reste du programme et renvoie un ID (pipeline/asset) lorsqu'une ressource est uploadée. La complexité de notre RHI est principalement de faire fonctionner OpenGL et Vulkan à partir d'une **classe abstraite** contenant des fonctions communes aux deux engines de manière à ce que **le reste du code n'ait pas besoin de savoir sur quel engine nous sommes**.
+Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une abstraction complète des APIs graphiques. Notre architecture permet un rendu multi-backend avec bascule d’API graphique à chaud entre OpenGL et Vulkan, à tout moment de l’exécution. Les deux engines reposent sur un principe **agnostique** : ils ne connaissent pas le reste du programme et renvoient un ID (pipeline/asset) lorsqu'une ressource est uploadée. La complexité de notre RHI est principalement de faire fonctionner OpenGL et Vulkan à partir d'une **classe abstraite** contenant des fonctions communes aux deux engines de manière à ce que **le reste du code n'ait pas besoin de savoir sur quel engine nous sommes**.
 
 ## Contrôles
 
