@@ -38,7 +38,7 @@ TargetedBlock World::_processRay(const glm::vec3 & pos, RayState & state, float 
 
 		if (!chunk || chunk->isTakenByWorker() || chunk->getState() < BUILT)
 			return p;
-		glm::vec3 chunkpos = chunk->posToChunkPos(block);
+		glm::vec3 chunkpos = Chunk::posToChunkPos(block);
 		uint8_t blockType = chunk->getBlock(chunkpos.x, chunkpos.y, chunkpos.z);
 		if (blockType != BlockType::AIR && blockType != BlockType::WATER)
 		{
