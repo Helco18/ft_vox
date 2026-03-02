@@ -13,7 +13,6 @@ struct ChunkData
 {
     float fadeValue;
     float maxDistanceRendered;
-    float time;
     float4x4 model;
 };
 

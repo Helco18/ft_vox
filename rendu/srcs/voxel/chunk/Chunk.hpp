@@ -50,8 +50,7 @@ struct alignas(16) ChunkData
 {
 	float		fadeValue;
 	float		maxDistanceRendered;
-	float		time;
-    float		_pad;
+    float		_pad[2];
 	glm::mat4	model;
 };
 
@@ -112,7 +111,7 @@ class Chunk
 		std::vector<glm::vec3>					_linesPos;
 		std::atomic<ChunkState>					_state;
 		std::mutex								_workerMutex;
-		ChunkData								_chunkData { 0.0f, 0.0f, 0.0f, 0.0f, glm::mat4(1.0f) };
+		ChunkData								_chunkData { 0.0f,  0.0f, {0.0f, 0.0f}, glm::mat4(1.0f) };
 		std::atomic_bool						_isDirty = false;
 		std::atomic_bool						_isTakenByWorker = false;
 		std::atomic_bool						_deleted = false;
