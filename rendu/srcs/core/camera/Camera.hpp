@@ -4,7 +4,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 
-#define CAMERA_SPEED 2.0f
+#define CAMERA_SPEED 1.0f
 #define NEAR_PLANE_OFFSET 0.5f
 
 enum CameraType

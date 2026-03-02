@@ -8,7 +8,7 @@ void InputManager::interceptScroll(GLFWwindow * window, double, double yoffset)
 		return;
 
 	Camera * camera = windowManager->getCamera();
-	if (yoffset > 0)
+	if (yoffset > 0 && camera->getSpeed() < MAX_SPEED)
 		camera->changeSpeed(SCROLL_SPEED);
 	else if (camera->getSpeed() > SCROLL_SPEED)
 		camera->changeSpeed(-SCROLL_SPEED);

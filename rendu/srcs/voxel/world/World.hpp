@@ -12,7 +12,7 @@
 #include "glm/gtx/hash.hpp"
 
 #define RENDER_DISTANCE_BORDER 1
-#define MAX_UPLOAD_PER_FRAME 128
+#define MAX_UPLOAD_PER_FRAME 1
 #define CHUNK_DELETION_DISTANCE 4
 
 struct TargetedBlock

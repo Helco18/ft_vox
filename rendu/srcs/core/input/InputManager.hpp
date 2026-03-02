@@ -5,7 +5,8 @@
 #include "WorldManager.hpp"
 
 #define SCROLL_SPEED 5.0f
-#define SPEED_MULTIPLICATOR 5.0f
+#define SPEED_MULTIPLICATOR 20.0f
+#define MAX_SPEED 4242.0f
 
 class InputManager
 {
