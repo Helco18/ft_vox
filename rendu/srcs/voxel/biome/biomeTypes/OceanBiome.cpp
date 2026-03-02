@@ -12,7 +12,7 @@ uint8_t OceanBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 	int worldY = paintingInfo.worldY;
 	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 
-	if (worldY >= -7 - noiseValue * 2 && worldY <= 0)
+	if (worldY >= -7 - noiseValue * 2 && worldY <= 3 && paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z) < 3)
 		return paintingInfo.temperature < -0.2f - noiseValue * 0.05 ? BlockType::WHITE_GRAVEL : BlockType::SAND;
 	else if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;
@@ -33,5 +33,9 @@ uint8_t OceanBiome::splitSkyFromSea(const BiomePaintingInfo & paintingInfo) cons
 
 uint8_t OceanBiome::paintSurface(const BiomePaintingInfo & paintingInfo) const
 {
+	if (paintingInfo.temperature <= -0.5f)
+		return paintingInfo.worldY <= 2 ? BlockType::WHITE_GRAVEL : BlockType::SNOW;
+	else if (paintingInfo.temperature <= 0.5f)
+		return BlockType::SAND;
 	return paintingInfo.worldY <= 2 ? BlockType::SAND : BlockType::GRASS;
 }

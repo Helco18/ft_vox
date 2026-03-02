@@ -23,9 +23,7 @@ uint8_t MountainsBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 
 	if (slope < 10.0 - (15 - worldY * 0.05) && worldY > height - 2 - (height % 2))
 		return BlockType::SNOW;
-	if (worldY >= -3 && worldY <= -1)
-		return BlockType::WHITE_GRAVEL;
-	else if (worldY >= -7 - noiseValue * 2 && worldY <= 0)
+	else if (worldY >= -7 - noiseValue * 2 && worldY <= 3 && paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z) < 3)
 		return paintingInfo.temperature < -0.2f - noiseValue * 0.05 ? BlockType::WHITE_GRAVEL : BlockType::SAND;
 	else if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;

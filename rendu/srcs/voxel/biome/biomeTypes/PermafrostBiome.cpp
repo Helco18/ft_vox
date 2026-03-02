@@ -14,7 +14,7 @@ uint8_t PermafrostBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 
 	if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;
-	else if (worldY >= -7 - noiseValue * 2 && worldY <= 0)
+	else if (worldY >= -7 - noiseValue * 2 && worldY <= 3 && paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z) < 3)
 		return paintingInfo.temperature < -0.2f - noiseValue * 0.05 ? BlockType::WHITE_GRAVEL : BlockType::SAND;
 	else if (worldY <= -1990 + noiseValue * 10)
 		return BlockType::BLACK_STONE;

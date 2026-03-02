@@ -49,7 +49,7 @@ uint8_t MesaBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 
 	if (worldY >= 14 && worldY <= 35)
 		return paintStratification(worldY);
-	else if (worldY >= -7 - noiseValue * 2 && worldY <= 0)
+	else if (worldY >= -7 - noiseValue * 2 && worldY <= 3 && paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z) < 3)
 		return paintingInfo.temperature < -0.2f - noiseValue * 0.05 ? BlockType::WHITE_GRAVEL : BlockType::SAND;
 	if (worldY >= 14 && worldY <= 22)
 		return BlockType::WHITE_STONE;

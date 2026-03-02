@@ -13,9 +13,9 @@ uint8_t TundraBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 	int height = paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z);
 	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 
-	if (worldY >= -6 && worldY <= -1)
+	if (worldY >= -6 && worldY <= -1 && noiseValue <= -5.8)
 		return BlockType::WHITE_GRAVEL;
-	else if (worldY >= -7 - noiseValue * 2 && worldY <= 0)
+	else if (worldY >= -7 - noiseValue * 2 && worldY <= 3 && paintingInfo.heightMap->getHeight(paintingInfo.x, paintingInfo.z) < 3)
 		return paintingInfo.temperature < -0.2f - noiseValue * 0.05 ? BlockType::WHITE_GRAVEL : BlockType::SAND;
 	else if (worldY > -2000 + noiseValue * 10 && worldY < -500 + noiseValue * 10)
 		return BlockType::MAGMA_STONE;
