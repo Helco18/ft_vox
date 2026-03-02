@@ -7,7 +7,8 @@ World::~World()
 {
 	_isLoaded.store(false);
 	_cv.notify_one();
-	_chunkPool.stop();
+	_generatePool.stop();
+	_meshPool.stop();
 }
 
 void World::load()
@@ -18,8 +19,9 @@ void World::load()
 	_heightNoise.setFBM(3, 1.0, 2.0);
 	_netherNoise.setFBM(2, 0.5, 2.0);
 	_isLoaded.store(true);
-	_chunkPool.start(ThreadPool::getAvailableThreads());
-	_chunkPool.submitTask([this]() { _generateChunks(); });
+	_generatePool.start(ThreadPool::getAvailableThreads() / 2);
+	_meshPool.start(ThreadPool::getAvailableThreads());
+	_generatePool.submitTask([this]() { _generateChunks(); });
 }
 
 void World::unloadChunks(AEngine * engine)
@@ -47,17 +49,17 @@ void World::update(AEngine * engine, Camera * camera)
 		oldRenderDistance = renderDistance;
 		_computeRenderDistance(renderDistance);
 	}
-	_isProceduralRequested.store(true);
 	_renderPoint = camPos;
 	if (lastVisitedChunk != currentChunk)
 	{
 		lastVisitedChunk = currentChunk;
 		if (!_isLocked.load())
 		{
-			_chunkPool.clearTasks();
+			_generatePool.clearTasks();
 			_checkForChunkDeletion(engine, camera);
 		}
 	}
+	_isProceduralRequested.store(true);
 	_cv.notify_one();
 }
 

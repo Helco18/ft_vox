@@ -69,8 +69,10 @@ void World::_generateChunks()
 		}
 		bool chunksReady;
 		bool isProceduralRequested = false;
-		std::vector<Task> taskList;
-		taskList.reserve(newChunks.size());
+		std::vector<Task> generateTasks;
+		std::vector<Task> meshTasks;
+		generateTasks.reserve(newChunks.size());
+		meshTasks.reserve(newChunks.size());
 		do {
 			chunksReady = true;
 			for (std::shared_ptr<Chunk> chunk : newChunks)
@@ -80,7 +82,8 @@ void World::_generateChunks()
 				isProceduralRequested = _isProceduralRequested.load(std::memory_order_relaxed);
 				if (isProceduralRequested)
 				{
-					_chunkPool.clearTasks();
+					_generatePool.clearTasks();
+					_meshPool.clearTasks();
 					for (std::shared_ptr<Chunk> chunk : newChunks)
 					{
 						if (!chunk || chunk->isMarkedForDeletion() || chunk->isTakenByWorker())
@@ -99,22 +102,24 @@ void World::_generateChunks()
 				if (state == IDLE)
 				{
 					chunk->setState(BUILDING);
-					taskList.push_back([chunk]() { chunk->build(); });
+					generateTasks.push_back([chunk]() { chunk->build(); });
 					chunksReady = false;
 				}
 				else if (state == BUILT && chunk->isReadyForMesh())
 				{
 					chunk->setState(MESHING);
-					taskList.push_back([chunk]() { chunk->generateMesh(); });
+					meshTasks.push_back([chunk]() { chunk->generateMesh(); });
 					chunksReady = false;
 				}
 				else if (state == BUILDING || state == MESHING)
 					chunksReady = false;
 			}
-			if (!chunksReady && !isProceduralRequested && taskList.empty())
+			if (!chunksReady && !isProceduralRequested && generateTasks.empty() && meshTasks.empty())
 				std::this_thread::yield();
-			_chunkPool.submitBatch(taskList);
-			taskList.clear();
+			_generatePool.submitBatch(generateTasks);
+			_meshPool.submitBatch(meshTasks);
+			generateTasks.clear();
+			meshTasks.clear();
 		} while (!chunksReady && !isProceduralRequested);
 	}
 }

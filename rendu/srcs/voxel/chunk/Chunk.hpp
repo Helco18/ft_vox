@@ -68,7 +68,7 @@ class Chunk
 		int										getChunkZ() const { return _chunkLocation.z; }
 		ChunkState								getState() const { return _state.load(); }
 		Asset &									getAsset() { return _asset; }
-		uint8_t									getBlock(int x, int y, int z) { return _blocks[x][y][z]; }
+		uint8_t									getBlock(int x, int y, int z) { return _blocks[x][y][z].load(std::memory_order_relaxed); }
 		inline float							getDistance(glm::vec3 pos) const { return(glm::distance((glm::vec3)locToChunkLoc(pos), (glm::vec3)_chunkLocation)); };
 		const glm::vec3 &						getMin() const { return _min; };
 		const glm::vec3 &						getMax() const { return _max; };
@@ -97,7 +97,7 @@ class Chunk
 	private:
 		World *									_world;
 		glm::ivec3								_chunkLocation;
-		uint8_t									_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
+		std::atomic<uint8_t>					_blocks[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 
 		std::array<std::vector<ChunkAsset>, 3>	_chunkOpaqueAsset;
 		std::array<std::vector<ChunkAsset>, 3>	_chunkTransparencyAsset;

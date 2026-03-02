@@ -94,7 +94,8 @@ class World
 		ChunkVec												_uploadedChunks;
 		std::vector<std::pair<std::weak_ptr<Chunk>, glm::vec3>>	_dirtyChunks;
 		std::atomic_bool										_readyToSwap = false;
-		ThreadPool												_chunkPool;
+		ThreadPool												_generatePool;
+		ThreadPool												_meshPool;
 		std::mutex												_mapMutex;
 		std::mutex												_visibleChunksMutex;
 		glm::vec3												_renderPoint;
