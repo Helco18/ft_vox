@@ -506,7 +506,12 @@ void Chunk::updateMesh(const glm::vec3 & pos)
 	}
 	_buildAsset();
 	if (_chunkFinalAsset.vertices.empty())
+	{
 		setState(MESHED_EMPTY);
+		_deleted.store(true);
+	}
+	else
+		_deleted.store(false);
 }
 
 void Chunk::_generateGreedyMesh()
