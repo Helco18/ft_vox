@@ -14,16 +14,14 @@ BiomeManager::BiomeAtlas BiomeManager::_biomeAtlas;
 
 void BiomeManager::init(uint32_t seed)
 {
-	_biomeAtlas.try_emplace(OCEAN, std::make_unique<OceanBiome>(seed, std::pair(-1.0f, 1.0f), std::pair(-1.0f, 0.2f)));
-	_biomeAtlas.try_emplace(PLAINS, std::make_unique<PlainsBiome>(seed, std::pair(-0.5f, 0.5f), std::pair(0.2f, 0.9f)));
-	_biomeAtlas.try_emplace(MESA, std::make_unique<MesaBiome>(seed, std::pair(0.5f, 1.0f), std::pair(0.5f, 0.9f)));
-	_biomeAtlas.try_emplace(DESERT, std::make_unique<DesertBiome>(seed, std::pair(0.5f, 1.0f), std::pair(0.2f, 0.5f)));
-	_biomeAtlas.try_emplace(TUNDRA, std::make_unique<TundraBiome>(seed, std::pair(-1.0f, -0.5f), std::pair(0.2f, 0.6f)));
-	_biomeAtlas.try_emplace(PERMAFROST, std::make_unique<PermafrostBiome>(seed, std::pair(-1.0f, -0.6f), std::pair(0.6f, 0.7f)));
-	_biomeAtlas.try_emplace(TUNDRA, std::make_unique<TundraBiome>(seed, std::pair(-0.6f, -0.5f), std::pair(0.7f, 0.9f)));
-	_biomeAtlas.try_emplace(PERMAFROST, std::make_unique<PermafrostBiome>(seed, std::pair(-0.6f, -0.5f), std::pair(0.7f, 0.9f)));
-	_biomeAtlas.try_emplace(ICE_SPIKES, std::make_unique<IceSpikesBiome>(seed, std::pair(-1.0f, -0.8f), std::pair(0.7f, 0.9f)));
-	_biomeAtlas.try_emplace(MOUNTAINS, std::make_unique<MountainsBiome>(seed, std::pair(-1.0f, 1.0f), std::pair(0.9f, 1.0f)));
+	_biomeAtlas.try_emplace(OCEAN, std::make_unique<OceanBiome>(seed, std::vector{std::pair(-1.0f, 1.0f)}, std::vector{std::pair(-1.0f, 0.2f)}));
+	_biomeAtlas.try_emplace(PLAINS, std::make_unique<PlainsBiome>(seed, std::vector{std::pair(-0.5f, 0.5f)}, std::vector{std::pair(0.2f, 0.9f)}));
+	_biomeAtlas.try_emplace(MESA, std::make_unique<MesaBiome>(seed, std::vector{std::pair(0.5f, 1.0f)}, std::vector{std::pair(0.5f, 0.9f)}));
+	_biomeAtlas.try_emplace(DESERT, std::make_unique<DesertBiome>(seed, std::vector{std::pair(0.5f, 1.0f)}, std::vector{std::pair(0.2f, 0.5f)}));
+	_biomeAtlas.try_emplace(TUNDRA, std::make_unique<TundraBiome>(seed, std::vector{std::pair(-0.6f, -0.5f), std::pair(-1.0f, -0.5f)}, std::vector{std::pair(0.7f, 0.9f), std::pair(0.2f, 0.6f)}));
+	_biomeAtlas.try_emplace(PERMAFROST, std::make_unique<PermafrostBiome>(seed, std::vector{std::pair(-0.6f, -0.5f), std::pair(-1.0f, -0.6f)}, std::vector{std::pair(0.7f, 0.9f), std::pair(0.6f, 0.7f)}));
+	_biomeAtlas.try_emplace(ICE_SPIKES, std::make_unique<IceSpikesBiome>(seed, std::vector{std::pair(-1.0f, -0.8f)}, std::vector{std::pair(0.7f, 0.9f)}));
+	_biomeAtlas.try_emplace(MOUNTAINS, std::make_unique<MountainsBiome>(seed, std::vector{std::pair(-1.0f, 1.0f)}, std::vector{std::pair(0.9f, 1.0f)}));
 }
 
 const ABiome & BiomeManager::getBiome(BiomeType biomeType)
@@ -38,21 +36,27 @@ const ABiome & BiomeManager::getBiomeAt(float temperature, float height)
 {
 	for (auto & [type, biome] : _biomeAtlas)
 	{
-		const std::pair<float, float> & temperatureRange = biome->getTemperatureRange();
-		const std::pair<float, float> & heightRange = biome->getHeightRange();
+		const std::vector<std::pair<float, float>> & temperatureRange = biome->getTemperatureRange();
+		const std::vector<std::pair<float, float>> & heightRange = biome->getHeightRange();
 
-		float temperatureMin = temperatureRange.first;
-		float temperatureMax = temperatureRange.second;
+		for (std::pair<float, float> tRange : temperatureRange)
+		{
+			for (std::pair<float, float> hRange : heightRange)
+			{
+				float temperatureMin = tRange.first;
+				float temperatureMax = tRange.second;
 
-		float temperatureDiff = getDistanceInterval(temperatureMin, temperatureMax, temperature);
+				float temperatureDiff = getDistanceInterval(temperatureMin, temperatureMax, temperature);
 
-		float heightMin = heightRange.first;
-		float heightMax = heightRange.second;
+				float heightMin = hRange.first;
+				float heightMax = hRange.second;
 
-		float heightDiff = getDistanceInterval(heightMin, heightMax, height);
+				float heightDiff = getDistanceInterval(heightMin, heightMax, height);
 
-		if (temperatureDiff == 0 && heightDiff == 0)
-			return *biome;
+				if (temperatureDiff == 0 && heightDiff == 0)
+					return *biome;
+			}
+		}
 	}
 	Logger::log(VOXEL, WARNING, "Requested biome with invalid temperature/height values: " + toString(temperature) + " | " + toString(height) + ". Defaulting to OCEAN.");
 	return *_biomeAtlas[OCEAN];
@@ -64,27 +68,33 @@ std::vector<BiomeDistanceInfo> BiomeManager::getBiomeSamples(float temperature, 
 
 	for (auto & [type, biome] : _biomeAtlas)
 	{
-		const std::pair<float, float> & temperatureRange = biome->getTemperatureRange();
-		const std::pair<float, float> & heightRange = biome->getHeightRange();
+		const std::vector<std::pair<float, float>> & temperatureRange = biome->getTemperatureRange();
+		const std::vector<std::pair<float, float>> & heightRange = biome->getHeightRange();
 
-		float temperatureMin = temperatureRange.first;
-		float temperatureMax = temperatureRange.second;
+		if (temperatureRange.size() != heightRange.size())
+			throw VoxelException("Temperature and height ranges aren't the same size for biome ID: " + toString(type) + ".");
 
-		float temperatureDiff = std::abs(getDistanceInterval(temperatureMin, temperatureMax, temperature));
-
-		float heightMin = heightRange.first;
-		float heightMax = heightRange.second;
-
-		float heightDiff = std::abs(getDistanceInterval(heightMin, heightMax, height));
-
-		float finalDiff = std::max(temperatureDiff, heightDiff);
-		// if (type == BiomeType::MESA)
-			// Logger::log(VOXEL, WARNING, "messa value is " + toString(temperatureDiff) + " for temperature = " + toString(temperature) + " for height = " + toString(height));
-		if (finalDiff <= 0.1)
+		for (size_t i = 0; i < temperatureRange.size(); ++i)
 		{
+			float temperatureMin = temperatureRange[i].first;
+			float temperatureMax = temperatureRange[i].second;
+
+			float temperatureDiff = std::abs(getDistanceInterval(temperatureMin, temperatureMax, temperature));
+
+			float heightMin = heightRange[i].first;
+			float heightMax = heightRange[i].second;
+
+			float heightDiff = std::abs(getDistanceInterval(heightMin, heightMax, height));
+
+			float finalDiff = std::max(temperatureDiff, heightDiff);
 			// if (type == BiomeType::MESA)
-			// 	Logger::log(VOXEL, WARNING, "MESA pushed.");
-			biomeDistanceInfos.push_back({ finalDiff, biome.get() });
+				// Logger::log(VOXEL, WARNING, "messa value is " + toString(temperatureDiff) + " for temperature = " + toString(temperature) + " for height = " + toString(height));
+			if (finalDiff <= 0.1)
+			{
+				// if (type == BiomeType::MESA)
+				// 	Logger::log(VOXEL, WARNING, "MESA pushed.");
+				biomeDistanceInfos.push_back({ finalDiff, biome.get() });
+			}
 		}
 	}
 	return biomeDistanceInfos;
