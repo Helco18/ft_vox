@@ -206,9 +206,7 @@ void Chunk::_emitBlocksFace(const glm::ivec3 & pos, int countBlockWidth, int cou
 	for (ChunkVertex & vertex : quad.vertices)
 	{
 		ChunkVertex tmp = vertex;
-		tmp.position += glm::vec3(pos.x + _chunkLocation.x * CHUNK_WIDTH,
-								  pos.y + _chunkLocation.y * CHUNK_HEIGHT,
-								  pos.z + _chunkLocation.z * CHUNK_LENGTH);
+		tmp.position += glm::vec3(pos.x, pos.y, pos.z);
 
 		const std::string & texPath = BlockData::getBlockData(_blocks[pos.x][pos.y][pos.z]).getTexturePath(face);
 		Texture * texture = TextureAtlas::getTexture(texPath);

@@ -111,6 +111,7 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 		_chunkData.fadeValue = 1.0f;
 	_chunkData.time += windowManager->getDeltaTime();
 	_chunkData.maxDistanceRendered = windowManager->getCamera()->getRenderDistance() * World::getRenderDistanceMin();
+	_chunkData.model = glm::translate(glm::mat4(1.0f), glm::vec3(_chunkLocation * CHUNK_LENGTH));
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 	if (windowManager->isChunkBordersActive())
 		engine->drawAsset(_assetFrame.assetID, PipelineManager::getPipeline(PIPELINE_LINES).id);

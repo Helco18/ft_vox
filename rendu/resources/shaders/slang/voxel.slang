@@ -9,6 +9,14 @@ struct VertexInput
 	float2 inUvRepeat;
 }
 
+struct ChunkData
+{
+    float fadeValue;
+    float maxDistanceRendered;
+    float time;
+    float4x4 model;
+};
+
 struct VertexOutput
 {
 	float4 sv_position : SV_Position;
@@ -19,7 +27,8 @@ struct VertexOutput
 	float2 outUvMax;
 	float2 outUvRepeat;
 	float3 worldPos;
-	float3 camPos;
+    float3 camPos;
+    ChunkData chunkData;
 };
 
 struct CameraMatrix
@@ -29,32 +38,21 @@ struct CameraMatrix
 	float3 camPos;
 };
 
-struct ChunkData
-{
-	float fadeValue;
-	float maxDistanceRendered;
-	float time;
-};
-
 [[vk::binding(0,0)]]
 ConstantBuffer<CameraMatrix> cameraMatrix;
 
 [[vk::binding(1,0)]]
 Sampler2D texture;
 
-#ifdef __VULKAN__
-[[push_constant]]
-#else
 [[vk::binding(2,0)]]
-#endif
 ConstantBuffer<ChunkData> chunkData;
 
 [shader("vertex")]
 VertexOutput vertMain(VertexInput input)
 {
 	VertexOutput output;
-	// x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
-	output.sv_position = mul(cameraMatrix.proj, mul(cameraMatrix.view, float4(input.inPosition, 1.0)));
+    // x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
+    output.sv_position = mul(cameraMatrix.proj, mul(cameraMatrix.view, mul(chunkData.model, float4(input.inPosition, 1.0))));
 	output.outNormal = input.inNormal;
 	output.outTexCoord = input.inTexCoord;
 	output.worldPos = input.inPosition;
@@ -62,7 +60,8 @@ VertexOutput vertMain(VertexInput input)
 	output.outUvMax = input.inUvMax;
 	output.outUvRepeat = input.inUvRepeat;
 	output.outAlpha = input.inAlpha;
-	output.camPos = cameraMatrix.camPos;
+    output.camPos = cameraMatrix.camPos;
+    output.chunkData = chunkData;
 	return output;
 }
 
@@ -80,7 +79,7 @@ float4 fragMain(VertexOutput output) : SV_Target
 	// frac(x) retourne la partie décimale de x (equivalent a x - floor(x))
 	float2 finalUV = output.outUvMin + frac(output.outTexCoord * output.outUvRepeat) * tileSize;
 	// Samle return un float4 (RGBA) de la texture à l'UV donné
-	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, chunkData.fadeValue * output.outAlpha);
+	float4 vertColor = texture.Sample(finalUV) * float4(1.0f, 1.0f, 1.0f, output.chunkData.fadeValue * output.outAlpha);
 	vertColor.rgb *= diffuse;
 
     // Fog ---------------------------------------------------------------------
@@ -89,8 +88,8 @@ float4 fragMain(VertexOutput output) : SV_Target
         fogColor = float3(35.0f / 255.0f, 0.0, 0.0);
     else
         fogColor = float3(0.7, 0.8, 1.0);
-    float fogStart = chunkData.maxDistanceRendered * ((float)(output.camPos.y >= -480.0f && output.camPos.y < 480.0f) * 0.5f);
-    float fogEnd = chunkData.maxDistanceRendered * ((output.camPos.y >= -480.0f) ? 1.0f : 0.5f);
+    float fogStart = output.chunkData.maxDistanceRendered * ((float)(output.camPos.y >= -480.0f && output.camPos.y < 480.0f) * 0.5f);
+    float fogEnd = output.chunkData.maxDistanceRendered * ((output.camPos.y >= -480.0f) ? 1.0f : 0.5f);
 	float distanceToCamera = length(output.worldPos - output.camPos);
 	// saturate(x) clamp x entre 0 et 1
 	float fogFactor = saturate((fogEnd - distanceToCamera) / (fogEnd - fogStart));

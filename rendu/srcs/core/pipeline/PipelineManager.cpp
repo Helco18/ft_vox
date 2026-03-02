@@ -81,10 +81,10 @@ static void uploadVoxel(AEngine * engine)
 	chunkData.stage = ShaderStage::VERTEX;
 	chunkData.type = DescriptorType::PUSH_CONSTANT;
 
-	infoVoxel.uniformSize = sizeof(ChunkData);
 	infoVoxel.descriptors.push_back(cameraMatrix);
 	infoVoxel.descriptors.push_back(textureAtlas);
 	infoVoxel.descriptors.push_back(chunkData);
+	infoVoxel.uniformSize = sizeof(ChunkData);
 	infoVoxel.attributeSize = calculateAttributeSize(infoVoxel.attributes);
 	PipelineManager::uploadPipeline(engine, infoVoxel, PIPELINE_VOXEL);
 
