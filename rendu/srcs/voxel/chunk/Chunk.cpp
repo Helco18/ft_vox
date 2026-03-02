@@ -110,7 +110,6 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 	if (_chunkData.fadeValue > 1.0f)
 		_chunkData.fadeValue = 1.0f;
 	_chunkData.maxDistanceRendered = windowManager->getCamera()->getRenderDistance() * World::getRenderDistanceMin();
-	// camPos - chunkPos * length
 	_chunkData.model = glm::translate(
 		glm::mat4(1.0f), 
 		glm::vec3(glm::dvec3(_chunkLocation.x * CHUNK_WIDTH, _chunkLocation.y * CHUNK_HEIGHT, _chunkLocation.z * CHUNK_LENGTH)
