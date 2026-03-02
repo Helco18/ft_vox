@@ -44,7 +44,7 @@ float4 fragMain(VertexOutput output) : SV_Target
 {
     float4 color;
 
-    if (output.camPos.y <= -500.0f)
+    if (output.camPos.y <= -480.0f)
         color = float4(35.0f / 255.0f, 0.0f, 0.0f, 1.0f);
     else
     {
