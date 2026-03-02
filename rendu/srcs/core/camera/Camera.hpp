@@ -39,9 +39,9 @@ class Camera
 	public:
 		Camera(glm::vec3 position, int width, int height);
 
-		const glm::vec3 &			getPosition() const { return _position; }
+		const glm::dvec3 &			getPosition() const { return _position; }
 		const glm::quat &			getOrientation() const { return _orientation; }
-		const glm::vec3	&			getAltitude() const { return _altitude; }
+		const glm::dvec3	&		getAltitude() const { return _altitude; }
 		CameraType					getCameraType() const { return _type; }
 		int							getWidth() const { return _width; }
 		int							getHeight() const { return _height; }
@@ -86,9 +86,9 @@ class Camera
 	private:
 		void						_extractPlanes();
 
-		glm::vec3					_position;
+		glm::dvec3					_position;
 		glm::quat					_orientation;
-		glm::vec3					_altitude;
+		glm::dvec3					_altitude;
 		uint8_t						_renderDistance = 2;
 		int							_width;
 		int							_height;

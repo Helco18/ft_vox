@@ -110,13 +110,13 @@ glm::mat4 Camera::computeView() const
 		case EULER :
 		case FPS :
 		{
-			glm::mat4 view = glm::lookAt(_position, _position + computeForward(false), computeUp());
+			glm::mat4 view = glm::lookAt(glm::vec3(0.0f), glm::vec3(0.0f) + computeForward(false), computeUp());
 			return(view);
 		}
 		case SIX_DOF :
 		{
 			glm::mat4 rot = glm::mat4_cast(glm::conjugate(_orientation));
-			glm::mat4 trans = glm::translate(glm::mat4(1.0f), -_position);
+			glm::mat4 trans = glm::translate(glm::mat4(1.0f), -glm::vec3(0.0f));
 			return(rot * trans);
 		}
 		default: return (glm::mat4());
@@ -160,8 +160,8 @@ void Camera::removePipelineToRender(PipelineType pipelineType)
 
 void Camera::renderViewMatrix(AEngine * engine, bool resized)
 {
-	static glm::vec3 oldPosition = _position;
-	static glm::vec3 oldAltitude = _altitude;
+	static glm::dvec3 oldPosition = _position;
+	static glm::dvec3 oldAltitude = _altitude;
 	static glm::quat oldOrientation = _orientation;
 	static float oldFov = -1;
 	static EngineType oldEngineType = engine->getEngineType();
