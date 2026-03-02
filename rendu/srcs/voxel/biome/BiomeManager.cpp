@@ -2,6 +2,7 @@
 #include "CustomExceptions.hpp"
 #include "utils.hpp"
 #include "OceanBiome.hpp"
+#include "PermafrostBiome.hpp"
 #include "PlainsBiome.hpp"
 #include "DesertBiome.hpp"
 #include "MesaBiome.hpp"
@@ -17,8 +18,11 @@ void BiomeManager::init(uint32_t seed)
 	_biomeAtlas.try_emplace(PLAINS, std::make_unique<PlainsBiome>(seed, std::pair(-0.5f, 0.5f), std::pair(0.2f, 0.9f)));
 	_biomeAtlas.try_emplace(MESA, std::make_unique<MesaBiome>(seed, std::pair(0.5f, 1.0f), std::pair(0.5f, 0.9f)));
 	_biomeAtlas.try_emplace(DESERT, std::make_unique<DesertBiome>(seed, std::pair(0.5f, 1.0f), std::pair(0.2f, 0.5f)));
+	_biomeAtlas.try_emplace(TUNDRA, std::make_unique<TundraBiome>(seed, std::pair(-1.0f, -0.5f), std::pair(0.2f, 0.6f)));
+	_biomeAtlas.try_emplace(PERMAFROST, std::make_unique<PermafrostBiome>(seed, std::pair(-1.0f, -0.6f), std::pair(0.6f, 0.7f)));
+	_biomeAtlas.try_emplace(TUNDRA, std::make_unique<TundraBiome>(seed, std::pair(-0.6f, -0.5f), std::pair(0.7f, 0.9f)));
+	_biomeAtlas.try_emplace(PERMAFROST, std::make_unique<PermafrostBiome>(seed, std::pair(-0.6f, -0.5f), std::pair(0.7f, 0.9f)));
 	_biomeAtlas.try_emplace(ICE_SPIKES, std::make_unique<IceSpikesBiome>(seed, std::pair(-1.0f, -0.8f), std::pair(0.7f, 0.9f)));
-	_biomeAtlas.try_emplace(TUNDRA, std::make_unique<TundraBiome>(seed, std::pair(-1.0f, -0.5f), std::pair(0.2f, 0.9f)));
 	_biomeAtlas.try_emplace(MOUNTAINS, std::make_unique<MountainsBiome>(seed, std::pair(-1.0f, 1.0f), std::pair(0.9f, 1.0f)));
 }
 

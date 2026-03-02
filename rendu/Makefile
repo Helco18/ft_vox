@@ -68,6 +68,7 @@ SRCS				=	srcs/main.cpp \
 						srcs/voxel/biome/biomeTypes/MesaBiome.cpp \
 						srcs/voxel/biome/biomeTypes/MountainsBiome.cpp \
 						srcs/voxel/biome/biomeTypes/OceanBiome.cpp \
+						srcs/voxel/biome/biomeTypes/PermafrostBiome.cpp \
 						srcs/voxel/biome/biomeTypes/PlainsBiome.cpp \
 						srcs/voxel/biome/biomeTypes/TundraBiome.cpp \
 						srcs/voxel/block/BlockData.cpp \
