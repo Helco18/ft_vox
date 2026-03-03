@@ -43,7 +43,11 @@ ConstantBuffer<CameraMatrix> cameraMatrix;
 [[vk::binding(1,0)]]
 Sampler2D texture;
 
-[[vk::binding(2,0)]]
+#ifdef __VULKAN__
+[[push_constant]]
+#else
+[[vk::binding(2, 0)]]
+#endif
 ConstantBuffer<ChunkData> chunkData;
 
 [shader("vertex")]
