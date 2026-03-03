@@ -146,11 +146,7 @@ struct PendingAsset
 	Asset *			asset;
 	PipelineID		pipelineID;
 	BufferData		vertexData;
-	BufferData		stagingVertexData;
-	vk::DeviceSize	vertexRingBufferOffset;
 	BufferData		indexData;
-	BufferData		stagingIndexData;
-	vk::DeviceSize	indexRingBufferOffset;
 };
 
 struct AssetData

@@ -55,9 +55,16 @@ void VulkanEngine::_processPendingAssets()
 	}
 	if (stagingBufferSize > _stagingBufferSize)
 	{
-		_createBuffer(stagingBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
-						vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-						_stagingBuffer.buffer, _stagingBuffer.memory);
+		try
+		{
+			_createBuffer(stagingBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
+							vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+							_stagingBuffer.buffer, _stagingBuffer.memory);
+		} catch (const vk::OutOfDeviceMemoryError & e)
+		{
+			Logger::log(ENGINE_VULKAN, FATAL, e.what());
+			return;
+		}
 		_stagingBufferSize = stagingBufferSize;
 		Logger::log(ENGINE_VULKAN, DEBUG, "Reallocating ring buffer with size: " + toString(_stagingBufferSize));
 	}
