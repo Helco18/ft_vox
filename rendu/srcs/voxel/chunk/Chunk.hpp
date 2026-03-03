@@ -105,6 +105,7 @@ class Chunk
 		ChunkAsset								_chunkFinalAsset;
 
 		Asset									_assetFrame;
+		glm::mat4								_frameModel;
 		Asset									_asset;
 
 		std::vector<ChunkVertex>				_vertices;

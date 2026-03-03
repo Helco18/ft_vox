@@ -36,7 +36,17 @@ static void uploadLines(AEngine * engine)
 	cameraMatrix.stage = ShaderStage::VERTEX;
 	cameraMatrix.type = DescriptorType::UNIFORM_BUFFER;
 
+	DescriptorInfo chunkData;
+	chunkData.name = "LineData";
+	chunkData.binding = 1;
+	chunkData.count = 1;
+	chunkData.size = sizeof(glm::mat4);
+	chunkData.stage = ShaderStage::VERTEX;
+	chunkData.type = DescriptorType::PUSH_CONSTANT;
+
 	infoLines.descriptors.push_back(cameraMatrix);
+	infoLines.descriptors.push_back(chunkData);
+	infoLines.uniformSize = sizeof(glm::mat4);
 	PipelineManager::uploadPipeline(engine, infoLines, PIPELINE_LINES);
 }
 

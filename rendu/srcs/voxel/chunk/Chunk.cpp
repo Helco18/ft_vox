@@ -12,6 +12,7 @@ Chunk::Chunk(int x, int y, int z, World * world): _world(world), _chunkLocation(
 	_min *= glm::vec3(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_LENGTH);
 	_max = _min + glm::vec3(CHUNK_WIDTH, CHUNK_HEIGHT, CHUNK_LENGTH);
 	_asset.uniforms = &_chunkData;
+	_assetFrame.uniforms = &_frameModel;
 	_asset.vertices.data = nullptr;
 }
 
@@ -115,6 +116,10 @@ void Chunk::drawAsset(AEngine * engine, PipelineType pipelineType)
 		glm::vec3(glm::dvec3(_chunkLocation.x * CHUNK_WIDTH, _chunkLocation.y * CHUNK_HEIGHT, _chunkLocation.z * CHUNK_LENGTH)
 		- windowManager->getCamera()->getPosition()
 	));
+	_frameModel = glm::translate(
+		glm::mat4(1.0f),
+		glm::vec3(glm::dvec3(_chunkLocation.x * CHUNK_WIDTH, _chunkLocation.y * CHUNK_HEIGHT, _chunkLocation.z * CHUNK_LENGTH)
+		- windowManager->getCamera()->getPosition()));
 	engine->drawAsset(_asset.assetID, PipelineManager::getPipeline(pipelineType).id);
 	if (windowManager->isChunkBordersActive())
 		engine->drawAsset(_assetFrame.assetID, PipelineManager::getPipeline(PIPELINE_LINES).id);

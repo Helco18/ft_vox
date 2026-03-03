@@ -366,46 +366,46 @@ void Chunk::_generateFrameMesh()
 		return;
 	glm::vec3 pos[24];
 
-	pos[0] = _chunkLocation;
-	pos[1] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[0] = glm::vec3(0.0f);
+	pos[1] = {0, 1, 0};
 
-	pos[2] = _chunkLocation;
-	pos[3] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
+	pos[2] = glm::vec3(0.0f);
+	pos[3] = {0, 0, 1};
 
-	pos[4] = _chunkLocation;
-	pos[5] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+	pos[4] = glm::vec3(0.0f);
+	pos[5] = {1, 0, 0};
 
 
-	pos[6] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
-	pos[7] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
+	pos[6] = {1, 1, 1};
+	pos[7] = {1, 0, 1};
 
-	pos[8] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
-	pos[9] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[8] = {1, 1, 1};
+	pos[9] = {1, 1, 0};
 
-	pos[10] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z + 1};
-	pos[11] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[10] = {1, 1, 1};
+	pos[11] = {0, 1, 1};
 
 //=========================================
 
-	pos[12] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
-	pos[13] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[12] = {0, 1, 0};
+	pos[13] = {0, 1, 1};
 
-	pos[14] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z};
-	pos[15] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
-
-
-	pos[16] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
-	pos[17] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
-
-	pos[18] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z + 1};
-	pos[19] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
+	pos[14] = {0, 1, 0};
+	pos[15] = {1, 1, 0};
 
 
-	pos[20] = {_chunkLocation.x + 1, _chunkLocation.y, _chunkLocation.z};
-	pos[21] = {_chunkLocation.x + 1, _chunkLocation.y + 1, _chunkLocation.z};
+	pos[16] = {1, 0, 1};
+	pos[17] = {0, 0, 1};
 
-	pos[22] = {_chunkLocation.x, _chunkLocation.y, _chunkLocation.z + 1};
-	pos[23] = {_chunkLocation.x, _chunkLocation.y + 1, _chunkLocation.z + 1};
+	pos[18] = {1, 0, 1};
+	pos[19] = {1, 0, 0};
+
+
+	pos[20] = {1, 0, 0};
+	pos[21] = {1, 1, 0};
+
+	pos[22] = {0, 0, 1};
+	pos[23] = {0, 1, 1};
 
 	_linesPos.reserve(24);
 	for (int i = 0; i < 24; ++i)
