@@ -57,6 +57,7 @@ void VulkanEngine::_processPendingAssets()
 	{
 		try
 		{
+			Logger::log(ENGINE_VULKAN, DEBUG, "Reallocating ring buffer with size: " + toString(_stagingBufferSize));
 			_createBuffer(stagingBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
 							vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
 							_stagingBuffer.buffer, _stagingBuffer.memory);
@@ -66,7 +67,6 @@ void VulkanEngine::_processPendingAssets()
 			return;
 		}
 		_stagingBufferSize = stagingBufferSize;
-		Logger::log(ENGINE_VULKAN, DEBUG, "Reallocating ring buffer with size: " + toString(_stagingBufferSize));
 	}
 	void * dataStaging = _stagingBuffer.memory.mapMemory(0, stagingBufferSize);
 	
