@@ -1,5 +1,6 @@
 #include "BlockOverlay.hpp"
 #include "Logger.hpp"
+#include "WindowManager.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
@@ -50,21 +51,14 @@ void BlockOverlay::uploadAsset(AEngine * engine)
 
 void BlockOverlay::drawAsset(AEngine * engine, const TargetedBlock & targetedBlock)
 {
-	static TargetedBlock lastTargetedBlock = { BlockFace::BOTTOM, glm::vec3(0.0f), BlockType::AIR };
 	static PipelineID pipelineID = PipelineManager::getPipeline(PIPELINE_BLOCKOVERLAY).id;
-	static EngineType lastEngineType = engine->getEngineType();
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(engine->getWindow()));
 
 	if (!BlockData::getBlockData(targetedBlock.type).isSolid())
 		return;
-	if (lastTargetedBlock.face != targetedBlock.face || lastTargetedBlock.type != targetedBlock.type || lastTargetedBlock.pos != targetedBlock.pos
-		|| lastEngineType != engine->getEngineType())
-	{
-		lastTargetedBlock = targetedBlock;
-		_model = glm::translate(glm::mat4(1.0f), targetedBlock.pos + glm::vec3(0.5f));
-		_model = glm::scale(_model, glm::vec3(1.001f));
-		_model = glm::translate(_model, glm::vec3(-0.5f)); // Merci mbatty
-		lastEngineType = engine->getEngineType();
-	}
+	_model = glm::translate(glm::mat4(1.0f), targetedBlock.pos - glm::vec3(windowManager->getCamera()->getPosition()) + glm::vec3(0.5f));
+	_model = glm::scale(_model, glm::vec3(1.001f));
+	_model = glm::translate(_model, glm::vec3(-0.5f)); // Merci mbatty
 	engine->updateUniformBuffer(pipelineID, 1, &_model, sizeof(glm::mat4));
 	engine->drawAsset(_asset.assetID, pipelineID);
 }

@@ -64,6 +64,7 @@ void VulkanEngine::_processPendingAssets()
 			} catch (const vk::OutOfDeviceMemoryError & e)
 			{
 				Logger::log(ENGINE_VULKAN, FATAL, e.what());
+				return;
 			}
 		}
 		_transferCommandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,

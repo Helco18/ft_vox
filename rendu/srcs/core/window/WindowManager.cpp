@@ -131,7 +131,7 @@ void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, in
 	windowManager->setWidth(width);
 	windowManager->setHeight(height);
 	engine->setFramebufferResized(true);
-	camera->renderViewMatrix(windowManager->getEngine(), true);
+	camera->renderViewMatrix(windowManager->getEngine());
 }
 
 void WindowManager::toggleFullscreen()
