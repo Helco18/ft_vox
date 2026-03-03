@@ -106,7 +106,7 @@ void World::render(AEngine * engine, PipelineType pipelineType, Camera * camera)
 				chunk->uploadAsset(engine);
 				i++;
 			}
-			if (state == UPLOADED && _chunkIsFrustum(planes, chunk.get()))
+			if (state == UPLOADED && _chunkIsFrustum(planes, camera->getPosition(), chunk.get()))
 				_uploadedChunks.push_back(chunk);
 		}
 	}

@@ -73,11 +73,10 @@ static float getSignedDistanceToPlane(const glm::vec3 & pos, const Plane & p)
 	return(glm::dot(normal, pos) + (p.plane[3]));
 }
 
-bool World::_chunkIsFrustum(const Plane * planes, Chunk * chunk)
+bool World::_chunkIsFrustum(const Plane * planes, const glm::vec3 & camPos, Chunk * chunk)
 {
-	return true;
-	const glm::vec3 & min = chunk->getMin();
-	const glm::vec3 & max = chunk->getMax();
+	const glm::vec3 & min = chunk->getMin() - camPos;
+	const glm::vec3 & max = chunk->getMax() - camPos;
 
 	const glm::vec3 c = (min + max) * 0.5f;
 	const glm::vec3 e = (max - min) - 0.5f;

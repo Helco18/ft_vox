@@ -77,7 +77,7 @@ class World
 		bool													_isWithinRenderDistance(const glm::vec3 & chunkPos, const glm::vec3 & camPos);
 		ChunkVec												_queryChunksInRange();
 		void													_checkForChunkDeletion(AEngine * engine, Camera * camera);
-		bool													_chunkIsFrustum(const Plane * planes, Chunk * chunk);
+		bool													_chunkIsFrustum(const Plane * planes, const glm::vec3 & camPos, Chunk * chunk);
 
 		TargetedBlock											_processRay(const glm::vec3 & pos, RayState & state, float maxDistance);
 
