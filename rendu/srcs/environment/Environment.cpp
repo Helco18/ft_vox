@@ -92,7 +92,7 @@ void Environment::loop()
 		engine->beginImGui();
 		InputManager::interceptMouse(_windowManager);
 		InputManager::interceptMovements(_windowManager);
-		crosshair.drawAsset(engine, camera->getWidth(), camera->getHeight());
+		crosshair.drawAsset(engine, _windowManager->getWidth(), _windowManager->getHeight());
 		blockOverlay.drawAsset(engine, targetedBlock);
 		if (world)
 		{
