@@ -92,8 +92,8 @@ float4 fragMain(VertexOutput output) : SV_Target
         fogColor = float3(35.0f / 255.0f, 0.0, 0.0);
     else
         fogColor = float3(0.7, 0.8, 1.0);
-    float fogStart = output.chunkData.maxDistanceRendered * ((float)(output.worldPos.y >= -480.0f && output.worldPos.y < 480.0f) * 0.5f);
-    float fogEnd = output.chunkData.maxDistanceRendered * ((output.worldPos.y >= -480.0f) ? 1.0f : 0.5f);
+    float fogStart = output.chunkData.maxDistanceRendered * ((float)(output.camPos.y >= -480.0f && output.camPos.y < 480.0f) * 0.5f);
+    float fogEnd = output.chunkData.maxDistanceRendered * ((output.camPos.y >= -480.0f) ? 1.0f : 0.5f);
     float distanceToCamera = length(output.worldPos);
 	// saturate(x) clamp x entre 0 et 1
 	float fogFactor = saturate((fogEnd - distanceToCamera) / (fogEnd - fogStart));
