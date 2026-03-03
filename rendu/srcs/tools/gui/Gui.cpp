@@ -17,7 +17,7 @@ void Gui::generateGui(GLFWwindow * window)
 	ImGui::NewFrame();
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
 	ImGui::Begin("Bozo and Zibo Circus");
-	
+
 	// FPS
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "XYZ: %.3f / %.3f / %.3f",
 		position.x, position.y, position.z);
@@ -27,7 +27,7 @@ void Gui::generateGui(GLFWwindow * window)
 		chunkPos.x, chunkPos.y, chunkPos.z);
 
 	static int currentRenderDistance = camera->getRenderDistance();
-	if (ImGui::SliderInt("Render distance", &currentRenderDistance, 2, 32, "%d chunks"))
+	if (ImGui::SliderInt("Render distance", &currentRenderDistance, 2, 10, "%d chunks"))
 		camera->setRenderDistance(currentRenderDistance);
 
 	static float fov = camera->getFOV();

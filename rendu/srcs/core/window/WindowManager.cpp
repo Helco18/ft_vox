@@ -25,7 +25,6 @@ void WindowManager::destroy()
 		glfwDestroyWindow(_window);
 		glfwTerminate();
 	}
-	OBJModel::deleteModels();
 	_isActive = false;
 }
 

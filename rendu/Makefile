@@ -44,7 +44,6 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanTexture.cpp \
 						srcs/core/engine/vulkan/VulkanUniform.cpp \
 						srcs/core/input/InputManager.cpp \
-						srcs/core/model/OBJModel.cpp \
 						srcs/core/pipeline/PipelineManager.cpp \
 						srcs/core/texture/TextureAtlas.cpp \
 						srcs/core/thread/ThreadPool.cpp \
@@ -112,7 +111,6 @@ INCLUDES			=	-I libs \
 						-I srcs/core/engine/opengl \
 						-I srcs/core/engine/vulkan \
 						-I srcs/core/input \
-						-I srcs/core/model \
 						-I srcs/core/pipeline \
 						-I srcs/core/texture \
 						-I srcs/core/thread \
