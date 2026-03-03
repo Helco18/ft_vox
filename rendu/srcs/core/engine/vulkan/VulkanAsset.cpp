@@ -26,10 +26,7 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	AssetData & assetData = _assetDataCache[assetID];
 	Asset * asset = assetData.asset;
 	if (!asset || !asset->isUploaded || !asset->vertices.data)
-	{
-		Logger::log(ENGINE_VULKAN, DEBUG, "POUET POUET :)))))))))))))))");
 		return;
-	}
 	_drawableAssets[pipelineID].push_back(asset);
 }
 
