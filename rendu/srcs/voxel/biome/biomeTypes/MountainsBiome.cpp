@@ -30,13 +30,27 @@ uint8_t MountainsBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 	else if (worldY <= -1990 + noiseValue * 10)
 		return BlockType::BLACK_STONE;
 	else if (worldY <= height - 2 - (height % 2))
+	{
+		// if (paintingInfo.temperature >= 0.5)
+		// 	return BlockType::RED_STONE;
 		return BlockType::STONE;
+	}
 	else
 	{
 		if (slope > 2.0f)
+		{
+			if (paintingInfo.temperature >= 0.5)
+				return BlockType::RED_STONE;
 			return BlockType::STONE;
+		}
 		else
+		{
+			if (paintingInfo.temperature >= 0.5)
+				return BlockType::SAND;
+			else if (paintingInfo.temperature <= -0.5)
+				return BlockType::SNOW;
 			return BlockType::DIRT;
+		}
 	}
 }
 
@@ -52,10 +66,18 @@ uint8_t MountainsBiome::paintSurface(const BiomePaintingInfo & paintingInfo) con
 	if (slope < 10.0 - (15 - paintingInfo.worldY * 0.05))
 		return BlockType::SNOW;
 	if (slope > 2.0f)
+	{
+		if (paintingInfo.temperature >= 0.5)
+			return BlockType::RED_STONE;
 		return BlockType::STONE;
+	}
 	double noiseValue = _biomeNoise.queryState({static_cast<double>(paintingInfo.worldX), static_cast<double>(paintingInfo.worldZ)});
 	if (noiseValue <= -0.75)
 		return BlockType::WHITE_GRAVEL;
+	else if (paintingInfo.temperature >= 0.5)
+		return BlockType::SAND;
+	else if (paintingInfo.temperature <= -0.5)
+		return BlockType::SNOW;
 	else
 		return BlockType::GRASS;
 }

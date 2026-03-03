@@ -53,6 +53,8 @@ void WindowManager::load()
 	glfwSetMouseButtonCallback(_window, InputManager::interceptOneTimeClicks);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
 	glfwSetScrollCallback(_window, InputManager::interceptScroll);
+	glfwSetInputMode(_window, GLFW_CURSOR, !_isMouseEnabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	glfwFocusWindow(_window);
 
 	_engine->load();
 	if (_vsync)
@@ -131,6 +133,13 @@ void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, in
 	windowManager->setHeight(height);
 	engine->setFramebufferResized(true);
 	camera->renderViewMatrix(windowManager->getEngine());
+}
+
+void WindowManager::toggleMouse()
+{
+	_isMouseEnabled = !_isMouseEnabled;
+	glfwSetInputMode(_window, GLFW_CURSOR, !_isMouseEnabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	glfwSetCursorPos(_window, (static_cast<float>(_width) / 2), (static_cast<float>(_height) / 2));
 }
 
 void WindowManager::toggleFullscreen()
