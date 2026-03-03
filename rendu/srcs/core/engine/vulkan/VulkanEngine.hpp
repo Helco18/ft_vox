@@ -143,12 +143,14 @@ struct PendingUniform
 
 struct PendingAsset
 {
-	Asset *		asset;
-	PipelineID	pipelineID;
-	BufferData	vertexData;
-	BufferData	stagingVertexData;
-	BufferData	indexData;
-	BufferData	stagingIndexData;
+	Asset *			asset;
+	PipelineID		pipelineID;
+	BufferData		vertexData;
+	BufferData		stagingVertexData;
+	vk::DeviceSize	vertexRingBufferOffset;
+	BufferData		indexData;
+	BufferData		stagingIndexData;
+	vk::DeviceSize	indexRingBufferOffset;
 };
 
 struct AssetData
@@ -250,6 +252,9 @@ class VulkanEngine : public AEngine
 		DrawableAssets						_drawableAssets;
 		std::vector<PendingUniform>			_pendingUniforms;
 		std::vector<PendingAsset>			_pendingAssets;
+		BufferData							_stagingBuffer;
+		vk::DeviceSize						_currentStagingBufferOffset = 0;
+		vk::DeviceSize						_stagingBufferSize = 0;
 		std::vector<std::vector<AssetID>>	_pendingUnloads;
 
 		void								_createInstance();
