@@ -87,14 +87,8 @@ std::vector<BiomeDistanceInfo> BiomeManager::getBiomeSamples(float temperature, 
 			float heightDiff = std::abs(getDistanceInterval(heightMin, heightMax, height));
 
 			float finalDiff = std::max(temperatureDiff, heightDiff);
-			// if (type == BiomeType::MESA)
-				// Logger::log(VOXEL, WARNING, "messa value is " + toString(temperatureDiff) + " for temperature = " + toString(temperature) + " for height = " + toString(height));
 			if (finalDiff <= 0.1)
-			{
-				// if (type == BiomeType::MESA)
-				// 	Logger::log(VOXEL, WARNING, "MESA pushed.");
 				biomeDistanceInfos.push_back({ finalDiff, biome.get() });
-			}
 		}
 	}
 	return biomeDistanceInfos;

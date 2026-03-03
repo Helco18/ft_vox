@@ -62,7 +62,7 @@ PipelineID VulkanEngine::uploadPipeline(PipelineInfo & pipelineInfo)
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 	vertexInputInfo.vertexAttributeDescriptionCount = attributeDescription.size();
 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
-	// (void) vertexInputInfo; // coucou nous après le triangle // coucou !!! on a un triangle omg
+	// (void) vertexInputInfo; // coucou nous après le triangle // coucou !!! on a un triangle omg // OMG on a un MONDE avec des BIOMES et tout j'te jure !!!
 	
 	vk::PipelineInputAssemblyStateCreateInfo pipelineInputInfo;
 	pipelineInputInfo.topology = VKValueConverter::getDrawMode(pipelineInfo.drawMode);

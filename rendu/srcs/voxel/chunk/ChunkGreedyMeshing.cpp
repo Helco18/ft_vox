@@ -431,7 +431,7 @@ void Chunk::_buildAsset()
 	{
 		for (size_t slice = 0; slice < _chunkOpaqueAsset[axis].size(); ++slice)
 		{
-			ChunkAsset &opaque = _chunkOpaqueAsset[axis][slice];
+			ChunkAsset & opaque = _chunkOpaqueAsset[axis][slice];
 			if (!opaque.vertices.empty())
 			{
 				uint32_t offset = _chunkFinalAsset.vertices.size();
@@ -446,7 +446,7 @@ void Chunk::_buildAsset()
 	{
 		for (size_t slice = 0; slice < _chunkTransparencyAsset[axis].size(); ++slice)
 		{
-			ChunkAsset &transp = _chunkTransparencyAsset[axis][slice];
+			ChunkAsset & transp = _chunkTransparencyAsset[axis][slice];
 			if (!transp.vertices.empty())
 			{
 				uint32_t offset = _chunkFinalAsset.vertices.size();

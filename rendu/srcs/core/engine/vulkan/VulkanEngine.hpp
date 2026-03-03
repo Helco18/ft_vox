@@ -252,9 +252,6 @@ class VulkanEngine : public AEngine
 		std::vector<PendingAsset>			_pendingAssets;
 		std::vector<std::vector<AssetID>>	_pendingUnloads;
 
-		// Threads
-		ThreadPool							_threadPool;
-
 		void								_createInstance();
 		void								_initDebugMessenger();
 		void								_createSurface();

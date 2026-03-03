@@ -6,7 +6,7 @@ void OpenGLEngine::_debugCallback(GLenum source, GLenum type, GLuint id, GLenum 
 {
 	LogSeverity logSeverity;
 
-	// Ignore-list.
+	// Ignore-list
 	if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
 		return;
 	logSeverity = (severity == GL_DEBUG_SEVERITY_NOTIFICATION) ? INFO :
