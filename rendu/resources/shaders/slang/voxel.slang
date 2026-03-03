@@ -53,12 +53,13 @@ ConstantBuffer<ChunkData> chunkData;
 [shader("vertex")]
 VertexOutput vertMain(VertexInput input)
 {
-	VertexOutput output;
+    VertexOutput output;
+    float4 worldPos = mul(chunkData.model, float4(input.inPosition, 1.0));
     // x y z w (w étant la composante pour passer du clip space au normalized device coordinates, gère la perspective/profondeur)
-    output.sv_position = mul(cameraMatrix.proj, mul(cameraMatrix.view, mul(chunkData.model, float4(input.inPosition, 1.0))));
+    output.sv_position = mul(cameraMatrix.proj, mul(cameraMatrix.view, worldPos));
 	output.outNormal = input.inNormal;
 	output.outTexCoord = input.inTexCoord;
-	output.worldPos = input.inPosition;
+	output.worldPos = worldPos.xyz;
 	output.outUvMin = input.inUvMin;
 	output.outUvMax = input.inUvMax;
 	output.outUvRepeat = input.inUvRepeat;
@@ -91,9 +92,9 @@ float4 fragMain(VertexOutput output) : SV_Target
         fogColor = float3(35.0f / 255.0f, 0.0, 0.0);
     else
         fogColor = float3(0.7, 0.8, 1.0);
-    float fogStart = output.chunkData.maxDistanceRendered * ((float)(output.camPos.y >= -480.0f && output.camPos.y < 480.0f) * 0.5f);
-    float fogEnd = output.chunkData.maxDistanceRendered * ((output.camPos.y >= -480.0f) ? 1.0f : 0.5f);
-	float distanceToCamera = length(output.worldPos - output.camPos);
+    float fogStart = output.chunkData.maxDistanceRendered * ((float)(output.worldPos.y >= -480.0f && output.worldPos.y < 480.0f) * 0.5f);
+    float fogEnd = output.chunkData.maxDistanceRendered * ((output.worldPos.y >= -480.0f) ? 1.0f : 0.5f);
+    float distanceToCamera = length(output.worldPos);
 	// saturate(x) clamp x entre 0 et 1
 	float fogFactor = saturate((fogEnd - distanceToCamera) / (fogEnd - fogStart));
 
