@@ -152,7 +152,10 @@ static void uploadCrosshair(AEngine * engine)
 	texture.type = DescriptorType::COMBINED_IMAGE_SAMPLER;
 	TextureInfo textureInfo;
 
-	textureInfo.data = stbi_load("resources/assets/textures/crosshair.png", &textureInfo.width, &textureInfo.height, &textureInfo.colorChannels, 4);
+	const std::string crosshairPath = "resources/assets/textures/crosshair.png";
+	if (!fileExists(crosshairPath))
+		throw PipelineException("Couldn't find crosshair texture.");
+	textureInfo.data = stbi_load(crosshairPath.c_str(), &textureInfo.width, &textureInfo.height, &textureInfo.colorChannels, 4);
 	textureInfo.colorChannels = 4;
 	textureInfo.filtering = TextureFiltering::NEAREST;
 	texture.textureInfo = textureInfo;
