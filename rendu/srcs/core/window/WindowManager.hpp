@@ -48,10 +48,10 @@ class WindowManager
 		static void		framebufferResizeCallback(GLFWwindow * window, int width, int height);
 
 	private:
-		Environment *	_environment;
-		AEngine *		_engine;
-		GLFWwindow *	_window;
-		Camera *		_camera;
+		Environment *	_environment = nullptr;
+		AEngine *		_engine = nullptr;
+		GLFWwindow *	_window = nullptr;
+		Camera *		_camera = nullptr;
 		EngineType		_engineType;
 		double			_lastFpsUpdate;
 		double			_deltaTime = 0.0;

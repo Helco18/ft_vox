@@ -16,10 +16,10 @@ WindowManager::WindowManager(EngineType engineType, Environment * environment, b
 
 void WindowManager::destroy()
 {
+	delete _camera;
 	if (!_isActive)
 		return;
 	delete _engine;
-	delete _camera;
 	if (_window)
 	{
 		glfwDestroyWindow(_window);
