@@ -35,6 +35,7 @@ class WindowManager
 		void			setWindowPosX(int windowPosX) { _windowPosX = windowPosX; }
 		void			setWindowPosY(int windowPosY) { _windowPosY = windowPosY; }
 		void			setVsync(bool vsync) { _vsync = vsync; _engine->setVsync(_vsync); }
+		void			setMouse(bool mouse) { _isMouseEnabled = mouse; }
 		void			requestSwap() { _isSwapRequested = true; }
 
 		void			toggleFullscreen();

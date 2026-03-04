@@ -145,3 +145,12 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 	if (key == GLFW_KEY_V)
 		WorldManager::getWorld(WORLD_NAME)->requestProcedural();
 }
+
+void InputManager::interceptFocus(GLFWwindow* window, int focused)
+{
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+	windowManager->setMouse(!focused);
+	glfwSetInputMode(windowManager->getWindow(), GLFW_CURSOR, !windowManager->isMouseEnabled() ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	if (!windowManager->isMouseEnabled())
+		glfwSetCursorPos(windowManager->getWindow(), (static_cast<float>(windowManager->getWidth()) / 2), (static_cast<float>(windowManager->getHeight()) / 2));
+}

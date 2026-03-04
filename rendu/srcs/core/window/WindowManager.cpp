@@ -55,6 +55,7 @@ void WindowManager::load()
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
 	glfwSetScrollCallback(_window, InputManager::interceptScroll);
 	glfwSetInputMode(_window, GLFW_CURSOR, !_isMouseEnabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	glfwSetWindowFocusCallback(_window, InputManager::interceptFocus);
 	glfwFocusWindow(_window);
 
 	_engine->load();
