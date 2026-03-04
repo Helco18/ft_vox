@@ -68,12 +68,11 @@ void VulkanEngine::_processPendingAssets()
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
-		if (asset->vertices.data)
-		{
-			_createVertexBuffer(pendingAsset);
-			if (!asset->indices.empty())
-				_createIndexBuffer(pendingAsset);
-		}
+		if (!asset->vertices.data)
+			continue;
+		_createVertexBuffer(pendingAsset);
+		if (!asset->indices.empty())
+			_createIndexBuffer(pendingAsset);
 		vk::DeviceSize vertexSize = asset->vertices.size;
 		memcpy(static_cast<uint8_t *>(dataStaging) + _currentStagingBufferOffset, asset->vertices.data, vertexSize);
 		_transferCommandBuffer.copyBuffer(_stagingBuffer.buffer, pendingAsset.vertexData.buffer,
