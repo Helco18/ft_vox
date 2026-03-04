@@ -340,6 +340,6 @@ imgui:
 		make --no-print-directory download_imgui; \
 	fi
 
-.PHONY: all shader clean sclean fclean re stb download_stb glm download_glm glfw download_glfw glad download_glad imgui download_imgui $(NAME)
+.PHONY: all shader clean sclean fclean re stb download_stb glm download_glm glfw download_glfw glad download_glad imgui download_imgui
 
 -include $(DEPS)
