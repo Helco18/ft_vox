@@ -46,8 +46,8 @@ Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une ab
   - **2** : caméra 6-DOF  
   - **3** : caméra FPS
 - **W / A / S / D** : déplacement de la caméra
-- **SPACE / CTRL** : contrôle de la hauteur
-- **SHIFT** : accélérer la caméra
+- **SPACE / SHIFT** : contrôle de la hauteur
+- **CTRL GAUCHE** : accélérer la caméra
 - **Molette haut / bas** : ajuster la vitesse de déplacement
 - **Q / E** : contrôle du tangage *(uniquement en mode 6-DOF)*
 - **Clic droit** : casse les blocks
@@ -58,13 +58,13 @@ Le moteur repose sur un **RHI (Rendering Hardware Interface)** permettant une ab
 
 L’exécutable supporte plusieurs flags d’exécution :
 - `-gl` `-opengl` : force l’utilisation de l’API **OpenGL** au lancement. *(Vulkan est utilisé par défaut)*
-- `-f` / `-fov` : initialise le **FOV** à la valeur renseignée. *(Valeurs par défaut : 90)*
+- `-fov` : initialise le **FOV** à la valeur renseignée. *(Valeurs par défaut : 80)*
 - `-p` : active le **profiler intégré**.
 - `-d` : active les 
 **messages de debug du programme et de l'engine**.
 - `-v` : active seulement les **messages de debug de l'engine**.
 - `-vsync` : active la **synchronisation verticale**.
-- `-r <distance>` : initialise la limite de **render distance** à la valeur renseignée. *(La valeur par défaut est 10 chunks de 32×32×32)*
+- `-r <distance>` : initialise la limite de **render distance** à la valeur renseignée. *(La valeur par défaut est 8 chunks de 32×32×32)*
 - `-x <coordX>` / `-y <coordY>` /  `-z <coordZ>` : définit la **position de spawn** par défaut. *(Valeurs par défaut : 0, 0, 0)*
 - `-s` : définit la **seed utilisée pour la génération**. *(Seed par défaut : 42)*
 
