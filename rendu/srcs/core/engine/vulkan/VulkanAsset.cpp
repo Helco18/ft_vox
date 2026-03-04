@@ -55,17 +55,10 @@ void VulkanEngine::_processPendingAssets()
 	}
 	if (stagingBufferSize > _stagingBufferSize)
 	{
-		try
-		{
-			Logger::log(ENGINE_VULKAN, DEBUG, "Reallocating ring buffer with size: " + toString(_stagingBufferSize));
-			_createBuffer(stagingBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
-							vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-							_stagingBuffer.buffer, _stagingBuffer.memory);
-		} catch (const vk::OutOfDeviceMemoryError & e)
-		{
-			Logger::log(ENGINE_VULKAN, FATAL, e.what());
-			return;
-		}
+		Logger::log(ENGINE_VULKAN, DEBUG, "Reallocating ring buffer with size: " + toString(_stagingBufferSize));
+		_createBuffer(stagingBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
+						vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+						_stagingBuffer.buffer, _stagingBuffer.memory);
 		_stagingBufferSize = stagingBufferSize;
 	}
 	void * dataStaging = _stagingBuffer.memory.mapMemory(0, stagingBufferSize);
@@ -77,16 +70,9 @@ void VulkanEngine::_processPendingAssets()
 		Asset * asset = pendingAsset.asset;
 		if (asset->vertices.data)
 		{
-			try
-			{
-				_createVertexBuffer(pendingAsset);
-				if (!asset->indices.empty())
-					_createIndexBuffer(pendingAsset);
-			} catch (const vk::OutOfDeviceMemoryError & e)
-			{
-				Logger::log(ENGINE_VULKAN, FATAL, e.what());
-				return;
-			}
+			_createVertexBuffer(pendingAsset);
+			if (!asset->indices.empty())
+				_createIndexBuffer(pendingAsset);
 		}
 		vk::DeviceSize vertexSize = asset->vertices.size;
 		memcpy(static_cast<uint8_t *>(dataStaging) + _currentStagingBufferOffset, asset->vertices.data, vertexSize);
