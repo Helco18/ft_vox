@@ -36,6 +36,7 @@ WindowManager::~WindowManager()
 
 void WindowManager::load()
 {
+	_isActive = true;
 	_window = _createWindow();
 
 	if (_windowPosX && _windowPosY)
@@ -61,14 +62,13 @@ void WindowManager::load()
 		_engine->setVsync(_vsync);
 	PipelineManager::init(_engine);
 
-
 	if (_isFullscreen)
 	{
 		GLFWmonitor * monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode * mode = glfwGetVideoMode(monitor);
 		glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 	}
-	_isActive = true;
+	_setIcon(_window);
 }
 
 bool WindowManager::drawFrame()

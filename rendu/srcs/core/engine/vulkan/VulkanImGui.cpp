@@ -1,3 +1,4 @@
+#include "CustomExceptions.hpp"
 #include "VulkanEngine.hpp"
 #include "Gui.hpp"
 #include "Logger.hpp"
@@ -5,9 +6,11 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_vulkan.h"
 #include "utils.hpp"
+#include <filesystem>
 
 void VulkanEngine::_initImGui()
 {
+	const std::string fontPath = "resources/assets/font/Minecraft.ttf";
 	const std::vector<vk::DescriptorPoolSize> poolSizes =
 	{
 		{ vk::DescriptorType::eSampler, 100 },
@@ -47,13 +50,16 @@ void VulkanEngine::_initImGui()
 	initInfo.PipelineInfoMain.PipelineRenderingCreateInfo = renderingInfo;
 	initInfo.UseDynamicRendering = true;
 	ImGui_ImplVulkan_Init(&initInfo);
+	_imGuiInit = true;
 
 	ImGuiIO &io = ImGui::GetIO();
 	ImFontConfig config;
 	config.OversampleH = 3;
 	config.OversampleV = 3;
 	config.GlyphExtraAdvanceX = 0.8f;
-	io.Fonts->AddFontFromFileTTF("resources/assets/font/Minecraft.ttf", 14.0f, &config);
+	if (!fileExists(fontPath))
+		throw OpenGLException("ImGui font file doesn't exist: " + fontPath);
+	io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 14.0f, &config);
 	io.Fonts->Build();
 
 	ImGuiStyle & style = ImGui::GetStyle();
@@ -108,7 +114,10 @@ void VulkanEngine::_renderImGui()
 
 void VulkanEngine::_shutdownImGui()
 {
+	if (!_imGuiInit)
+		return;
 	ImGui_ImplGlfw_Shutdown();
 	ImGui_ImplVulkan_Shutdown();
 	ImGui::DestroyContext();
+	_imGuiInit = false;
 }

@@ -11,7 +11,10 @@ GLFWimage WindowManager::_decodeOneStep(const char * filename)
 	unsigned char * pixels = stbi_load(filename, &width, &height, &channels, STBI_rgb_alpha);
 
 	if (!pixels)
-		throw WindowException("Failed to load image : " + std::string(filename));
+	{
+		image.pixels = nullptr;
+		return image;
+	}
 	image.width = width;
 	image.height = height;
 	image.pixels = pixels;
@@ -24,23 +27,17 @@ void WindowManager::_setIcon(GLFWwindow * window)
 	GLFWimage images[2];
 
 	stbi_set_flip_vertically_on_load(false);
-	try
+	images[0] = _decodeOneStep("resources/assets/icon/icon.png");
+	if (!images[0].pixels || images[0].height != images[0].width)
+		throw WindowException("Invalid icon. It must be a valid file with matching height/width.");
+	images[1] = _decodeOneStep("resources/assets/icon/icon_small.png");
+	if (!images[1].pixels || images[1].height != images[1].width)
 	{
-		images[0] = _decodeOneStep("resources/assets/icon/icon.png");
-		images[1] = _decodeOneStep("resources/assets/icon/icon_small.png");
-		if (images[0].height != images[0].width || images[1].height != images[1].width)
-			throw WindowException("Icone size mismatch");
+		stbi_image_free(images[0].pixels);
+		throw WindowException("Invalid icon. It must be a valid file with matching height/width.");
+	}
 
-		glfwSetWindowIcon(window, 2, images);
-	}
-	catch (const std::exception & e)
-	{
-		if (images[0].pixels)
-			stbi_image_free(images[0].pixels);
-		if (images[1].pixels)
-			stbi_image_free(images[1].pixels);
-		throw;
-	}
+	glfwSetWindowIcon(window, 2, images);
 
 	stbi_image_free(images[0].pixels);
 	stbi_image_free(images[1].pixels);
@@ -77,25 +74,16 @@ GLFWwindow * WindowManager::_createWindow()
 	sstream << "[" << (ENGINE_NAME(_engineType)) << "]";
 	GLFWwindow * window = glfwCreateWindow(_width, _height, sstream.str().c_str(), nullptr, nullptr);
 
-	try
-	{
-		if (!window)
-			throw WindowException("Failed to instantiate GLFW window.");
+	if (!window)
+		throw WindowException("Failed to instantiate GLFW window.");
 
-		if (_engineType == OPENGL)
-		{
-			glfwMakeContextCurrent(window);
-			if (!gladLoadGL(glfwGetProcAddress))
-				throw WindowException("Couldn't initialize GLAD.");
-		}
-		glfwSetWindowSizeLimits(window, WIDTH / 2, HEIGHT / 2, GLFW_DONT_CARE, GLFW_DONT_CARE);
-		_setIcon(window);
-	}
-	catch (const std::exception & e)
+	if (_engineType == OPENGL)
 	{
-		glfwTerminate();
-		throw;
+		glfwMakeContextCurrent(window);
+		if (!gladLoadGL(glfwGetProcAddress))
+			throw WindowException("Couldn't initialize GLAD.");
 	}
+	glfwSetWindowSizeLimits(window, WIDTH / 2, HEIGHT / 2, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 	glfwSetErrorCallback(glfwErrorCallback);
 	return (window);

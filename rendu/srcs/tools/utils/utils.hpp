@@ -29,3 +29,4 @@ std::vector<std::string>	ft_split(const std::string & str, char delimiter);
 const std::string			getFileAsString(const char * name);
 float						getDistanceInterval(float min, float max, float value);
 uint64_t					alignTo(uint64_t offset, uint64_t alignment);
+bool						fileExists(const std::string & path);

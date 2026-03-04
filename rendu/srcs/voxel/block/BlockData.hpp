@@ -54,6 +54,8 @@ class BlockData
 	private:
 		typedef std::unordered_map<uint8_t, BlockData>	BlockDataRegistry;
 
+		static void					_validateTextures();
+
 		static BlockDataRegistry	_dataRegistry;
 
 		std::string					_name;

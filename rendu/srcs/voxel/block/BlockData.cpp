@@ -1,8 +1,23 @@
 #include "BlockData.hpp"
 #include "CustomExceptions.hpp"
 #include "utils.hpp"
+#include <fstream>
 
 BlockData::BlockDataRegistry BlockData::_dataRegistry;
+
+void BlockData::_validateTextures()
+{
+	for (auto & [_, textureCache] : _dataRegistry)
+	{
+		const std::vector<std::string> & textureVec = textureCache._textures;
+		for (const std::string & texture : textureVec)
+		{
+			std::ifstream f(texture);
+			if (!f.is_open())
+				throw VoxelException("Block texture not found: " + texture);
+		}
+	}
+}
 
 void BlockData::init()
 {
@@ -41,6 +56,8 @@ void BlockData::init()
 	_dataRegistry.emplace(WHITE_GRAVEL, BlockData("white_gravel", true, true, false, whiteGravelTextures));
 	_dataRegistry.emplace(BROWN_STONE, BlockData("brown_stone", true, true, false, brownStoneTextures));
 	_dataRegistry.emplace(MAGMA_STONE, BlockData("magma_stone", true, true, false, magmaStoneTextures));
+
+	_validateTextures();
 }
 
 BlockData & BlockData::getBlockData(uint8_t type)

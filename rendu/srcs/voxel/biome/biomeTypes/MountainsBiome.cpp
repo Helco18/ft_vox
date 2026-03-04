@@ -30,11 +30,7 @@ uint8_t MountainsBiome::fillWorld(const BiomePaintingInfo & paintingInfo) const
 	else if (worldY <= -1990 + noiseValue * 10)
 		return BlockType::BLACK_STONE;
 	else if (worldY <= height - 2 - (height % 2))
-	{
-		// if (paintingInfo.temperature >= 0.5)
-		// 	return BlockType::RED_STONE;
 		return BlockType::STONE;
-	}
 	else
 	{
 		if (slope > 2.0f)
