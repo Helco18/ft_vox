@@ -26,6 +26,7 @@ class WindowManager
 		bool			isChunkBordersActive() const { return _chunkBordersActive; }
 		bool			isWireframe() const { return _isWireframeEnabled; }
 		bool			isSwapRequested() const { return _isSwapRequested; }
+		bool			isMouseEnabled() const { return _isMouseEnabled; }
 		bool			isVsyncEnabled() const { return _vsync; }
 
 		void			setDeltaTime(double deltaTime) { _deltaTime = deltaTime; }
@@ -34,21 +35,23 @@ class WindowManager
 		void			setWindowPosX(int windowPosX) { _windowPosX = windowPosX; }
 		void			setWindowPosY(int windowPosY) { _windowPosY = windowPosY; }
 		void			setVsync(bool vsync) { _vsync = vsync; _engine->setVsync(_vsync); }
+		void			setMouse(bool mouse) { _isMouseEnabled = mouse; }
 		void			requestSwap() { _isSwapRequested = true; }
 
 		void			toggleFullscreen();
 		void			toggleChunkBorders() { _chunkBordersActive = !_chunkBordersActive; }
 		void			toggleWireframe() { _isWireframeEnabled = !_isWireframeEnabled; }
+		void			toggleMouse();
 
 		void			destroy();
 
 		static void		framebufferResizeCallback(GLFWwindow * window, int width, int height);
 
 	private:
-		Environment *	_environment;
-		AEngine *		_engine;
-		GLFWwindow *	_window;
-		Camera *		_camera;
+		Environment *	_environment = nullptr;
+		AEngine *		_engine = nullptr;
+		GLFWwindow *	_window = nullptr;
+		Camera *		_camera = nullptr;
 		EngineType		_engineType;
 		double			_lastFpsUpdate;
 		double			_deltaTime = 0.0;
@@ -60,6 +63,7 @@ class WindowManager
 		bool			_isSwapRequested;
 		bool			_chunkBordersActive = false;
 		bool			_isWireframeEnabled = false;
+		bool			_isMouseEnabled = false;
 		bool			_isActive = false;
 		bool			_vsync = false;
 

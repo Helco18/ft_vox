@@ -2,6 +2,7 @@
 #include "CustomExceptions.hpp"
 #include <fstream>
 #include <ostream>
+#include <filesystem>
 
 std::vector<std::string> ft_split(const std::string & str, char delimiter)
 {
@@ -58,4 +59,25 @@ float getDistanceInterval(float min, float max, float value)
 	else if (value > max)
 		return value - max;
 	return 0;
+}
+
+uint64_t alignTo(uint64_t offset, uint64_t alignment)
+{
+	uint64_t remainder = offset % alignment;
+	if (remainder == 0)
+		return offset;
+	return offset + (alignment - remainder);
+}
+
+bool fileExists(const std::string & path)
+{
+	try
+	{
+		if (!std::filesystem::exists(path) || (std::filesystem::status(path).permissions() & std::filesystem::perms::owner_read) == std::filesystem::perms::none)
+			return false;
+	} catch (const std::filesystem::filesystem_error & e)
+	{
+		return false;
+	}
+	return true;
 }

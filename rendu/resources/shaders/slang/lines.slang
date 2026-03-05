@@ -47,5 +47,4 @@ VertexOutput vertMain(VertexInput input)
 float4 fragMain(VertexOutput output) : SV_Target
 {
     return float4((abs(output.worldPos.x) % 255) / 255, (abs(output.worldPos.y) % 255) / 255, (abs(output.worldPos.z) % 255) / 255, 1.0f);
-    // return float4(0.2f, 0.0f, 0.7f, 1.0f);
 }

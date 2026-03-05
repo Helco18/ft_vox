@@ -87,4 +87,5 @@ class AEngine
 
 		bool				_imGuiEnabled = false;
 		bool				_imGuiThisFrame = false;
+		bool				_imGuiInit = false;
 };

@@ -2,6 +2,7 @@
 #include "CustomExceptions.hpp"
 #include "Profiler.hpp"
 #include <algorithm>
+#include <vulkan/vulkan.hpp>
 
 static ProgramParams parseArgs(int ac, char ** av)
 {
@@ -109,6 +110,11 @@ int main(int ac, char ** av)
 	catch (const CustomException & e)
 	{
 		Logger::log(e.getSource(), FATAL, std::string(e.what()));
+		return 1;
+	}
+	catch (const vk::OutOfDeviceMemoryError & e)
+	{
+		Logger::log(ENGINE_VULKAN, FATAL, std::string(e.what()));
 		return 1;
 	}
 	Profiler::print();

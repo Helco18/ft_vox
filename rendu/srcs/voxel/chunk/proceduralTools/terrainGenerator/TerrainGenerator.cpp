@@ -30,10 +30,9 @@ void TerrainGenerator::_addCave(int x, int y, int z, int worldX, int worldY, int
 	double epsilon = 0.032;    // largeur de la bande
 	double gradientThreshold = 0.00035;  // clap de la coquille
 
-	// Logger::log(VOXEL, INFO, "Cave value: " + toString(caveValue) + ", Gradient magnitude: " + toString(gradientMagnitude));
 	if (std::abs(caveValue - target) < epsilon)
 	{
-		double h = 0.08; // pas du gradient
+		double h = 0.08; // step du gradient
 
 		double nx1 = noise.queryState({px + h, py, pz});
 		double ny1 = noise.queryState({px, py + h, pz});

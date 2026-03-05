@@ -63,16 +63,7 @@ void VulkanEngine::_createVertexBuffer(PendingAsset & pendingAsset)
 
 	Asset * asset = pendingAsset.asset;
 	BufferData & vertexData = pendingAsset.vertexData;
-	BufferData & stagingVertexData = pendingAsset.stagingVertexData;
 	vk::DeviceSize size = asset->vertices.size;
-
-	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc,
-					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-					stagingVertexData.buffer, stagingVertexData.memory);
-
-	void * dataStaging = stagingVertexData.memory.mapMemory(0, size);
-	memcpy(dataStaging, asset->vertices.data, size);
-	stagingVertexData.memory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,
@@ -86,16 +77,7 @@ void VulkanEngine::_createIndexBuffer(PendingAsset & pendingAsset)
 
 	Asset * asset = pendingAsset.asset;
 	BufferData & indexData = pendingAsset.indexData;
-	BufferData & stagingIndexData = pendingAsset.stagingIndexData;
 	vk::DeviceSize size = sizeof(asset->indices[0]) * asset->indices.size();
-
-	_createBuffer(size, vk::BufferUsageFlagBits::eTransferSrc, 
-					vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-					stagingIndexData.buffer, stagingIndexData.memory);
-
-	void * dataStaging = stagingIndexData.memory.mapMemory(0, size);
-	memcpy(dataStaging, asset->indices.data(), size);
-	stagingIndexData.memory.unmapMemory();
 
 	_createBuffer(size, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, 
 					vk::MemoryPropertyFlagBits::eDeviceLocal,

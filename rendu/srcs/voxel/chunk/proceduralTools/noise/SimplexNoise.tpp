@@ -140,20 +140,7 @@ double SimplexNoise<N>::_terrainNoise(const std::array<double, N> & pos) const
 template <uint8_t N>
 std::array<double, N>	SimplexNoise<N>::_gradient(int hash) const
 {
-
-	// std::array<double, N> g{};
-	// double len = 0.0;
-	// for (uint8_t d = 0; d < N; ++d)
-	// {
-    //     g[d] = static_cast<double>(hash) / 127.5 - 1.0;
-	// 	len += g[d] * g[d];
-	// }
-
-	// len = 1.0 / std::sqrt(len);
-	// for (double & v : g)
-	// 	v *= len;
-
-    std::array<double, N> g{}; // initialisé à 0
+    std::array<double, N> g{};
 
     if constexpr (N == 2) {
         static const double grad2[8][2] = {

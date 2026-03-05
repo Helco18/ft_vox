@@ -26,10 +26,7 @@ void VulkanEngine::drawAsset(AssetID assetID, PipelineID pipelineID)
 	AssetData & assetData = _assetDataCache[assetID];
 	Asset * asset = assetData.asset;
 	if (!asset || !asset->isUploaded || !asset->vertices.data)
-	{
-		Logger::log(ENGINE_VULKAN, DEBUG, "POUET POUET :)))))))))))))))");
 		return;
-	}
 	_drawableAssets[pipelineID].push_back(asset);
 }
 
@@ -49,38 +46,55 @@ void VulkanEngine::_processPendingAssets()
 {
 	if (_pendingAssets.empty())
 		return;
+
+	vk::DeviceSize stagingBufferSize = 0;
+	for (PendingAsset & pendingAsset : _pendingAssets)
+	{
+		stagingBufferSize += alignTo(pendingAsset.asset->vertices.size, 16);
+		stagingBufferSize += alignTo(pendingAsset.asset->indices.size() * sizeof(uint32_t), 16);
+	}
+	if (stagingBufferSize > _stagingBufferSize)
+	{
+		Logger::log(ENGINE_VULKAN, DEBUG, "Reallocating ring buffer with size: " + toString(_stagingBufferSize));
+		_createBuffer(stagingBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
+						vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+						_stagingBuffer.buffer, _stagingBuffer.memory);
+		_stagingBufferSize = stagingBufferSize;
+	}
+	void * dataStaging = _stagingBuffer.memory.mapMemory(0, stagingBufferSize);
+	
 	vk::CommandBufferBeginInfo commandBufferBeginInfo;
 	_transferCommandBuffer.begin(commandBufferBeginInfo);
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;
-		if (asset->vertices.data)
-		{
-			try
-			{
-				_createVertexBuffer(pendingAsset);
-				if (!asset->indices.empty())
-					_createIndexBuffer(pendingAsset);
-			} catch (const vk::OutOfDeviceMemoryError & e)
-			{
-				Logger::log(ENGINE_VULKAN, FATAL, e.what());
-				return;
-			}
-		}
-		_transferCommandBuffer.copyBuffer(pendingAsset.stagingVertexData.buffer, pendingAsset.vertexData.buffer,
-			vk::BufferCopy(0, 0, asset->vertices.size));
+		if (!asset->vertices.data)
+			continue;
+		_createVertexBuffer(pendingAsset);
+		if (!asset->indices.empty())
+			_createIndexBuffer(pendingAsset);
+		vk::DeviceSize vertexSize = asset->vertices.size;
+		memcpy(static_cast<uint8_t *>(dataStaging) + _currentStagingBufferOffset, asset->vertices.data, vertexSize);
+		_transferCommandBuffer.copyBuffer(_stagingBuffer.buffer, pendingAsset.vertexData.buffer,
+			vk::BufferCopy(_currentStagingBufferOffset, 0, vertexSize));
+		_currentStagingBufferOffset += alignTo(vertexSize, 16);
 		if (!asset->indices.empty())
 		{
-			_transferCommandBuffer.copyBuffer(pendingAsset.stagingIndexData.buffer, pendingAsset.indexData.buffer,
-				vk::BufferCopy(0, 0, sizeof(uint32_t) * asset->indices.size()));
+			vk::DeviceSize indicesSize = sizeof(uint32_t) * asset->indices.size();
+			memcpy(static_cast<uint8_t *>(dataStaging) + _currentStagingBufferOffset, asset->indices.data(), indicesSize);
+			_transferCommandBuffer.copyBuffer(_stagingBuffer.buffer, pendingAsset.indexData.buffer,
+				vk::BufferCopy(_currentStagingBufferOffset, 0, indicesSize));
+			_currentStagingBufferOffset += alignTo(indicesSize, 16);
 		}
 	}
+	_stagingBuffer.memory.unmapMemory();
 	_transferCommandBuffer.end();
 	vk::SubmitInfo submitInfo;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &*_transferCommandBuffer;
 	_transferQueue.submit(submitInfo);
 	_transferQueue.waitIdle();
+	_currentStagingBufferOffset = 0;
 	for (PendingAsset & pendingAsset : _pendingAssets)
 	{
 		Asset * asset = pendingAsset.asset;

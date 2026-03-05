@@ -18,9 +18,6 @@ Environment::~Environment()
 
 void Environment::init(ProgramParams & programParams)
 {
-	if (!OBJModel::loadModels())
-		throw EnvironmentException("Failed to load models.");
-
 	TextureAtlas::pushFolder("resources/assets/textures");
 	TextureAtlas::createAtlas();
 

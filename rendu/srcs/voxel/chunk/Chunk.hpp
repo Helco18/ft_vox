@@ -6,9 +6,9 @@
 #define CHUNK_LENGTH 32
 
 #include <mutex>
-#include "OBJModel.hpp"
 #include "AEngine.hpp"
 #include "BlockData.hpp"
+#include "glm/glm.hpp"
 
 class World;
 

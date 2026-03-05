@@ -23,14 +23,13 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 	GLFWwindow * window = windowManager->getWindow();
 	Camera * camera = windowManager->getCamera();
 
-	int width, height;
-	double mouseX, mouseY;
-
-	width = windowManager->getWidth();
-	height = windowManager->getHeight();
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
+	if (!windowManager->isMouseEnabled())
 	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		int width, height;
+		double mouseX, mouseY;
+
+		width = windowManager->getWidth();
+		height = windowManager->getHeight();
 		glfwGetCursorPos(window, &mouseX, &mouseY);
 
 		if (oldMouseX != mouseX || oldMouseY != mouseY)
@@ -42,20 +41,12 @@ void InputManager::interceptMouse(WindowManager * windowManager)
 
 		glfwSetCursorPos(window, (static_cast<float>(width) / 2), (static_cast<float>(height) / 2));
 	}
-	else
-	{
-		if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			glfwSetCursorPos(window, (static_cast<float>(width) / 2), (static_cast<float>(height) / 2));
-		}
-	}
 }
 
 void InputManager::interceptOneTimeClicks(GLFWwindow * window, int key, int action, int)
 {
 	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
-	if (windowManager->getEngine()->isGuiEnabled())
+	if (windowManager->isMouseEnabled())
 		return;
 	Player & player = windowManager->getEnvironment()->getPlayer();
 	TargetedBlock targetedBlock = player.getTargetedBlock();
@@ -128,12 +119,6 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 
 	if (action != GLFW_PRESS)
 		return;
-
-	if (key == GLFW_KEY_ESCAPE)
-	{
-		glfwSetWindowShouldClose(window, GL_TRUE);
-		return;
-	}
 	if (key == GLFW_KEY_TAB)
 		windowManager->requestSwap();
 
@@ -145,6 +130,8 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 		windowManager->toggleWireframe();
 	if (key == GLFW_KEY_F11)
 		windowManager->toggleFullscreen();
+	if (key == GLFW_KEY_ENTER || key == GLFW_KEY_PAUSE || key == GLFW_KEY_ESCAPE)
+		windowManager->toggleMouse();
 
 	if (key == GLFW_KEY_1)
 		camera->setCameraType(EULER);
@@ -157,4 +144,13 @@ void InputManager::interceptInputs(GLFWwindow * window, int key, int, int action
 	// Trigger generation
 	if (key == GLFW_KEY_V)
 		WorldManager::getWorld(WORLD_NAME)->requestProcedural();
+}
+
+void InputManager::interceptFocus(GLFWwindow* window, int focused)
+{
+	WindowManager * windowManager = reinterpret_cast<WindowManager *>(glfwGetWindowUserPointer(window));
+	windowManager->setMouse(!focused);
+	glfwSetInputMode(windowManager->getWindow(), GLFW_CURSOR, !windowManager->isMouseEnabled() ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	if (!windowManager->isMouseEnabled())
+		glfwSetCursorPos(windowManager->getWindow(), (static_cast<float>(windowManager->getWidth()) / 2), (static_cast<float>(windowManager->getHeight()) / 2));
 }

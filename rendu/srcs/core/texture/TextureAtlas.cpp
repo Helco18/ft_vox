@@ -1,5 +1,6 @@
 #include "TextureAtlas.hpp"
 #include "AEngine.hpp"
+#include "CustomExceptions.hpp"
 #include "Logger.hpp"
 #include "stb/stb_image.h"
 #include "stb/stb_image_write.h"
@@ -17,10 +18,7 @@ void TextureAtlas::createAtlas()
 	int offsetX = 0;
 
 	if (_width == 0 || _height == 0 || _textureMap.empty())
-	{
-		Logger::log(TEXTURE, FATAL, "Texture Map is empty.");
-		return;
-	}
+		throw TextureException("Texture Map is empty.");
 	_atlasData.resize(_width * _height * _colorChannels, 255);
 	const float normWidth = 1.0f / static_cast<float>(_width);
 	const float normHeight = 1.0f / static_cast<float>(_height);
@@ -59,10 +57,7 @@ void TextureAtlas::pushTexture(const std::string & texturePath)
 	stbi_set_flip_vertically_on_load(true);
 	texture->data = stbi_load(texturePath.c_str(), &texture->width, &texture->height, &texture->colorChannels, STBI_rgb_alpha);
 	if (!texture->data)
-	{
-		Logger::log(TEXTURE, ERROR, "Couldn't open texture file at: " + texturePath);
-		return;
-	}
+		throw TextureException("Couldn't open texture file at: " + texturePath);
 	if (_height < texture->height)
 		_height = texture->height;
 	_width += texture->width;
@@ -72,25 +67,25 @@ void TextureAtlas::pushTexture(const std::string & texturePath)
 
 void TextureAtlas::pushFolder(const std::string & folderPath)
 {
-	if (!std::filesystem::exists(folderPath))
+	try
 	{
-		Logger::log(TEXTURE, ERROR, "Couldn't find folder at: " + folderPath);
-		return;
-	}
+		if (!std::filesystem::exists(folderPath))
+			throw TextureException("Couldn't find folder at: " + folderPath);
 
-	std::filesystem::directory_iterator it(folderPath);	
-	for (const std::filesystem::directory_entry & entry : it)
-		pushTexture(entry.path());
+		std::filesystem::directory_iterator it(folderPath);	
+		for (const std::filesystem::directory_entry & entry : it)
+			pushTexture(entry.path());
+	} catch (const std::filesystem::filesystem_error & e)
+	{
+		throw TextureException(e.what());
+	}
 }
 
 Texture * TextureAtlas::getTexture(const std::string & texturePath)
 {
 	TextureMap::iterator it = _textureMap.find(texturePath);
 	if (it == _textureMap.end())
-	{
-		Logger::log(TEXTURE, ERROR, "Couldn't find texture at: " + texturePath);
-		return nullptr;
-	}
+		throw TextureException("Couldn't find texture file at: " + texturePath);
 	return it->second.get();
 }
 

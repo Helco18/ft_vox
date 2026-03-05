@@ -10,6 +10,7 @@ NAME				=	ft_vox
 # Paths
 SHADER_PATH			=	resources/shaders
 OBJ_PATH			=	objs
+LIBS_PATH			=	libs/
 GLAD_PATH			=	libs/glad
 GLFW_PATH			=	libs/GLFW
 SPIRV_PATH			=	$(SHADER_PATH)/spir-v
@@ -44,7 +45,6 @@ SRCS				=	srcs/main.cpp \
 						srcs/core/engine/vulkan/VulkanTexture.cpp \
 						srcs/core/engine/vulkan/VulkanUniform.cpp \
 						srcs/core/input/InputManager.cpp \
-						srcs/core/model/OBJModel.cpp \
 						srcs/core/pipeline/PipelineManager.cpp \
 						srcs/core/texture/TextureAtlas.cpp \
 						srcs/core/thread/ThreadPool.cpp \
@@ -112,7 +112,6 @@ INCLUDES			=	-I libs \
 						-I srcs/core/engine/opengl \
 						-I srcs/core/engine/vulkan \
 						-I srcs/core/input \
-						-I srcs/core/model \
 						-I srcs/core/pipeline \
 						-I srcs/core/texture \
 						-I srcs/core/thread \
@@ -160,13 +159,15 @@ RESET				=	\033[0m
 
 # Custom messages
 EXE_DONE			=	@echo "[PROGRAM] $(PURPLE)$(NAME) compiled!$(RESET)"
-SHADERS_DONE		=	@echo "[SHADER] $(PURPLE)Shaders compiled!$(RESET)"
 SHADERS_CLEAN		=	@echo "[SHADER] $(YELLOW)Shaders cleaned!$(RESET)"
 ALL_CLEAN			=	@echo "[SRCS] $(YELLOW)Project's objects cleaned!$(RESET)"
-ALL_FCLEAN			=	@echo "[SRCS] $(YELLOW)Project's objects & Executables cleaned!$(RESET)"
+ALL_FCLEAN			=	@echo "[SRCS] $(YELLOW)Project's objects & Executables & Libs cleaned!$(RESET)"
 
 # Rules
-all : glfw glm stb glad imgui shader $(NAME)
+all:
+	@$(MAKE) libs
+	@$(MAKE) shader
+	@$(MAKE) $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(GLFW) -o $(NAME) $(INCLUDES) $(LDFLAGS)
@@ -186,6 +187,8 @@ $(OBJ_PATH)/%.o: libs/%.c
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 	@echo "[SRCS] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
+
+libs: glfw glm stb glad imgui
 
 run: all
 	./$(NAME)
@@ -209,7 +212,6 @@ $(GLSL_PATH)/%.frag: $(SHADER_PATH)/slang/%.slang
 	@echo "[SHADER-GLSL] $(LIGHT_GREEN)Compiled: $@ $(RESET)"
 
 shader: $(SPIRV_OBJS) $(GLSL_VERT_OBJS) $(GLSL_FRAG_OBJS)
-	$(SHADERS_DONE)
 
 sclean:
 	@rm -rf $(SPIRV_PATH)
@@ -218,15 +220,17 @@ sclean:
 
 clean :
 	@rm -rf $(OBJ_PATH)
-	@rm -rf $(SPIRV_PATH)
-	@rm -rf $(GLSL_PATH)
 	$(ALL_CLEAN)
 
-fclean :
+fclean : sclean
 	@rm -f $(NAME)
 	@rm -rf $(OBJ_PATH)
-	@rm -rf $(SPIRV_PATH)
-	@rm -rf $(GLSL_PATH)
+	@rm -rf $(LIBS_PATH)
+	@rm -rf logs/
+	@rm -rf imgui.ini
+	@rm -rf noise.png
+	@rm -rf atlas_debug.png
+	@rm -rf imgui.ini
 	$(ALL_FCLEAN)
 
 re:

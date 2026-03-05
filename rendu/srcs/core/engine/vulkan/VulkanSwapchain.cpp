@@ -174,4 +174,6 @@ void VulkanEngine::_recreateSwapchain()
 	_createImageViews();
 	_createMultisamplingImage();
 	_createDepthResources();
+	if (_imGuiThisFrame)
+		_renderImGui();
 }

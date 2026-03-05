@@ -16,16 +16,15 @@ WindowManager::WindowManager(EngineType engineType, Environment * environment, b
 
 void WindowManager::destroy()
 {
+	delete _camera;
 	if (!_isActive)
 		return;
 	delete _engine;
-	delete _camera;
 	if (_window)
 	{
 		glfwDestroyWindow(_window);
 		glfwTerminate();
 	}
-	OBJModel::deleteModels();
 	_isActive = false;
 }
 
@@ -37,6 +36,7 @@ WindowManager::~WindowManager()
 
 void WindowManager::load()
 {
+	_isActive = true;
 	_window = _createWindow();
 
 	if (_windowPosX && _windowPosY)
@@ -54,12 +54,14 @@ void WindowManager::load()
 	glfwSetMouseButtonCallback(_window, InputManager::interceptOneTimeClicks);
 	glfwSetKeyCallback(_window, InputManager::interceptInputs);
 	glfwSetScrollCallback(_window, InputManager::interceptScroll);
+	glfwSetInputMode(_window, GLFW_CURSOR, !_isMouseEnabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	glfwSetWindowFocusCallback(_window, InputManager::interceptFocus);
+	glfwFocusWindow(_window);
 
 	_engine->load();
 	if (_vsync)
 		_engine->setVsync(_vsync);
 	PipelineManager::init(_engine);
-
 
 	if (_isFullscreen)
 	{
@@ -67,7 +69,7 @@ void WindowManager::load()
 		const GLFWvidmode * mode = glfwGetVideoMode(monitor);
 		glfwSetWindowMonitor(_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 	}
-	_isActive = true;
+	_setIcon(_window);
 }
 
 bool WindowManager::drawFrame()
@@ -132,6 +134,13 @@ void WindowManager::framebufferResizeCallback(GLFWwindow * window, int width, in
 	windowManager->setHeight(height);
 	engine->setFramebufferResized(true);
 	camera->renderViewMatrix(windowManager->getEngine());
+}
+
+void WindowManager::toggleMouse()
+{
+	_isMouseEnabled = !_isMouseEnabled;
+	glfwSetInputMode(_window, GLFW_CURSOR, !_isMouseEnabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	glfwSetCursorPos(_window, (static_cast<float>(_width) / 2), (static_cast<float>(_height) / 2));
 }
 
 void WindowManager::toggleFullscreen()
