@@ -1,4 +1,7 @@
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1de1a729-f456-4a53-9c03-deba95f652cb" />
+
 # ft_vox
+
 ft_vox est un projet de voxel utilisant un moteur graphique 3D, conçu pour explorer
 les concepts avancés du rendu bas niveau et de la programmation GPU moderne.
 
