@@ -82,7 +82,7 @@ Pour les tests et l’optimisation, nous disposons d’outils comme un **profile
 - [GLM](https://github.com/g-truc/glm) : pour les mathématiques de l'API graphique.
 - [stb_image](https://github.com/nothings/stb) : pour le chargement d'images.
 - [GLAD](https://glad.dav1d.de/) : pour le chargement des extensions OpenGL.
-- [ImGui](https://github.com/ocornut/imgui) : pour la fenêtre de debug
+- [ImGui](https://github.com/ocornut/imgui) : pour la fenêtre de debug.
 
 ## Liens utiles
 
